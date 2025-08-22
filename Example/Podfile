@@ -12,7 +12,8 @@ target 'MNSwiftKit_Example' do
   #pod 'MNSwiftKit/EmptyView', :path => '../'
   #pod 'MNSwiftKit/Layout', :path => '../'
   #pod 'MNSwiftKit/Purchase', :path => '../'
-  pod 'MNSwiftKit/Networking', :path => '../'
+  #pod 'MNSwiftKit/Networking', :path => '../'
+  pod 'MNSwiftKit/Toast', :path => '../'
 
   target 'MNSwiftKit_Tests' do
     inherit! :search_paths

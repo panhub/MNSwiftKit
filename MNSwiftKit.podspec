@@ -87,7 +87,17 @@ Swift开发基础组件，模块化。
     network.source_files = 'MNSwiftKit/Networking/Classes/*.swift'
     network.resource_bundles = {
         # 'MNSwiftKit_Networking' 是生成的 bundle 名称
-        'MNSwiftKit_Networking' => ['MNSwiftKit/Networking/Assets/*.json', 'MNSwiftKit/Networking/Assets/**/*.json']
+        'MNSwiftKit_Networking' => ['MNSwiftKit/Networking/Assets/*.json']
+    }
+  end
+  
+  # Toast <加载指示图>
+  s.subspec 'Toast' do |toast|
+    toast.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    toast.source_files = 'MNSwiftKit/Toast/Classes/*.swift'
+    toast.resource_bundles = {
+        # 'MNSwiftKit_Toast' 是生成的 bundle 名称
+        'MNSwiftKit_Toast' => ['MNSwiftKit/Toast/Assets/*.{png,jpg,jpeg}']
     }
   end
   
@@ -97,6 +107,7 @@ Swift开发基础组件，模块化。
     # 它只是一个“元模块”，用来聚合所有其他子模块的依赖
     full.dependency 'MNSwiftKit/Core'
     full.dependency 'MNSwiftKit/Base'
+    full.dependency 'MNSwiftKit/Toast'
     full.dependency 'MNSwiftKit/Layout'
     full.dependency 'MNSwiftKit/Refresh'
     full.dependency 'MNSwiftKit/Purchase'
