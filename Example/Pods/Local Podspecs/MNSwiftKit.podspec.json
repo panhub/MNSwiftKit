@@ -53,11 +53,21 @@
       "source_files": "MNSwiftKit/Database/Classes/**/*.{swift}"
     },
     {
+      "name": "EmptyView",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "CoreGraphics"
+      ],
+      "source_files": "MNSwiftKit/EmptyView/Classes/**/*.{swift}"
+    },
+    {
       "name": "Full",
       "dependencies": {
         "MNSwiftKit/Core": [],
         "MNSwiftKit/Base": [],
-        "MNSwiftKit/Database": []
+        "MNSwiftKit/Database": [],
+        "MNSwiftKit/EmptyView": []
       }
     }
   ],

@@ -34,7 +34,7 @@ Swift开发基础组件，模块化。
   # 默认模块
   s.default_subspec = 'Full'
   
-  # Core
+  # Core <Foundation 基础工具>
   s.subspec 'Core' do |core|
     core.frameworks = 'Foundation', 'CoreFoundation', 'CoreGraphics'
     core.source_files = 'MNSwiftKit/Core/Classes/**/*.{swift}'
@@ -42,16 +42,22 @@ Swift开发基础组件，模块化。
     # core.dependency 'SnapKit', '~> 5.6.0'
   end
   
-  # Base
+  # Base <UIKit 基础工具>
   s.subspec 'Base' do |base|
     base.frameworks = 'UIKit', 'Foundation', 'CoreGraphics', 'QuartzCore', 'ImageIO', 'CoreServices', 'UniformTypeIdentifiers'
     base.source_files = 'MNSwiftKit/Base/Classes/**/*.{swift}'
   end
   
-  # Database
+  # Database <数据库>
   s.subspec 'Database' do |database|
     database.frameworks = 'Foundation', 'AVFoundation', 'CoreGraphics'
     database.source_files = 'MNSwiftKit/Database/Classes/**/*.{swift}'
+  end
+  
+  # EmptyView <空数据默认视图支持>
+  s.subspec 'EmptyView' do |empty|
+    empty.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    empty.source_files = 'MNSwiftKit/EmptyView/Classes/**/*.{swift}'
   end
   
   # Full
@@ -61,6 +67,7 @@ Swift开发基础组件，模块化。
     full.dependency 'MNSwiftKit/Core'
     full.dependency 'MNSwiftKit/Base'
     full.dependency 'MNSwiftKit/Database'
+    full.dependency 'MNSwiftKit/EmptyView'
   end
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
