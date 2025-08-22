@@ -75,6 +75,12 @@ Swift开发基础组件，模块化。
     ]
   end
   
+  # Purchase <内购支持>
+  s.subspec 'Purchase' do |purchase|
+    purchase.frameworks = 'UIKit', 'Foundation', 'StoreKit'
+    purchase.source_files = 'MNSwiftKit/Purchase/Classes/*.swift'
+  end
+  
   # Full
   s.subspec 'Full' do |full|
     # 'Full' 子模块本身不包含任何源代码
@@ -83,6 +89,7 @@ Swift开发基础组件，模块化。
     full.dependency 'MNSwiftKit/Base'
     full.dependency 'MNSwiftKit/Layout'
     full.dependency 'MNSwiftKit/Refresh'
+    full.dependency 'MNSwiftKit/Purchase'
     full.dependency 'MNSwiftKit/Database'
     full.dependency 'MNSwiftKit/EmptyView'
   end

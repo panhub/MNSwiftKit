@@ -17,18 +17,18 @@ class ViewController: UIViewController {
         
         view.backgroundColor = .white
         
-        print("============\(MN_SCREEN_WIDTH)============")
-        print("============\(MN_SCREEN_HEIGHT)============")
-        print("============\(MN_SCREEN_MAX)============")
-        print("============\(MN_SCREEN_MIN)============")
-        print("============\(MN_TAB_BAR_HEIGHT)============")
-        print("============\(MN_BOTTOM_SAFE_HEIGHT)============")
-        print("============\(MN_BOTTOM_BAR_HEIGHT)============")
-        print("============\(MN_STATUS_BAR_HEIGHT)============")
-        print("============\(MN_NAV_BAR_HEIGHT)============")
-        print("============\(MN_TOP_BAR_HEIGHT)============")
-        print("============\("md5测试".crypto.md5)============")
-        print("============\(String.uuid)============")
+//        print("============\(MN_SCREEN_WIDTH)============")
+//        print("============\(MN_SCREEN_HEIGHT)============")
+//        print("============\(MN_SCREEN_MAX)============")
+//        print("============\(MN_SCREEN_MIN)============")
+//        print("============\(MN_TAB_BAR_HEIGHT)============")
+//        print("============\(MN_BOTTOM_SAFE_HEIGHT)============")
+//        print("============\(MN_BOTTOM_BAR_HEIGHT)============")
+//        print("============\(MN_STATUS_BAR_HEIGHT)============")
+//        print("============\(MN_NAV_BAR_HEIGHT)============")
+//        print("============\(MN_TOP_BAR_HEIGHT)============")
+//        print("============\("md5测试".crypto.md5)============")
+//        print("============\(String.uuid)============")
     }
 
     override func didReceiveMemoryWarning() {

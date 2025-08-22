@@ -83,12 +83,22 @@
       ]
     },
     {
+      "name": "Purchase",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "StoreKit"
+      ],
+      "source_files": "MNSwiftKit/Purchase/Classes/*.swift"
+    },
+    {
       "name": "Full",
       "dependencies": {
         "MNSwiftKit/Core": [],
         "MNSwiftKit/Base": [],
         "MNSwiftKit/Layout": [],
         "MNSwiftKit/Refresh": [],
+        "MNSwiftKit/Purchase": [],
         "MNSwiftKit/Database": [],
         "MNSwiftKit/EmptyView": []
       }
