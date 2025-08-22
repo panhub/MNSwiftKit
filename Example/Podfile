@@ -1,0 +1,17 @@
+install! 'cocoapods', :warn_for_unused_master_specs_repo => false
+use_frameworks!
+
+platform :ios, '9.0'
+
+target 'MNSwiftKit_Example' do
+
+  pod 'MNSwiftKit/Core', :path => '../'
+  pod 'MNSwiftKit/Base', :path => '../'
+  pod 'MNSwiftKit/Database', :path => '../'
+
+  target 'MNSwiftKit_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end

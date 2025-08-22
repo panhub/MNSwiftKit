@@ -1,2 +1,32 @@
 # MNSwiftKit
-Swift开发基础工具。
+
+[![CI Status](https://img.shields.io/travis/mellow/MNSwiftKit.svg?style=flat)](https://travis-ci.org/mellow/MNSwiftKit)
+[![Version](https://img.shields.io/cocoapods/v/MNSwiftKit.svg?style=flat)](https://cocoapods.org/pods/MNSwiftKit)
+[![License](https://img.shields.io/cocoapods/l/MNSwiftKit.svg?style=flat)](https://cocoapods.org/pods/MNSwiftKit)
+[![Platform](https://img.shields.io/cocoapods/p/MNSwiftKit.svg?style=flat)](https://cocoapods.org/pods/MNSwiftKit)
+
+## Example
+
+To run the example project, clone the repo, and run `pod install` from the Example directory first.
+
+## Requirements
+
+## Installation
+
+MNSwiftKit is available through [CocoaPods](https://cocoapods.org). To install
+it, simply add the following line to your Podfile:
+
+```ruby
+pod 'MNSwiftKit'
+pod 'MNSwiftKit/Core'
+pod 'MNSwiftKit/Base'
+pod 'MNSwiftKit/Database'
+```
+
+## Author
+
+panhub, fengpann@163.com
+
+## License
+
+MNSwiftKit is available under the MIT license. See the LICENSE file for more info.

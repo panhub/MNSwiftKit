@@ -1,0 +1,20 @@
+PODS:
+  - MNSwiftKit/Base (0.1.0)
+  - MNSwiftKit/Core (0.1.0)
+  - MNSwiftKit/Database (0.1.0)
+
+DEPENDENCIES:
+  - MNSwiftKit/Base (from `../`)
+  - MNSwiftKit/Core (from `../`)
+  - MNSwiftKit/Database (from `../`)
+
+EXTERNAL SOURCES:
+  MNSwiftKit:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  MNSwiftKit: ae296b16fbd9a5ce357b38711dc9cfde30499623
+
+PODFILE CHECKSUM: fbc8a25656697dbbec3e042077f005edbc79b2da
+
+COCOAPODS: 1.16.2
