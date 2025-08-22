@@ -44,6 +44,15 @@
       "source_files": "MNSwiftKit/Base/Classes/*.swift"
     },
     {
+      "name": "Layout",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "CoreGraphics"
+      ],
+      "source_files": "MNSwiftKit/Layout/Classes/*.swift"
+    },
+    {
       "name": "Database",
       "frameworks": [
         "Foundation",
@@ -78,6 +87,7 @@
       "dependencies": {
         "MNSwiftKit/Core": [],
         "MNSwiftKit/Base": [],
+        "MNSwiftKit/Layout": [],
         "MNSwiftKit/Refresh": [],
         "MNSwiftKit/Database": [],
         "MNSwiftKit/EmptyView": []

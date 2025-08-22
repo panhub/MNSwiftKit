@@ -48,6 +48,12 @@ Swift开发基础组件，模块化。
     base.source_files = 'MNSwiftKit/Base/Classes/*.swift'
   end
   
+  # Layout <UI布局快速获取>
+  s.subspec 'Layout' do |layout|
+    layout.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    layout.source_files = 'MNSwiftKit/Layout/Classes/*.swift'
+  end
+  
   # Database <数据库>
   s.subspec 'Database' do |database|
     database.frameworks = 'Foundation', 'AVFoundation', 'CoreGraphics'
@@ -75,6 +81,7 @@ Swift开发基础组件，模块化。
     # 它只是一个“元模块”，用来聚合所有其他子模块的依赖
     full.dependency 'MNSwiftKit/Core'
     full.dependency 'MNSwiftKit/Base'
+    full.dependency 'MNSwiftKit/Layout'
     full.dependency 'MNSwiftKit/Refresh'
     full.dependency 'MNSwiftKit/Database'
     full.dependency 'MNSwiftKit/EmptyView'
