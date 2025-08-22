@@ -804,7 +804,7 @@ extension UIView {
     
     /// 判断是否需要展示空数据视图
     @objc fileprivate func empty_displayIfNeeded() {
-        guard let emptyView = empty.contentView else { return }
+        guard let emptyView = mn_empty.contentView else { return }
         guard let dataSource = emptyView.dataSource else { return }
         var visible: Bool = false
         if let display = dataSource.dataEmptyViewShouldDisplay?(self) {
@@ -829,7 +829,7 @@ extension UIView {
 // MARK: - 构造命名空间/包装器
 extension UIView {
     
-    fileprivate struct DataEmptyAssociated {
+    fileprivate struct MNDataEmptyAssociated {
         
         static var view: String = "com.mn.data.empty.view"
         static var observer: String = "com.mn.data.empty.observer"
@@ -837,7 +837,7 @@ extension UIView {
         static var components: String = "com.mn.data.empty.components"
     }
     
-    public class DataEmptyWrapper {
+    public class MNDataEmptyWrapper {
         
         fileprivate let view: UIView
         
@@ -847,10 +847,10 @@ extension UIView {
     }
     
     /// 空数据视图包装器
-    public var empty: DataEmptyWrapper { DataEmptyWrapper(view: self) }
+    public var mn_empty: MNDataEmptyWrapper { MNDataEmptyWrapper(view: self) }
 }
 
-extension UIView.DataEmptyWrapper {
+extension UIView.MNDataEmptyWrapper {
     
     /// 空数据视图数据源
     @MainActor
@@ -902,10 +902,10 @@ extension UIView.DataEmptyWrapper {
             } else {
                 observer.endObserve()
             }
-            objc_setAssociatedObject(view, &UIView.DataEmptyAssociated.display, newValue, .OBJC_ASSOCIATION_ASSIGN)
+            objc_setAssociatedObject(view, &UIView.MNDataEmptyAssociated.display, newValue, .OBJC_ASSOCIATION_ASSIGN)
         }
         get {
-            objc_getAssociatedObject(view, &UIView.DataEmptyAssociated.display) as? Bool ?? true
+            objc_getAssociatedObject(view, &UIView.MNDataEmptyAssociated.display) as? Bool ?? true
         }
     }
     
@@ -916,33 +916,33 @@ extension UIView.DataEmptyWrapper {
             if let contentView = contentView {
                 contentView.components = newValue
             }
-            objc_setAssociatedObject(view, &UIView.DataEmptyAssociated.components, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(view, &UIView.MNDataEmptyAssociated.components, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
         get {
             if let contentView = contentView {
                 return contentView.components
             }
-            return objc_getAssociatedObject(view, &UIView.DataEmptyAssociated.components) as? [MNDataEmptyComponent] ?? []
+            return objc_getAssociatedObject(view, &UIView.MNDataEmptyAssociated.components) as? [MNDataEmptyComponent] ?? []
         }
     }
     
     /// 空数据视图
     fileprivate var contentView: MNDataEmptyView? {
         set {
-            objc_setAssociatedObject(view, &UIView.DataEmptyAssociated.view, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(view, &UIView.MNDataEmptyAssociated.view, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
         get {
-            objc_getAssociatedObject(view, &UIView.DataEmptyAssociated.view) as? MNDataEmptyView
+            objc_getAssociatedObject(view, &UIView.MNDataEmptyAssociated.view) as? MNDataEmptyView
         }
     }
     
     /// 空数据监听
     fileprivate var observer: MNDataEmptyObserver {
-        if let observer = objc_getAssociatedObject(view, &UIView.DataEmptyAssociated.observer) as? MNDataEmptyObserver {
+        if let observer = objc_getAssociatedObject(view, &UIView.MNDataEmptyAssociated.observer) as? MNDataEmptyObserver {
             return observer
         }
         let observer = MNDataEmptyObserver(target: view, action: #selector(view.empty_displayIfNeeded))
-        objc_setAssociatedObject(view, &UIView.DataEmptyAssociated.observer, observer, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        objc_setAssociatedObject(view, &UIView.MNDataEmptyAssociated.observer, observer, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         return observer
     }
     

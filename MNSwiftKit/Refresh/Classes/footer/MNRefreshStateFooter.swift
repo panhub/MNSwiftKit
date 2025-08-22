@@ -42,21 +42,18 @@ open class MNRefreshStateFooter: MNRefreshFooter {
         return indicatorView
     }()
     
-    open override func initialized() {
-        super.initialized()
+    open override func commonInit() {
+        super.commonInit()
         addSubview(textLabel)
         addSubview(indicatorView)
     }
     
     open override func layoutSubviews() {
         super.layoutSubviews()
-        if style == .large {
-            textLabel.center = CGPoint(x: frame.width/2.0, y: frame.height - MN_BOTTOM_SAFE_HEIGHT - textLabel.height/2.0)
-            indicatorView.center = CGPoint(x: frame.width/2.0, y: frame.height - MN_BOTTOM_SAFE_HEIGHT - indicatorView.height/2.0)
-        } else {
-            textLabel.center = CGPoint(x: frame.width/2.0, y: frame.height/2.0)
-            indicatorView.center = CGPoint(x: frame.width/2.0, y: frame.height/2.0)
-        }
+        let rect = bounds.inset(by: contentInset)
+        let center = CGPoint(x: rect.midX, y: rect.midY)
+        textLabel.center = center
+        indicatorView.center = center
     }
     
     open override func footerViewDidDragging(_ percent: CGFloat) {

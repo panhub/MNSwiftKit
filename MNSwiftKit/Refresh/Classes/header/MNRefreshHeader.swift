@@ -9,21 +9,12 @@ import UIKit
 
 open class MNRefreshHeader: MNRefreshComponent {
     
-    /**初始化*/
-    open override func initialized() {
-        super.initialized()
-        switch style {
-        case .small:
-            height = MNRefreshComponent.NormalHeight
-        case .large:
-            height = max(MN_STATUS_BAR_HEIGHT + MN_NAV_BAR_HEIGHT, MNRefreshComponent.NormalHeight)
-        }
-    }
-    
     open override func didChangeOffset(_ offset: UIOffset) {
         guard let scrollView = scrollView else { return }
-        minY = offset.vertical - height
-        midX = scrollView.frame.width/2.0 - scrollView.mn.contentInset.left + offset.horizontal
+        var rect = frame
+        rect.origin.y = offset.vertical - rect.height
+        rect.origin.x = scrollView.frame.width/2.0 - scrollView.mn_refresh.contentInset.left + offset.horizontal - rect.width/2.0
+        frame = rect
     }
     
     open override func scrollViewContentOffsetDidChange(_ change: [NSKeyValueChangeKey : Any]?) {
@@ -36,17 +27,17 @@ open class MNRefreshHeader: MNRefreshComponent {
         if state == .refreshing {
             guard let _ = window else { return }
             // 解决停留问题
-            let insetT = min(max(-scrollView.mn.offsetY, referenceInset.top), frame.height + referenceInset.top)
-            scrollView.mn.topInset = insetT
+            let insetT = min(max(-scrollView.mn_refresh.offsetY, referenceInset.top), frame.height + referenceInset.top)
+            scrollView.mn_refresh.topInset = insetT
             deltaInset = referenceInset.top - insetT
             return
         }
         
         // contentInset可能会随时变
-        referenceInset = scrollView.mn.contentInset
+        referenceInset = scrollView.mn_refresh.contentInset
         
         // 当前的偏移
-        let offsetY = scrollView.mn.offsetY
+        let offsetY = scrollView.mn_refresh.offsetY
         // 控件刚好出现(正常状态下)的offsetY
         let happenOffsetY = -referenceInset.top
         
@@ -85,7 +76,7 @@ open class MNRefreshHeader: MNRefreshComponent {
             // 结束刷新
             UIView.animate(withDuration: MNRefreshComponent.SlowAnimationDuration) { [weak self] in
                 guard let self = self, let scrollView = self.scrollView else { return }
-                scrollView.mn.topInset += self.deltaInset
+                scrollView.mn_refresh.topInset += self.deltaInset
             } completion: { [weak self] _ in
                 // 回调结束刷新
                 guard let self = self else { return }
@@ -95,9 +86,9 @@ open class MNRefreshHeader: MNRefreshComponent {
             // 开始刷新
             UIView.animate(withDuration: MNRefreshComponent.FastAnimationDuration) { [weak self] in
                 guard let self = self, let scrollView = self.scrollView else { return }
-                let inset = self.referenceInset.top + self.height
-                scrollView.mn.topInset = inset
-                scrollView.mn.offsetY = -inset
+                let inset = self.referenceInset.top + self.frame.height
+                scrollView.mn_refresh.topInset = inset
+                scrollView.mn_refresh.offsetY = -inset
             } completion: { [weak self] _ in
                 // 回调开始刷新
                 guard let self = self else { return }

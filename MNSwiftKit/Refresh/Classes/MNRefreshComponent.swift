@@ -14,12 +14,6 @@ import CoreGraphics
     @objc public enum State: Int {
         case normal, pulling, preparing, refreshing, noMoreData
     }
-    /// 外观样式
-    @objc public enum AppearanceStyle: Int {
-        case small, large
-    }
-    /// style = small 的控件高度
-    @objc public static let NormalHeight: CGFloat = 55.0
     /// 记录父视图
     @objc public private(set) weak var scrollView: UIScrollView?
     /// 缓慢的动画时间
@@ -28,8 +22,6 @@ import CoreGraphics
     @objc public static let FastAnimationDuration: TimeInterval = 0.25
     /// 定义颜色
     @objc open var color: UIColor = .black
-    /// 定义样式
-    @objc open var style: AppearanceStyle = .small
     /// 是否在刷新
     @objc open var isRefreshing: Bool { state == .refreshing }
     /// 是否是无更多数据状态
@@ -52,6 +44,12 @@ import CoreGraphics
             didChangeOffset(offset)
         }
     }
+    /// 调整控件内容偏移
+    @objc open var contentInset: UIEdgeInsets = .zero {
+        didSet {
+            setNeedsLayout()
+        }
+    }
     /// 当前状态
     @objc open var state: State = .normal {
         didSet {
@@ -61,25 +59,18 @@ import CoreGraphics
     }
     
     @objc public override init(frame: CGRect) {
-        super.init(frame: frame)
-        initialized()
+        super.init(frame: .init(x: 0.0, y: 0.0, width: 0.0, height: 55.0))
+        commonInit()
     }
     
-    @objc public init(style: AppearanceStyle) {
-        super.init(frame: .zero)
-        self.style = style
-        initialized()
-    }
-    
-    @objc public init(style: AppearanceStyle, target: NSObjectProtocol, action: Selector) {
-        super.init(frame: .zero)
-        self.style = style
+    @objc public init(target: NSObjectProtocol, action: Selector) {
+        super.init(frame: .init(x: 0.0, y: 0.0, width: 0.0, height: 55.0))
         addTarget(target, action: action)
-        initialized()
+        commonInit()
     }
     
-    @objc open func initialized() {
-        backgroundColor = UIColor.clear
+    @objc open func commonInit() {
+        backgroundColor = .clear
     }
     
     required public init?(coder: NSCoder) {
@@ -99,9 +90,12 @@ import CoreGraphics
         super.didMoveToSuperview()
         guard let scrollView = superview as? UIScrollView else { return }
         // 保持同宽度
-        width = scrollView.width
+        var rect = frame
+        rect.size.width = scrollView.frame.width
+        frame = frame
+        autoresizingMask = .flexibleWidth
         // 记录UIScrollView最开始的contentInset
-        referenceInset = scrollView.mn.contentInset
+        referenceInset = scrollView.mn_refresh.contentInset
         // 设置永远支持垂直弹簧效果
         scrollView.alwaysBounceVertical = true
         // 开始监听

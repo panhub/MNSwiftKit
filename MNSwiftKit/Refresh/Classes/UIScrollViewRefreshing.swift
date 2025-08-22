@@ -8,58 +8,78 @@
 import UIKit
 import ObjectiveC.runtime
 
-extension NameSpaceWrapper where Base: UIScrollView {
+extension UIScrollView {
+    
+    fileprivate struct MNRefreshAssociated {
+        static var footer = "com.mn.scroll.view.load.footer"
+        static var header = "com.mn.scroll.view.refresh.header"
+    }
+    
+    public class MNRefreshWrapper {
+        
+        fileprivate let scrollView: UIScrollView
+        
+        fileprivate init(scrollView: UIScrollView) {
+            self.scrollView = scrollView
+        }
+    }
+    
+    /// 刷新控制包装器
+    public var mn_refresh: MNRefreshWrapper { MNRefreshWrapper(scrollView: self) }
+}
+
+extension UIScrollView.MNRefreshWrapper {
     
     public var contentInset: UIEdgeInsets {
         if #available(iOS 11.0, *) {
-            return base.adjustedContentInset
+            return scrollView.adjustedContentInset
         }
-        return base.contentInset
+        return scrollView.contentInset
     }
     
     public var contentHeight: CGFloat {
-        base.contentSize.height
+        scrollView.contentSize.height
     }
     
     public var offsetY: CGFloat {
-        get { base.contentOffset.y }
+        get { scrollView.contentOffset.y }
         set {
-            var offset = base.contentOffset
+            var offset = scrollView.contentOffset
             offset.y = newValue
-            base.contentOffset = offset
+            scrollView.contentOffset = offset
         }
     }
     
     public var topInset: CGFloat {
         get { contentInset.top }
         set {
-            var inset = base.contentInset
+            var inset = scrollView.contentInset
             inset.top = newValue
             if #available(iOS 11.0, *) {
-                inset.top -= (base.adjustedContentInset.top - base.contentInset.top)
+                inset.top -= (scrollView.adjustedContentInset.top - scrollView.contentInset.top)
             }
-            base.contentInset = inset
+            scrollView.contentInset = inset
         }
     }
     
     public var bottomInset: CGFloat {
         get { contentInset.bottom }
         set {
-            var inset = base.contentInset
+            var inset = scrollView.contentInset
             inset.bottom = newValue
             if #available(iOS 11.0, *) {
-                inset.bottom -= (base.adjustedContentInset.bottom - base.contentInset.bottom)
+                inset.bottom -= (scrollView.adjustedContentInset.bottom - scrollView.contentInset.bottom)
             }
-            base.contentInset = inset
+            scrollView.contentInset = inset
         }
     }
 }
 
-extension NameSpaceWrapper where Base: UIScrollView {
+extension UIScrollView.MNRefreshWrapper {
     
     /// 头部刷新控件
     public var header: MNRefreshHeader? {
-        get { objc_getAssociatedObject(base, &UIScrollView.RefreshAssociated.header) as? MNRefreshHeader }
+        get { objc_getAssociatedObject(scrollView, &UIScrollView.MNRefreshAssociated.header) as? MNRefreshHeader }
         set {
             let header = header
             if newValue == nil, header == nil { return }
@@ -68,15 +88,15 @@ extension NameSpaceWrapper where Base: UIScrollView {
                 header.removeFromSuperview()
             }
             if let newValue = newValue {
-                base.insertSubview(newValue, at: 0)
+                scrollView.insertSubview(newValue, at: 0)
             }
-            objc_setAssociatedObject(base, &UIScrollView.RefreshAssociated.header, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(scrollView, &UIScrollView.MNRefreshAssociated.header, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
     
     /// 底部加载更多控件
     public var footer: MNRefreshFooter? {
-        get { objc_getAssociatedObject(base, &UIScrollView.RefreshAssociated.footer) as? MNRefreshFooter }
+        get { objc_getAssociatedObject(scrollView, &UIScrollView.MNRefreshAssociated.footer) as? MNRefreshFooter }
         set {
             let footer = footer
             if newValue == nil, footer == nil { return }
@@ -85,9 +105,9 @@ extension NameSpaceWrapper where Base: UIScrollView {
                 footer.removeFromSuperview()
             }
             if let newValue = newValue {
-                base.insertSubview(newValue, at: 0)
+                scrollView.insertSubview(newValue, at: 0)
             }
-            objc_setAssociatedObject(base, &UIScrollView.RefreshAssociated.footer, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(scrollView, &UIScrollView.MNRefreshAssociated.footer, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
     
@@ -150,13 +170,5 @@ extension NameSpaceWrapper where Base: UIScrollView {
                 footer.endRefreshingAndNoMoreData()
             }
         }
-    }
-}
-
-// MARK: - 快速添加
-fileprivate extension UIScrollView {
-    struct RefreshAssociated {
-        static var footer = "com.mn.scroll.view.load.footer"
-        static var header = "com.mn.scroll.view.refresh.header"
     }
 }

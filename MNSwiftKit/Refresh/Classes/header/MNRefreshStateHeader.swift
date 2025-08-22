@@ -28,17 +28,15 @@ open class MNRefreshStateHeader: MNRefreshHeader {
         return indicatorView
     }()
     
-    open override func initialized() {
-        super.initialized()
+    open override func commonInit() {
+        super.commonInit()
         addSubview(indicatorView)
     }
     
     open override func layoutSubviews() {
         super.layoutSubviews()
-        var center = CGPoint(x: bounds.width/2.0, y: bounds.height/2.0)
-        if style == .large {
-            center.y =  (frame.height - MN_STATUS_BAR_HEIGHT)/2.0 + MN_STATUS_BAR_HEIGHT
-        }
+        let rect = bounds.inset(by: contentInset)
+        let center = CGPoint(x: rect.midX, y: rect.midY)
         indicatorView.center = center
     }
     
