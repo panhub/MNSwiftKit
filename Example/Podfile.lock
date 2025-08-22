@@ -1,18 +1,16 @@
 PODS:
-  - MNSwiftKit/Layout (0.1.0)
-  - MNSwiftKit/Purchase (0.1.0)
+  - MNSwiftKit/Networking (0.1.0)
 
 DEPENDENCIES:
-  - MNSwiftKit/Layout (from `../`)
-  - MNSwiftKit/Purchase (from `../`)
+  - MNSwiftKit/Networking (from `../`)
 
 EXTERNAL SOURCES:
   MNSwiftKit:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: 999a9bd4a466710747f8de3fc443ba50765a7cae
+  MNSwiftKit: 955052b8d5a757c46df91a7d5b655890b98780a7
 
-PODFILE CHECKSUM: 05905d145516920d50bcd0c54f958aa8dc182496
+PODFILE CHECKSUM: b226ac2500481738e95df58d28242adff207550c
 
 COCOAPODS: 1.16.2

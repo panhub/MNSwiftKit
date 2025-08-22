@@ -92,6 +92,25 @@
       "source_files": "MNSwiftKit/Purchase/Classes/*.swift"
     },
     {
+      "name": "Networking",
+      "frameworks": [
+        "Foundation",
+        "SystemConfiguration",
+        "CoreTelephony",
+        "CoreAudio",
+        "Security",
+        "CoreFoundation",
+        "CoreGraphics"
+      ],
+      "source_files": "MNSwiftKit/Networking/Classes/*.swift",
+      "resource_bundles": {
+        "MNSwiftKit_Networking": [
+          "MNSwiftKit/Networking/Assets/*.json",
+          "MNSwiftKit/Networking/Assets/**/*.json"
+        ]
+      }
+    },
+    {
       "name": "Full",
       "dependencies": {
         "MNSwiftKit/Core": [],
@@ -100,7 +119,8 @@
         "MNSwiftKit/Refresh": [],
         "MNSwiftKit/Purchase": [],
         "MNSwiftKit/Database": [],
-        "MNSwiftKit/EmptyView": []
+        "MNSwiftKit/EmptyView": [],
+        "MNSwiftKit/Networking": []
       }
     }
   ],

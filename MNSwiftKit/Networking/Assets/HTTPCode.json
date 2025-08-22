@@ -1,0 +1,202 @@
+{
+  "100" : {
+    "description" : "服务器返回此代码表示已收到初始的请求，正在等待其余部分",
+    "localized" : "请求者应当继续提出请求",
+    "msg" : "Continue"
+  },
+  "101" : {
+    "description" : "请求者已要求服务器切换协议，服务器已确认并准备切换",
+    "localized" : "切换协议",
+    "msg" : "Switching Protocols"
+  },
+  "200" : {
+    "description" : "服务器提供了请求的网页，对GET和POST请求的应答文档跟在后面",
+    "localized" : "服务器已成功处理了请求",
+    "msg" : "OK"
+  },
+  "201" : {
+    "description" : "请求成功并且服务器创建了新的资源，Location头给出了它的URL",
+    "localized" : "已创建",
+    "msg" : "Created"
+  },
+  "202" : {
+    "description" : "服务器已接受请求，但尚未处理。该请求最终可能会或可能不会被执行，因为在实际处理时可能不允许该请求",
+    "localized" : "已接受",
+    "msg" : "Accepted"
+  },
+  "203" : {
+    "description" : "服务器已成功处理了请求，但返回的信息可能来自另一来源",
+    "localized" : "非授权信息",
+    "msg" : "Non-Authoritative Information"
+  },
+  "204" : {
+    "description" : "服务器成功处理了请求，但没有返回任何内容",
+    "localized" : "无内容",
+    "msg" : "No Content"
+  },
+  "205" : {
+    "description" : "应该重置它所显示的内容。用来强制清除表单输入内容",
+    "localized" : "没有新的内容",
+    "msg" : "Reset Content"
+  },
+  "206" : {
+    "description" : "服务器成功处理了部分 GET 请求",
+    "localized" : "客户发送了一个带有Range头的GET请求",
+    "msg" : "Partial Content"
+  },
+  "300" : {
+    "description" : "服务器可根据请求者 (user agent) 选择一项操作，或提供操作列表供请求者选择",
+    "localized" : "多种选择，针对请求，服务器可执行多种操作。",
+    "msg" : "Multiple Choices"
+  },
+  "301" : {
+    "description" : "服务器返回此响应（对 GET 或 HEAD 请求的响应）时，会自动将请求者转到新位置",
+    "localized" : "永久移动，请求的网页已永久移动到新位置",
+    "msg" : "Moved Permanently"
+  },
+  "302" : {
+    "description" : "服务器目前从不同位置的网页响应请求，但请求者应继续使用原有位置来进行以后的请求",
+    "localized" : "临时的移动",
+    "msg" : "Moved Temporatily"
+  },
+  "303" : {
+    "description" : "请求者应当对不同的位置使用单独的GET请求来检索响应时，服务器返回此代码。即该状态码存在的最主要意义是为了处理POST请求重定向到GET请求的情况",
+    "localized" : "查看其它位置",
+    "msg" : "See Other"
+  },
+  "304" : {
+    "description" : "服务器返回此响应时，不会返回网页内容",
+    "localized" : "未修改，自从上次请求后，请求的网页未修改过",
+    "msg" : "Not Modified"
+  },
+  "305" : {
+    "description" : "如果服务器返回此响应，表示请求者应使用代理",
+    "localized" : "使用代理，请求者只能使用代理访问请求的网页",
+    "msg" : "Use Proxy"
+  },
+  "307" : {
+    "description" : "服务器目前从不同位置的网页响应请求，但请求者应继续使用原有位置来进行以后的请求",
+    "localized" : "临时重定向",
+    "msg" : "Temporary Redirect"
+  },
+  "400" : {
+    "description" : "服务器不理解请求的语法",
+    "localized" : "错误请求",
+    "msg" : "Bad Request"
+  },
+  "401" : {
+    "description" : "对于需要登录的网页，服务器可能返回此响应",
+    "localized" : "未授权，访问被拒绝， 请求要求身份验证",
+    "msg" : "Unauthorized"
+  },
+  "403" : {
+    "description" : "服务器拒绝请求",
+    "localized" : "禁止访问",
+    "msg" : "Forbidden"
+  },
+  "404" : {
+    "description" : "由于未知的原因服务器找不到请求的资源",
+    "localized" : "未找到资源",
+    "msg" : "Not Found"
+  },
+  "405" : {
+    "description" : "禁用请求中指定的方法",
+    "localized" : "请求方法被禁用",
+    "msg" : "Method Not Allowed"
+  },
+  "406" : {
+    "description" : "资源已找到，但无法使用请求的内容特性响应请求内容",
+    "localized" : "内容特性不接受",
+    "msg" : "Not Acceptable"
+  },
+  "407" : {
+    "description" : "此状态代码与401（未授权）类似，但指定请求者应当授权使用代理",
+    "localized" : "需要代理授权验证",
+    "msg" : "Proxy Authentication Required"
+  },
+  "408" : {
+    "description" : "服务器等候请求时发生超时",
+    "localized" : "请求超时",
+    "msg" : "Request Timeout"
+  },
+  "409" : {
+    "description" : "服务器在完成请求时发生冲突。服务器必须在响应中包含有关冲突的信息",
+    "localized" : "服务器发生冲突",
+    "msg" : "Conflict"
+  },
+  "410" : {
+    "description" : "文档永久地离开了指定的位置",
+    "localized" : "请求的资源已永久删除",
+    "msg" : "Conflict"
+  },
+  "411" : {
+    "description" : "服务器不接受不含有效内容长度标头字段的请求",
+    "localized" : "需要有效长度",
+    "msg" : "Length Required"
+  },
+  "412" : {
+    "description" : "服务器未满足请求者在请求中设置的其中一个前提条件",
+    "localized" : "未满足请求前提条件",
+    "msg" : "Precondition Failed"
+  },
+  "413" : {
+    "description" : "超出服务器的处理能力，服务器无法处理请求",
+    "localized" : "请求体过大",
+    "msg" : "Request Entity Too Large"
+  },
+  "414" : {
+    "description" : "超出服务器的处理能力，服务器无法处理请求",
+    "localized" : "请求的URI（通常为网址）过长",
+    "msg" : "Request URI Too Long"
+  },
+  "415" : {
+    "description" : "请求的格式不受请求页面的支持",
+    "localized" : "不支持的媒体类型",
+    "msg" : "不支持的媒体类型"
+  },
+  "416" : {
+    "description" : "客户端无法提供请求的范围或范围超出边界，则服务器会返回此状态代码",
+    "localized" : "请求范围不符合要求",
+    "msg" : "Requested Range Not Satisfiable"
+  },
+  "417" : {
+    "description" : "服务器未满足\"期望\"请求标头字段的要求",
+    "localized" : "未满足期望值",
+    "msg" : "未满足期望值"
+  },
+  "423" : {
+    "description" : "锁定的错误",
+    "localized" : "锁定的错误",
+    "msg" : "锁定的错误"
+  },
+  "500" : {
+    "description" : "服务器遇到错误，无法完成请求",
+    "localized" : "服务器内部错误",
+    "msg" : "Internal Server Error"
+  },
+  "501" : {
+    "description" : "例如，服务器无法识别请求方法时可能会返回此代码",
+    "localized" : "服务器不具备完成请求的功能",
+    "msg" : "Not Implemented"
+  },
+  "502" : {
+    "description" : "服务器作为网关或代理，从上游服务器收到无效响应",
+    "localized" : "网关错误",
+    "msg" : "Bad Gateway"
+  },
+  "503" : {
+    "description" : "服务器目前无法使用（由于超载或停机维护）。通常，这只是暂时状态",
+    "localized" : "服务器不可用",
+    "msg" : "Service Unavailable"
+  },
+  "504" : {
+    "description" : "服务器作为网关或代理，但是没有及时从上游服务器收到请求",
+    "localized" : "网关超时",
+    "msg" : "Gateway Timeout"
+  },
+  "505" : {
+    "description" : "服务器不支持请求中所用的HTTP协议版本",
+    "localized" : "HTTP版本不受支持",
+    "msg" : "HTTP Version Not Supported"
+  }
+}

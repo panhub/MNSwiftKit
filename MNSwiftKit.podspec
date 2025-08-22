@@ -81,6 +81,16 @@ Swift开发基础组件，模块化。
     purchase.source_files = 'MNSwiftKit/Purchase/Classes/*.swift'
   end
   
+  # Purchase <内购支持>
+  s.subspec 'Networking' do |network|
+    network.frameworks = 'Foundation', 'SystemConfiguration', 'CoreTelephony', 'CoreAudio', 'Security', 'CoreFoundation', 'CoreGraphics'
+    network.source_files = 'MNSwiftKit/Networking/Classes/*.swift'
+    network.resource_bundles = {
+        # 'MNSwiftKit_Networking' 是生成的 bundle 名称
+        'MNSwiftKit_Networking' => ['MNSwiftKit/Networking/Assets/*.json', 'MNSwiftKit/Networking/Assets/**/*.json']
+    }
+  end
+  
   # Full
   s.subspec 'Full' do |full|
     # 'Full' 子模块本身不包含任何源代码
@@ -92,6 +102,7 @@ Swift开发基础组件，模块化。
     full.dependency 'MNSwiftKit/Purchase'
     full.dependency 'MNSwiftKit/Database'
     full.dependency 'MNSwiftKit/EmptyView'
+    full.dependency 'MNSwiftKit/Networking'
   end
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
