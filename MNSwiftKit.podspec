@@ -37,7 +37,7 @@ Swift开发基础组件，模块化。
   # Core <Foundation 基础工具>
   s.subspec 'Core' do |core|
     core.frameworks = 'Foundation', 'CoreFoundation', 'CoreGraphics'
-    core.source_files = 'MNSwiftKit/Core/Classes/**/*.{swift}'
+    core.source_files = 'MNSwiftKit/Core/Classes/*.swift'
     # 可以依赖一些基础库，比如 SnapKit
     # core.dependency 'SnapKit', '~> 5.6.0'
   end
@@ -45,19 +45,28 @@ Swift开发基础组件，模块化。
   # Base <UIKit 基础工具>
   s.subspec 'Base' do |base|
     base.frameworks = 'UIKit', 'Foundation', 'CoreGraphics', 'QuartzCore', 'ImageIO', 'CoreServices', 'UniformTypeIdentifiers'
-    base.source_files = 'MNSwiftKit/Base/Classes/**/*.{swift}'
+    base.source_files = 'MNSwiftKit/Base/Classes/*.swift'
   end
   
   # Database <数据库>
   s.subspec 'Database' do |database|
     database.frameworks = 'Foundation', 'AVFoundation', 'CoreGraphics'
-    database.source_files = 'MNSwiftKit/Database/Classes/**/*.{swift}'
+    database.source_files = 'MNSwiftKit/Database/Classes/*.swift'
   end
   
   # EmptyView <空数据默认视图支持>
   s.subspec 'EmptyView' do |empty|
     empty.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
-    empty.source_files = 'MNSwiftKit/EmptyView/Classes/**/*.{swift}'
+    empty.source_files = 'MNSwiftKit/EmptyView/Classes/*.swift'
+  end
+  
+  # Refresh <刷新控件>
+  s.subspec 'Refresh' do |refresh|
+    refresh.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    refresh.source_files = [
+       'MNSwiftKit/Refresh/Classes/*.swift',
+       'MNSwiftKit/Refresh/Classes/**/*.swift'
+    ]
   end
   
   # Full
@@ -66,6 +75,7 @@ Swift开发基础组件，模块化。
     # 它只是一个“元模块”，用来聚合所有其他子模块的依赖
     full.dependency 'MNSwiftKit/Core'
     full.dependency 'MNSwiftKit/Base'
+    full.dependency 'MNSwiftKit/Refresh'
     full.dependency 'MNSwiftKit/Database'
     full.dependency 'MNSwiftKit/EmptyView'
   end
