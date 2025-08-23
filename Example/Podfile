@@ -6,14 +6,14 @@ platform :ios, '9.0'
 target 'MNSwiftKit_Example' do
 
   #pod 'MNSwiftKit/Core', :path => '../'
-  pod 'MNSwiftKit/Base', :path => '../'
+  #pod 'MNSwiftKit/Base', :path => '../'
   #pod 'MNSwiftKit/Database', :path => '../'
   #pod 'MNSwiftKit/Refresh', :path => '../'
   #pod 'MNSwiftKit/EmptyView', :path => '../'
   #pod 'MNSwiftKit/Layout', :path => '../'
   #pod 'MNSwiftKit/Purchase', :path => '../'
   #pod 'MNSwiftKit/Networking', :path => '../'
-  #pod 'MNSwiftKit/Toast', :path => '../'
+  pod 'MNSwiftKit/Toast', :path => '../'
   #pod 'MNSwiftKit/HTTPRequest', :path => '../'
   #pod 'MNSwiftKit/Unity', :path => '../'
 

@@ -30,7 +30,7 @@ class ViewController: UIViewController {
 //        print("============\("md5测试".crypto.md5)============")
 //        print("============\(String.uuid)============")
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

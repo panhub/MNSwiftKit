@@ -1,18 +1,16 @@
 PODS:
-  - MNSwiftKit/Base (0.1.0):
-    - MNSwiftKit/Layout
-  - MNSwiftKit/Layout (0.1.0)
+  - MNSwiftKit/Toast (0.1.0)
 
 DEPENDENCIES:
-  - MNSwiftKit/Base (from `../`)
+  - MNSwiftKit/Toast (from `../`)
 
 EXTERNAL SOURCES:
   MNSwiftKit:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: 6f4f8dc4cd7146577c6ef423522d02fa3e19c654
+  MNSwiftKit: 3827689a6b81ae15efb85edaf2d813cabac56cfc
 
-PODFILE CHECKSUM: 9deb9ad3695828997fa14e9da34ebbf5e37ce375
+PODFILE CHECKSUM: 841bf95de04d4a33607f0fcf888ec435db934219
 
 COCOAPODS: 1.16.2

@@ -28,7 +28,7 @@
         "CoreFoundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/Core/Classes/*.swift"
+      "source_files": "MNSwiftKit/Core/Sources/*.swift"
     },
     {
       "name": "Base",
@@ -42,7 +42,7 @@
         "CoreServices",
         "UniformTypeIdentifiers"
       ],
-      "source_files": "MNSwiftKit/Base/Classes/**/*.swift",
+      "source_files": "MNSwiftKit/Base/Sources/**/*.swift",
       "dependencies": {
         "MNSwiftKit/Layout": []
       }
@@ -60,7 +60,7 @@
         "AdSupport",
         "AppTrackingTransparency"
       ],
-      "source_files": "MNSwiftKit/Unity/Classes/*.swift"
+      "source_files": "MNSwiftKit/Unity/Sources/*.swift"
     },
     {
       "name": "Toast",
@@ -69,10 +69,10 @@
         "Foundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/Toast/Classes/*.swift",
+      "source_files": "MNSwiftKit/Toast/Sources/*.swift",
       "resource_bundles": {
         "MNSwiftKit_Toast": [
-          "MNSwiftKit/Toast/Assets/*.{png,jpg,jpeg}"
+          "MNSwiftKit/Toast/Resources/*.{png,jpg,jpeg}"
         ]
       }
     },
@@ -83,7 +83,7 @@
         "Foundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/Layout/Classes/*.swift"
+      "source_files": "MNSwiftKit/Layout/Sources/*.swift"
     },
     {
       "name": "Refresh",
@@ -93,8 +93,8 @@
         "CoreGraphics"
       ],
       "source_files": [
-        "MNSwiftKit/Refresh/Classes/*.swift",
-        "MNSwiftKit/Refresh/Classes/**/*.swift"
+        "MNSwiftKit/Refresh/Sources/*.swift",
+        "MNSwiftKit/Refresh/Sources/**/*.swift"
       ]
     },
     {
@@ -104,7 +104,7 @@
         "Foundation",
         "StoreKit"
       ],
-      "source_files": "MNSwiftKit/Purchase/Classes/*.swift"
+      "source_files": "MNSwiftKit/Purchase/Sources/*.swift"
     },
     {
       "name": "Database",
@@ -113,7 +113,7 @@
         "AVFoundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/Database/Classes/*.swift"
+      "source_files": "MNSwiftKit/Database/Sources/*.swift"
     },
     {
       "name": "EmptyView",
@@ -122,7 +122,7 @@
         "Foundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/EmptyView/Classes/*.swift"
+      "source_files": "MNSwiftKit/EmptyView/Sources/*.swift"
     },
     {
       "name": "Networking",
@@ -135,10 +135,10 @@
         "CoreFoundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/Networking/Classes/*.swift",
+      "source_files": "MNSwiftKit/Networking/Sources/*.swift",
       "resource_bundles": {
         "MNSwiftKit_Networking": [
-          "MNSwiftKit/Networking/Assets/*.json"
+          "MNSwiftKit/Networking/Resources/*.json"
         ]
       }
     },
@@ -149,7 +149,7 @@
         "Foundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/HTTPRequest/Classes/*.swift",
+      "source_files": "MNSwiftKit/HTTPRequest/Sources/*.swift",
       "dependencies": {
         "MNSwiftKit/Networking": []
       }
