@@ -124,6 +124,18 @@
       }
     },
     {
+      "name": "HTTPRequest",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "CoreGraphics"
+      ],
+      "source_files": "MNSwiftKit/HTTPRequest/Classes/*.swift",
+      "dependencies": {
+        "MNSwiftKit/Networking": []
+      }
+    },
+    {
       "name": "Full",
       "dependencies": {
         "MNSwiftKit/Core": [],
@@ -134,7 +146,8 @@
         "MNSwiftKit/Purchase": [],
         "MNSwiftKit/Database": [],
         "MNSwiftKit/EmptyView": [],
-        "MNSwiftKit/Networking": []
+        "MNSwiftKit/Networking": [],
+        "MNSwiftKit/HTTPRequest": []
       }
     }
   ],

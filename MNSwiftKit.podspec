@@ -81,7 +81,7 @@ Swift开发基础组件，模块化。
     purchase.source_files = 'MNSwiftKit/Purchase/Classes/*.swift'
   end
   
-  # Purchase <内购支持>
+  # Purchase <网络请求>
   s.subspec 'Networking' do |network|
     network.frameworks = 'Foundation', 'SystemConfiguration', 'CoreTelephony', 'CoreAudio', 'Security', 'CoreFoundation', 'CoreGraphics'
     network.source_files = 'MNSwiftKit/Networking/Classes/*.swift'
@@ -101,6 +101,13 @@ Swift开发基础组件，模块化。
     }
   end
   
+  # HTTPRequest <网络请求封装>
+  s.subspec 'HTTPRequest' do |request|
+    request.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    request.source_files = 'MNSwiftKit/HTTPRequest/Classes/*.swift'
+    request.dependency 'MNSwiftKit/Networking'
+  end
+  
   # Full
   s.subspec 'Full' do |full|
     # 'Full' 子模块本身不包含任何源代码
@@ -114,6 +121,7 @@ Swift开发基础组件，模块化。
     full.dependency 'MNSwiftKit/Database'
     full.dependency 'MNSwiftKit/EmptyView'
     full.dependency 'MNSwiftKit/Networking'
+    full.dependency 'MNSwiftKit/HTTPRequest'
   end
 
   # s.public_header_files = 'Pod/Classes/**/*.h'

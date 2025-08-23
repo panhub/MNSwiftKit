@@ -1,16 +1,18 @@
 PODS:
-  - MNSwiftKit/Toast (0.1.0)
+  - MNSwiftKit/HTTPRequest (0.1.0):
+    - MNSwiftKit/Networking
+  - MNSwiftKit/Networking (0.1.0)
 
 DEPENDENCIES:
-  - MNSwiftKit/Toast (from `../`)
+  - MNSwiftKit/HTTPRequest (from `../`)
 
 EXTERNAL SOURCES:
   MNSwiftKit:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: 91d91d09db428c0feecd3c49ea64179e28231bdd
+  MNSwiftKit: 6b0990870060e1dffb92f644daec78d0c4134ae2
 
-PODFILE CHECKSUM: 87de82b68b01b2dde66e198114910c9bd35aace2
+PODFILE CHECKSUM: bbfd6689868d0dc67613cacde5995137e1fbf248
 
 COCOAPODS: 1.16.2
