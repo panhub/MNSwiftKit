@@ -128,14 +128,14 @@ extension UIImage {
     @objc public func renderBy(color: UIColor) -> UIImage? {
         guard let cgImage = cgImage else { return nil }
         UIGraphicsBeginImageContextWithOptions(size, false, scale)
-        let context = UIGraphicsGetCurrentContext()
-        context?.translateBy(x: 0.0, y: size.height)
-        context?.scaleBy(x: 1.0, y: -1.0)
-        context?.setBlendMode(.normal)
+        guard let context = UIGraphicsGetCurrentContext() else { return nil }
+        context.translateBy(x: 0.0, y: size.height)
+        context.scaleBy(x: 1.0, y: -1.0)
+        context.setBlendMode(.normal)
         let rect = CGRect(x: 0.0, y: 0.0, width: size.width, height: size.height)
-        context?.clip(to: rect, mask: cgImage)
+        context.clip(to: rect, mask: cgImage)
         color.setFill()
-        context?.fill(rect)
+        context.fill(rect)
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return image

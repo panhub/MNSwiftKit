@@ -11,7 +11,7 @@ import ObjectiveC.runtime
 // MARK: - 获取弹窗
 extension UIView {
     
-    internal struct AssociatedToast {
+    internal struct MNToastAssociated {
         /// 关联弹窗的Key
         static var toast = "com.mn.view.toast"
     }
@@ -24,8 +24,8 @@ extension UIView {
     
     /// tost弹窗
     @objc public var toast: MNToast? {
-        get { objc_getAssociatedObject(self, &UIView.AssociatedToast.toast) as? MNToast }
-        set { objc_setAssociatedObject(self, &UIView.AssociatedToast.toast, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
+        get { objc_getAssociatedObject(self, &UIView.MNToastAssociated.toast) as? MNToast }
+        set { objc_setAssociatedObject(self, &UIView.MNToastAssociated.toast, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
     }
 }
 
@@ -40,8 +40,6 @@ extension UIView {
     @objc public func showMaskToast(_ status: String) {
         showToast(MNMaskToast(), status: status)
     }
-    
-    
     
     @objc public func showProgressToast(_ status: String) {
         showToast(MNProgressToast(), status: status)

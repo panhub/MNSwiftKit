@@ -28,7 +28,7 @@
         "CoreFoundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/Core/Sources/*.swift"
+      "source_files": "MNSwiftKit/Core/Sources/**/*.swift"
     },
     {
       "name": "Base",
@@ -60,7 +60,7 @@
         "AdSupport",
         "AppTrackingTransparency"
       ],
-      "source_files": "MNSwiftKit/Unity/Sources/*.swift"
+      "source_files": "MNSwiftKit/Unity/Sources/**/*.swift"
     },
     {
       "name": "Toast",
@@ -69,7 +69,7 @@
         "Foundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/Toast/Sources/*.swift",
+      "source_files": "MNSwiftKit/Toast/Sources/**/*.swift",
       "resource_bundles": {
         "MNSwiftKit_Toast": [
           "MNSwiftKit/Toast/Resources/*.{png,jpg,jpeg}"
@@ -83,7 +83,7 @@
         "Foundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/Spliter/Sources/*.swift",
+      "source_files": "MNSwiftKit/Spliter/Sources/**/*.swift",
       "dependencies": {
         "MNSwiftKit/Layout": []
       }
@@ -95,7 +95,7 @@
         "Foundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/Layout/Sources/*.swift"
+      "source_files": "MNSwiftKit/Layout/Sources/**/*.swift"
     },
     {
       "name": "Refresh",
@@ -104,10 +104,7 @@
         "Foundation",
         "CoreGraphics"
       ],
-      "source_files": [
-        "MNSwiftKit/Refresh/Sources/*.swift",
-        "MNSwiftKit/Refresh/Sources/**/*.swift"
-      ]
+      "source_files": "MNSwiftKit/Refresh/Sources/**/*.swift"
     },
     {
       "name": "Purchase",
@@ -116,7 +113,7 @@
         "Foundation",
         "StoreKit"
       ],
-      "source_files": "MNSwiftKit/Purchase/Sources/*.swift"
+      "source_files": "MNSwiftKit/Purchase/Sources/**/*.swift"
     },
     {
       "name": "Database",
@@ -125,7 +122,40 @@
         "AVFoundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/Database/Sources/*.swift"
+      "source_files": "MNSwiftKit/Database/Sources/**/*.swift"
+    },
+    {
+      "name": "Definition",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "CoreGraphics"
+      ],
+      "source_files": "MNSwiftKit/Definition/Sources/**/*.swift"
+    },
+    {
+      "name": "Controller",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "CoreGraphics",
+        "WebKit"
+      ],
+      "source_files": "MNSwiftKit/Controller/Sources/**/*.swift",
+      "resource_bundles": {
+        "MNSwiftKit_Controller": [
+          "MNSwiftKit/Controller/Resources/*.{png,jpg,jpeg}"
+        ]
+      },
+      "dependencies": {
+        "MNSwiftKit/Toast": [],
+        "MNSwiftKit/Layout": [],
+        "MNSwiftKit/Refresh": [],
+        "MNSwiftKit/Definition": [],
+        "MNSwiftKit/EmptyView": [],
+        "MNSwiftKit/Transitioning": [],
+        "MNSwiftKit/HTTPRequest": []
+      }
     },
     {
       "name": "EmptyView",
@@ -134,7 +164,7 @@
         "Foundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/EmptyView/Sources/*.swift"
+      "source_files": "MNSwiftKit/EmptyView/Sources/**/*.swift"
     },
     {
       "name": "Networking",
@@ -147,12 +177,21 @@
         "CoreFoundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/Networking/Sources/*.swift",
+      "source_files": "MNSwiftKit/Networking/Sources/**/*.swift",
       "resource_bundles": {
         "MNSwiftKit_Networking": [
           "MNSwiftKit/Networking/Resources/*.json"
         ]
       }
+    },
+    {
+      "name": "Transitioning",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "CoreGraphics"
+      ],
+      "source_files": "MNSwiftKit/Transitioning/Sources/**/*.swift"
     },
     {
       "name": "HTTPRequest",
@@ -161,19 +200,10 @@
         "Foundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/HTTPRequest/Sources/*.swift",
+      "source_files": "MNSwiftKit/HTTPRequest/Sources/**/*.swift",
       "dependencies": {
         "MNSwiftKit/Networking": []
       }
-    },
-    {
-      "name": "TransitionAnimator",
-      "frameworks": [
-        "UIKit",
-        "Foundation",
-        "CoreGraphics"
-      ],
-      "source_files": "MNSwiftKit/TransitionAnimator/Sources/*.swift"
     },
     {
       "name": "Full",
@@ -187,10 +217,12 @@
         "MNSwiftKit/Refresh": [],
         "MNSwiftKit/Purchase": [],
         "MNSwiftKit/Database": [],
+        "MNSwiftKit/Definition": [],
+        "MNSwiftKit/Controller": [],
         "MNSwiftKit/EmptyView": [],
         "MNSwiftKit/Networking": [],
-        "MNSwiftKit/HTTPRequest": [],
-        "MNSwiftKit/TransitionAnimator": []
+        "MNSwiftKit/Transitioning": [],
+        "MNSwiftKit/HTTPRequest": []
       }
     }
   ],

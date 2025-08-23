@@ -35,6 +35,28 @@ extension UIView {
             view.removeFromSuperview()
         }
     }
+    
+    /// 背景图片
+    @objc public var background: UIImage? {
+        set {
+            if let imageView = self as? UIImageView {
+                imageView.image = newValue
+            } else if let button = self as? UIButton {
+                button.setBackgroundImage(newValue, for: .normal)
+            } else {
+                layer.background = newValue
+            }
+        }
+        get {
+            if let imageView = self as? UIImageView {
+                return imageView.image ?? imageView.highlightedImage
+            } else if let button = self as? UIButton {
+                return button.currentBackgroundImage ?? button.currentImage
+            } else {
+                return layer.background
+            }
+        }
+    }
 }
 
 extension UIView.ContentMode {

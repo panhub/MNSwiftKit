@@ -9,6 +9,25 @@ import UIKit
 
 extension UIViewController {
     
+    /// 依据情况出栈或模态弹出
+    /// - Parameters:
+    ///   - animated: 是否动态显示
+    ///   - completionHandler: 结束回调(对模态弹出有效)
+    @objc public func pop(animated: Bool = true, completion completionHandler: (()->Void)? = nil) {
+        if let nav = navigationController {
+            if nav.viewControllers.count > 1 {
+                nav.popViewController(animated: animated)
+                if let completionHandler = completionHandler {
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5, execute: completionHandler)
+                }
+            } else if let _ = nav.presentingViewController {
+                nav.dismiss(animated: animated, completion: completionHandler)
+            }
+        } else if let _ = presentingViewController {
+            dismiss(animated: animated, completion: completionHandler)
+        }
+    }
+    
     /// 从父控制器中移除自身
     @objc public func removeFromParentController() {
         guard let _ = parent else { return }

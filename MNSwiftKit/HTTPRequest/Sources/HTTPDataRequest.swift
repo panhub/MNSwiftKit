@@ -37,7 +37,7 @@ import MNSwiftKit_Networking
 }
 
 /// 分页请求支持
-@objc public protocol HTTPPagingEnabled: NSObjectProtocol where Self: HTTPDataRequest {
+@objc public protocol HTTPPagingSupported: NSObjectProtocol where Self: HTTPDataRequest {
     /// 页数
     var page: Int { set get }
     /// 是否还有更多数据

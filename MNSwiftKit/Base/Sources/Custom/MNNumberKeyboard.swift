@@ -66,8 +66,12 @@ public class MNNumberKeyboard: UIView {
         
         /// 键盘高度
         public var visibleHeight: CGFloat {
+            var bottomInset = 0.0
+            if #available(iOS 11.0, *) {
+                bottomInset = UIWindow().safeAreaInsets.bottom
+            }
             let rows: Int = 12/columns
-            return (spacing + keyButtonHeight)*CGFloat(rows) + MN_BOTTOM_SAFE_HEIGHT
+            return (spacing + keyButtonHeight)*CGFloat(rows) + bottomInset
         }
         
         public init() {}

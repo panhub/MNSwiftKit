@@ -11,6 +11,41 @@ import QuartzCore
 
 extension CALayer {
     
+    /// 背景图片
+    @objc public var background: UIImage? {
+        set { contents = newValue?.cgImage }
+        get {
+            guard let contents = contents else { return nil }
+            return UIImage(cgImage: contents as! CGImage)
+        }
+    }
+    
+    /// 暂停动画
+    @objc public func pauseAnimation() {
+        guard speed == 1.0 else { return }
+        let pauseTime = convertTime(CACurrentMediaTime(), from: nil)
+        speed = 0.0
+        timeOffset = pauseTime
+    }
+    
+    /// 继续动画
+    @objc public func resumeAnimation() {
+        guard speed == 0.0 else { return }
+        let pauseTime = timeOffset
+        speed = 1.0
+        timeOffset = 0.0
+        beginTime = 0.0
+        let timeSincePause = convertTime(CACurrentMediaTime(), from: nil) - pauseTime
+        beginTime = timeSincePause
+    }
+    
+    /// 重置动画
+    @objc public func resetAnimation() {
+        speed = 1.0
+        timeOffset = 0.0
+        beginTime = 0.0
+    }
+    
     /// 摇晃方向
     @objc public enum ShakeOrientation: Int {
         case horizontal, vertical

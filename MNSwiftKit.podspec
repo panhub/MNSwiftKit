@@ -37,7 +37,7 @@ Swift开发基础组件，模块化。
   # Core <Foundation 基础工具>
   s.subspec 'Core' do |core|
     core.frameworks = 'Foundation', 'CoreFoundation', 'CoreGraphics'
-    core.source_files = 'MNSwiftKit/Core/Sources/*.swift'
+    core.source_files = 'MNSwiftKit/Core/Sources/**/*.swift'
     # 可以依赖一些基础库，比如 SnapKit
     # core.dependency 'SnapKit', '~> 5.6.0'
   end
@@ -52,13 +52,13 @@ Swift开发基础组件，模块化。
   # Unity <基础工具>
   s.subspec 'Unity' do |unity|
     unity.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'CoreFoundation', 'CoreGraphics', 'CoreMedia', 'Photos', 'AdSupport', 'AppTrackingTransparency'
-    unity.source_files = 'MNSwiftKit/Unity/Sources/*.swift'
+    unity.source_files = 'MNSwiftKit/Unity/Sources/**/*.swift'
   end
   
   # Toast <加载指示图>
   s.subspec 'Toast' do |toast|
     toast.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
-    toast.source_files = 'MNSwiftKit/Toast/Sources/*.swift'
+    toast.source_files = 'MNSwiftKit/Toast/Sources/**/*.swift'
     toast.resource_bundles = {
         # 'MNSwiftKit_Toast' 是生成的 bundle 名称
         'MNSwiftKit_Toast' => ['MNSwiftKit/Toast/Resources/*.{png,jpg,jpeg}']
@@ -68,64 +68,84 @@ Swift开发基础组件，模块化。
   # Spliter <分页控制器>
   s.subspec 'Spliter' do |spliter|
     spliter.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
-    spliter.source_files = 'MNSwiftKit/Spliter/Sources/*.swift'
+    spliter.source_files = 'MNSwiftKit/Spliter/Sources/**/*.swift'
     spliter.dependency 'MNSwiftKit/Layout'
   end
   
   # Layout <UI布局快速获取>
   s.subspec 'Layout' do |layout|
     layout.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
-    layout.source_files = 'MNSwiftKit/Layout/Sources/*.swift'
+    layout.source_files = 'MNSwiftKit/Layout/Sources/**/*.swift'
   end
   
   # Refresh <刷新控件>
   s.subspec 'Refresh' do |refresh|
     refresh.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
-    refresh.source_files = [
-       'MNSwiftKit/Refresh/Sources/*.swift',
-       'MNSwiftKit/Refresh/Sources/**/*.swift'
-    ]
+    refresh.source_files = 'MNSwiftKit/Refresh/Sources/**/*.swift'
   end
   
   # Purchase <内购支持>
   s.subspec 'Purchase' do |purchase|
     purchase.frameworks = 'UIKit', 'Foundation', 'StoreKit'
-    purchase.source_files = 'MNSwiftKit/Purchase/Sources/*.swift'
+    purchase.source_files = 'MNSwiftKit/Purchase/Sources/**/*.swift'
   end
   
   # Database <数据库>
   s.subspec 'Database' do |database|
     database.frameworks = 'Foundation', 'AVFoundation', 'CoreGraphics'
-    database.source_files = 'MNSwiftKit/Database/Sources/*.swift'
+    database.source_files = 'MNSwiftKit/Database/Sources/**/*.swift'
   end
   
-  # EmptyView <空数据默认视图支持>
+  # Definition <基础定义>
+  s.subspec 'Definition' do |definition|
+    definition.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    definition.source_files = 'MNSwiftKit/Definition/Sources/**/*.swift'
+  end
+  
+  # Controller <控制器基类>
+  s.subspec 'Controller' do |controller|
+    controller.frameworks = 'UIKit', 'Foundation', 'CoreGraphics', 'WebKit'
+    controller.source_files = 'MNSwiftKit/Controller/Sources/**/*.swift'
+    controller.resource_bundles = {
+        # 'MNSwiftKit_Controller' 是生成的 bundle 名称
+        'MNSwiftKit_Controller' => ['MNSwiftKit/Controller/Resources/*.{png,jpg,jpeg}']
+    }
+    controller.dependency 'MNSwiftKit/Toast'
+    controller.dependency 'MNSwiftKit/Layout'
+    controller.dependency 'MNSwiftKit/Refresh'
+    controller.dependency 'MNSwiftKit/Definition'
+    controller.dependency 'MNSwiftKit/EmptyView'
+    controller.dependency 'MNSwiftKit/Transitioning'
+    controller.dependency 'MNSwiftKit/HTTPRequest'
+  end
+  
+  # EmptyView <空数据视图>
   s.subspec 'EmptyView' do |empty|
     empty.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
-    empty.source_files = 'MNSwiftKit/EmptyView/Sources/*.swift'
+    empty.source_files = 'MNSwiftKit/EmptyView/Sources/**/*.swift'
   end
   
   # Purchase <网络请求>
   s.subspec 'Networking' do |network|
     network.frameworks = 'Foundation', 'SystemConfiguration', 'CoreTelephony', 'CoreAudio', 'Security', 'CoreFoundation', 'CoreGraphics'
-    network.source_files = 'MNSwiftKit/Networking/Sources/*.swift'
+    network.source_files = 'MNSwiftKit/Networking/Sources/**/*.swift'
     network.resource_bundles = {
         # 'MNSwiftKit_Networking' 是生成的 bundle 名称
         'MNSwiftKit_Networking' => ['MNSwiftKit/Networking/Resources/*.json']
     }
   end
   
+  # Transitioning <控制器转场支持>
+  s.subspec 'Transitioning' do |transition|
+    transition.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    transition.source_files = 'MNSwiftKit/Transitioning/Sources/**/*.swift'
+  end
+  
   # HTTPRequest <网络请求封装>
   s.subspec 'HTTPRequest' do |request|
     request.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
-    request.source_files = 'MNSwiftKit/HTTPRequest/Sources/*.swift'
+    request.source_files = 'MNSwiftKit/HTTPRequest/Sources/**/*.swift'
     request.dependency 'MNSwiftKit/Networking'
-  end
-  
-  # TransitionAnimator <控制器转场动画>
-  s.subspec 'TransitionAnimator' do |animator|
-    animator.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
-    animator.source_files = 'MNSwiftKit/TransitionAnimator/Sources/*.swift'
   end
   
   # Full
@@ -141,10 +161,12 @@ Swift开发基础组件，模块化。
     full.dependency 'MNSwiftKit/Refresh'
     full.dependency 'MNSwiftKit/Purchase'
     full.dependency 'MNSwiftKit/Database'
+    full.dependency 'MNSwiftKit/Definition'
+    full.dependency 'MNSwiftKit/Controller'
     full.dependency 'MNSwiftKit/EmptyView'
     full.dependency 'MNSwiftKit/Networking'
+    full.dependency 'MNSwiftKit/Transitioning'
     full.dependency 'MNSwiftKit/HTTPRequest'
-    full.dependency 'MNSwiftKit/TransitionAnimator'
   end
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
