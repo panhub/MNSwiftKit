@@ -1,18 +1,16 @@
 PODS:
-  - MNSwiftKit/HTTPRequest (0.1.0):
-    - MNSwiftKit/Networking
-  - MNSwiftKit/Networking (0.1.0)
+  - MNSwiftKit/Unity (0.1.0)
 
 DEPENDENCIES:
-  - MNSwiftKit/HTTPRequest (from `../`)
+  - MNSwiftKit/Unity (from `../`)
 
 EXTERNAL SOURCES:
   MNSwiftKit:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: 6b0990870060e1dffb92f644daec78d0c4134ae2
+  MNSwiftKit: c03b8f8e73917495c0cf63eb1c13e041b9617be2
 
-PODFILE CHECKSUM: bbfd6689868d0dc67613cacde5995137e1fbf248
+PODFILE CHECKSUM: a59e1b259c20936d08af9500d480d3cdfdbcec65
 
 COCOAPODS: 1.16.2

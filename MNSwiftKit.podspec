@@ -44,26 +44,30 @@ Swift开发基础组件，模块化。
   
   # Base <UIKit 基础工具>
   s.subspec 'Base' do |base|
-    base.frameworks = 'UIKit', 'Foundation', 'CoreGraphics', 'QuartzCore', 'ImageIO', 'CoreServices', 'UniformTypeIdentifiers'
+    base.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'CoreGraphics', 'QuartzCore', 'ImageIO', 'CoreServices', 'UniformTypeIdentifiers'
     base.source_files = 'MNSwiftKit/Base/Classes/*.swift'
+  end
+  
+  # Unity <UIKit 基础工具>
+  s.subspec 'Unity' do |unity|
+    unity.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'CoreFoundation', 'CoreGraphics', 'CoreMedia', 'Photos', 'AdSupport', 'AppTrackingTransparency'
+    unity.source_files = 'MNSwiftKit/Unity/Classes/*.swift'
+  end
+  
+  # Toast <加载指示图>
+  s.subspec 'Toast' do |toast|
+    toast.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    toast.source_files = 'MNSwiftKit/Toast/Classes/*.swift'
+    toast.resource_bundles = {
+        # 'MNSwiftKit_Toast' 是生成的 bundle 名称
+        'MNSwiftKit_Toast' => ['MNSwiftKit/Toast/Assets/*.{png,jpg,jpeg}']
+    }
   end
   
   # Layout <UI布局快速获取>
   s.subspec 'Layout' do |layout|
     layout.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
     layout.source_files = 'MNSwiftKit/Layout/Classes/*.swift'
-  end
-  
-  # Database <数据库>
-  s.subspec 'Database' do |database|
-    database.frameworks = 'Foundation', 'AVFoundation', 'CoreGraphics'
-    database.source_files = 'MNSwiftKit/Database/Classes/*.swift'
-  end
-  
-  # EmptyView <空数据默认视图支持>
-  s.subspec 'EmptyView' do |empty|
-    empty.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
-    empty.source_files = 'MNSwiftKit/EmptyView/Classes/*.swift'
   end
   
   # Refresh <刷新控件>
@@ -81,6 +85,18 @@ Swift开发基础组件，模块化。
     purchase.source_files = 'MNSwiftKit/Purchase/Classes/*.swift'
   end
   
+  # Database <数据库>
+  s.subspec 'Database' do |database|
+    database.frameworks = 'Foundation', 'AVFoundation', 'CoreGraphics'
+    database.source_files = 'MNSwiftKit/Database/Classes/*.swift'
+  end
+  
+  # EmptyView <空数据默认视图支持>
+  s.subspec 'EmptyView' do |empty|
+    empty.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    empty.source_files = 'MNSwiftKit/EmptyView/Classes/*.swift'
+  end
+  
   # Purchase <网络请求>
   s.subspec 'Networking' do |network|
     network.frameworks = 'Foundation', 'SystemConfiguration', 'CoreTelephony', 'CoreAudio', 'Security', 'CoreFoundation', 'CoreGraphics'
@@ -88,16 +104,6 @@ Swift开发基础组件，模块化。
     network.resource_bundles = {
         # 'MNSwiftKit_Networking' 是生成的 bundle 名称
         'MNSwiftKit_Networking' => ['MNSwiftKit/Networking/Assets/*.json']
-    }
-  end
-  
-  # Toast <加载指示图>
-  s.subspec 'Toast' do |toast|
-    toast.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
-    toast.source_files = 'MNSwiftKit/Toast/Classes/*.swift'
-    toast.resource_bundles = {
-        # 'MNSwiftKit_Toast' 是生成的 bundle 名称
-        'MNSwiftKit_Toast' => ['MNSwiftKit/Toast/Assets/*.{png,jpg,jpeg}']
     }
   end
   
@@ -114,6 +120,7 @@ Swift开发基础组件，模块化。
     # 它只是一个“元模块”，用来聚合所有其他子模块的依赖
     full.dependency 'MNSwiftKit/Core'
     full.dependency 'MNSwiftKit/Base'
+    full.dependency 'MNSwiftKit/Unity'
     full.dependency 'MNSwiftKit/Toast'
     full.dependency 'MNSwiftKit/Layout'
     full.dependency 'MNSwiftKit/Refresh'
