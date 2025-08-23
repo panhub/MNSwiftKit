@@ -77,6 +77,18 @@
       }
     },
     {
+      "name": "Spliter",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "CoreGraphics"
+      ],
+      "source_files": "MNSwiftKit/Spliter/Sources/*.swift",
+      "dependencies": {
+        "MNSwiftKit/Layout": []
+      }
+    },
+    {
       "name": "Layout",
       "frameworks": [
         "UIKit",
@@ -161,6 +173,7 @@
         "MNSwiftKit/Base": [],
         "MNSwiftKit/Unity": [],
         "MNSwiftKit/Toast": [],
+        "MNSwiftKit/Spliter": [],
         "MNSwiftKit/Layout": [],
         "MNSwiftKit/Refresh": [],
         "MNSwiftKit/Purchase": [],

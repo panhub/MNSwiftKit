@@ -42,14 +42,14 @@ Swift开发基础组件，模块化。
     # core.dependency 'SnapKit', '~> 5.6.0'
   end
   
-  # Base <UIKit 基础工具>
+  # Base <UIKit 基础控件>
   s.subspec 'Base' do |base|
     base.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'CoreGraphics', 'QuartzCore', 'ImageIO', 'CoreServices', 'UniformTypeIdentifiers'
     base.source_files = 'MNSwiftKit/Base/Sources/**/*.swift'
     base.dependency 'MNSwiftKit/Layout'
   end
   
-  # Unity <UIKit 基础工具>
+  # Unity <基础工具>
   s.subspec 'Unity' do |unity|
     unity.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'CoreFoundation', 'CoreGraphics', 'CoreMedia', 'Photos', 'AdSupport', 'AppTrackingTransparency'
     unity.source_files = 'MNSwiftKit/Unity/Sources/*.swift'
@@ -63,6 +63,13 @@ Swift开发基础组件，模块化。
         # 'MNSwiftKit_Toast' 是生成的 bundle 名称
         'MNSwiftKit_Toast' => ['MNSwiftKit/Toast/Resources/*.{png,jpg,jpeg}']
     }
+  end
+  
+  # Spliter <分页控制器>
+  s.subspec 'Spliter' do |spliter|
+    spliter.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    spliter.source_files = 'MNSwiftKit/Spliter/Sources/*.swift'
+    spliter.dependency 'MNSwiftKit/Layout'
   end
   
   # Layout <UI布局快速获取>
@@ -123,6 +130,7 @@ Swift开发基础组件，模块化。
     full.dependency 'MNSwiftKit/Base'
     full.dependency 'MNSwiftKit/Unity'
     full.dependency 'MNSwiftKit/Toast'
+    full.dependency 'MNSwiftKit/Spliter'
     full.dependency 'MNSwiftKit/Layout'
     full.dependency 'MNSwiftKit/Refresh'
     full.dependency 'MNSwiftKit/Purchase'
