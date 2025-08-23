@@ -1,8 +1,8 @@
 //
 //  UIResponder+MNHelper.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by MNFoundation on 2022/8/2.
+//  Created by panhub on 2022/8/2.
 //  核心扩展方法
 
 import UIKit

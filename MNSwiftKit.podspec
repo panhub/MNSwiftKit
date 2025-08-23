@@ -34,19 +34,14 @@ Swift开发基础组件，模块化。
   # 默认模块
   s.default_subspec = 'Full'
   
-  # Core <Foundation 基础工具>
-  s.subspec 'Core' do |core|
-    core.frameworks = 'Foundation', 'CoreFoundation', 'CoreGraphics'
-    core.source_files = 'MNSwiftKit/Core/Sources/**/*.swift'
+  # UI <UIKit 基础控件>
+  s.subspec 'UI' do |ui|
+    ui.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'CoreGraphics', 'QuartzCore', 'ImageIO', 'CoreServices', 'UniformTypeIdentifiers'
+    ui.source_files = 'MNSwiftKit/UI/Sources/**/*.swift'
+    ui.dependency 'MNSwiftKit/Layout'
+    ui.dependency 'MNSwiftKit/Extension'
     # 可以依赖一些基础库，比如 SnapKit
-    # core.dependency 'SnapKit', '~> 5.6.0'
-  end
-  
-  # Base <UIKit 基础控件>
-  s.subspec 'Base' do |base|
-    base.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'CoreGraphics', 'QuartzCore', 'ImageIO', 'CoreServices', 'UniformTypeIdentifiers'
-    base.source_files = 'MNSwiftKit/Base/Sources/**/*.swift'
-    base.dependency 'MNSwiftKit/Layout'
+    # ui.dependency 'SnapKit', '~> 5.6.0'
   end
   
   # Unity <基础工具>
@@ -102,6 +97,12 @@ Swift开发基础组件，模块化。
     definition.source_files = 'MNSwiftKit/Definition/Sources/**/*.swift'
   end
   
+  # Extension <基础扩展>
+  s.subspec 'Extension' do |ext|
+    ext.frameworks = 'Foundation', 'CoreFoundation', 'CoreGraphics'
+    ext.source_files = 'MNSwiftKit/Extension/Sources/**/*.swift'
+  end
+  
   # Controller <控制器基类>
   s.subspec 'Controller' do |controller|
     controller.frameworks = 'UIKit', 'Foundation', 'CoreGraphics', 'WebKit'
@@ -125,7 +126,7 @@ Swift开发基础组件，模块化。
     empty.source_files = 'MNSwiftKit/EmptyView/Sources/**/*.swift'
   end
   
-  # Purchase <网络请求>
+  # Networking <网络请求>
   s.subspec 'Networking' do |network|
     network.frameworks = 'Foundation', 'SystemConfiguration', 'CoreTelephony', 'CoreAudio', 'Security', 'CoreFoundation', 'CoreGraphics'
     network.source_files = 'MNSwiftKit/Networking/Sources/**/*.swift'
@@ -152,8 +153,7 @@ Swift开发基础组件，模块化。
   s.subspec 'Full' do |full|
     # 'Full' 子模块本身不包含任何源代码
     # 它只是一个“元模块”，用来聚合所有其他子模块的依赖
-    full.dependency 'MNSwiftKit/Core'
-    full.dependency 'MNSwiftKit/Base'
+    full.dependency 'MNSwiftKit/UI'
     full.dependency 'MNSwiftKit/Unity'
     full.dependency 'MNSwiftKit/Toast'
     full.dependency 'MNSwiftKit/Spliter'
@@ -162,6 +162,7 @@ Swift开发基础组件，模块化。
     full.dependency 'MNSwiftKit/Purchase'
     full.dependency 'MNSwiftKit/Database'
     full.dependency 'MNSwiftKit/Definition'
+    full.dependency 'MNSwiftKit/Extension'
     full.dependency 'MNSwiftKit/Controller'
     full.dependency 'MNSwiftKit/EmptyView'
     full.dependency 'MNSwiftKit/Networking'

@@ -1,8 +1,8 @@
 //
 //  MNPurchaseRequest.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/11/7.
+//  Created by panhub on 2022/11/7.
 //  内购请求
 
 import UIKit

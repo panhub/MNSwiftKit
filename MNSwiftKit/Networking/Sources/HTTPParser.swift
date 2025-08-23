@@ -1,8 +1,8 @@
 //
 //  HTTPParser.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/7/27.
+//  Created by panhub on 2021/7/27.
 //  请求结果序列化
 
 import Foundation

@@ -1,8 +1,8 @@
 //
 //  MNDrawerAnimator.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/8/17.
+//  Created by panhub on 2021/8/17.
 //  远近切换
 
 import UIKit

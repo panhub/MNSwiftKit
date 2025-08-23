@@ -1,6 +1,6 @@
 //
 //  UIScreen+MNHelper.swift
-//  MNFoundation
+//  MNSwiftKit
 //
 //  Created by mellow on 2025/8/20.
 //

@@ -1,8 +1,8 @@
 //
 //  MNDefinition.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by MNFoundation on 2021/7/14.
+//  Created by panhub on 2021/7/14.
 //  公共定义 全局依赖
 
 import UIKit

@@ -18,9 +18,21 @@ it, simply add the following line to your Podfile:
 
 ```ruby
 pod 'MNSwiftKit'
-pod 'MNSwiftKit/Core'
-pod 'MNSwiftKit/Base'
+pod 'MNSwiftKit/UI'
+pod 'MNSwiftKit/Unity'
+pod 'MNSwiftKit/Toast'
+pod 'MNSwiftKit/Spliter'
+pod 'MNSwiftKit/Layout'
+pod 'MNSwiftKit/Refresh'
+pod 'MNSwiftKit/Purchase'
 pod 'MNSwiftKit/Database'
+pod 'MNSwiftKit/Definition'
+pod 'MNSwiftKit/Extension'
+pod 'MNSwiftKit/Controller'
+pod 'MNSwiftKit/EmptyView'
+pod 'MNSwiftKit/Networking'
+pod 'MNSwiftKit/Transitioning'
+pod 'MNSwiftKit/HTTPRequest'
 ```
 
 ## Author

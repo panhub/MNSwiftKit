@@ -1,8 +1,8 @@
 //
 //  MNScanner.swift
-//  anhe
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/3/28.
+//  Created by panhub on 2022/3/28.
 //  扫码方案
 
 import UIKit

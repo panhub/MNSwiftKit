@@ -1,8 +1,8 @@
 //
 //  MNDataEmptyView.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/7/18.
+//  Created by panhub on 2021/7/18.
 //  空数据占位图
 
 import UIKit

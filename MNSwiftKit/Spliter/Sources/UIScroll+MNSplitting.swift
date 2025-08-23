@@ -1,8 +1,8 @@
 //
 //  UIScroll+MNSplitting.swift
-//  anhe
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/6/3.
+//  Created by panhub on 2022/6/3.
 //
 
 import UIKit

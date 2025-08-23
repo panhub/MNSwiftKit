@@ -1,8 +1,8 @@
 //
 //  MNScriptMessageHandler.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/8/8.
+//  Created by panhub on 2021/8/8.
 //  脚本交互信息控制
 
 import WebKit

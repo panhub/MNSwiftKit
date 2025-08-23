@@ -1,8 +1,8 @@
 //
 //  MNNetworking.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/7/19.
+//  Created by panhub on 2021/7/19.
 //  请求错误定义
 
 import Foundation

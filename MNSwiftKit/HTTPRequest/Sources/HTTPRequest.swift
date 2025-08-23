@@ -1,8 +1,8 @@
 //
 //  HTTPRequest.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/8/1.
+//  Created by panhub on 2021/8/1.
 //  网络请求基类, 不可直接实例化使用
 
 import Foundation

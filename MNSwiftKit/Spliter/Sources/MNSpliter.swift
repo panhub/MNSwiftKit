@@ -1,8 +1,8 @@
 //
 //  MNSpliter.swift
-//  anhe
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/5/29.
+//  Created by panhub on 2022/5/29.
 //  导航项配置信息
 
 import UIKit

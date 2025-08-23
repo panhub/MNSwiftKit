@@ -1,8 +1,8 @@
 //
 //  HTTPBodyAdaptor.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/8/2.
+//  Created by panhub on 2021/8/2.
 //  上传数据适配
 
 import UIKit

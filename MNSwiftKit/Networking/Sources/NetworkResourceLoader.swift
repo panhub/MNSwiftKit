@@ -1,8 +1,8 @@
 //
 //  NetworkResourceLoader.swift
-//  MNSwiftKit_Example
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2025/8/23.
+//  Created by panhub on 2025/8/23.
 //  Copyright © 2025 CocoaPods. All rights reserved.
 //  资源加载
 

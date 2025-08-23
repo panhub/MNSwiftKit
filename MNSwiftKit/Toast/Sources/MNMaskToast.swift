@@ -1,8 +1,8 @@
 //
 //  MNMaskToast.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/9/10.
+//  Created by panhub on 2021/9/10.
 //  Mask弹窗
 
 import UIKit

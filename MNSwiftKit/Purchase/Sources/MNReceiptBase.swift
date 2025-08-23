@@ -1,8 +1,8 @@
 //
 //  MNReceiptBase.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 元气绘画 on 2023/12/1.
+//  Created by panhub on 2023/12/1.
 //  购买收据缓存
 
 import SQLite3

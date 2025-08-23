@@ -1,8 +1,8 @@
 //
 //  MNTabBarController.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/8/15.
+//  Created by panhub on 2021/8/15.
 //  标签栏控制器
 
 import UIKit

@@ -1,8 +1,8 @@
 //
 //  MNSplitPageController.swift
-//  anhe
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/5/28.
+//  Created by panhub on 2022/5/28.
 //  分页控制器内的滑动子控制器
 
 import UIKit

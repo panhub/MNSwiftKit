@@ -1,8 +1,8 @@
 //
 //  MNPermission.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/12/12.
+//  Created by panhub on 2021/12/12.
 //  获取权限
 
 import UIKit

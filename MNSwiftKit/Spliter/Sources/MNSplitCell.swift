@@ -1,8 +1,8 @@
 //
 //  MNSplitCell.swift
-//  anhe
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/5/29.
+//  Created by panhub on 2022/5/29.
 //  顶部导航项表格
 
 import UIKit

@@ -1,8 +1,8 @@
 //
 //  MNRefreshStateHeader.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/8/19.
+//  Created by panhub on 2021/8/19.
 //  默认下拉刷新控件
 
 import UIKit

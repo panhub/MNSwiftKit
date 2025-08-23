@@ -1,8 +1,8 @@
 //
 //  UIView+MNLayout.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/7/14.
+//  Created by panhub on 2021/7/14.
 //  视图位置便捷方法
 
 import UIKit

@@ -1,8 +1,8 @@
 //
 //  MNDatabase.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/3/4.
+//  Created by panhub on 2022/3/4.
 //  数据库解决方案
 
 import SQLite3

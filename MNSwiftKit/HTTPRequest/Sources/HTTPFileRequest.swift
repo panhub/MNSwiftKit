@@ -1,8 +1,8 @@
 //
 //  HTTPFileRequest.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/12/19.
+//  Created by panhub on 2022/12/19.
 //  文件下载请求
 //  利用句柄写入本地文件
 //  暂停: 取消任务   继续: 开始任务

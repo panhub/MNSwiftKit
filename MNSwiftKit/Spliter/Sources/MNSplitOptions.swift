@@ -1,8 +1,8 @@
 //
 //  MNSplitOptions.swift
-//  anhe
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/5/28.
+//  Created by panhub on 2022/5/28.
 //  分段视图配置信息
 
 import UIKit

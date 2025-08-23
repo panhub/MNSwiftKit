@@ -1,8 +1,8 @@
 //
 //  MNBaseViewController.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/7/18.
+//  Created by panhub on 2021/7/18.
 //  控制器基类(提供基础功能)
 
 import UIKit

@@ -1,8 +1,8 @@
 //
 //  HapticFeedback.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/3/15.
+//  Created by panhub on 2022/3/15.
 //  触觉反馈(适用于 iPhone 7、7 Plus 及其以上机型)
 
 import UIKit

@@ -1,8 +1,8 @@
 //
 //  MNSplitView.swift
-//  anhe
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/5/29.
+//  Created by panhub on 2022/5/29.
 //  页面控制视图
 
 import UIKit

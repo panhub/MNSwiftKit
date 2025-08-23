@@ -1,8 +1,8 @@
 //
 //  HTTPParam.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/7/19.
+//  Created by panhub on 2021/7/19.
 //  链接参数提取
 
 import Foundation

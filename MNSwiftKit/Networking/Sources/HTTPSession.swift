@@ -1,8 +1,8 @@
 //
 //  HTTPSession.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/7/21.
+//  Created by panhub on 2021/7/21.
 //  请求会话管理
 
 import Foundation

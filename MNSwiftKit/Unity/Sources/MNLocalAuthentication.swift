@@ -1,8 +1,8 @@
 //
 //  MNLocalAuthentication.swift
-//  anhe
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2023/2/9.
+//  Created by panhub on 2023/2/9.
 //  本地身份验证
 
 import Foundation

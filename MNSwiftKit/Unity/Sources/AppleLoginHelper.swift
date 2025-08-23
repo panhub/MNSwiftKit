@@ -1,8 +1,8 @@
 //
 //  AppleLoginHelper.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 小斯 on 2023/5/4.
+//  Created by panhub on 2023/5/4.
 //  Apple登录辅助工具
 
 import UIKit

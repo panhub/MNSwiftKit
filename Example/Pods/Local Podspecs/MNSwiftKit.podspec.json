@@ -22,16 +22,7 @@
   "default_subspecs": "Full",
   "subspecs": [
     {
-      "name": "Core",
-      "frameworks": [
-        "Foundation",
-        "CoreFoundation",
-        "CoreGraphics"
-      ],
-      "source_files": "MNSwiftKit/Core/Sources/**/*.swift"
-    },
-    {
-      "name": "Base",
+      "name": "UI",
       "frameworks": [
         "UIKit",
         "Foundation",
@@ -42,9 +33,10 @@
         "CoreServices",
         "UniformTypeIdentifiers"
       ],
-      "source_files": "MNSwiftKit/Base/Sources/**/*.swift",
+      "source_files": "MNSwiftKit/UI/Sources/**/*.swift",
       "dependencies": {
-        "MNSwiftKit/Layout": []
+        "MNSwiftKit/Layout": [],
+        "MNSwiftKit/Extension": []
       }
     },
     {
@@ -134,6 +126,15 @@
       "source_files": "MNSwiftKit/Definition/Sources/**/*.swift"
     },
     {
+      "name": "Extension",
+      "frameworks": [
+        "Foundation",
+        "CoreFoundation",
+        "CoreGraphics"
+      ],
+      "source_files": "MNSwiftKit/Extension/Sources/**/*.swift"
+    },
+    {
       "name": "Controller",
       "frameworks": [
         "UIKit",
@@ -208,8 +209,7 @@
     {
       "name": "Full",
       "dependencies": {
-        "MNSwiftKit/Core": [],
-        "MNSwiftKit/Base": [],
+        "MNSwiftKit/UI": [],
         "MNSwiftKit/Unity": [],
         "MNSwiftKit/Toast": [],
         "MNSwiftKit/Spliter": [],
@@ -218,6 +218,7 @@
         "MNSwiftKit/Purchase": [],
         "MNSwiftKit/Database": [],
         "MNSwiftKit/Definition": [],
+        "MNSwiftKit/Extension": [],
         "MNSwiftKit/Controller": [],
         "MNSwiftKit/EmptyView": [],
         "MNSwiftKit/Networking": [],

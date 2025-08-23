@@ -1,8 +1,8 @@
 //
 //  MNWebPayController.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/8/10.
+//  Created by panhub on 2021/8/10.
 //  网页支付解决方案
 
 import UIKit

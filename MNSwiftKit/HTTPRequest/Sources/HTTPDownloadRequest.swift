@@ -1,8 +1,8 @@
 //
 //  HTTPDownloadRequest.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/8/2.
+//  Created by panhub on 2021/8/2.
 //  下载请求体
 
 import Foundation

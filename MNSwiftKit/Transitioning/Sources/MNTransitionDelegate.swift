@@ -1,8 +1,8 @@
 //
 //  MNTransitionDelegate.swift
-//  anhe
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/6/23.
+//  Created by panhub on 2022/6/23.
 //  导航转场代理
 
 import UIKit

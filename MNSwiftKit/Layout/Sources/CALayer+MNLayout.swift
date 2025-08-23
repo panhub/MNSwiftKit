@@ -1,8 +1,8 @@
 //
 //  CALayer+MNLayout.swift
-//  anhe
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/2/19.
+//  Created by panhub on 2022/2/19.
 //  视图层位置便捷方法
 
 import Foundation

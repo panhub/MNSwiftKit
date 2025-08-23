@@ -1,8 +1,8 @@
 //
 //  QRCode.swift
-//  anhe
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/3/30.
+//  Created by panhub on 2022/3/30.
 //  二维码
 
 import UIKit
@@ -10,15 +10,22 @@ import Foundation
 import CoreImage
 import CoreGraphics
 
+/// 二维码
 class QRCode {
     
     private(set) var image: UIImage
     
+    /// 构造二维码模型
+    /// - Parameter image: 二维码图片
     init(image: UIImage) {
         self.image = image
     }
     
-    convenience init?(data metadata: Data, pixel: Int) {
+    /// 构造二维码模型
+    /// - Parameters:
+    ///   - metadata: 元数据
+    ///   - pixel: 像素
+    convenience init?(metadata: Data, pixel: Int) {
         guard pixel > 0 else { return nil }
         
         guard let filter = CIFilter(name: "CIQRCodeGenerator", parameters: nil) else { return nil }

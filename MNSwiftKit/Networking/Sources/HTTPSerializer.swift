@@ -1,8 +1,8 @@
 //
 //  HTTPSerializer.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/7/19.
+//  Created by panhub on 2021/7/19.
 //  请求序列化
 
 import UIKit

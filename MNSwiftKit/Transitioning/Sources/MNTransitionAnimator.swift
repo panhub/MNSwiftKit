@@ -1,8 +1,8 @@
 //
 //  MNTransitionAnimator.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/8/16.
+//  Created by panhub on 2021/8/16.
 //  转场动画控制者
 
 import UIKit
