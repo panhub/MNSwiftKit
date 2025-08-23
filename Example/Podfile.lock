@@ -1,18 +1,16 @@
 PODS:
-  - MNSwiftKit/Layout (0.1.0)
-  - MNSwiftKit/Spliter (0.1.0):
-    - MNSwiftKit/Layout
+  - MNSwiftKit/TransitionAnimator (0.1.0)
 
 DEPENDENCIES:
-  - MNSwiftKit/Spliter (from `../`)
+  - MNSwiftKit/TransitionAnimator (from `../`)
 
 EXTERNAL SOURCES:
   MNSwiftKit:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: a23106a789bdb491cd4443e0c09e6e9cf43fa609
+  MNSwiftKit: a26d0dd4c7e86f04a9a57a325dbec68b66e5da95
 
-PODFILE CHECKSUM: f3dbc3c7999d9a05b1ba87d791deee9b268903aa
+PODFILE CHECKSUM: 9da94e9c9baf1d6ade4151ca7937731cac2054e6
 
 COCOAPODS: 1.16.2

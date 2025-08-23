@@ -122,6 +122,12 @@ Swift开发基础组件，模块化。
     request.dependency 'MNSwiftKit/Networking'
   end
   
+  # TransitionAnimator <控制器转场动画>
+  s.subspec 'TransitionAnimator' do |animator|
+    animator.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    animator.source_files = 'MNSwiftKit/TransitionAnimator/Sources/*.swift'
+  end
+  
   # Full
   s.subspec 'Full' do |full|
     # 'Full' 子模块本身不包含任何源代码
@@ -138,6 +144,7 @@ Swift开发基础组件，模块化。
     full.dependency 'MNSwiftKit/EmptyView'
     full.dependency 'MNSwiftKit/Networking'
     full.dependency 'MNSwiftKit/HTTPRequest'
+    full.dependency 'MNSwiftKit/TransitionAnimator'
   end
 
   # s.public_header_files = 'Pod/Classes/**/*.h'

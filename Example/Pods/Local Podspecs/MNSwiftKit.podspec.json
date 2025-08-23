@@ -167,6 +167,15 @@
       }
     },
     {
+      "name": "TransitionAnimator",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "CoreGraphics"
+      ],
+      "source_files": "MNSwiftKit/TransitionAnimator/Sources/*.swift"
+    },
+    {
       "name": "Full",
       "dependencies": {
         "MNSwiftKit/Core": [],
@@ -180,7 +189,8 @@
         "MNSwiftKit/Database": [],
         "MNSwiftKit/EmptyView": [],
         "MNSwiftKit/Networking": [],
-        "MNSwiftKit/HTTPRequest": []
+        "MNSwiftKit/HTTPRequest": [],
+        "MNSwiftKit/TransitionAnimator": []
       }
     }
   ],

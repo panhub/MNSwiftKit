@@ -1,5 +1,5 @@
 //
-//  UIScrollViewPageAssociated.swift
+//  UIScroll+MNSplitting.swift
 //  anhe
 //
 //  Created by 冯盼 on 2022/6/3.
@@ -32,7 +32,7 @@ extension UIScrollView {
         }
     }
     
-    /// 刷新控制包装器
+    /// 分割包装器
     internal var mn_split: MNSplitWrapper { MNSplitWrapper(scrollView: self) }
 }
 
