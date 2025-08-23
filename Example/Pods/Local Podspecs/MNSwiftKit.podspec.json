@@ -42,7 +42,10 @@
         "CoreServices",
         "UniformTypeIdentifiers"
       ],
-      "source_files": "MNSwiftKit/Base/Classes/*.swift"
+      "source_files": "MNSwiftKit/Base/Classes/**/*.swift",
+      "dependencies": {
+        "MNSwiftKit/Layout": []
+      }
     },
     {
       "name": "Unity",
@@ -52,7 +55,10 @@
         "AVFoundation",
         "CoreFoundation",
         "CoreGraphics",
-        "CoreMedia"
+        "CoreMedia",
+        "Photos",
+        "AdSupport",
+        "AppTrackingTransparency"
       ],
       "source_files": "MNSwiftKit/Unity/Classes/*.swift"
     },

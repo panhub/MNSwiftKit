@@ -6,7 +6,7 @@ platform :ios, '9.0'
 target 'MNSwiftKit_Example' do
 
   #pod 'MNSwiftKit/Core', :path => '../'
-  #pod 'MNSwiftKit/Base', :path => '../'
+  pod 'MNSwiftKit/Base', :path => '../'
   #pod 'MNSwiftKit/Database', :path => '../'
   #pod 'MNSwiftKit/Refresh', :path => '../'
   #pod 'MNSwiftKit/EmptyView', :path => '../'
@@ -15,7 +15,7 @@ target 'MNSwiftKit_Example' do
   #pod 'MNSwiftKit/Networking', :path => '../'
   #pod 'MNSwiftKit/Toast', :path => '../'
   #pod 'MNSwiftKit/HTTPRequest', :path => '../'
-pod 'MNSwiftKit/Unity', :path => '../'
+  #pod 'MNSwiftKit/Unity', :path => '../'
 
   target 'MNSwiftKit_Tests' do
     inherit! :search_paths

@@ -125,7 +125,7 @@ public class MNSegmentedControl: UIControl {
         
         let width: CGFloat = (items.reduce(0.0) { $0 + $1.frame.width }) + contentInset.left + contentInset.right
         let height: CGFloat = segmentHeight + contentInset.top + contentInset.bottom
-        size = CGSize(width: width, height: height)
+        frame = .init(x: frame.minX, y: frame.minY, width: width, height: height)
         
         segment.frame = items[selectedSegmentIndex].frame
     }

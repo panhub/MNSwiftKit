@@ -1,16 +1,18 @@
 PODS:
-  - MNSwiftKit/Unity (0.1.0)
+  - MNSwiftKit/Base (0.1.0):
+    - MNSwiftKit/Layout
+  - MNSwiftKit/Layout (0.1.0)
 
 DEPENDENCIES:
-  - MNSwiftKit/Unity (from `../`)
+  - MNSwiftKit/Base (from `../`)
 
 EXTERNAL SOURCES:
   MNSwiftKit:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: c03b8f8e73917495c0cf63eb1c13e041b9617be2
+  MNSwiftKit: 6f4f8dc4cd7146577c6ef423522d02fa3e19c654
 
-PODFILE CHECKSUM: a59e1b259c20936d08af9500d480d3cdfdbcec65
+PODFILE CHECKSUM: 9deb9ad3695828997fa14e9da34ebbf5e37ce375
 
 COCOAPODS: 1.16.2

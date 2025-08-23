@@ -6,14 +6,20 @@
 //  定制输入框
 
 import UIKit
+#if canImport(MNSwiftKit_Layout)
+import MNSwiftKit_Layout
+#endif
 
 public class MNTextField: UITextField {
     
     /// 占位符位置
     public enum PlaceAlignment: Int {
-        case left = 0 // Visually left aligned
-        case center = 1 // Visually centered
-        case right = 2 // Visually right aligned
+        /// Visually left aligned
+        case left = 0
+        /// Visually centered
+        case center = 1
+        /// Visually right aligned
+        case right = 2
     }
     
     /// 左占位图
@@ -196,13 +202,13 @@ public class MNTextField: UITextField {
         if let leftView = leftPlaceView, leftViewMode == .unlessEditing {
             leftView.isHidden = placeLabel.isHidden
             if textAlignment == .left {
-                placeLabel.minX = leftView.isHidden ? 0.0 : leftView.maxX
+                placeLabel.mn_layout.minX = leftView.isHidden ? 0.0 : leftView.mn_layout.maxX
             }
         }
         if let rightView = rightPlaceView, rightViewMode == .unlessEditing {
             rightView.isHidden = placeLabel.isHidden
             if textAlignment == .right {
-                placeLabel.maxX = rightView.isHidden ? frame.width : rightView.minX
+                placeLabel.mn_layout.maxX = rightView.isHidden ? frame.width : rightView.mn_layout.minX
             }
         }
     }
@@ -210,39 +216,39 @@ public class MNTextField: UITextField {
     /// 更新占位符
     private func layoutPlaceIfNeeded() {
         guard let _ = superview else { return }
-        placeLabel.midY = frame.height/2.0
-        leftPlaceView?.midY = frame.height/2.0
-        rightPlaceView?.midY = frame.height/2.0
+        placeLabel.mn_layout.midY = frame.height/2.0
+        leftPlaceView?.mn_layout.midY = frame.height/2.0
+        rightPlaceView?.mn_layout.midY = frame.height/2.0
         if isFirstResponder {
             // 编辑状态
             if textAlignment == .left {
                 // 居左
                 if let leftView = leftPlaceView {
                     // 有左视图
-                    leftView.minX = 0.0
+                    leftView.mn_layout.minX = 0.0
                     switch leftViewMode {
                     case .always, .whileEditing:
                         leftView.isHidden = false
-                        placeLabel.minX = leftView.maxX
+                        placeLabel.mn_layout.minX = leftView.mn_layout.maxX
                     case .unlessEditing:
                         if placeLabel.isHidden {
                             leftView.isHidden = true
-                            placeLabel.minX = 0.0
+                            placeLabel.mn_layout.minX = 0.0
                         } else {
                             leftView.isHidden = false
-                            placeLabel.minX = leftView.maxX
+                            placeLabel.mn_layout.minX = leftView.mn_layout.maxX
                         }
                     default:
                         leftView.isHidden = true
-                        placeLabel.minX = 0.0
+                        placeLabel.mn_layout.minX = 0.0
                     }
                 } else {
                     // 无左视图
-                    placeLabel.minX = 0.0
+                    placeLabel.mn_layout.minX = 0.0
                 }
                 // 判断右视图
                 if let rightView = rightPlaceView {
-                    rightView.maxX = frame.width
+                    rightView.mn_layout.maxX = frame.width
                     switch rightViewMode {
                     case .always, .whileEditing:
                         // 显示
@@ -259,30 +265,30 @@ public class MNTextField: UITextField {
                 // 居右
                 if let rightView = rightPlaceView {
                     // 有右视图
-                    rightView.maxX = frame.width
+                    rightView.mn_layout.maxX = frame.width
                     switch rightViewMode {
                     case .always, .whileEditing:
                         rightView.isHidden = false
-                        placeLabel.maxX = rightView.minX
+                        placeLabel.mn_layout.maxX = rightView.mn_layout.minX
                     case .unlessEditing:
                         if placeLabel.isHidden {
                             rightView.isHidden = true
-                            placeLabel.maxX = frame.width
+                            placeLabel.mn_layout.maxX = frame.width
                         } else {
                             rightView.isHidden = false
-                            placeLabel.maxX = rightView.minX
+                            placeLabel.mn_layout.maxX = rightView.mn_layout.minX
                         }
                     default:
                         rightView.isHidden = true
-                        placeLabel.maxX = frame.width
+                        placeLabel.mn_layout.maxX = frame.width
                     }
                 } else {
                     // 无右视图
-                    placeLabel.maxX = frame.width
+                    placeLabel.mn_layout.maxX = frame.width
                 }
                 // 判断左视图
                 if let leftView = leftPlaceView {
-                    leftView.minX = 0.0
+                    leftView.mn_layout.minX = 0.0
                     switch leftViewMode {
                     case .always, .whileEditing:
                         // 显示
@@ -312,22 +318,22 @@ public class MNTextField: UITextField {
                 // 居左
                 if let leftView = leftView {
                     // 有左视图
-                    leftView.minX = 0.0
+                    leftView.mn_layout.minX = 0.0
                     switch leftViewMode {
                     case .always, .unlessEditing:
                         leftView.isHidden = false
-                        placeLabel.minX = leftView.maxX
+                        placeLabel.mn_layout.minX = leftView.mn_layout.maxX
                     default:
                         leftView.isHidden = true
-                        placeLabel.minX = 0.0
+                        placeLabel.mn_layout.minX = 0.0
                     }
                 } else {
                     // 无左视图
-                    placeLabel.minX = 0.0
+                    placeLabel.mn_layout.minX = 0.0
                 }
                 // 判断右视图
                 if let rightView = rightPlaceView {
-                    rightView.maxX = frame.width
+                    rightView.mn_layout.maxX = frame.width
                     switch rightViewMode {
                     case .always, .unlessEditing:
                         // 显示
@@ -351,7 +357,7 @@ public class MNTextField: UITextField {
                         leftWidth = leftView.frame.width
                     default:
                         // 隐藏
-                        leftView.minX = 0.0
+                        leftView.mn_layout.minX = 0.0
                         leftView.isHidden = true
                     }
                 }
@@ -365,37 +371,37 @@ public class MNTextField: UITextField {
                     default:
                         // 隐藏
                         rightView.isHidden = true
-                        rightView.maxX = frame.width
+                        rightView.mn_layout.maxX = frame.width
                     }
                 }
                 let x: CGFloat = (frame.width - leftWidth - placeWidth - rightWidth)/2.0
                 if let leftView = leftPlaceView, leftView.isHidden == false {
-                    leftView.minX = x
+                    leftView.mn_layout.minX = x
                 }
-                placeLabel.minX = x + leftWidth
+                placeLabel.mn_layout.minX = x + leftWidth
                 if let rightView = rightPlaceView, rightView.isHidden == false {
-                    rightView.minX = x + leftWidth + placeWidth
+                    rightView.mn_layout.minX = x + leftWidth + placeWidth
                 }
             case .right:
                 // 居右
                 if let rightView = rightView {
                     // 有右视图
-                    rightView.maxX = frame.width
+                    rightView.mn_layout.maxX = frame.width
                     switch rightViewMode {
                     case .always, .unlessEditing:
                         rightView.isHidden = false
-                        placeLabel.maxX = rightView.minX
+                        placeLabel.mn_layout.maxX = rightView.mn_layout.minX
                     default:
                         rightView.isHidden = true
-                        placeLabel.maxX = frame.width
+                        placeLabel.mn_layout.maxX = frame.width
                     }
                 } else {
                     // 无右视图
-                    placeLabel.maxX = frame.width
+                    placeLabel.mn_layout.maxX = frame.width
                 }
                 // 判断左视图
                 if let leftView = leftPlaceView {
-                    leftView.minX = 0.0
+                    leftView.mn_layout.minX = 0.0
                     switch leftViewMode {
                     case .always, .unlessEditing:
                         // 显示

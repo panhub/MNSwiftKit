@@ -45,7 +45,8 @@ Swift开发基础组件，模块化。
   # Base <UIKit 基础工具>
   s.subspec 'Base' do |base|
     base.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'CoreGraphics', 'QuartzCore', 'ImageIO', 'CoreServices', 'UniformTypeIdentifiers'
-    base.source_files = 'MNSwiftKit/Base/Classes/*.swift'
+    base.source_files = 'MNSwiftKit/Base/Classes/**/*.swift'
+    base.dependency 'MNSwiftKit/Layout'
   end
   
   # Unity <UIKit 基础工具>

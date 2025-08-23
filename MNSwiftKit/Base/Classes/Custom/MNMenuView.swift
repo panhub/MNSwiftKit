@@ -201,7 +201,7 @@ extension MNMenuView {
     ///   - touchHandler: 按钮点击回调
     public func show(in superview: UIView? = nil, target targetView: UIView, animated: Bool = true, touched touchHandler: ((_ sender: UIControl) -> Void)? = nil) {
         guard self.superview == nil else { return }
-        guard stackView.frame.size.isEmpty == false else { return }
+        guard stackView.frame.size.width > 0.0, stackView.frame.size.height > 0.0 else { return }
         guard let superview = superview ?? UIWindow.current else { return }
         guard let rect = targetView.superview?.convert(targetView.frame, to: superview) else { return }
         
@@ -223,8 +223,10 @@ extension MNMenuView {
         case .top:
             contentView.frame = CGRect(x: 0.0, y: 0.0, width: stackView.frame.width + contentInset.left + contentInset.right, height: stackView.frame.height + contentInset.top + contentInset.bottom + arrowSize.height)
             stackView.frame = CGRect(x: contentInset.left, y: arrowSize.height + contentInset.top, width: stackView.frame.width, height: stackView.frame.height)
-            contentView.midX = rect.midX - arrowOffset.horizontal
-            contentView.minY = rect.maxY + arrowOffset.vertical
+            var contentRect = contentView.frame
+            contentRect.origin.x = rect.midX - arrowOffset.horizontal - contentRect.width/2.0
+            contentRect.origin.y = rect.maxY + arrowOffset.vertical
+            contentView.frame = contentRect
             bezierPath.move(to: CGPoint(x: borderWidth/2.0, y: arrowSize.height + borderWidth + cornerRadius))
             bezierPath.addArc(withCenter: CGPoint(x: borderWidth + cornerRadius, y: arrowSize.height + borderWidth + cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: .pi, endAngle: .pi/2.0 + .pi, clockwise: true)
             bezierPath.addLine(to: CGPoint(x: contentView.frame.width/2.0 - arrowSize.width/2.0 + borderWidth/2.0 + arrowOffset.horizontal, y: arrowSize.height + borderWidth/2.0))
@@ -242,8 +244,10 @@ extension MNMenuView {
         case .left:
             contentView.frame = CGRect(x: 0.0, y: 0.0, width: stackView.frame.width + contentInset.left + contentInset.right + arrowSize.height, height: stackView.frame.height + contentInset.top + contentInset.bottom)
             stackView.frame = CGRect(x: contentInset.left + arrowSize.height, y: contentInset.top, width: stackView.frame.width, height: stackView.frame.height)
-            contentView.minX = rect.maxX + arrowOffset.horizontal
-            contentView.midY = rect.midY - arrowOffset.vertical
+            var contentRect = contentView.frame
+            contentRect.origin.x = rect.maxX + arrowOffset.horizontal
+            contentRect.origin.y = rect.midY - arrowOffset.vertical - contentRect.height/2.0
+            contentView.frame = contentRect
             bezierPath.move(to: CGPoint(x: arrowSize.height + borderWidth/2.0, y: cornerRadius + borderWidth))
             bezierPath.addArc(withCenter: CGPoint(x: arrowSize.height + borderWidth + cornerRadius, y: borderWidth + cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: .pi, endAngle: .pi/2.0 + .pi, clockwise: true)
             bezierPath.addLine(to: CGPoint(x: contentView.frame.width - borderWidth - cornerRadius, y: borderWidth/2.0))
@@ -261,8 +265,10 @@ extension MNMenuView {
         case .bottom:
             contentView.frame = CGRect(x: 0.0, y: 0.0, width: stackView.frame.width + contentInset.left + contentInset.right, height: stackView.frame.height + contentInset.top + contentInset.bottom + arrowSize.height)
             stackView.frame = CGRect(x: contentInset.left, y: contentInset.top, width: stackView.frame.width, height: stackView.frame.height)
-            contentView.midX = rect.midX - arrowOffset.horizontal
-            contentView.maxY = rect.minY + arrowOffset.vertical
+            var contentRect = contentView.frame
+            contentRect.origin.x = rect.midX - arrowOffset.horizontal - contentRect.width/2.0
+            contentRect.origin.y = rect.minY + arrowOffset.vertical - contentRect.height
+            contentView.frame = contentRect
             bezierPath.move(to: CGPoint(x: borderWidth/2.0, y: borderWidth + cornerRadius))
             bezierPath.addArc(withCenter: CGPoint(x: borderWidth + cornerRadius, y: borderWidth + cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: .pi, endAngle: .pi/2.0 + .pi, clockwise: true)
             bezierPath.addLine(to: CGPoint(x: contentView.frame.width - borderWidth - cornerRadius, y: borderWidth/2.0))
@@ -280,8 +286,10 @@ extension MNMenuView {
         case .right:
             contentView.frame = CGRect(x: 0.0, y: 0.0, width: stackView.frame.width + contentInset.left + contentInset.right + arrowSize.height, height: stackView.frame.height + contentInset.top + contentInset.bottom)
             stackView.frame = CGRect(x: contentInset.left, y: contentInset.top, width: stackView.frame.width, height: stackView.frame.height)
-            contentView.maxX = rect.minX + arrowOffset.horizontal
-            contentView.midY = rect.midY - arrowOffset.vertical
+            var contentRect = contentView.frame
+            contentRect.origin.x = rect.minX + arrowOffset.horizontal - contentRect.width
+            contentRect.origin.y = rect.midY - arrowOffset.vertical - contentRect.height/2.0
+            contentView.frame = contentRect
             bezierPath.move(to: CGPoint(x: borderWidth/2.0, y: cornerRadius + borderWidth))
             bezierPath.addArc(withCenter: CGPoint(x: borderWidth + cornerRadius, y: borderWidth + cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: .pi, endAngle: .pi/2.0 + .pi, clockwise: true)
             bezierPath.addLine(to: CGPoint(x: contentView.frame.width - arrowSize.height - borderWidth - cornerRadius, y: borderWidth/2.0))

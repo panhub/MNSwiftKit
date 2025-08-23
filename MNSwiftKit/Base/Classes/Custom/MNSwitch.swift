@@ -7,12 +7,19 @@
 
 import UIKit
 
-@objc protocol MNSwitchDelegate: NSObjectProtocol {
+/// 开关代理
+@objc public protocol MNSwitchDelegate: NSObjectProtocol {
+    /// 是否允许改变
+    /// - Parameter switch: 开关
+    /// - Returns: 是否允许改变
     @objc optional func switchShouldChangeValue(_ switch: MNSwitch) -> Bool
-    @objc optional func switchValueChanged(_ switch: MNSwitch) -> Void
+    /// 开关值变化告知
+    /// - Parameter switch: 开关
+    @objc optional func switchValueChanged(_ switch: MNSwitch)
 }
 
-class MNSwitch: UIView {
+/// 开关
+public class MNSwitch: UIView {
     /// 内部使用
     private let spacing: CGFloat = 2.0
     /// 默认颜色
@@ -35,13 +42,13 @@ class MNSwitch: UIView {
         set { thumb.backgroundColor = newValue ?? .white }
     }
     /// 正常状态下颜色
-    override var tintColor: UIColor! {
+    public override var tintColor: UIColor! {
         didSet {
             updateColor()
         }
     }
     /// 拒绝设置背景颜色
-    override var backgroundColor: UIColor? {
+    public override var backgroundColor: UIColor? {
         set {}
         get { super.backgroundColor }
     }
@@ -53,7 +60,7 @@ class MNSwitch: UIView {
         }
     }
     /// 拒绝直接修改尺寸
-    override var frame: CGRect {
+    public override var frame: CGRect {
         get { super.frame }
         set {
             var rect: CGRect = newValue
@@ -93,7 +100,7 @@ class MNSwitch: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         setOn(isOn == false, animated: true, interactive: true)
     }
     
@@ -102,7 +109,7 @@ class MNSwitch: UIView {
     ///   - on: 是否开启
     ///   - isAnimated: 是否动画
     ///   - isInteractive: 是否是由交互触发
-    @objc func setOn(_ on: Bool, animated isAnimated: Bool, interactive isInteractive: Bool = false) {
+    @objc public func setOn(_ on: Bool, animated isAnimated: Bool, interactive isInteractive: Bool = false) {
         guard isAnimating == false, isOn != on else { return }
         var isAllowChangeValue: Bool = true
         if isInteractive, (delegate?.switchShouldChangeValue?(self) ?? true) == false {

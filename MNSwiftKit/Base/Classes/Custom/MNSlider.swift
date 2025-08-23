@@ -9,13 +9,29 @@ import UIKit
 
 // MARK: - 事件代理
 @objc public protocol MNSliderDelegate: NSObjectProtocol {
+    /// 想要滑动询问
+    /// - Parameter slider: 滑块
+    /// - Returns: 是否允许滑动
     @objc optional func sliderShouldBeginDragging(_ slider: MNSlider) -> Bool
-    @objc optional func sliderWillBeginDragging(_ slider: MNSlider) -> Void
-    @objc optional func sliderDidDragging(_ slider: MNSlider) -> Void
-    @objc optional func sliderDidEndDragging(_ slider: MNSlider) -> Void
+    /// 即将开始滑动
+    /// - Parameter slider: 滑块
+    @objc optional func sliderWillBeginDragging(_ slider: MNSlider)
+    /// 滑块滑动
+    /// - Parameter slider: 滑块
+    @objc optional func sliderDidDragging(_ slider: MNSlider)
+    /// 停止滑动
+    /// - Parameter slider: 滑块
+    @objc optional func sliderDidEndDragging(_ slider: MNSlider)
+    /// 想要点击询问
+    /// - Parameter slider: 滑块
+    /// - Returns: 是否允许滑动
     @objc optional func sliderShouldBeginTouching(_ slider: MNSlider) -> Bool
-    @objc optional func sliderWillBeginTouching(_ slider: MNSlider) -> Void
-    @objc optional func sliderDidEndTouching(_ slider: MNSlider) -> Void
+    /// 即将点击
+    /// - Parameter slider: 滑块
+    @objc optional func sliderWillBeginTouching(_ slider: MNSlider)
+    /// 点击结束
+    /// - Parameter slider: 滑块
+    @objc optional func sliderDidEndTouching(_ slider: MNSlider)
 }
 
 public class MNSlider: UIView {

@@ -6,6 +6,7 @@
 //  扫描视图
 
 import UIKit
+import CoreGraphics
 
 public class MNScanView: UIView {
     /// 扫描线图片
@@ -34,19 +35,16 @@ public class MNScanView: UIView {
     
     /// 扫描前准备
     public func prepareScanning() {
-        guard scanRect.isEmpty == false, let image = image, image.size.isEmpty == false else { return }
+        guard scanRect.isEmpty == false, let image = image, image.size.width > 0.0, image.size.height > 0.0 else { return }
         // 扫描线
         scanLine.image = image
-        scanLine.width = scanRect.width
-        scanLine.height = ceil(image.size.height/image.size.width*scanRect.width)
-        scanLine.minY = scanRect.minY
-        scanLine.midX = scanRect.midX
+        scanLine.frame = .init(x: scanRect.minX, y: scanRect.minY, width: scanRect.width, height: ceil(image.size.height/image.size.width*scanRect.width))
         scanLine.contentMode = .scaleAspectFit
         scanLine.contentScaleFactor = UIScreen.main.scale
         // 扫描动画
         if scanLine.layer.animation(forKey: "com.scan.lin.animation") == nil {
             let animation = CABasicAnimation(keyPath: "transform.translation.y")
-            animation.toValue = scanRect.height - scanLine.height
+            animation.toValue = scanRect.height - scanLine.frame.height
             animation.duration = 2.0
             animation.beginTime = CACurrentMediaTime()
             animation.repeatCount = Float.greatestFiniteMagnitude
@@ -120,7 +118,6 @@ extension MNScanView {
     
     /// 停止扫描动画
     public func stopScanning() {
-        scanLine.layer.pauseAnimation()
         guard scanLine.layer.speed == 1.0 else { return }
         let pausedTime = scanLine.layer.convertTime(CACurrentMediaTime(), from: nil)
         scanLine.layer.speed = 0.0

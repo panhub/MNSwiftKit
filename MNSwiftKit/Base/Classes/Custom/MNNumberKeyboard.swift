@@ -7,6 +7,7 @@
 
 import UIKit
 
+/// 数字键盘代理
 @objc public protocol MNNumberKeyboardDelegate: NSObjectProtocol {
     /// 询问是否响应数字按键
     /// - Parameters:
@@ -106,7 +107,10 @@ public class MNNumberKeyboard: UIView {
         keys.append(last)
         keys.appendKey(options.rightKey)
         
-        CGRect(x: 0.0, y: spacing, width: width, height: height).grid(offset: UIOffset(horizontal: spacing, vertical: spacing), count: keys.count, column: columns) { idx, rect, _ in
+        for idx in 0..<keys.count {
+            let x = (width + spacing)*CGFloat(idx%columns)
+            let y = spacing + (height + spacing)*CGFloat(idx/columns)
+            let rect = CGRect(x: x, y: y, width: width, height: height)
             
             let key = keys[idx]
             if key == .none { return }
