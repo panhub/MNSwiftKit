@@ -158,6 +158,24 @@ Swift开发基础组件，模块化。
     }
   end
   
+  # AssetPicker <资源选择器>
+  s.subspec 'AssetPicker' do |picker|
+    picker.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'Photos', 'CoreFoundation', 'CoreGraphics'
+    picker.source_files = 'MNSwiftKit/AssetPicker/Sources/**/*.swift'
+    picker.resource_bundles = {
+        # 'MNSwiftKit_AssetPicker' 是生成的 bundle 名称
+        'MNSwiftKit_AssetPicker' => ['MNSwiftKit/AssetPicker/Resources/**/*.{png,jpg,jpeg}']
+    }
+    picker.dependency 'MNSwiftKit/UI'
+    picker.dependency 'MNSwiftKit/Toast'
+    picker.dependency 'MNSwiftKit/Player'
+    picker.dependency 'MNSwiftKit/Layout'
+    picker.dependency 'MNSwiftKit/Refresh'
+    picker.dependency 'MNSwiftKit/Exporter'
+    picker.dependency 'MNSwiftKit/Definition'
+    picker.dependency 'MNSwiftKit/EmptyView'
+  end
+  
   # Transitioning <控制器转场支持>
   s.subspec 'Transitioning' do |transition|
     transition.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
@@ -191,6 +209,7 @@ Swift开发基础组件，模块化。
     full.dependency 'MNSwiftKit/Controller'
     full.dependency 'MNSwiftKit/EmptyView'
     full.dependency 'MNSwiftKit/Networking'
+    full.dependency 'MNSwiftKit/AssetPicker'
     full.dependency 'MNSwiftKit/Transitioning'
     full.dependency 'MNSwiftKit/HTTPRequest'
   end

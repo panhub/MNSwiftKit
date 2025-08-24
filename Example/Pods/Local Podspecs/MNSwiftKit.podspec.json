@@ -220,6 +220,33 @@
       }
     },
     {
+      "name": "AssetPicker",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "AVFoundation",
+        "Photos",
+        "CoreFoundation",
+        "CoreGraphics"
+      ],
+      "source_files": "MNSwiftKit/AssetPicker/Sources/**/*.swift",
+      "resource_bundles": {
+        "MNSwiftKit_AssetPicker": [
+          "MNSwiftKit/AssetPicker/Resources/**/*.{png,jpg,jpeg}"
+        ]
+      },
+      "dependencies": {
+        "MNSwiftKit/UI": [],
+        "MNSwiftKit/Toast": [],
+        "MNSwiftKit/Player": [],
+        "MNSwiftKit/Layout": [],
+        "MNSwiftKit/Refresh": [],
+        "MNSwiftKit/Exporter": [],
+        "MNSwiftKit/Definition": [],
+        "MNSwiftKit/EmptyView": []
+      }
+    },
+    {
       "name": "Transitioning",
       "frameworks": [
         "UIKit",
@@ -259,6 +286,7 @@
         "MNSwiftKit/Controller": [],
         "MNSwiftKit/EmptyView": [],
         "MNSwiftKit/Networking": [],
+        "MNSwiftKit/AssetPicker": [],
         "MNSwiftKit/Transitioning": [],
         "MNSwiftKit/HTTPRequest": []
       }

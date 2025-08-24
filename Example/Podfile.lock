@@ -1,16 +1,35 @@
 PODS:
-  - MNSwiftKit/Activity (0.1.0)
+  - MNSwiftKit/AssetPicker (0.1.0):
+    - MNSwiftKit/Definition
+    - MNSwiftKit/EmptyView
+    - MNSwiftKit/Exporter
+    - MNSwiftKit/Layout
+    - MNSwiftKit/Player
+    - MNSwiftKit/Refresh
+    - MNSwiftKit/Toast
+    - MNSwiftKit/UI
+  - MNSwiftKit/Definition (0.1.0)
+  - MNSwiftKit/EmptyView (0.1.0)
+  - MNSwiftKit/Exporter (0.1.0)
+  - MNSwiftKit/Extension (0.1.0)
+  - MNSwiftKit/Layout (0.1.0)
+  - MNSwiftKit/Player (0.1.0)
+  - MNSwiftKit/Refresh (0.1.0)
+  - MNSwiftKit/Toast (0.1.0)
+  - MNSwiftKit/UI (0.1.0):
+    - MNSwiftKit/Extension
+    - MNSwiftKit/Layout
 
 DEPENDENCIES:
-  - MNSwiftKit/Activity (from `../`)
+  - MNSwiftKit/AssetPicker (from `../`)
 
 EXTERNAL SOURCES:
   MNSwiftKit:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: 74bbe0c0f7b6a035e2ade6606a3b45e1a3e9111c
+  MNSwiftKit: f5bda492cb2920e07c39378859318d97025d57c0
 
-PODFILE CHECKSUM: a3c2e6e517b99f182429c2f75d5c6f339e186231
+PODFILE CHECKSUM: d0d97253bb94e4d600ea1b9b60fcc95cc913299c
 
 COCOAPODS: 1.16.2

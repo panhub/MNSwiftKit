@@ -8,12 +8,21 @@
 import UIKit
 import AVFoundation
 
+/// 播放视图代理
 @objc public protocol MNPlayViewDelegate: NSObjectProtocol {
+    
+    /// 询问是否响应点击手势
+    /// - Parameter playView: 播放视图
+    /// - Returns: 是否响应点击
     @objc optional func playViewShouldReceiveTouch(_ playView: MNPlayView) -> Bool
-    @objc optional func playViewTouchUpInside(_ playView: MNPlayView) -> Void
+    
+    /// 点击事件告知
+    /// - Parameter playView: 播放视图
+    @objc optional func playViewTouchUpInside(_ playView: MNPlayView)
 }
 
 extension AVLayerVideoGravity {
+    
     /// AVLayerVideoGravity => UIView.ContentMode
     public var asContentMode: UIView.ContentMode {
         switch self {
@@ -25,12 +34,16 @@ extension AVLayerVideoGravity {
     }
 }
 
+/// 播放器画布
 public class MNPlayView: UIView {
     
+    /// 代理
     @objc public weak var delegate: MNPlayViewDelegate?
     
+    /// 指定播放器画布
     public override class var layerClass: AnyClass { AVPlayerLayer.self }
     
+    /// 画面渲染方式
     @objc public var videoGravity: AVLayerVideoGravity {
         get { (layer as? AVPlayerLayer)?.videoGravity ?? .resize }
         set {
@@ -39,6 +52,7 @@ public class MNPlayView: UIView {
         }
     }
     
+    /// 点击手势
     private lazy var tap: UITapGestureRecognizer = {
         let tap = UITapGestureRecognizer(target: self, action: #selector(clicked(_:)))
         tap.isEnabled = false
@@ -46,12 +60,13 @@ public class MNPlayView: UIView {
         return tap
     }()
     
-    /**是否响应点击事件**/
+    /// 是否响应点击事件
     @objc public var isTouchEnabled: Bool {
         get { tap.isEnabled }
         set { tap.isEnabled = newValue }
     }
     
+    /// 封面视图
     public private(set) lazy var coverView: UIImageView = {
         let coverView = UIImageView(frame: bounds)
         coverView.clipsToBounds = true
@@ -76,13 +91,15 @@ public class MNPlayView: UIView {
 
 // MARK: - Event
 extension MNPlayView {
+    
     @objc private func clicked(_ recognizer: UITapGestureRecognizer) {
         delegate?.playViewTouchUpInside?(self)
     }
 }
 
-// MARK: - Event
+// MARK: - UIGestureRecognizerDelegate
 extension MNPlayView: UIGestureRecognizerDelegate {
+    
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         return delegate?.playViewShouldReceiveTouch?(self) ?? true
     }
