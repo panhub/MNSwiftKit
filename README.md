@@ -19,8 +19,8 @@ it, simply add the following line to your Podfile:
 ```ruby
 pod 'MNSwiftKit'
 pod 'MNSwiftKit/UI'
-pod 'MNSwiftKit/Unity'
 pod 'MNSwiftKit/Toast'
+pod 'MNSwiftKit/Utility'
 pod 'MNSwiftKit/Player'
 pod 'MNSwiftKit/Spliter'
 pod 'MNSwiftKit/Layout'

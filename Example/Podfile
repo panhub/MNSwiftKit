@@ -7,7 +7,7 @@ target 'MNSwiftKit_Example' do
 
   #pod 'MNSwiftKit', :path => '../'
   #pod 'MNSwiftKit/UI', :path => '../'
-  #pod 'MNSwiftKit/Unity', :path => '../'
+  #pod 'MNSwiftKit/Utility', :path => '../'
   #pod 'MNSwiftKit/Toast', :path => '../'
   #pod 'MNSwiftKit/Player', :path => '../'
   #pod 'MNSwiftKit/Spliter', :path => '../'

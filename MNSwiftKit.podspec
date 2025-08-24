@@ -44,10 +44,10 @@ Swift开发基础组件，模块化。
     # ui.dependency 'SnapKit', '~> 5.6.0'
   end
   
-  # Unity <基础工具>
-  s.subspec 'Unity' do |unity|
-    unity.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'CoreFoundation', 'CoreGraphics', 'CoreMedia', 'Photos', 'AdSupport', 'AppTrackingTransparency'
-    unity.source_files = 'MNSwiftKit/Unity/Sources/**/*.swift'
+  # Utility <基础工具>
+  s.subspec 'Utility' do |utility|
+    utility.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'CoreFoundation', 'CoreGraphics', 'CoreMedia', 'Photos', 'AdSupport', 'AppTrackingTransparency'
+    utility.source_files = 'MNSwiftKit/Utility/Sources/**/*.swift'
   end
   
   # Toast <加载指示图>
@@ -194,8 +194,8 @@ Swift开发基础组件，模块化。
     # 'Full' 子模块本身不包含任何源代码
     # 它只是一个“元模块”，用来聚合所有其他子模块的依赖
     full.dependency 'MNSwiftKit/UI'
-    full.dependency 'MNSwiftKit/Unity'
     full.dependency 'MNSwiftKit/Toast'
+    full.dependency 'MNSwiftKit/Utility'
     full.dependency 'MNSwiftKit/Player'
     full.dependency 'MNSwiftKit/Spliter'
     full.dependency 'MNSwiftKit/Layout'
