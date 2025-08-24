@@ -8,6 +8,9 @@
 import UIKit
 import Photos
 import Foundation
+#if canImport(MNSwiftKit_AnimatedImage)
+import MNSwiftKit_AnimatedImage
+#endif
 
 class MNAssetHelper {
     
@@ -158,7 +161,8 @@ extension MNAssetHelper {
                 guard let asset = asset else { return }
                 let isCancelled: Bool = (info?[PHImageCancelledKey] as? NSNumber)?.boolValue ?? false
                 guard isCancelled == false else { return }
-                guard let image = result?.resizedOrientation else { return }
+                guard let result = result else { return }
+                let image = result.mn_picker.resized
                 let isDegraded: Bool = (info?[PHImageResultIsDegradedKey] as? NSNumber)?.boolValue ?? false
                 asset.update(cover: image)
                 if isDegraded == false {
@@ -211,7 +215,8 @@ extension MNAssetHelper {
             let isCancelled: Bool = (info?[PHImageCancelledKey] as? NSNumber)?.boolValue ?? false
             guard isCancelled == false else { return }
             asset.requestId = PHInvalidImageRequestID
-            let image = result?.resizedOrientation
+            guard let result = result else { return }
+            let image = result.mn_picker.resized
             DispatchQueue.main.async {
                 completionHandler?(asset, image)
             }
@@ -307,7 +312,7 @@ extension MNAssetHelper {
                     if image.isAnimatedImage {
                         asset.content = image
                     } else {
-                        asset.content = image.resizedOrientation
+                        asset.content = image.mn_picker.resized
                     }
                 }
                 DispatchQueue.main.async {
@@ -488,18 +493,18 @@ extension MNAssetHelper {
                     } else if #available(iOS 10.0, *), options.allowsExportHeifc == false, phAsset.isHeifc {
                         // 判断是否需要转化heif/heic格式图片
                         if let ciImage = CIImage(data: imageData!), let colorSpace = ciImage.colorSpace, let jpgData = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace, options: [CIImageRepresentationOption(rawValue: kCGImageDestinationLossyCompressionQuality as String):max(min(options.compressionQuality, 1.0), 0.1)]) {
-                            image = UIImage(data: jpgData)?.resizedOrientation
+                            image = UIImage(data: jpgData)?.mn_picker.resized
                             if let _ = image {
                                 fileSize = Int64(jpgData.count)
                             }
                         }
                     } else {
                         isAllowCompress = true
-                        image = result.resizedOrientation
+                        image = result.mn_picker.resized
                         fileSize = Int64(imageData!.count)
                     }
                     if isAllowCompress, options.compressionQuality < 1.0 {
-                        image = image?.compress(pixel: 1280.0, quality: max(options.compressionQuality, 0.5), fileSize: &fileSize)
+                        image = image?.mn_picker.compress(pixel: 1280.0, quality: max(options.compressionQuality, 0.5), fileSize: &fileSize)
                         if image == nil { fileSize = 0 }
                     }
                 }

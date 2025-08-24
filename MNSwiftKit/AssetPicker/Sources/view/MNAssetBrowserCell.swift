@@ -8,8 +8,8 @@
 import UIKit
 import Photos
 import PhotosUI
-#if canImport(MNSwiftKit_UI)
-import MNSwiftKit_UI
+#if canImport(MNSwiftKit_Slider)
+import MNSwiftKit_Slider
 #endif
 #if canImport(MNSwiftKit_Player)
 import MNSwiftKit_Player
@@ -443,7 +443,7 @@ extension MNAssetBrowserCell {
 extension MNAssetBrowserCell: MNPlayerDelegate {
     
     func playerDidEndDecode(_ player: MNPlayer) {
-        durationLabel.text = Date(timeIntervalSince1970: TimeInterval(player.duration)).timeValue
+        durationLabel.text = Date(timeIntervalSince1970: TimeInterval(player.duration)).mn_picker.timeString
     }
     
     func playerDidChangeStatus(_ player: MNPlayer) {
@@ -461,7 +461,7 @@ extension MNAssetBrowserCell: MNPlayerDelegate {
     
     func playerDidPlayTimeInterval(_ player: MNPlayer) {
         slider.setValue(player.progress, animated: false)
-        timeLabel.text = Date(timeIntervalSince1970: player.timeInterval).timeValue
+        timeLabel.text = Date(timeIntervalSince1970: player.timeInterval).mn_picker.timeString
     }
     
     func player(_ player: MNPlayer, didPlayFail msg: String) {

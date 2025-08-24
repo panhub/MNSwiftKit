@@ -190,6 +190,54 @@ extension UIImage.MNPickingWrapper {
         return UIImage(cgImage: newImage)
     }
     
+    /**调整方向*/
+    var resized: UIImage {
+        
+        guard image.imageOrientation != .up, let cgImage = image.cgImage, let colorSpace = cgImage.colorSpace else { return image }
+        
+        guard let context = CGContext.init(data: nil, width: Int(image.size.width), height: Int(image.size.height), bitsPerComponent: cgImage.bitsPerComponent, bytesPerRow: 0, space: colorSpace, bitmapInfo: cgImage.bitmapInfo.rawValue) else { return image }
+        
+        var transform: CGAffineTransform = .identity
+        
+        switch image.imageOrientation {
+        case .down, .downMirrored:
+            transform = transform.translatedBy(x: image.size.width, y: image.size.height)
+            transform = transform.rotated(by: .pi)
+        case .left, .leftMirrored:
+            transform = transform.translatedBy(x: image.size.width, y: 0.0)
+            transform = transform.rotated(by: .pi/2.0)
+        case .right, .rightMirrored:
+            transform = transform.translatedBy(x: 0.0, y: image.size.height)
+            transform = transform.rotated(by: -.pi/2.0)
+        default:
+            break
+        }
+        
+        switch image.imageOrientation {
+        case .upMirrored, .downMirrored:
+            transform = transform.translatedBy(x: image.size.width, y: 0.0)
+            transform = transform.scaledBy(x: -1.0, y: 1.0)
+        case .leftMirrored, .rightMirrored:
+            transform = transform.translatedBy(x: image.size.height, y: 0.0)
+            transform = transform.scaledBy(x: -1.0, y: 1.0)
+        default:
+            break
+        }
+    
+        context.concatenate(transform)
+        
+        switch image.imageOrientation {
+        case .left, .leftMirrored, .right, .rightMirrored:
+            context.draw(cgImage, in: CGRect(x: 0.0, y: 0.0, width: image.size.height, height: image.size.width))
+        default:
+            context.draw(cgImage, in: CGRect(x: 0.0, y: 0.0, width: image.size.width, height: image.size.height))
+        }
+        
+        guard let bitcgImage = context.makeImage() else { return image }
+        
+        return UIImage(cgImage: bitcgImage)
+    }
+    
     /// 调整图片尺寸
     /// - Parameter pix: 最大像素
     /// - Returns: 调整后的图片
@@ -235,6 +283,62 @@ extension UIImage.MNPickingWrapper {
         let currentImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return currentImage
+    }
+    
+    /// 近似微信朋友圈图片压缩 (以1280为界以 0.6为压缩系数)
+    /// - Parameters:
+    ///   - pixel: 像素阀值
+    ///   - quality: 压缩系数
+    ///   - pointer: 图片大小
+    /// - Returns: (压缩后图片, 图片质量)
+    func compress(pixel: CGFloat = 1280.0, quality: CGFloat, fileSize pointer: UnsafeMutablePointer<Int64>? = nil) -> UIImage? {
+        guard pixel > 0.0, quality > 0.01 else { return nil }
+        // 调整尺寸
+        var width: CGFloat = image.size.width*image.scale
+        var height: CGFloat = image.size.height*image.scale
+        guard width > 0.0, height > 0.0 else { return nil }
+        let boundary: CGFloat = pixel
+        let isSquare: Bool = width == height
+        if width > boundary || height > boundary {
+            if max(width, height)/min(width, height) <= 2.0 {
+                let ratio: CGFloat = boundary/max(width, height)
+                if width >= height {
+                    width = boundary
+                    height = height*ratio
+                } else {
+                    height = boundary
+                    width = width*ratio
+                }
+            } else if min(width, height) > boundary {
+                let ratio: CGFloat = boundary/min(width, height)
+                if width <= height {
+                    width = boundary
+                    height = height*ratio
+                } else {
+                    height = boundary
+                    width = width*ratio
+                }
+            }
+            width = ceil(width)
+            height = ceil(height)
+            if isSquare {
+                width = min(width, height)
+                height = width
+            }
+        }
+        // 缩图片
+        UIGraphicsBeginImageContext(CGSize(width: width, height: height))
+        image.draw(in: CGRect(x: 0.0, y: 0.0, width: width, height: height))
+        let result = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        // 压图片
+        if let imageData = result?.jpegData(compressionQuality: quality), let image = UIImage(data: imageData) {
+            if let pointer = pointer {
+                pointer.pointee = Int64(imageData.count)
+            }
+            return image
+        }
+        return nil
     }
 }
 

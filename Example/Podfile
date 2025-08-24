@@ -7,12 +7,12 @@ target 'MNSwiftKit_Example' do
 
   #pod 'MNSwiftKit', :path => '../'
   #pod 'MNSwiftKit/UI', :path => '../'
-  #pod 'MNSwiftKit/Utility', :path => '../'
   #pod 'MNSwiftKit/Toast', :path => '../'
+  #pod 'MNSwiftKit/Slider', :path => '../'
+  #pod 'MNSwiftKit/Utility', :path => '../'
   #pod 'MNSwiftKit/Player', :path => '../'
   #pod 'MNSwiftKit/Spliter', :path => '../'
   #pod 'MNSwiftKit/Layout', :path => '../'
-  #pod 'MNSwiftKit/Activity', :path => '../'
   #pod 'MNSwiftKit/Refresh', :path => '../'
   #pod 'MNSwiftKit/Exporter', :path => '../'
   #pod 'MNSwiftKit/Purchase', :path => '../'
@@ -25,6 +25,7 @@ target 'MNSwiftKit_Example' do
   pod 'MNSwiftKit/AssetPicker', :path => '../'
   #pod 'MNSwiftKit/Transitioning', :path => '../'
   #pod 'MNSwiftKit/HTTPRequest', :path => '../'
+  #pod 'MNSwiftKit/AnimatedImage', :path => '../'
   
   target 'MNSwiftKit_Tests' do
     inherit! :search_paths

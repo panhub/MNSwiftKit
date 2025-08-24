@@ -34,13 +34,18 @@
         "UniformTypeIdentifiers"
       ],
       "source_files": "MNSwiftKit/UI/Sources/**/*.swift",
+      "resource_bundles": {
+        "MNSwiftKit_UI": [
+          "MNSwiftKit/UI/Resources/**/*.{png,jpg,jpeg}"
+        ]
+      },
       "dependencies": {
         "MNSwiftKit/Layout": [],
         "MNSwiftKit/Extension": []
       }
     },
     {
-      "name": "Unity",
+      "name": "Utility",
       "frameworks": [
         "UIKit",
         "Foundation",
@@ -52,7 +57,7 @@
         "AdSupport",
         "AppTrackingTransparency"
       ],
-      "source_files": "MNSwiftKit/Unity/Sources/**/*.swift"
+      "source_files": "MNSwiftKit/Utility/Sources/**/*.swift"
     },
     {
       "name": "Toast",
@@ -67,6 +72,16 @@
           "MNSwiftKit/Toast/Resources/*.{png,jpg,jpeg}"
         ]
       }
+    },
+    {
+      "name": "Slider",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "QuartzCore",
+        "CoreGraphics"
+      ],
+      "source_files": "MNSwiftKit/Slider/Sources/**/*.swift"
     },
     {
       "name": "Player",
@@ -98,21 +113,6 @@
         "CoreGraphics"
       ],
       "source_files": "MNSwiftKit/Layout/Sources/**/*.swift"
-    },
-    {
-      "name": "Activity",
-      "frameworks": [
-        "UIKit",
-        "Foundation",
-        "QuartzCore",
-        "CoreGraphics"
-      ],
-      "source_files": "MNSwiftKit/Activity/Sources/**/*.swift",
-      "resource_bundles": {
-        "MNSwiftKit_Activity": [
-          "MNSwiftKit/Activity/Resources/**/*.{png,jpg,jpeg}"
-        ]
-      }
     },
     {
       "name": "Refresh",
@@ -166,7 +166,10 @@
         "CoreFoundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/Extension/Sources/**/*.swift"
+      "source_files": "MNSwiftKit/Extension/Sources/**/*.swift",
+      "dependencies": {
+        "MNSwiftKit/AnimatedImage": []
+      }
     },
     {
       "name": "Controller",
@@ -236,14 +239,15 @@
         ]
       },
       "dependencies": {
-        "MNSwiftKit/UI": [],
         "MNSwiftKit/Toast": [],
+        "MNSwiftKit/Slider": [],
         "MNSwiftKit/Player": [],
         "MNSwiftKit/Layout": [],
         "MNSwiftKit/Refresh": [],
         "MNSwiftKit/Exporter": [],
         "MNSwiftKit/Definition": [],
-        "MNSwiftKit/EmptyView": []
+        "MNSwiftKit/EmptyView": [],
+        "MNSwiftKit/AnimatedImage": []
       }
     },
     {
@@ -268,15 +272,27 @@
       }
     },
     {
+      "name": "AnimatedImage",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "CoreGraphics",
+        "ImageIO",
+        "CoreServices",
+        "UniformTypeIdentifiers"
+      ],
+      "source_files": "MNSwiftKit/AnimatedImage/Sources/**/*.swift"
+    },
+    {
       "name": "Full",
       "dependencies": {
         "MNSwiftKit/UI": [],
-        "MNSwiftKit/Unity": [],
         "MNSwiftKit/Toast": [],
+        "MNSwiftKit/Slider": [],
+        "MNSwiftKit/Utility": [],
         "MNSwiftKit/Player": [],
         "MNSwiftKit/Spliter": [],
         "MNSwiftKit/Layout": [],
-        "MNSwiftKit/Activity": [],
         "MNSwiftKit/Refresh": [],
         "MNSwiftKit/Exporter": [],
         "MNSwiftKit/Purchase": [],
@@ -288,7 +304,8 @@
         "MNSwiftKit/Networking": [],
         "MNSwiftKit/AssetPicker": [],
         "MNSwiftKit/Transitioning": [],
-        "MNSwiftKit/HTTPRequest": []
+        "MNSwiftKit/HTTPRequest": [],
+        "MNSwiftKit/AnimatedImage": []
       }
     }
   ],

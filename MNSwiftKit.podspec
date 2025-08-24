@@ -38,6 +38,10 @@ Swift开发基础组件，模块化。
   s.subspec 'UI' do |ui|
     ui.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'CoreGraphics', 'QuartzCore', 'ImageIO', 'CoreServices', 'UniformTypeIdentifiers'
     ui.source_files = 'MNSwiftKit/UI/Sources/**/*.swift'
+    ui.resource_bundles = {
+        # 'MNSwiftKit_UI' 是生成的 bundle 名称
+        'MNSwiftKit_UI' => ['MNSwiftKit/UI/Resources/**/*.{png,jpg,jpeg}']
+    }
     ui.dependency 'MNSwiftKit/Layout'
     ui.dependency 'MNSwiftKit/Extension'
     # 可以依赖一些基础库，比如 SnapKit
@@ -60,6 +64,12 @@ Swift开发基础组件，模块化。
     }
   end
   
+  # Slider <自定义滑块>
+  s.subspec 'Slider' do |slider|
+    slider.frameworks = 'UIKit', 'Foundation', 'QuartzCore', 'CoreGraphics'
+    slider.source_files = 'MNSwiftKit/Slider/Sources/**/*.swift'
+  end
+  
   # Player <播放器>
   s.subspec 'Player' do |player|
     player.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'AudioToolbox'
@@ -77,16 +87,6 @@ Swift开发基础组件，模块化。
   s.subspec 'Layout' do |layout|
     layout.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
     layout.source_files = 'MNSwiftKit/Layout/Sources/**/*.swift'
-  end
-  
-  # Activity <自定义指示器>
-  s.subspec 'Activity' do |activity|
-    activity.frameworks = 'UIKit', 'Foundation', 'QuartzCore', 'CoreGraphics'
-    activity.source_files = 'MNSwiftKit/Activity/Sources/**/*.swift'
-    activity.resource_bundles = {
-        # 'MNSwiftKit_Activity' 是生成的 bundle 名称
-        'MNSwiftKit_Activity' => ['MNSwiftKit/Activity/Resources/**/*.{png,jpg,jpeg}']
-    }
   end
   
   # Refresh <刷新控件>
@@ -123,6 +123,7 @@ Swift开发基础组件，模块化。
   s.subspec 'Extension' do |ext|
     ext.frameworks = 'Foundation', 'CoreFoundation', 'CoreGraphics'
     ext.source_files = 'MNSwiftKit/Extension/Sources/**/*.swift'
+    ext.dependency 'MNSwiftKit/AnimatedImage'
   end
   
   # Controller <控制器基类>
@@ -166,14 +167,15 @@ Swift开发基础组件，模块化。
         # 'MNSwiftKit_AssetPicker' 是生成的 bundle 名称
         'MNSwiftKit_AssetPicker' => ['MNSwiftKit/AssetPicker/Resources/**/*.{png,jpg,jpeg}']
     }
-    picker.dependency 'MNSwiftKit/UI'
     picker.dependency 'MNSwiftKit/Toast'
+    picker.dependency 'MNSwiftKit/Slider'
     picker.dependency 'MNSwiftKit/Player'
     picker.dependency 'MNSwiftKit/Layout'
     picker.dependency 'MNSwiftKit/Refresh'
     picker.dependency 'MNSwiftKit/Exporter'
     picker.dependency 'MNSwiftKit/Definition'
     picker.dependency 'MNSwiftKit/EmptyView'
+    picker.dependency 'MNSwiftKit/AnimatedImage'
   end
   
   # Transitioning <控制器转场支持>
@@ -189,17 +191,23 @@ Swift开发基础组件，模块化。
     request.dependency 'MNSwiftKit/Networking'
   end
   
+  # AnimatedImage <动图支持>
+  s.subspec 'AnimatedImage' do |animated|
+    animated.frameworks = 'UIKit', 'Foundation', 'CoreGraphics', 'ImageIO', 'CoreServices', 'UniformTypeIdentifiers'
+    animated.source_files = 'MNSwiftKit/AnimatedImage/Sources/**/*.swift'
+  end
+  
   # Full
   s.subspec 'Full' do |full|
     # 'Full' 子模块本身不包含任何源代码
     # 它只是一个“元模块”，用来聚合所有其他子模块的依赖
     full.dependency 'MNSwiftKit/UI'
     full.dependency 'MNSwiftKit/Toast'
+    full.dependency 'MNSwiftKit/Slider'
     full.dependency 'MNSwiftKit/Utility'
     full.dependency 'MNSwiftKit/Player'
     full.dependency 'MNSwiftKit/Spliter'
     full.dependency 'MNSwiftKit/Layout'
-    full.dependency 'MNSwiftKit/Activity'
     full.dependency 'MNSwiftKit/Refresh'
     full.dependency 'MNSwiftKit/Exporter'
     full.dependency 'MNSwiftKit/Purchase'
@@ -212,6 +220,7 @@ Swift开发基础组件，模块化。
     full.dependency 'MNSwiftKit/AssetPicker'
     full.dependency 'MNSwiftKit/Transitioning'
     full.dependency 'MNSwiftKit/HTTPRequest'
+    full.dependency 'MNSwiftKit/AnimatedImage'
   end
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
