@@ -242,7 +242,7 @@ public class MNPlayer: NSObject {
                         return
                     }
                     let begin = delegate?.playerShouldPlayToBeginTime?(self) ?? 0.0
-                    seek(to: begin) { [weak self] finish in
+                    seek(seconds: begin) { [weak self] finish in
                         guard let self = self else { return }
                         if finish {
                             self.player.play()
@@ -328,7 +328,7 @@ extension MNPlayer {
         if status == .finished {
             // 跳转开始部分
             let begin = delegate?.playerShouldPlayToBeginTime?(self) ?? 0.0
-            seek(to: begin) { [weak self] finish in
+            seek(seconds: begin) { [weak self] finish in
                 guard finish, let self = self else { return }
                 self.player.play()
                 self.status = .playing
@@ -373,7 +373,7 @@ extension MNPlayer {
         }
         if status == .playing { pause() }
         let begin = delegate?.playerShouldPlayToBeginTime?(self) ?? 0.0
-        seek(to: begin) { [weak self] _ in
+        seek(seconds: begin) { [weak self] _ in
             guard let self = self else { return }
             self.player.play()
             self.status = .playing
@@ -439,58 +439,28 @@ extension MNPlayer {
     
     /// 跳转到指定位置
     /// - Parameters:
-    ///   - progress: 进度
+    ///   - value: 进度
     ///   - completion: 跳转结束
-    public func seek(progress: Float, completion: ((Bool)->Void)? = nil) {
-        seek(progress: Double(progress), completion: completion)
-    }
-    
-    /// 跳转到指定位置
-    /// - Parameters:
-    ///   - progress: 进度
-    ///   - completion: 跳转结束
-    public func seek(progress: CGFloat, completion: ((Bool)->Void)? = nil) {
-        seek(progress: Double(progress), completion: completion)
-    }
-    
-    /// 跳转到指定位置
-    /// - Parameters:
-    ///   - progress: 进度
-    ///   - completion: 跳转结束
-    public func seek(progress: Double, completion: ((Bool)->Void)? = nil) {
+    public func seek<T>(progress value: T, completion: ((_ isSuccess: Bool)->Void)? = nil) where T: BinaryFloatingPoint {
         guard let currentItem = player.currentItem, currentItem.status == .readyToPlay else {
             completion?(false)
             return
         }
+        let progress = Float64(value)
         let time = CMTimeMultiplyByFloat64(currentItem.duration, multiplier: progress)
         player.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero, completionHandler: completion ?? { _ in })
     }
     
     /// 跳转到指定秒数
     /// - Parameters:
-    ///   - seconds: 秒数
-    ///   - completion: 跳转结束
-    public func seek(to seconds: Float, completion: ((Bool)->Void)? = nil) {
-        seek(to: TimeInterval(seconds), completion: completion)
-    }
-    
-    /// 跳转到指定秒数
-    /// - Parameters:
-    ///   - seconds: 秒数
-    ///   - completion: 跳转结束
-    public func seek(to seconds: CGFloat, completion: ((Bool)->Void)? = nil) {
-        seek(to: TimeInterval(seconds), completion: completion)
-    }
-    
-    /// 跳转到指定秒数
-    /// - Parameters:
-    ///   - seconds: 秒数
-    ///   - completion: 跳转结束
-    public func seek(to seconds: TimeInterval, completion: ((Bool)->Void)? = nil) {
+    ///   - value: 秒数
+    ///   - completion: 跳转结束回调
+    public func seek<T>(seconds value: T, completion: ((_ isSuccess: Bool)->Void)? = nil) where T: BinaryFloatingPoint {
         guard let currentItem = player.currentItem, currentItem.status == .readyToPlay else {
             completion?(false)
             return
         }
+        let seconds = TimeInterval(value)
         let time = CMTime(seconds: seconds, preferredTimescale: currentItem.duration.timescale)
         player.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero, completionHandler: completion ?? { _ in })
     }
@@ -508,7 +478,7 @@ private extension MNPlayer {
             let begin = delegate?.playerShouldPlayToBeginTime?(self) ?? 0.0
             if playIndex >= (urls.count - 1) {
                 // 不支持播放下一曲
-                seek(to: begin) { [weak self] finish in
+                seek(seconds: begin) { [weak self] finish in
                     guard let self = self else { return }
                     self.player.play()
                 }
