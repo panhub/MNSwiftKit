@@ -109,6 +109,15 @@
       "source_files": "MNSwiftKit/Refresh/Sources/**/*.swift"
     },
     {
+      "name": "Exporter",
+      "frameworks": [
+        "Foundation",
+        "AVFoundation",
+        "QuartzCore"
+      ],
+      "source_files": "MNSwiftKit/Exporter/Sources/**/*.swift"
+    },
+    {
       "name": "Purchase",
       "frameworks": [
         "UIKit",
@@ -226,6 +235,7 @@
         "MNSwiftKit/Spliter": [],
         "MNSwiftKit/Layout": [],
         "MNSwiftKit/Refresh": [],
+        "MNSwiftKit/Exporter": [],
         "MNSwiftKit/Purchase": [],
         "MNSwiftKit/Database": [],
         "MNSwiftKit/Definition": [],

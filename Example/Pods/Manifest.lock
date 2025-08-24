@@ -1,16 +1,16 @@
 PODS:
-  - MNSwiftKit/Player (0.1.0)
+  - MNSwiftKit/Exporter (0.1.0)
 
 DEPENDENCIES:
-  - MNSwiftKit/Player (from `../`)
+  - MNSwiftKit/Exporter (from `../`)
 
 EXTERNAL SOURCES:
   MNSwiftKit:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: e72c8bd513b5e5038f79c1f650dbdde82f4ed7eb
+  MNSwiftKit: 258e4a41d2089b123706e958f431f1ecd4fbb0d9
 
-PODFILE CHECKSUM: d74bb7807a9e8fac9ba0f7669629ecb223ecb029
+PODFILE CHECKSUM: 02ad88e2c029677f1f5570f2dad6e5a3b8ae9cf5
 
 COCOAPODS: 1.16.2

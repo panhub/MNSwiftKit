@@ -85,6 +85,12 @@ Swift开发基础组件，模块化。
     refresh.source_files = 'MNSwiftKit/Refresh/Sources/**/*.swift'
   end
   
+  # Exporter <媒体资源输出>
+  s.subspec 'Exporter' do |exporter|
+    exporter.frameworks = 'Foundation', 'AVFoundation', 'QuartzCore'
+    exporter.source_files = 'MNSwiftKit/Exporter/Sources/**/*.swift'
+  end
+  
   # Purchase <内购支持>
   s.subspec 'Purchase' do |purchase|
     purchase.frameworks = 'UIKit', 'Foundation', 'StoreKit'
@@ -166,6 +172,7 @@ Swift开发基础组件，模块化。
     full.dependency 'MNSwiftKit/Spliter'
     full.dependency 'MNSwiftKit/Layout'
     full.dependency 'MNSwiftKit/Refresh'
+    full.dependency 'MNSwiftKit/Exporter'
     full.dependency 'MNSwiftKit/Purchase'
     full.dependency 'MNSwiftKit/Database'
     full.dependency 'MNSwiftKit/Definition'
