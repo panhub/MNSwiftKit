@@ -100,6 +100,21 @@
       "source_files": "MNSwiftKit/Layout/Sources/**/*.swift"
     },
     {
+      "name": "Activity",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "QuartzCore",
+        "CoreGraphics"
+      ],
+      "source_files": "MNSwiftKit/Activity/Sources/**/*.swift",
+      "resource_bundles": {
+        "MNSwiftKit_Activity": [
+          "MNSwiftKit/Activity/Resources/**/*.{png,jpg,jpeg}"
+        ]
+      }
+    },
+    {
       "name": "Refresh",
       "frameworks": [
         "UIKit",
@@ -234,6 +249,7 @@
         "MNSwiftKit/Player": [],
         "MNSwiftKit/Spliter": [],
         "MNSwiftKit/Layout": [],
+        "MNSwiftKit/Activity": [],
         "MNSwiftKit/Refresh": [],
         "MNSwiftKit/Exporter": [],
         "MNSwiftKit/Purchase": [],

@@ -79,6 +79,16 @@ Swift开发基础组件，模块化。
     layout.source_files = 'MNSwiftKit/Layout/Sources/**/*.swift'
   end
   
+  # Activity <自定义指示器>
+  s.subspec 'Activity' do |activity|
+    activity.frameworks = 'UIKit', 'Foundation', 'QuartzCore', 'CoreGraphics'
+    activity.source_files = 'MNSwiftKit/Activity/Sources/**/*.swift'
+    activity.resource_bundles = {
+        # 'MNSwiftKit_Activity' 是生成的 bundle 名称
+        'MNSwiftKit_Activity' => ['MNSwiftKit/Activity/Resources/**/*.{png,jpg,jpeg}']
+    }
+  end
+  
   # Refresh <刷新控件>
   s.subspec 'Refresh' do |refresh|
     refresh.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
@@ -171,6 +181,7 @@ Swift开发基础组件，模块化。
     full.dependency 'MNSwiftKit/Player'
     full.dependency 'MNSwiftKit/Spliter'
     full.dependency 'MNSwiftKit/Layout'
+    full.dependency 'MNSwiftKit/Activity'
     full.dependency 'MNSwiftKit/Refresh'
     full.dependency 'MNSwiftKit/Exporter'
     full.dependency 'MNSwiftKit/Purchase'
