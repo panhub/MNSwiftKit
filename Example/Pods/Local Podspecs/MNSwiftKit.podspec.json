@@ -69,6 +69,16 @@
       }
     },
     {
+      "name": "Player",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "AVFoundation",
+        "AudioToolbox"
+      ],
+      "source_files": "MNSwiftKit/Player/Sources/**/*.swift"
+    },
+    {
       "name": "Spliter",
       "frameworks": [
         "UIKit",
@@ -212,6 +222,7 @@
         "MNSwiftKit/UI": [],
         "MNSwiftKit/Unity": [],
         "MNSwiftKit/Toast": [],
+        "MNSwiftKit/Player": [],
         "MNSwiftKit/Spliter": [],
         "MNSwiftKit/Layout": [],
         "MNSwiftKit/Refresh": [],

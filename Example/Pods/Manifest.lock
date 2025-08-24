@@ -1,59 +1,16 @@
 PODS:
-  - MNSwiftKit (0.1.0):
-    - MNSwiftKit/Full (= 0.1.0)
-  - MNSwiftKit/Controller (0.1.0):
-    - MNSwiftKit/Definition
-    - MNSwiftKit/EmptyView
-    - MNSwiftKit/HTTPRequest
-    - MNSwiftKit/Layout
-    - MNSwiftKit/Refresh
-    - MNSwiftKit/Toast
-    - MNSwiftKit/Transitioning
-  - MNSwiftKit/Database (0.1.0)
-  - MNSwiftKit/Definition (0.1.0)
-  - MNSwiftKit/EmptyView (0.1.0)
-  - MNSwiftKit/Extension (0.1.0)
-  - MNSwiftKit/Full (0.1.0):
-    - MNSwiftKit/Controller
-    - MNSwiftKit/Database
-    - MNSwiftKit/Definition
-    - MNSwiftKit/EmptyView
-    - MNSwiftKit/Extension
-    - MNSwiftKit/HTTPRequest
-    - MNSwiftKit/Layout
-    - MNSwiftKit/Networking
-    - MNSwiftKit/Purchase
-    - MNSwiftKit/Refresh
-    - MNSwiftKit/Spliter
-    - MNSwiftKit/Toast
-    - MNSwiftKit/Transitioning
-    - MNSwiftKit/UI
-    - MNSwiftKit/Unity
-  - MNSwiftKit/HTTPRequest (0.1.0):
-    - MNSwiftKit/Networking
-  - MNSwiftKit/Layout (0.1.0)
-  - MNSwiftKit/Networking (0.1.0)
-  - MNSwiftKit/Purchase (0.1.0)
-  - MNSwiftKit/Refresh (0.1.0)
-  - MNSwiftKit/Spliter (0.1.0):
-    - MNSwiftKit/Layout
-  - MNSwiftKit/Toast (0.1.0)
-  - MNSwiftKit/Transitioning (0.1.0)
-  - MNSwiftKit/UI (0.1.0):
-    - MNSwiftKit/Extension
-    - MNSwiftKit/Layout
-  - MNSwiftKit/Unity (0.1.0)
+  - MNSwiftKit/Player (0.1.0)
 
 DEPENDENCIES:
-  - MNSwiftKit (from `../`)
+  - MNSwiftKit/Player (from `../`)
 
 EXTERNAL SOURCES:
   MNSwiftKit:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: cf5ac1585d43771d5a652a2c8ece6e6d652e3301
+  MNSwiftKit: e72c8bd513b5e5038f79c1f650dbdde82f4ed7eb
 
-PODFILE CHECKSUM: 2cbb7db2ca2bc5b1f9ff3a3682b2178c724ef996
+PODFILE CHECKSUM: d74bb7807a9e8fac9ba0f7669629ecb223ecb029
 
 COCOAPODS: 1.16.2

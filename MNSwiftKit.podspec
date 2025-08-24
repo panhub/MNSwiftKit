@@ -60,6 +60,12 @@ Swift开发基础组件，模块化。
     }
   end
   
+  # Player <播放器>
+  s.subspec 'Player' do |player|
+    player.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'AudioToolbox'
+    player.source_files = 'MNSwiftKit/Player/Sources/**/*.swift'
+  end
+  
   # Spliter <分页控制器>
   s.subspec 'Spliter' do |spliter|
     spliter.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
@@ -156,6 +162,7 @@ Swift开发基础组件，模块化。
     full.dependency 'MNSwiftKit/UI'
     full.dependency 'MNSwiftKit/Unity'
     full.dependency 'MNSwiftKit/Toast'
+    full.dependency 'MNSwiftKit/Player'
     full.dependency 'MNSwiftKit/Spliter'
     full.dependency 'MNSwiftKit/Layout'
     full.dependency 'MNSwiftKit/Refresh'
