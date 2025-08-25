@@ -8,11 +8,11 @@
 import UIKit
 import Foundation
 import CoreGraphics
-//#if canImport(MNSwiftKit_Definition)
-//import MNSwiftKit_Definition
+//#if canImport(MNSwiftKitDefinition)
+//import MNSwiftKitDefinition
 //#endif
-//#if canImport(MNSwiftKit_Toast)
-//import MNSwiftKit_Toast
+//#if canImport(MNSwiftKitToast)
+//import MNSwiftKitToast
 //#endif
 
 open class MNBaseViewController: UIViewController {

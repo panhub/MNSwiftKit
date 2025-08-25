@@ -6,11 +6,11 @@
 //  数据流控制器
 
 import UIKit
-//#if canImport(MNSwiftKit_Refresh)
-//import MNSwiftKit_Refresh
+//#if canImport(MNSwiftKitRefresh)
+//import MNSwiftKitRefresh
 //#endif
-//#if canImport(MNSwiftKit_Toast)
-//import MNSwiftKit_Toast
+//#if canImport(MNSwiftKitToast)
+//import MNSwiftKitToast
 //#endif
 
 /// 列表控制器

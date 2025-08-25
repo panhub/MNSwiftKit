@@ -6,8 +6,8 @@
 //  网络请求基类, 不可直接实例化使用
 
 import Foundation
-//#if canImport(MNSwiftKit_Networking)
-//import MNSwiftKit_Networking
+//#if canImport(MNSwiftKitNetworking)
+//import MNSwiftKitNetworking
 //#endif
 
 /// 请求开始回调

@@ -1,8 +1,8 @@
 //
 //  MNActivityIndicatorView.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/7/25.
+//  Created by panhub on 2022/7/25.
 //  活动指示图
 
 import UIKit

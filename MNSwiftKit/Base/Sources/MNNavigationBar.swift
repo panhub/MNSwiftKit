@@ -8,11 +8,11 @@
 import UIKit
 import Foundation
 import CoreGraphics
-//#if canImport(MNSwiftKit_Definition)
-//import MNSwiftKit_Definition
+//#if canImport(MNSwiftKitDefinition)
+//import MNSwiftKitDefinition
 //#endif
-//#if canImport(MNSwiftKit_Layout)
-//import MNSwiftKit_Layout
+//#if canImport(MNSwiftKitLayout)
+//import MNSwiftKitLayout
 //#endif
 
 /// 导航条事件代理
@@ -94,15 +94,15 @@ import CoreGraphics
         return rightBarItem
     }()
     /// 导航底部分割线
-    private lazy var shadowView: UIView = {
-        let shadowView = UIView(frame: CGRect(x: 0.0, y: bounds.height - 0.7, width: bounds.width, height: 0.7))
-        shadowView.autoresizingMask = .flexibleTopMargin
+    private lazy var separatorView: UIView = {
+        let separatorView = UIView(frame: CGRect(x: 0.0, y: bounds.height - 0.7, width: bounds.width, height: 0.7))
+        separatorView.autoresizingMask = .flexibleTopMargin
         if #available(iOS 13.0, *) {
-            shadowView.backgroundColor = .opaqueSeparator
+            separatorView.backgroundColor = .opaqueSeparator
         } else {
-            shadowView.backgroundColor = .gray.withAlphaComponent(0.15)
+            separatorView.backgroundColor = .gray.withAlphaComponent(0.15)
         }
-        return shadowView
+        return separatorView
     }()
     /// 导航标题
     @objc public private(set) lazy var titleLabel: UILabel = {
@@ -130,7 +130,7 @@ import CoreGraphics
         addSubview(titleLabel)
         layoutTitleLabel()
         // 阴影线
-        addSubview(shadowView)
+        addSubview(separatorView)
         // 回调代理
         if let delegate = delegate {
             delegate.navigationBarDidLayoutSubitems?(self)
@@ -261,27 +261,21 @@ extension MNNavigationBar {
         }
     }
     
-    /// 是否显示顶部阴影线条
-    @objc public var showsShadowView: Bool {
-        get { shadowView.isHidden == false }
-        set { shadowView.isHidden = newValue == false }
-    }
-    
     /// 顶部阴影线颜色
-    @objc public var shadowColor: UIColor? {
-        get { shadowView.backgroundColor }
-        set { shadowView.backgroundColor = newValue }
+    @objc public var separatorColor: UIColor? {
+        get { separatorView.backgroundColor }
+        set { separatorView.backgroundColor = newValue }
     }
     
     /// 导航栏阴影线位置
     @objc public var shadowInset: UIEdgeInsets {
-        get { UIEdgeInsets(top: shadowView.frame.minY, left: shadowView.frame.minX, bottom: 0.0, right: frame.width - shadowView.frame.maxX) }
+        get { UIEdgeInsets(top: separatorView.frame.minY, left: separatorView.frame.minX, bottom: 0.0, right: frame.width - separatorView.frame.maxX) }
         set {
-            let mask = shadowView.autoresizingMask
-            shadowView.autoresizingMask = []
-            shadowView.mn_layout.minX = newValue.left
-            shadowView.mn_layout.width = frame.width - newValue.left - newValue.right
-            shadowView.autoresizingMask = mask
+            let mask = separatorView.autoresizingMask
+            separatorView.autoresizingMask = []
+            separatorView.mn_layout.minX = newValue.left
+            separatorView.mn_layout.width = frame.width - newValue.left - newValue.right
+            separatorView.autoresizingMask = mask
         }
     }
 }

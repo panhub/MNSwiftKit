@@ -1,18 +1,18 @@
 //
 //  MNAssetBrowser.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/10/8.
+//  Created by panhub on 2021/10/8.
 //  资源浏览器
 
 import UIKit
 import CoreAudio
 import CoreMedia
-//#if canImport(MNSwiftKit_Layout)
-//import MNSwiftKit_Layout
+//#if canImport(MNSwiftKitLayout)
+//import MNSwiftKitLayout
 //#endif
-//#if canImport(MNSwiftKit_Definition)
-//import MNSwiftKit_Definition
+//#if canImport(MNSwiftKitDefinition)
+//import MNSwiftKitDefinition
 //#endif
 
 /// 资源浏览代理

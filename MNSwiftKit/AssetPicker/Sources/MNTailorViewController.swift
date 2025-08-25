@@ -1,26 +1,26 @@
 //
 //  MNTailorViewController.swift
-//  MNTest
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/9/23.
+//  Created by panhub on 2022/9/23.
 //  视频裁剪控制器
 
 import UIKit
 import AVFoundation
-//#if canImport(MNSwiftKit_Toast)
-//import MNSwiftKit_Toast
+//#if canImport(MNSwiftKitToast)
+//import MNSwiftKitToast
 //#endif
-//#if canImport(MNSwiftKit_Player)
-//import MNSwiftKit_Player
+//#if canImport(MNSwiftKitPlayer)
+//import MNSwiftKitPlayer
 //#endif
-//#if canImport(MNSwiftKit_Layout)
-//import MNSwiftKit_Layout
+//#if canImport(MNSwiftKitLayout)
+//import MNSwiftKitLayout
 //#endif
-//#if canImport(MNSwiftKit_Exporter)
-//import MNSwiftKit_Exporter
+//#if canImport(MNSwiftKitExporter)
+//import MNSwiftKitExporter
 //#endif
-//#if canImport(MNSwiftKit_Definition)
-//import MNSwiftKit_Definition
+//#if canImport(MNSwiftKitDefinition)
+//import MNSwiftKitDefinition
 //#endif
 
 

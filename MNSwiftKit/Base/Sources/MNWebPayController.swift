@@ -8,8 +8,8 @@
 import UIKit
 import WebKit
 import Foundation
-//#if canImport(MNSwiftKit_Definition)
-//import MNSwiftKit_Definition
+//#if canImport(MNSwiftKitDefinition)
+//import MNSwiftKitDefinition
 //#endif
 
 public struct MNWebPayment {

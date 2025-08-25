@@ -1,13 +1,13 @@
 //
 //  MNTailorHandler.swift
-//  MNTest
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/9/23.
+//  Created by panhub on 2022/9/23.
 //  视频裁剪把手
 
 import UIKit
-//#if canImport(MNSwiftKit_Layout)
-//import MNSwiftKit_Layout
+//#if canImport(MNSwiftKitLayout)
+//import MNSwiftKitLayout
 //#endif
 
 /// 滑动代理

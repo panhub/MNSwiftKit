@@ -1,24 +1,24 @@
 //
 //  MNAssetBrowserCell.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/10/8.
+//  Created by panhub on 2021/10/8.
 //  资源浏览器表格
 
 import UIKit
 import Photos
 import PhotosUI
-//#if canImport(MNSwiftKit_Slider)
-//import MNSwiftKit_Slider
+//#if canImport(MNSwiftKitSlider)
+//import MNSwiftKitSlider
 //#endif
-//#if canImport(MNSwiftKit_Player)
-//import MNSwiftKit_Player
+//#if canImport(MNSwiftKitPlayer)
+//import MNSwiftKitPlayer
 //#endif
-//#if canImport(MNSwiftKit_Layout)
-//import MNSwiftKit_Layout
+//#if canImport(MNSwiftKitLayout)
+//import MNSwiftKitLayout
 //#endif
-//#if canImport(MNSwiftKit_Definition)
-//import MNSwiftKit_Definition
+//#if canImport(MNSwiftKitDefinition)
+//import MNSwiftKitDefinition
 //#endif
 
 /// 资源浏览器表格

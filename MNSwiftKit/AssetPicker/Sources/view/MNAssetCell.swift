@@ -1,8 +1,8 @@
 //
 //  MNAssetCell.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/10/28.
+//  Created by panhub on 2021/10/28.
 //  资源列表
 
 import UIKit

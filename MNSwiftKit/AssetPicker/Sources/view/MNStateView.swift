@@ -1,8 +1,8 @@
 //
 //  MNStateView.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/2/7.
+//  Created by panhub on 2022/2/7.
 //  媒体资源缩略图-状态视图
 
 import UIKit

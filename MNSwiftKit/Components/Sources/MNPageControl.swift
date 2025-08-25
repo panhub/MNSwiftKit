@@ -1,6 +1,6 @@
 //
 //  MNPageControl.swift
-//  MNTest
+//  MNSwiftKit
 //
 //  Created by panhub on 2022/9/27.
 //  页码指示器

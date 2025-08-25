@@ -1,8 +1,8 @@
 //
 //  PHAsset+MNExportExtension.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/1/30.
+//  Created by panhub on 2022/1/30.
 //
 
 import Photos

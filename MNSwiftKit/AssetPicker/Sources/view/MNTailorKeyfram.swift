@@ -1,8 +1,8 @@
 //
 //  MNTailorKeyfram.swift
-//  MNTest
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/9/23.
+//  Created by panhub on 2022/9/23.
 //  视频关键帧集合视图
 
 import UIKit

@@ -1,8 +1,8 @@
 //
 //  MNAssetPickerToolBar.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/1/30.
+//  Created by panhub on 2022/1/30.
 //  资源选择器底部控制栏
 
 import UIKit

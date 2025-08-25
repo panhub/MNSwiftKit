@@ -1,8 +1,8 @@
 //
 //  MNAsset.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/9/27.
+//  Created by panhub on 2021/9/27.
 //  相册资源模型
 
 import UIKit

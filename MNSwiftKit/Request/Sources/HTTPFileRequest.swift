@@ -9,8 +9,8 @@
 
 import UIKit
 import Foundation
-//#if canImport(MNSwiftKit_Networking)
-//import MNSwiftKit_Networking
+//#if canImport(MNSwiftKitNetworking)
+//import MNSwiftKitNetworking
 //#endif
 
 /// 询问下载位置回调

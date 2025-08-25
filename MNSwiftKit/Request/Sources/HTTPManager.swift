@@ -8,8 +8,8 @@
 import UIKit
 import Foundation
 import ObjectiveC.runtime
-//#if canImport(MNSwiftKit_Networking)
-//import MNSwiftKit_Networking
+//#if canImport(MNSwiftKitNetworking)
+//import MNSwiftKitNetworking
 //#endif
 
 /// 请求管理者 以单例模式存在

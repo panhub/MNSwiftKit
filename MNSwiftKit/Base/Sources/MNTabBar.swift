@@ -6,11 +6,11 @@
 //  标签栏
 
 import UIKit
-//#if canImport(MNSwiftKit_Definition)
-//import MNSwiftKit_Definition
+//#if canImport(MNSwiftKitDefinition)
+//import MNSwiftKitDefinition
 //#endif
-//#if canImport(MNSwiftKit_Layout)
-//import MNSwiftKit_Layout
+//#if canImport(MNSwiftKitLayout)
+//import MNSwiftKitLayout
 //#endif
 
 /// 标签栏代理
@@ -34,15 +34,15 @@ public class MNTabBar: UIView {
     /// 按钮
     private var items: [MNTabBarItem] = [MNTabBarItem]()
     /// 阴影线
-    private lazy var shadowView: UIView = {
-        let shadowView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: bounds.width, height: 0.7))
-        shadowView.autoresizingMask = [.flexibleWidth, .flexibleBottomMargin]
+    private lazy var separatorView: UIView = {
+        let separatorView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: bounds.width, height: 0.7))
+        separatorView.autoresizingMask = [.flexibleWidth, .flexibleBottomMargin]
         if #available(iOS 13.0, *) {
-            shadowView.backgroundColor = .opaqueSeparator
+            separatorView.backgroundColor = .opaqueSeparator
         } else {
-            shadowView.backgroundColor = .gray.withAlphaComponent(0.15)
+            separatorView.backgroundColor = .gray.withAlphaComponent(0.15)
         }
-        return shadowView
+        return separatorView
     }()
     /// 毛玻璃视图
     private lazy var visualView: UIVisualEffectView = {
@@ -70,7 +70,7 @@ public class MNTabBar: UIView {
         super.init(frame: UIScreen.main.bounds.inset(by: UIEdgeInsets(top: UIScreen.main.bounds.height - MN_BOTTOM_BAR_HEIGHT, left: 0.0, bottom: 0.0, right: 0.0)))
         backgroundColor = .clear
         addSubview(visualView)
-        addSubview(shadowView)
+        addSubview(separatorView)
     }
     
     required init?(coder: NSCoder) {
@@ -108,7 +108,7 @@ public class MNTabBar: UIView {
             item.badgeColor = vc.bottomBarItemBadgeColor
             item.badgeTextFont = vc.bottomBarItemBadgeTextFont
             item.badgeTextColor = vc.bottomBarItemBadgeTextColor
-            item.badgeContentPadding = vc.bottomBarItemBadgeContentPadding
+            item.badgeContentInset = vc.bottomBarItemBadgeContentInset
             item.addTarget(self, action: #selector(itemButtonTouchUpInside(_:)), for: .touchUpInside)
             addSubview(item)
             items.append(item)
@@ -150,28 +150,22 @@ extension MNTabBar {
         set { visualView.isHidden = newValue == false }
     }
     
-    /// 是否显示顶部阴影线条
-    @objc public var showsShadowView: Bool {
-        get { shadowView.isHidden == false }
-        set { shadowView.isHidden = newValue == false }
-    }
-    
     /// 顶部阴影线颜色
-    @objc public var shadowColor: UIColor? {
-        get { shadowView.backgroundColor }
-        set { shadowView.backgroundColor = newValue }
+    @objc public var separatorColor: UIColor? {
+        get { separatorView.backgroundColor }
+        set { separatorView.backgroundColor = newValue }
     }
     
     ///  阴影线位置
-    @objc public var shadowInset: UIEdgeInsets {
-        get { UIEdgeInsets(top: 0.0, left: shadowView.frame.minX, bottom: frame.height - shadowView.frame.maxY, right: frame.width - shadowView.frame.maxX) }
+    @objc public var separatorInset: UIEdgeInsets {
+        get { UIEdgeInsets(top: 0.0, left: separatorView.frame.minX, bottom: frame.height - separatorView.frame.maxY, right: frame.width - separatorView.frame.maxX) }
         set {
-            let autoresizingMask = shadowView.autoresizingMask
-            shadowView.autoresizingMask = []
-            let rect = bounds.inset(by: UIEdgeInsets(top: 0.0, left: max(newValue.left, 0.0), bottom: frame.height - shadowView.frame.maxY, right: max(newValue.right, 0.0)))
-            shadowView.mn_layout.minX = rect.minX
-            shadowView.mn_layout.width = rect.width
-            shadowView.autoresizingMask = autoresizingMask
+            let autoresizingMask = separatorView.autoresizingMask
+            separatorView.autoresizingMask = []
+            let rect = bounds.inset(by: UIEdgeInsets(top: 0.0, left: max(newValue.left, 0.0), bottom: frame.height - separatorView.frame.maxY, right: max(newValue.right, 0.0)))
+            separatorView.mn_layout.minX = rect.minX
+            separatorView.mn_layout.width = rect.width
+            separatorView.autoresizingMask = autoresizingMask
         }
     }
 }

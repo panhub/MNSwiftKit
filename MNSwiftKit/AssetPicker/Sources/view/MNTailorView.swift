@@ -1,14 +1,14 @@
 //
 //  MNTailorView.swift
-//  MNTest
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/9/23.
+//  Created by panhub on 2022/9/23.
 //  视频裁剪控制
 
 import UIKit
 import AVFoundation
-//#if canImport(MNSwiftKit_Layout)
-//import MNSwiftKit_Layout
+//#if canImport(MNSwiftKitLayout)
+//import MNSwiftKitLayout
 //#endif
 
 protocol MNTailorViewDelegate: NSObjectProtocol {

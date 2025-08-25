@@ -1,13 +1,13 @@
 //
 //  MNTailorTimeView.swift
-//  MNTest
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/9/25.
+//  Created by panhub on 2022/9/25.
 //  裁剪时间
 
 import UIKit
-//#if canImport(MNSwiftKit_Layout)
-//import MNSwiftKit_Layout
+//#if canImport(MNSwiftKitLayout)
+//import MNSwiftKitLayout
 //#endif
 
 class MNTailorTimeView: UIView {

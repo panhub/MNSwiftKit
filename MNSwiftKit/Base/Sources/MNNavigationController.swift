@@ -6,8 +6,8 @@
 //  导航控制器
 
 import UIKit
-//#if canImport(MNSwiftKit_Transitioning)
-//import MNSwiftKit_Transitioning
+//#if canImport(MNSwiftKitTransitioning)
+//import MNSwiftKitTransitioning
 //#endif
 
 open class MNNavigationController: UINavigationController {

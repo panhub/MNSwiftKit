@@ -1,8 +1,8 @@
 //
 //  MNAssetAlbumCell.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/1/31.
+//  Created by panhub on 2022/1/31.
 //  资源选择器相册表格
 
 import UIKit

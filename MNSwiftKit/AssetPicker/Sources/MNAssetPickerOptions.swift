@@ -1,8 +1,8 @@
 //
 //  MNAssetPickerOptions.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/9/27.
+//  Created by panhub on 2021/9/27.
 //  资源选择器配置信息 allowsMultipleSelection
 
 import UIKit

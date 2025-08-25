@@ -6,8 +6,8 @@
 //  标签控制器按钮
 
 import UIKit
-//#if canImport(MNSwiftKit_Layout)
-//import MNSwiftKit_Layout
+//#if canImport(MNSwiftKitLayout)
+//import MNSwiftKitLayout
 //#endif
 
 /// 标签栏按钮
@@ -44,17 +44,23 @@ public class MNTabBarItem: UIControl {
         return stackView
     }()
     
-    /// 角标
+    /// 角标文字
     private lazy var badgeLabel: UILabel = {
         let badgeLabel = UILabel()
-        badgeLabel.isHidden = true
-        badgeLabel.clipsToBounds = true
+        badgeLabel.textColor = .white
         badgeLabel.numberOfLines = 1
         badgeLabel.textAlignment = .center
-        badgeLabel.textColor = .white
-        badgeLabel.backgroundColor = .systemRed
         badgeLabel.font = .systemFont(ofSize: 10.0, weight: .medium)
         return badgeLabel
+    }()
+    
+    /// 角标
+    private lazy var badgeView: UIView = {
+        let badgeView = UIView()
+        badgeView.isHidden = true
+        badgeView.clipsToBounds = true
+        badgeView.backgroundColor = .systemRed
+        return badgeView
     }()
     
     /// 标题与图片间隔
@@ -125,8 +131,8 @@ public class MNTabBarItem: UIControl {
     
     /// 角标背景色
     public var badgeColor: UIColor {
-        get { badgeLabel.backgroundColor! }
-        set { badgeLabel.backgroundColor = newValue }
+        get { badgeView.backgroundColor! }
+        set { badgeView.backgroundColor = newValue }
     }
     
     /// 角标字体
@@ -134,7 +140,7 @@ public class MNTabBarItem: UIControl {
         get { badgeLabel.font! }
         set {
             badgeLabel.font = newValue
-            setNeedsLayout()
+            updateBadge()
         }
     }
     
@@ -152,9 +158,9 @@ public class MNTabBarItem: UIControl {
     }
     
     /// 角标内容左右增加尺寸
-    public var badgeContentPadding: CGSize = .init(width: 8.0, height: 8.0) {
+    public var badgeContentInset: UIEdgeInsets = .init(top: 4.0, left: 7.0, bottom: 3.0, right: 7.0) {
         didSet {
-            layoutBadge()
+            updateBadge()
         }
     }
     
@@ -193,11 +199,17 @@ public class MNTabBarItem: UIControl {
             stackView.bottomAnchor.constraint(equalTo: bottomAnchor),
             stackView.rightAnchor.constraint(equalTo: rightAnchor)
         ])
-        addSubview(badgeLabel)
+        badgeView.addSubview(badgeLabel)
+        addSubview(badgeView)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        layoutBadge()
     }
     
     /// 更新角标
@@ -219,31 +231,24 @@ public class MNTabBarItem: UIControl {
             }
         }
         guard let text = text else {
-            badgeLabel.isHidden = true
+            badgeView.isHidden = true
             return
         }
         badgeLabel.text = text
+        badgeView.isHidden = false
         if text.isEmpty {
             // 圆点
-            badgeLabel.mn_layout.size = badgeContentPadding
-            badgeLabel.layer.cornerRadius = badgeContentPadding.height/2.0
+            badgeLabel.frame = .zero
+            badgeView.mn_layout.size = .init(width: badgeContentInset.left + badgeContentInset.right, height: badgeContentInset.top + badgeContentInset.bottom)
+            badgeView.layer.cornerRadius = badgeView.frame.height/2.0
         } else {
             // 文字
             badgeLabel.sizeToFit()
-            var badgeSize: CGSize = .zero
-            badgeSize.height = ceil(badgeLabel.mn_layout.size.height) + badgeContentPadding.height
-            if text.count > 1 {
-                //
-                badgeSize.width = ceil(badgeLabel.mn_layout.size.width) + badgeContentPadding.width
-            } else {
-                let width = ceil(badgeLabel.mn_layout.width)
-                if width > badgeSize.height {
-                    badgeSize.height = width + 3.0
-                }
-                badgeSize.width = badgeSize.height
-            }
-            badgeLabel.mn_layout.size = badgeSize
-            badgeLabel.layer.cornerRadius = badgeSize.height/2.0
+            badgeLabel.mn_layout.origin = .init(x: badgeContentInset.left, y: badgeContentInset.top)
+            var badgeSize = CGSize(width: badgeContentInset.left + badgeLabel.frame.width + badgeContentInset.right, height: badgeContentInset.top + badgeLabel.frame.height + badgeContentInset.bottom)
+            badgeSize.width = max(badgeSize.width, badgeSize.height)
+            badgeView.mn_layout.size = badgeSize
+            badgeView.layer.cornerRadius = badgeSize.height/2.0
         }
         layoutBadge()
     }
@@ -253,6 +258,6 @@ public class MNTabBarItem: UIControl {
         var center = CGPoint(x: bounds.midX, y: bounds.midY)
         center.x += badgeOffset.horizontal
         center.y += badgeOffset.vertical
-        badgeLabel.center = center
+        badgeView.center = center
     }
 }

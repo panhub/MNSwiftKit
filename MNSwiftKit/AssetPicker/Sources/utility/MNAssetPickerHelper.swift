@@ -1,8 +1,8 @@
 //
 //  UIImage+MNAssetExport.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/9/29.
+//  Created by panhub on 2021/9/29.
 //  辅助工具
 
 import UIKit

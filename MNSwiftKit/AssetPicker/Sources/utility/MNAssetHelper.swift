@@ -1,15 +1,15 @@
 //
 //  MNAssetHelper.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/9/28.
+//  Created by panhub on 2021/9/28.
 //  辅助方法
 
 import UIKit
 import Photos
 import Foundation
-//#if canImport(MNSwiftKit_AnimatedImage)
-//import MNSwiftKit_AnimatedImage
+//#if canImport(MNSwiftKitAnimatedImage)
+//import MNSwiftKitAnimatedImage
 //#endif
 
 class MNAssetHelper {

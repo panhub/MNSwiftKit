@@ -6,8 +6,8 @@
 //  网络请求结果
 
 import Foundation
-//#if canImport(MNSwiftKit_Networking)
-//import MNSwiftKit_Networking
+//#if canImport(MNSwiftKitNetworking)
+//import MNSwiftKitNetworking
 //#endif
 
 /// 网络请求结果

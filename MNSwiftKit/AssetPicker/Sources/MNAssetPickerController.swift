@@ -1,20 +1,20 @@
 //
 //  MNAssetPickerController.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/9/27.
+//  Created by panhub on 2021/9/27.
 //  资源挑选控制器
 
 import UIKit
 import Photos
-//#if canImport(MNSwiftKit_Toast)
-//import MNSwiftKit_Toast
+//#if canImport(MNSwiftKitToast)
+//import MNSwiftKitToast
 //#endif
-//#if canImport(MNSwiftKit_Definition)
-//import MNSwiftKit_Definition
+//#if canImport(MNSwiftKitDefinition)
+//import MNSwiftKitDefinition
 //#endif
-//#if canImport(MNSwiftKit_EmptyView)
-//import MNSwiftKit_EmptyView
+//#if canImport(MNSwiftKitEmptyView)
+//import MNSwiftKitEmptyView
 //#endif
 
 class MNAssetPickerController: UIViewController {

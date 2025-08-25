@@ -1,16 +1,16 @@
 //
 //  MNAssetPreviewController.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/2/4.
+//  Created by panhub on 2022/2/4.
 //  资源预览控制器
 
 import UIKit
-//#if canImport(MNSwiftKit_Layout)
-//import MNSwiftKit_Layout
+//#if canImport(MNSwiftKitLayout)
+//import MNSwiftKitLayout
 //#endif
-//#if canImport(MNSwiftKit_Definition)
-//import MNSwiftKit_Definition
+//#if canImport(MNSwiftKitDefinition)
+//import MNSwiftKitDefinition
 //#endif
 
 /// 资源浏览控制器代理

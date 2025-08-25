@@ -1,8 +1,8 @@
 //
 //  MNAssetAlbumBadge.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2021/9/30.
+//  Created by panhub on 2021/9/30.
 //  相簿角标
 
 import UIKit

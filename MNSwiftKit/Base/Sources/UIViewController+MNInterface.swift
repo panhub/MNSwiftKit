@@ -67,8 +67,8 @@ public protocol MNTabBarSupported {
     var bottomBarItemImage: UIImage? { get }
     /// 标签栏选择按钮图片
     var bottomBarItemSelectedImage: UIImage? { get }
-    /// 标签栏徽标内容填充尺寸, 圆点状态下使用此尺寸
-    var bottomBarItemBadgeContentPadding: CGSize { get }
+    /// 标签栏徽标内容填充
+    var bottomBarItemBadgeContentInset: UIEdgeInsets { get }
     /// 标签栏徽标偏移量<相对于中心点>
     var bottomBarItemBadgeOffset: UIOffset { get }
     /// 标签栏徽标颜色
@@ -104,8 +104,8 @@ extension UIViewController: MNTabBarSupported {
     @objc open var bottomBarItemBadgeTextColor: UIColor { .white }
     /// 标签栏徽标字体
     @objc open var bottomBarItemBadgeTextFont: UIFont { .systemFont(ofSize: 10.0, weight: .medium) }
-    /// 标签栏徽标内容填充尺寸, 圆点状态下使用此尺寸
-    @objc open var bottomBarItemBadgeContentPadding: CGSize { .init(width: 8.0, height: 8.0) }
+    /// 标签栏徽标内容填充
+    @objc open var bottomBarItemBadgeContentInset: UIEdgeInsets { .init(top: 4.0, left: 7.0, bottom: 3.0, right: 7.0) }
 }
 
 extension MNTabBarSupported where Self: UIViewController {

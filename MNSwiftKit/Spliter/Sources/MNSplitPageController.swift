@@ -7,8 +7,8 @@
 
 import UIKit
 import Foundation
-//#if canImport(MNSwiftKit_Layout)
-//import MNSwiftKit_Layout
+//#if canImport(MNSwiftKitLayout)
+//import MNSwiftKitLayout
 //#endif
 
 protocol MNSplitPageControllerDataSource: AnyObject {

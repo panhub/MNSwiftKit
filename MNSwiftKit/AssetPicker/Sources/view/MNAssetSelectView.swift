@@ -1,8 +1,8 @@
 //
 //  MNAssetSelectView.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2022/2/4.
+//  Created by panhub on 2022/2/4.
 //  资源选择视图
 
 import UIKit

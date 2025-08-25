@@ -7,11 +7,11 @@
 
 import UIKit
 import WebKit
-//#if canImport(MNSwiftKit_Layout)
-//import MNSwiftKit_Layout
+//#if canImport(MNSwiftKitLayout)
+//import MNSwiftKitLayout
 //#endif
-//#if canImport(MNSwiftKit_Networking)
-//import MNSwiftKit_Networking
+//#if canImport(MNSwiftKitNetworking)
+//import MNSwiftKitNetworking
 //#endif
 
 /// 网页加载代理

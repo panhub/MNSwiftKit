@@ -6,8 +6,8 @@
 //  数据请求者
 
 import Foundation
-//#if canImport(MNSwiftKit_Networking)
-//import MNSwiftKit_Networking
+//#if canImport(MNSwiftKitNetworking)
+//import MNSwiftKitNetworking
 //#endif
 
 /// 请求方式
