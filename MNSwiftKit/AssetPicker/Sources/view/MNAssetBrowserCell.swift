@@ -97,7 +97,7 @@ class MNAssetBrowserCell: UICollectionViewCell {
     private lazy var toolBar: UIImageView = {
         let toolBar = UIImageView(frame: CGRect(x: 0.0, y: 0.0, width: contentView.bounds.width, height: MNAssetBrowserCell.ToolBarHeight))
         toolBar.mn_layout.maxY = contentView.bounds.height
-        toolBar.image = PickerResourceLoader.image(named: "bottom")
+        toolBar.image = AssetPickerResource.image(named: "bottom")
         toolBar.isUserInteractionEnabled = true
         toolBar.contentMode = .scaleToFill
         return toolBar
@@ -113,17 +113,17 @@ class MNAssetBrowserCell: UICollectionViewCell {
             playButton.configurationUpdateHandler = { button in
                 switch button.state {
                 case .normal:
-                    button.configuration?.background.image = PickerResourceLoader.image(named: "browser_play")
+                    button.configuration?.background.image = AssetPickerResource.image(named: "browser_play")
                 case .selected:
-                    button.configuration?.background.image = PickerResourceLoader.image(named: "browser_pause")
+                    button.configuration?.background.image = AssetPickerResource.image(named: "browser_pause")
                 default: break
                 }
             }
         } else {
             playButton = UIButton(type: .custom)
             playButton.adjustsImageWhenHighlighted = false
-            playButton.setBackgroundImage(PickerResourceLoader.image(named: "browser_play"), for: .normal)
-            playButton.setBackgroundImage(PickerResourceLoader.image(named: "browser_pause"), for: .selected)
+            playButton.setBackgroundImage(AssetPickerResource.image(named: "browser_play"), for: .normal)
+            playButton.setBackgroundImage(AssetPickerResource.image(named: "browser_pause"), for: .selected)
         }
         playButton.frame = CGRect(x: 0.0, y: 0.0, width: 25.0, height: 25.0)
         playButton.mn_layout.minX = 10.0

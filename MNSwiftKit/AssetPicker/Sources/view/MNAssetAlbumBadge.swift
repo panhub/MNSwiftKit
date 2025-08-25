@@ -83,7 +83,7 @@ class MNAssetAlbumBadge: UIControl {
             NSLayoutConstraint(item: arrowView, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1.0, constant: 0.0)
         ])
         
-        imageView.image = PickerResourceLoader.image(named: "down")
+        imageView.image = AssetPickerResource.image(named: "down")
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
         imageView.isUserInteractionEnabled = false

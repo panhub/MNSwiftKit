@@ -73,11 +73,11 @@ class MNAssetPreviewController: UIViewController {
         navView.backgroundColor = .clear
         navView.contentMode = .scaleToFill
         navView.isUserInteractionEnabled = true
-        navView.image = PickerResourceLoader.image(named: "top")
+        navView.image = AssetPickerResource.image(named: "top")
         let back = UIButton(type: .custom)
         back.frame = CGRect(x: 15.0, y: 0.0, width: 25.0, height: 25.0)
         back.mn_layout.midY = (navView.frame.height - MN_STATUS_BAR_HEIGHT)/2.0 + MN_STATUS_BAR_HEIGHT
-        back.setBackgroundImage(PickerResourceLoader.image(named: "back"), for: .normal)
+        back.setBackgroundImage(AssetPickerResource.image(named: "back"), for: .normal)
         back.addTarget(self, action: #selector(back(_:)), for: .touchUpInside)
         navView.addSubview(back)
         var maxX: CGFloat = navView.frame.width - back.frame.minX
@@ -86,7 +86,7 @@ class MNAssetPreviewController: UIViewController {
             done.frame = back.frame
             done.mn_layout.maxX = maxX
             done.tag = Event.done.rawValue
-            done.setBackgroundImage(PickerResourceLoader.image(named: "done"), for: .normal)
+            done.setBackgroundImage(AssetPickerResource.image(named: "done"), for: .normal)
             done.addTarget(self, action: #selector(buttonTouchUpInside(_:)), for: .touchUpInside)
             navView.addSubview(done)
             maxX = done.frame.minX - 18.0
@@ -100,8 +100,8 @@ class MNAssetPreviewController: UIViewController {
             select.clipsToBounds = true
             select.layer.cornerRadius = min(select.frame.width, select.frame.height)/2.0
             select.addTarget(self, action: #selector(selectButtonTouchUpInside(_:)), for: .touchUpInside)
-            let normalImage = PickerResourceLoader.image(named: "selectbox")
-            let selectedImage = PickerResourceLoader.image(named: "checkbox_fill")?.mn_picker.renderBy(color: options.themeColor)
+            let normalImage = AssetPickerResource.image(named: "selectbox")
+            let selectedImage = AssetPickerResource.image(named: "checkbox_fill")?.mn_picker.renderBy(color: options.themeColor)
             if #available(iOS 15.0, *) {
                 var configuration = UIButton.Configuration.plain()
                 configuration.background.backgroundColor = .clear

@@ -1,5 +1,5 @@
 //
-//  ComponentResourceLoader.swift
+//  BaseResource.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2025/8/23.
@@ -9,23 +9,23 @@
 import Foundation
 
 /// 资源加载器
-public class ComponentResourceLoader {
+public class BaseResource {
     
     /// 资源束
-    private static var bundle: Bundle = {
-        // 尝试从 CocoaPods 生成的 bundle 中加载（库作为 Pod 使用时）
-        if let url = Bundle.main.url(forResource: "MNSwiftKitComponents", withExtension: "bundle"), let bundle = Bundle(url: url) {
+    nonisolated(unsafe) private static var bundle: Bundle = {
+        // 在主目录下寻找
+        if let url = Bundle.main.url(forResource: "MNSwiftKit_Base", withExtension: "bundle"), let bundle = Bundle(url: url) {
             return bundle
         }
         // 尝试从当前框架/模块的 bundle 中加载（库作为 Pod 使用时）
-        if let url = Bundle(for: ComponentResourceLoader.self).url(forResource: "MNSwiftKitComponents", withExtension: "bundle"), let bundle = Bundle(url: url) {
+        if let url = Bundle(for: BaseResource.self).url(forResource: "MNSwiftKit_Base", withExtension: "bundle"), let bundle = Bundle(url: url) {
             return bundle
         }
         // 可能是直接源代码集成，尝试在框架 bundle 的上级目录查找
-        if let url = Bundle(for: ComponentResourceLoader.self).url(forResource: "MNSwiftKitComponents", withExtension: "bundle", subdirectory: "Frameworks/MNSwiftKit.framework"), let bundle = Bundle(url: url) {
+        if let url = Bundle(for: BaseResource.self).url(forResource: "MNSwiftKit_Base", withExtension: "bundle", subdirectory: "Frameworks/MNSwiftKit.framework"), let bundle = Bundle(url: url) {
             return bundle
         }
-        return Bundle(for: ComponentResourceLoader.self)
+        return Bundle(for: BaseResource.self)
     }()
     
     

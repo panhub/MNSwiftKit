@@ -12,8 +12,9 @@ import ObjectiveC.runtime
 extension UIView {
     
     internal struct MNToastAssociated {
+        
         /// 关联弹窗的Key
-        static var toast = "com.mn.view.toast"
+        nonisolated(unsafe) static var toast = "com.mn.view.toast"
     }
     
     /// 是否存在toast弹窗

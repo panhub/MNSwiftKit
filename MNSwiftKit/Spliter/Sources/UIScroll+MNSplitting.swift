@@ -15,12 +15,13 @@ extension UIScrollView {
     }
     
     fileprivate struct MNSplitAssociated {
-        static var pageIndex: String = "com.mn.page.scroll.index"
-        static var headerInset: String = "com.mn.page.scroll.header.inset"
-        static var isObserved: String = "com.mn.page.scroll.observed"
-        static var transitionState: String = "com.mn.page.scroll.transition.state"
-        static var leastContentSize: String = "com.mn.page.scroll.least.content.size"
-        static var reachedContentSize: String = "com.mn.page.scroll.content.size.reached"
+        
+        nonisolated(unsafe) static var pageIndex: String = "com.mn.page.scroll.index"
+        nonisolated(unsafe) static var headerInset: String = "com.mn.page.scroll.header.inset"
+        nonisolated(unsafe) static var isObserved: String = "com.mn.page.scroll.observed"
+        nonisolated(unsafe) static var transitionState: String = "com.mn.page.scroll.transition.state"
+        nonisolated(unsafe) static var leastContentSize: String = "com.mn.page.scroll.least.content.size"
+        nonisolated(unsafe) static var reachedContentSize: String = "com.mn.page.scroll.content.size.reached"
     }
     
     internal class MNSplitWrapper {

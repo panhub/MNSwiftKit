@@ -117,7 +117,7 @@ public class MNAlertView: UIView {
     /// 事件集合
     private var actions: [MNAlertAction] = [MNAlertAction]()
     /// 暂存弹窗
-    fileprivate static var alerts: [MNAlertView] = [MNAlertView]()
+    nonisolated(unsafe) fileprivate static var alerts: [MNAlertView] = [MNAlertView]()
     /// 分割线高度
     private let separatorHeight: CGFloat = 1.0
     /// 按钮高度

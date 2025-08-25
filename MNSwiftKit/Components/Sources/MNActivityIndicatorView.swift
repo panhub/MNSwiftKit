@@ -115,7 +115,7 @@ public class MNActivityIndicatorView: UIView {
         let mask = CALayer()
         mask.frame = indicator.bounds
         mask.contentsScale = UIScreen.main.scale
-        mask.contents = ComponentResourceLoader.image(named: style == .dark ? "mask-black" : "mask-white")?.cgImage
+        mask.contents = ComponentResource.image(named: style == .dark ? "mask-black" : "mask-white")?.cgImage
         indicator.mask = mask
         
         contentView.layer.addSublayer(indicator)

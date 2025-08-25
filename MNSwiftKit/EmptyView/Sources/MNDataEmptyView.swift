@@ -831,10 +831,10 @@ extension UIView {
     
     fileprivate struct MNDataEmptyAssociated {
         
-        static var view: String = "com.mn.data.empty.view"
-        static var observer: String = "com.mn.data.empty.observer"
-        static var display: String = "com.mn.data.empty.auto.display"
-        static var components: String = "com.mn.data.empty.components"
+        nonisolated(unsafe) static var view: String = "com.mn.data.empty.view"
+        nonisolated(unsafe) static var observer: String = "com.mn.data.empty.observer"
+        nonisolated(unsafe) static var display: String = "com.mn.data.empty.auto.display"
+        nonisolated(unsafe) static var components: String = "com.mn.data.empty.components"
     }
     
     public class MNDataEmptyWrapper {

@@ -39,7 +39,7 @@ Pod::Spec.new do |s|
     b.frameworks = 'UIKit', 'Foundation', 'CoreGraphics', 'WebKit'
     b.source_files = 'MNSwiftKit/Base/Sources/**/*.swift'
     b.resource_bundles = {
-        'MNSwiftKitBase' => ['MNSwiftKit/Base/Resources/*.{png,jpg,jpeg}']
+        'MNSwiftKit_Base' => ['MNSwiftKit/Base/Resources/*.{png,jpg,jpeg}']
     }
     b.dependency 'MNSwiftKit/Toast'
     b.dependency 'MNSwiftKit/Layout'
@@ -55,7 +55,7 @@ Pod::Spec.new do |s|
     t.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
     t.source_files = 'MNSwiftKit/Toast/Sources/**/*.swift'
     t.resource_bundles = {
-        'MNSwiftKitToast' => ['MNSwiftKit/Toast/Resources/*.{png,jpg,jpeg}']
+        'MNSwiftKit_Toast' => ['MNSwiftKit/Toast/Resources/*.{png,jpg,jpeg}']
     }
   end
   
@@ -146,7 +146,7 @@ Pod::Spec.new do |s|
     n.frameworks = 'Foundation', 'SystemConfiguration', 'CoreTelephony', 'CoreAudio', 'Security', 'CoreFoundation', 'CoreGraphics'
     n.source_files = 'MNSwiftKit/Networking/Sources/**/*.swift'
     n.resource_bundles = {
-        'MNSwiftKitNetworking' => ['MNSwiftKit/Networking/Resources/*.json']
+        'MNSwiftKit_Networking' => ['MNSwiftKit/Networking/Resources/*.json']
     }
   end
   
@@ -155,7 +155,7 @@ Pod::Spec.new do |s|
     pk.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'Photos', 'CoreFoundation', 'CoreGraphics'
     pk.source_files = 'MNSwiftKit/AssetPicker/Sources/**/*.swift'
     pk.resource_bundles = {
-        'MNSwiftKitAssetPicker' => ['MNSwiftKit/AssetPicker/Resources/**/*.{png,jpg,jpeg}']
+        'MNSwiftKit_AssetPicker' => ['MNSwiftKit/AssetPicker/Resources/**/*.{png,jpg,jpeg}']
     }
     pk.dependency 'MNSwiftKit/Toast'
     pk.dependency 'MNSwiftKit/Slider'
@@ -173,7 +173,7 @@ Pod::Spec.new do |s|
     c.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'CoreGraphics', 'QuartzCore', 'ImageIO', 'CoreServices', 'UniformTypeIdentifiers'
     c.source_files = 'MNSwiftKit/Components/Sources/**/*.swift'
     c.resource_bundles = {
-        'MNSwiftKitComponents' => ['MNSwiftKit/Components/Resources/**/*.{png,jpg,jpeg}']
+        'MNSwiftKit_Components' => ['MNSwiftKit/Components/Resources/**/*.{png,jpg,jpeg}']
     }
     c.dependency 'MNSwiftKit/Layout'
     c.dependency 'MNSwiftKit/Extension'

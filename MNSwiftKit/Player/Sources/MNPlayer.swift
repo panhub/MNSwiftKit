@@ -639,7 +639,8 @@ extension MNPlayer {
 private extension AVPlayerItem {
     
     struct MNAssociatedKey {
-        static var isObserved = "com.mn.player.item.observed"
+        
+        nonisolated(unsafe) static var isObserved = "com.mn.player.item.observed"
     }
     
     var isObserved: Bool {

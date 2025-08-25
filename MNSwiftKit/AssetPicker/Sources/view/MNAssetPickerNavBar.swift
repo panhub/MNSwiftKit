@@ -47,7 +47,7 @@ class MNAssetPickerNavBar: UIView {
         
         let closeButton = UIButton(type: .custom)
         closeButton.translatesAutoresizingMaskIntoConstraints = false
-        let backgroundImage = PickerResourceLoader.image(named: "back")?.mn_picker.renderBy(color: options.mode == .light ? .black : UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0))
+        let backgroundImage = AssetPickerResource.image(named: "back")?.mn_picker.renderBy(color: options.mode == .light ? .black : UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0))
         if #available(iOS 15.0, *) {
             var configuration = UIButton.Configuration.plain()
             configuration.background.backgroundColor = .clear

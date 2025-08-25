@@ -11,13 +11,14 @@ import ObjectiveC.runtime
 
 extension SKRequest {
     
-    private struct PurchaseAssociated {
-        static var identifier = "com.mn.purchase.request.identifier"
+    private struct MNPurchaseAssociated {
+        
+        nonisolated(unsafe) static var identifier = "com.mn.purchase.request.identifier"
     }
     
     /// 自定义标识
     var identifier: String {
-        get { objc_getAssociatedObject(self, &SKRequest.PurchaseAssociated.identifier) as? String ?? "" }
-        set { objc_setAssociatedObject(self, &SKRequest.PurchaseAssociated.identifier, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC) }
+        get { objc_getAssociatedObject(self, &SKRequest.MNPurchaseAssociated.identifier) as? String ?? "" }
+        set { objc_setAssociatedObject(self, &SKRequest.MNPurchaseAssociated.identifier, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC) }
     }
 }

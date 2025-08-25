@@ -46,10 +46,9 @@ open class MNTransitionAnimator: NSObject {
         super.init()
     }
     
-    /**实例化转场动画*/
+    /// 获取转场实例
     @objc public static func animator(animation: Animation = .normal) -> MNTransitionAnimator {
         // 获取命名空间
-        //let nameSpace = Bundle(for: MNTransitionAnimator.self).infoDictionary!["CFBundleExecutable"] as! String
         let nameSpace = NSStringFromClass(MNTransitionAnimator.self).components(separatedBy: ".").first!
         // 转换为类
         let cls = NSClassFromString("\(nameSpace).\(MNTransitionAnimator.Animations[animation.rawValue])")! as! MNTransitionAnimator.Type

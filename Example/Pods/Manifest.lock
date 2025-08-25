@@ -1,8 +1,8 @@
 PODS:
-  - MNSwiftKit (0.1.0):
-    - MNSwiftKit/Full (= 0.1.0)
-  - MNSwiftKit/AnimatedImage (0.1.0)
-  - MNSwiftKit/AssetPicker (0.1.0):
+  - MNSwiftKit (0.1.1):
+    - MNSwiftKit/Full (= 0.1.1)
+  - MNSwiftKit/AnimatedImage (0.1.1)
+  - MNSwiftKit/AssetPicker (0.1.1):
     - MNSwiftKit/AnimatedImage
     - MNSwiftKit/Definition
     - MNSwiftKit/EmptyView
@@ -12,7 +12,7 @@ PODS:
     - MNSwiftKit/Refresh
     - MNSwiftKit/Slider
     - MNSwiftKit/Toast
-  - MNSwiftKit/Base (0.1.0):
+  - MNSwiftKit/Base (0.1.1):
     - MNSwiftKit/Definition
     - MNSwiftKit/EmptyView
     - MNSwiftKit/Layout
@@ -20,16 +20,16 @@ PODS:
     - MNSwiftKit/Request
     - MNSwiftKit/Toast
     - MNSwiftKit/Transitioning
-  - MNSwiftKit/Components (0.1.0):
+  - MNSwiftKit/Components (0.1.1):
     - MNSwiftKit/Extension
     - MNSwiftKit/Layout
-  - MNSwiftKit/Database (0.1.0)
-  - MNSwiftKit/Definition (0.1.0)
-  - MNSwiftKit/EmptyView (0.1.0)
-  - MNSwiftKit/Exporter (0.1.0)
-  - MNSwiftKit/Extension (0.1.0):
+  - MNSwiftKit/Database (0.1.1)
+  - MNSwiftKit/Definition (0.1.1)
+  - MNSwiftKit/EmptyView (0.1.1)
+  - MNSwiftKit/Exporter (0.1.1)
+  - MNSwiftKit/Extension (0.1.1):
     - MNSwiftKit/AnimatedImage
-  - MNSwiftKit/Full (0.1.0):
+  - MNSwiftKit/Full (0.1.1):
     - MNSwiftKit/AnimatedImage
     - MNSwiftKit/AssetPicker
     - MNSwiftKit/Base
@@ -50,19 +50,19 @@ PODS:
     - MNSwiftKit/Toast
     - MNSwiftKit/Transitioning
     - MNSwiftKit/Utility
-  - MNSwiftKit/Layout (0.1.0)
-  - MNSwiftKit/Networking (0.1.0)
-  - MNSwiftKit/Player (0.1.0)
-  - MNSwiftKit/Purchase (0.1.0)
-  - MNSwiftKit/Refresh (0.1.0)
-  - MNSwiftKit/Request (0.1.0):
+  - MNSwiftKit/Layout (0.1.1)
+  - MNSwiftKit/Networking (0.1.1)
+  - MNSwiftKit/Player (0.1.1)
+  - MNSwiftKit/Purchase (0.1.1)
+  - MNSwiftKit/Refresh (0.1.1)
+  - MNSwiftKit/Request (0.1.1):
     - MNSwiftKit/Networking
-  - MNSwiftKit/Slider (0.1.0)
-  - MNSwiftKit/Spliter (0.1.0):
+  - MNSwiftKit/Slider (0.1.1)
+  - MNSwiftKit/Spliter (0.1.1):
     - MNSwiftKit/Layout
-  - MNSwiftKit/Toast (0.1.0)
-  - MNSwiftKit/Transitioning (0.1.0)
-  - MNSwiftKit/Utility (0.1.0)
+  - MNSwiftKit/Toast (0.1.1)
+  - MNSwiftKit/Transitioning (0.1.1)
+  - MNSwiftKit/Utility (0.1.1)
 
 DEPENDENCIES:
   - MNSwiftKit (from `../`)
@@ -72,7 +72,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: a1e5c57b0e68a7af26d8c2496202514704a72d18
+  MNSwiftKit: 8d0484500c99a77073510dff72b2455707fac424
 
 PODFILE CHECKSUM: a58152fb778d3209e6da799e009ad8f68710d6a6
 

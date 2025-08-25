@@ -43,10 +43,10 @@ public struct MNAssociatedKey {}
 extension MNAssociatedKey {
     
     /// 关联用户自定义信息
-    fileprivate static var userInfo: String = "com.mn.object.user.info"
+    nonisolated(unsafe) fileprivate static var userInfo: String = "com.mn.object.user.info"
     
     /// 第一次关联
-    fileprivate static var firstAssociated: String = "com.mn.object.first.associated"
+    nonisolated(unsafe) fileprivate static var firstAssociated: String = "com.mn.object.first.associated"
 }
 
 /// 关联对象包装器

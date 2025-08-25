@@ -57,8 +57,8 @@ extension UIViewController {
     
     private struct MNTransitioningAssociated {
         
-        static var bottomBar = "com.mn.view.transition.bottom.bar.key"
-        static var bottomSnapshot = "com.mn.view.transition.bottom.snapshot.key"
+        nonisolated(unsafe) static var bottomBar = "com.mn.view.transition.bottom.bar.key"
+        nonisolated(unsafe) static var bottomSnapshot = "com.mn.view.transition.bottom.snapshot.key"
     }
     
     /// 转场标签栏

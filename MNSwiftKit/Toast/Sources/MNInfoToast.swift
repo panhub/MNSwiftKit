@@ -13,7 +13,7 @@ public class MNInfoToast: NSObject, MNToastBuilder {
         let activityView = UIImageView(frame: CGRect(x: 0.0, y: 0.0, width: 45.0, height: 45.0))
         activityView.contentMode = .scaleAspectFit
         activityView.tintColor = UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0)
-        activityView.image = ToastResourceLoader.image(named: "info")?.withRenderingMode(.alwaysTemplate)
+        activityView.image = ToastResource.image(named: "info")?.withRenderingMode(.alwaysTemplate)
         return activityView
     }()
     

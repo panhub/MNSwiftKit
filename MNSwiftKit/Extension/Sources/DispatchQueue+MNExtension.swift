@@ -9,7 +9,7 @@ import Foundation
 
 extension DispatchQueue {
     
-    private static var onceTracker: [String] = [String]()
+    nonisolated(unsafe) private static var onceTracker: [String] = [String]()
     
     public class func once(token: String, block: ()->Void) {
         objc_sync_enter(self)

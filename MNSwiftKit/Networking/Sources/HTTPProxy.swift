@@ -13,25 +13,25 @@ fileprivate let DispatchSerializationQueue = DispatchQueue(label: "com.mn.url.se
 
 fileprivate extension URLSessionTask {
     
-    private struct HTTPAssociated {
-        static var challengeFailure = "com.mn.http.session.task.challenge.failure"
-        static var downloadFailure = "com.mn.http.session.task.download.failure"
-        static var fileIsDownloaded = "com.mn.http.session.task.file.downloaded"
+    private struct MNHTTPAssociated {
+        nonisolated(unsafe) static var challengeFailure = "com.mn.http.session.task.challenge.failure"
+        nonisolated(unsafe) static var downloadFailure = "com.mn.http.session.task.download.failure"
+        nonisolated(unsafe) static var fileIsDownloaded = "com.mn.http.session.task.file.downloaded"
     }
     
     var isDownloaded: Bool {
-        get { objc_getAssociatedObject(self, &HTTPAssociated.fileIsDownloaded) as? Bool ?? false }
-        set { objc_setAssociatedObject(self, &HTTPAssociated.fileIsDownloaded, newValue, .OBJC_ASSOCIATION_ASSIGN) }
+        get { objc_getAssociatedObject(self, &MNHTTPAssociated.fileIsDownloaded) as? Bool ?? false }
+        set { objc_setAssociatedObject(self, &MNHTTPAssociated.fileIsDownloaded, newValue, .OBJC_ASSOCIATION_ASSIGN) }
     }
     
     var isChallengeFailure: Bool {
-        get { objc_getAssociatedObject(self, &HTTPAssociated.challengeFailure) as? Bool ?? false }
-        set { objc_setAssociatedObject(self, &HTTPAssociated.challengeFailure, newValue, .OBJC_ASSOCIATION_ASSIGN) }
+        get { objc_getAssociatedObject(self, &MNHTTPAssociated.challengeFailure) as? Bool ?? false }
+        set { objc_setAssociatedObject(self, &MNHTTPAssociated.challengeFailure, newValue, .OBJC_ASSOCIATION_ASSIGN) }
     }
     
     var downloadError: HTTPError? {
-        get { objc_getAssociatedObject(self, &HTTPAssociated.downloadFailure) as? HTTPError }
-        set { objc_setAssociatedObject(self, &HTTPAssociated.downloadFailure, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
+        get { objc_getAssociatedObject(self, &MNHTTPAssociated.downloadFailure) as? HTTPError }
+        set { objc_setAssociatedObject(self, &MNHTTPAssociated.downloadFailure, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
     }
 }
 

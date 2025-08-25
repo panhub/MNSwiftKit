@@ -268,7 +268,7 @@ public class MNDatabase {
     /// 默认后缀
     public static var `extension`: String { "sqlite" }
     /// 快速构造入口
-    public static let `default` = MNDatabase()
+    nonisolated(unsafe) public static let `default` = MNDatabase()
     /// 信号量加锁保证线程安全
     private let semaphore = DispatchSemaphore(value: 1)
     /// 数据操作队列

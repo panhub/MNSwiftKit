@@ -34,7 +34,7 @@ public class MNMaskToast: NSObject, MNToastBuilder {
         let mask = CALayer()
         mask.frame = activityLayer.bounds
         mask.contentsScale = UIScreen.main.scale
-        mask.contents = ToastResourceLoader.image(named: "mask")?.cgImage
+        mask.contents = ToastResource.image(named: "mask")?.cgImage
         activityLayer.mask = mask
         
         activityView.layer.addSublayer(activityLayer)

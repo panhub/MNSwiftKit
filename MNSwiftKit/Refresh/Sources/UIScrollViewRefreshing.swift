@@ -11,8 +11,9 @@ import ObjectiveC.runtime
 extension UIScrollView {
     
     fileprivate struct MNRefreshAssociated {
-        static var footer = "com.mn.scroll.view.load.footer"
-        static var header = "com.mn.scroll.view.refresh.header"
+        
+        nonisolated(unsafe) static var footer = "com.mn.scroll.view.load.footer"
+        nonisolated(unsafe) static var header = "com.mn.scroll.view.refresh.header"
     }
     
     public class MNRefreshWrapper {

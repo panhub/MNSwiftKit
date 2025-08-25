@@ -63,7 +63,7 @@ import CoreGraphics
             leftBarItem.mn_layout.size = CGSize(width: MNNavigationBar.itemSize, height: MNNavigationBar.itemSize)
             if let delegate = delegate, (delegate.navigationBarShouldDrawBackBarItem?() ?? false) == true {
                 // 返回按钮
-                leftBarItem.layer.contents = BaseResourceLoader.image(named: "back")?.cgImage
+                leftBarItem.layer.contents = BaseResource.image(named: "back")?.cgImage
                 (leftBarItem as! UIControl).addTarget(self, action: #selector(leftBarItemTouchUpInside(_:)), for: UIControl.Event.touchUpInside)
             }
         }
@@ -198,7 +198,7 @@ extension MNNavigationBar {
     @objc public var backColor: UIColor? {
         get { nil }
         set {
-            guard let image = BaseResourceLoader.image(named: "back") else { return }
+            guard let image = BaseResource.image(named: "back") else { return }
             guard let cgImage = image.cgImage else { return }
             UIGraphicsBeginImageContextWithOptions(image.size, false, image.scale)
             guard let context = UIGraphicsGetCurrentContext() else { return }

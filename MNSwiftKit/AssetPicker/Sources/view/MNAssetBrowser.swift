@@ -172,7 +172,7 @@ public class MNAssetBrowser: UIView {
             let button = UIButton(type: .custom)
             button.tag = event.rawValue
             button.frame = CGRect(x: 0.0, y: 0.0, width: 25.0, height: 25.0)
-            let backgroundImage = PickerResourceLoader.image(named: event.resource)
+            let backgroundImage = AssetPickerResource.image(named: event.resource)
             if #available(iOS 15.0, *) {
                 var configuration = UIButton.Configuration.plain()
                 configuration.background.backgroundColor = .clear
@@ -208,7 +208,7 @@ public class MNAssetBrowser: UIView {
         if events.isEmpty == false || navigationItemView.subviews.isEmpty == false {
             navigationView.contentMode = .scaleToFill
             navigationView.isUserInteractionEnabled = true
-            navigationView.image = PickerResourceLoader.image(named: "top")
+            navigationView.image = AssetPickerResource.image(named: "top")
         }
         return navigationView
     }()
@@ -317,7 +317,7 @@ extension MNAssetBrowser {
                 // 未开启交互
                 navigationView.contentMode = .scaleToFill
                 navigationView.isUserInteractionEnabled = true
-                navigationView.image = PickerResourceLoader.image(named: "top")
+                navigationView.image = AssetPickerResource.image(named: "top")
             }
         }
     }

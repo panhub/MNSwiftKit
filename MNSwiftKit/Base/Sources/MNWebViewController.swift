@@ -243,8 +243,8 @@ extension MNWebViewController {
         let leftItemView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 62.0, height: 22.0))
         let backButton = UIButton(type: .custom)
         backButton.mn_layout.size = CGSize(width: leftItemView.frame.height, height: leftItemView.frame.height)
-        backButton.setBackgroundImage(BaseResourceLoader.image(named: "back"), for: .normal)
-        backButton.setBackgroundImage(BaseResourceLoader.image(named: "back"), for: .highlighted)
+        backButton.setBackgroundImage(BaseResource.image(named: "back"), for: .normal)
+        backButton.setBackgroundImage(BaseResource.image(named: "back"), for: .highlighted)
         backButton.addTarget(self, action: #selector(back), for: .touchUpInside)
         leftItemView.addSubview(backButton)
         closeButton = UIButton(type: .custom)
@@ -252,8 +252,8 @@ extension MNWebViewController {
         closeButton.mn_layout.size = CGSize(width: 20.0, height: 20.0)
         closeButton.mn_layout.maxX = leftItemView.frame.width
         closeButton.mn_layout.midY = leftItemView.frame.height/2.0
-        closeButton.setBackgroundImage(BaseResourceLoader.image(named: "close"), for: .normal)
-        closeButton.setBackgroundImage(BaseResourceLoader.image(named: "close"), for: .highlighted)
+        closeButton.setBackgroundImage(BaseResource.image(named: "close"), for: .normal)
+        closeButton.setBackgroundImage(BaseResource.image(named: "close"), for: .highlighted)
         closeButton.addTarget(self, action: #selector(close), for: .touchUpInside)
         leftItemView.addSubview(closeButton)
         return leftItemView
@@ -264,8 +264,8 @@ extension MNWebViewController {
     open override func navigationBarShouldCreateRightBarItem() -> UIView? {
         reloadButton = UIButton(type: .custom)
         reloadButton.frame = CGRect(x: 0.0, y: 0.0, width: 23.0, height: 23.0)
-        reloadButton.setBackgroundImage(BaseResourceLoader.image(named: "refresh"), for: .normal)
-        reloadButton.setBackgroundImage(BaseResourceLoader.image(named: "refresh"), for: .highlighted)
+        reloadButton.setBackgroundImage(BaseResource.image(named: "refresh"), for: .normal)
+        reloadButton.setBackgroundImage(BaseResource.image(named: "refresh"), for: .highlighted)
         reloadButton.addTarget(self, action: #selector(reload), for: .touchUpInside)
         let animation = CABasicAnimation(keyPath: "transform.rotation.z")
         animation.duration = 1.0

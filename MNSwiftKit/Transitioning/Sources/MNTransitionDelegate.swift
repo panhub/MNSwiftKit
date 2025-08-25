@@ -12,7 +12,7 @@ extension UINavigationController {
     
     fileprivate struct MNTransitionAssociated {
         
-        static var delegate: String = "com.mn.navigation.transitioning.delegate"
+        nonisolated(unsafe) static var delegate: String = "com.mn.navigation.transitioning.delegate"
     }
     
     public class MNTransitionWrapper {

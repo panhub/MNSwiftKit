@@ -17,7 +17,7 @@ public class HTTPSecurityPolicy {
         case certificate // 验证证书
     }
     /**默认验证实例*/
-    public static var `default`: HTTPSecurityPolicy = HTTPSecurityPolicy()
+    nonisolated(unsafe) public static var `default`: HTTPSecurityPolicy = HTTPSecurityPolicy()
     /**验证模式*/
     public var mode: Mode = .none
     /**是否验证域名*/

@@ -1,6 +1,6 @@
 {
   "name": "MNSwiftKit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "summary": "A collection of Swift components.",
   "description": "A collection of Swift components, Any module can installed.",
   "homepage": "https://github.com/panhub/MNSwiftKit",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/panhub/MNSwiftKit.git",
-    "tag": "0.1.0"
+    "tag": "0.1.1"
   },
   "swift_versions": "5.0",
   "platforms": {
@@ -31,7 +31,7 @@
       ],
       "source_files": "MNSwiftKit/Base/Sources/**/*.swift",
       "resource_bundles": {
-        "MNSwiftKitBase": [
+        "MNSwiftKit_Base": [
           "MNSwiftKit/Base/Resources/*.{png,jpg,jpeg}"
         ]
       },
@@ -54,7 +54,7 @@
       ],
       "source_files": "MNSwiftKit/Toast/Sources/**/*.swift",
       "resource_bundles": {
-        "MNSwiftKitToast": [
+        "MNSwiftKit_Toast": [
           "MNSwiftKit/Toast/Resources/*.{png,jpg,jpeg}"
         ]
       }
@@ -208,7 +208,7 @@
       ],
       "source_files": "MNSwiftKit/Networking/Sources/**/*.swift",
       "resource_bundles": {
-        "MNSwiftKitNetworking": [
+        "MNSwiftKit_Networking": [
           "MNSwiftKit/Networking/Resources/*.json"
         ]
       }
@@ -225,7 +225,7 @@
       ],
       "source_files": "MNSwiftKit/AssetPicker/Sources/**/*.swift",
       "resource_bundles": {
-        "MNSwiftKitAssetPicker": [
+        "MNSwiftKit_AssetPicker": [
           "MNSwiftKit/AssetPicker/Resources/**/*.{png,jpg,jpeg}"
         ]
       },
@@ -255,7 +255,7 @@
       ],
       "source_files": "MNSwiftKit/Components/Sources/**/*.swift",
       "resource_bundles": {
-        "MNSwiftKitComponents": [
+        "MNSwiftKit_Components": [
           "MNSwiftKit/Components/Resources/**/*.{png,jpg,jpeg}"
         ]
       },
@@ -275,6 +275,14 @@
     },
     {
       "name": "AnimatedImage",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "CoreGraphics",
+        "ImageIO",
+        "CoreServices",
+        "UniformTypeIdentifiers"
+      ],
       "source_files": "MNSwiftKit/AnimatedImage/Sources/**/*.swift"
     },
     {

@@ -11,20 +11,22 @@ import ObjectiveC.runtime
 
 extension UIView {
     
-    /// 是否交换过方法
-    fileprivate static var isExchangeTouchMethod: Bool = false
-    
-    fileprivate static var mn_key_touchInset: String = "com.mn.key.view.touch.inset"
+    private struct MNTouchInsetAssociated {
+        
+        nonisolated(unsafe) static var key = "com.mn.view.touch.inset.key"
+        
+        nonisolated(unsafe) static var exchanged = "com.mn.view.touch.inset.exchanged"
+    }
     
     /// 设置触发区域
     @MainActor public var mn_touchInset: UIEdgeInsets {
         get {
-            guard let value = objc_getAssociatedObject(self, &UIView.mn_key_touchInset) as? NSValue else { return .zero }
+            guard let value = objc_getAssociatedObject(self, &UIView.MNTouchInsetAssociated.key) as? NSValue else { return .zero }
             return value.uiEdgeInsetsValue
         }
         set {
-            objc_setAssociatedObject(self, &UIView.mn_key_touchInset, NSValue(uiEdgeInsets: newValue), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-            guard UIView.isExchangeTouchMethod == false else { return }
+            objc_setAssociatedObject(self, &UIView.MNTouchInsetAssociated.key, NSValue(uiEdgeInsets: newValue), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            if let isExchanged = objc_getAssociatedObject(self, &UIView.MNTouchInsetAssociated.exchanged) as? Bool, isExchanged { return }
             let originalSelector = #selector(self.point(inside:with:))
             guard let originalMethod = class_getInstanceMethod(UIView.self, originalSelector) else { return }
             let newSelector = #selector(self.mn_view_point(inside:with:))
@@ -34,7 +36,7 @@ extension UIView {
             } else {
                 method_exchangeImplementations(originalMethod, replaceMethod)
             }
-            UIView.isExchangeTouchMethod = true
+            objc_setAssociatedObject(self, &UIView.MNTouchInsetAssociated.exchanged, true, .OBJC_ASSOCIATION_ASSIGN)
         }
     }
     

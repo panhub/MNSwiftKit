@@ -62,7 +62,7 @@ class MNTailorViewController: UIViewController {
     /// 时间显示
     private let timeLabel: UILabel = UILabel()
     /// 播放/暂停标记
-    private let badgeView: UIImageView = UIImageView(image: PickerResourceLoader.image(named: "player_play"))
+    private let badgeView: UIImageView = UIImageView(image: AssetPickerResource.image(named: "player_play"))
     /// 视频播放视图
     private let playView: MNPlayView = MNPlayView()
     /// 时间显示
@@ -154,7 +154,7 @@ class MNTailorViewController: UIViewController {
         closeButton.mn_layout.size = CGSize(width: 30.0, height: 30.0)
         closeButton.mn_layout.minX = 15.0
         closeButton.mn_layout.maxY = view.frame.height - max(15.0, MN_BOTTOM_SAFE_HEIGHT)
-        closeButton.setBackgroundImage(PickerResourceLoader.image(named: "player_close"), for: .normal)
+        closeButton.setBackgroundImage(AssetPickerResource.image(named: "player_close"), for: .normal)
         closeButton.addTarget(self, action: #selector(closeButtonTouchUpInside(_:)), for: .touchUpInside)
         view.addSubview(closeButton)
         
@@ -162,7 +162,7 @@ class MNTailorViewController: UIViewController {
         doneButton.mn_layout.midY = closeButton.frame.midY
         doneButton.mn_layout.maxX = view.frame.width - closeButton.frame.minX
         doneButton.isUserInteractionEnabled = false
-        doneButton.setBackgroundImage(PickerResourceLoader.image(named: "player_done"), for: .normal)
+        doneButton.setBackgroundImage(AssetPickerResource.image(named: "player_done"), for: .normal)
         doneButton.addTarget(self, action: #selector(doneButtonTouchUpInside(_:)), for: .touchUpInside)
         view.addSubview(doneButton)
         
@@ -184,7 +184,7 @@ class MNTailorViewController: UIViewController {
         badgeView.mn_layout.width = 25.0
         badgeView.mn_picker.sizeFitToWidth()
         badgeView.isUserInteractionEnabled = false
-        badgeView.highlightedImage = PickerResourceLoader.image(named: "player_pause")
+        badgeView.highlightedImage = AssetPickerResource.image(named: "player_pause")
         badgeView.center = CGPoint(x: playControl.bounds.midX, y: playControl.bounds.midY)
         playControl.addSubview(badgeView)
         
