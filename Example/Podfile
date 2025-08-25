@@ -5,8 +5,8 @@ platform :ios, '9.0'
 
 target 'MNSwiftKit_Example' do
 
-  #pod 'MNSwiftKit', :path => '../'
-  #pod 'MNSwiftKit/UI', :path => '../'
+  pod 'MNSwiftKit', :path => '../'
+  #pod 'MNSwiftKit/Base', :path => '../'
   #pod 'MNSwiftKit/Toast', :path => '../'
   #pod 'MNSwiftKit/Slider', :path => '../'
   #pod 'MNSwiftKit/Utility', :path => '../'
@@ -14,17 +14,17 @@ target 'MNSwiftKit_Example' do
   #pod 'MNSwiftKit/Spliter', :path => '../'
   #pod 'MNSwiftKit/Layout', :path => '../'
   #pod 'MNSwiftKit/Refresh', :path => '../'
+  #pod 'MNSwiftKit/Request', :path => '../'
   #pod 'MNSwiftKit/Exporter', :path => '../'
   #pod 'MNSwiftKit/Purchase', :path => '../'
   #pod 'MNSwiftKit/Database', :path => '../'
   #pod 'MNSwiftKit/Definition', :path => '../'
   #pod 'MNSwiftKit/Extension', :path => '../'
-  #pod 'MNSwiftKit/Controller', :path => '../'
   #pod 'MNSwiftKit/EmptyView', :path => '../'
   #pod 'MNSwiftKit/Networking', :path => '../'
-  pod 'MNSwiftKit/AssetPicker', :path => '../'
+  #pod 'MNSwiftKit/AssetPicker', :path => '../'
+  #pod 'MNSwiftKit/Components', :path => '../'
   #pod 'MNSwiftKit/Transitioning', :path => '../'
-  #pod 'MNSwiftKit/HTTPRequest', :path => '../'
   #pod 'MNSwiftKit/AnimatedImage', :path => '../'
   
   target 'MNSwiftKit_Tests' do

@@ -1,5 +1,5 @@
 //
-//  ToastResourceLoader.swift
+//  PickerResourceLoader.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2025/8/23.
@@ -9,25 +9,24 @@
 import Foundation
 
 /// 资源加载器
-public class ToastResourceLoader {
+public class PickerResourceLoader {
     
     /// 资源束
-    private static var bundle: Bundle = {
+    private class var bundle: Bundle {
         // 尝试从 CocoaPods 生成的 bundle 中加载（库作为 Pod 使用时）
-        if let url = Bundle.main.url(forResource: "MNSwiftKitToast", withExtension: "bundle"), let bundle = Bundle(url: url) {
+        if let url = Bundle.main.url(forResource: "MNSwiftKitAssetPicker", withExtension: "bundle"), let bundle = Bundle(url: url) {
             return bundle
         }
         // 尝试从当前框架/模块的 bundle 中加载（库作为 Pod 使用时）
-        if let url = Bundle(for: ToastResourceLoader.self).url(forResource: "MNSwiftKitToast", withExtension: "bundle"), let bundle = Bundle(url: url) {
+        if let url = Bundle(for: PickerResourceLoader.self).url(forResource: "MNSwiftKitAssetPicker", withExtension: "bundle"), let bundle = Bundle(url: url) {
             return bundle
         }
         // 可能是直接源代码集成，尝试在框架 bundle 的上级目录查找
-        if let url = Bundle(for: ToastResourceLoader.self).url(forResource: "MNSwiftKitToast", withExtension: "bundle", subdirectory: "Frameworks/MNSwiftKit.framework"), let bundle = Bundle(url: url) {
+        if let url = Bundle(for: PickerResourceLoader.self).url(forResource: "MNSwiftKitAssetPicker", withExtension: "bundle", subdirectory: "Frameworks/MNSwiftKit.framework"), let bundle = Bundle(url: url) {
             return bundle
         }
-        return Bundle(for: ToastResourceLoader.self)
-    }()
-    
+        return Bundle(for: PickerResourceLoader.self)
+    }
     
     /// 获取资源束内图片
     /// - Parameter named: 图片名称

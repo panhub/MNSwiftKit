@@ -8,12 +8,12 @@
 import UIKit
 import CoreAudio
 import CoreMedia
-#if canImport(MNSwiftKit_Layout)
-import MNSwiftKit_Layout
-#endif
-#if canImport(MNSwiftKit_Definition)
-import MNSwiftKit_Definition
-#endif
+//#if canImport(MNSwiftKit_Layout)
+//import MNSwiftKit_Layout
+//#endif
+//#if canImport(MNSwiftKit_Definition)
+//import MNSwiftKit_Definition
+//#endif
 
 /// 资源浏览代理
 @objc public protocol MNAssetBrowseDelegate: NSObjectProtocol {

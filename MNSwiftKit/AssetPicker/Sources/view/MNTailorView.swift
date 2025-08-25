@@ -7,9 +7,9 @@
 
 import UIKit
 import AVFoundation
-#if canImport(MNSwiftKit_Layout)
-import MNSwiftKit_Layout
-#endif
+//#if canImport(MNSwiftKit_Layout)
+//import MNSwiftKit_Layout
+//#endif
 
 protocol MNTailorViewDelegate: NSObjectProtocol {
     

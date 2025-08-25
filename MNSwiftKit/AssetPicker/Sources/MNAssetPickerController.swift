@@ -7,15 +7,15 @@
 
 import UIKit
 import Photos
-#if canImport(MNSwiftKit_Toast)
-import MNSwiftKit_Toast
-#endif
-#if canImport(MNSwiftKit_Definition)
-import MNSwiftKit_Definition
-#endif
-#if canImport(MNSwiftKit_EmptyView)
-import MNSwiftKit_EmptyView
-#endif
+//#if canImport(MNSwiftKit_Toast)
+//import MNSwiftKit_Toast
+//#endif
+//#if canImport(MNSwiftKit_Definition)
+//import MNSwiftKit_Definition
+//#endif
+//#if canImport(MNSwiftKit_EmptyView)
+//import MNSwiftKit_EmptyView
+//#endif
 
 class MNAssetPickerController: UIViewController {
     /// 配置信息

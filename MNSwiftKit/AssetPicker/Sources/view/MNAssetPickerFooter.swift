@@ -6,9 +6,9 @@
 //
 
 import UIKit
-#if canImport(MNSwiftKit_Refresh)
-import MNSwiftKit_Refresh
-#endif
+//#if canImport(MNSwiftKit_Refresh)
+//import MNSwiftKit_Refresh
+//#endif
 
 class MNAssetPickerFooter: MNRefreshStateFooter {
     

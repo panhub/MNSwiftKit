@@ -8,18 +8,18 @@
 import UIKit
 import Photos
 import PhotosUI
-#if canImport(MNSwiftKit_Slider)
-import MNSwiftKit_Slider
-#endif
-#if canImport(MNSwiftKit_Player)
-import MNSwiftKit_Player
-#endif
-#if canImport(MNSwiftKit_Layout)
-import MNSwiftKit_Layout
-#endif
-#if canImport(MNSwiftKit_Definition)
-import MNSwiftKit_Definition
-#endif
+//#if canImport(MNSwiftKit_Slider)
+//import MNSwiftKit_Slider
+//#endif
+//#if canImport(MNSwiftKit_Player)
+//import MNSwiftKit_Player
+//#endif
+//#if canImport(MNSwiftKit_Layout)
+//import MNSwiftKit_Layout
+//#endif
+//#if canImport(MNSwiftKit_Definition)
+//import MNSwiftKit_Definition
+//#endif
 
 /// 资源浏览器表格
 class MNAssetBrowserCell: UICollectionViewCell {

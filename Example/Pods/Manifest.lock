@@ -1,4 +1,6 @@
 PODS:
+  - MNSwiftKit (0.1.0):
+    - MNSwiftKit/Full (= 0.1.0)
   - MNSwiftKit/AnimatedImage (0.1.0)
   - MNSwiftKit/AssetPicker (0.1.0):
     - MNSwiftKit/AnimatedImage
@@ -10,25 +12,68 @@ PODS:
     - MNSwiftKit/Refresh
     - MNSwiftKit/Slider
     - MNSwiftKit/Toast
+  - MNSwiftKit/Base (0.1.0):
+    - MNSwiftKit/Definition
+    - MNSwiftKit/EmptyView
+    - MNSwiftKit/Layout
+    - MNSwiftKit/Refresh
+    - MNSwiftKit/Request
+    - MNSwiftKit/Toast
+    - MNSwiftKit/Transitioning
+  - MNSwiftKit/Components (0.1.0):
+    - MNSwiftKit/Extension
+    - MNSwiftKit/Layout
+  - MNSwiftKit/Database (0.1.0)
   - MNSwiftKit/Definition (0.1.0)
   - MNSwiftKit/EmptyView (0.1.0)
   - MNSwiftKit/Exporter (0.1.0)
+  - MNSwiftKit/Extension (0.1.0):
+    - MNSwiftKit/AnimatedImage
+  - MNSwiftKit/Full (0.1.0):
+    - MNSwiftKit/AnimatedImage
+    - MNSwiftKit/AssetPicker
+    - MNSwiftKit/Base
+    - MNSwiftKit/Components
+    - MNSwiftKit/Database
+    - MNSwiftKit/Definition
+    - MNSwiftKit/EmptyView
+    - MNSwiftKit/Exporter
+    - MNSwiftKit/Extension
+    - MNSwiftKit/Layout
+    - MNSwiftKit/Networking
+    - MNSwiftKit/Player
+    - MNSwiftKit/Purchase
+    - MNSwiftKit/Refresh
+    - MNSwiftKit/Request
+    - MNSwiftKit/Slider
+    - MNSwiftKit/Spliter
+    - MNSwiftKit/Toast
+    - MNSwiftKit/Transitioning
+    - MNSwiftKit/Utility
   - MNSwiftKit/Layout (0.1.0)
+  - MNSwiftKit/Networking (0.1.0)
   - MNSwiftKit/Player (0.1.0)
+  - MNSwiftKit/Purchase (0.1.0)
   - MNSwiftKit/Refresh (0.1.0)
+  - MNSwiftKit/Request (0.1.0):
+    - MNSwiftKit/Networking
   - MNSwiftKit/Slider (0.1.0)
+  - MNSwiftKit/Spliter (0.1.0):
+    - MNSwiftKit/Layout
   - MNSwiftKit/Toast (0.1.0)
+  - MNSwiftKit/Transitioning (0.1.0)
+  - MNSwiftKit/Utility (0.1.0)
 
 DEPENDENCIES:
-  - MNSwiftKit/AssetPicker (from `../`)
+  - MNSwiftKit (from `../`)
 
 EXTERNAL SOURCES:
   MNSwiftKit:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: 02eac46e4f45ead5a06d6d955eda82ef66266fe5
+  MNSwiftKit: a1e5c57b0e68a7af26d8c2496202514704a72d18
 
-PODFILE CHECKSUM: 259d3984142d5d542eec280d1631e6b11f084adc
+PODFILE CHECKSUM: a58152fb778d3209e6da799e009ad8f68710d6a6
 
 COCOAPODS: 1.16.2

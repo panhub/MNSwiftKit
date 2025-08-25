@@ -6,12 +6,12 @@
 //  资源预览控制器
 
 import UIKit
-#if canImport(MNSwiftKit_Layout)
-import MNSwiftKit_Layout
-#endif
-#if canImport(MNSwiftKit_Definition)
-import MNSwiftKit_Definition
-#endif
+//#if canImport(MNSwiftKit_Layout)
+//import MNSwiftKit_Layout
+//#endif
+//#if canImport(MNSwiftKit_Definition)
+//import MNSwiftKit_Definition
+//#endif
 
 /// 资源浏览控制器代理
 @objc protocol MNAssetPreviewControllerDelegate: NSObjectProtocol {

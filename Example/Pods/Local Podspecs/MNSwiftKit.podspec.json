@@ -1,8 +1,8 @@
 {
   "name": "MNSwiftKit",
   "version": "0.1.0",
-  "summary": "Swift开发基础组件。",
-  "description": "Swift开发基础组件，模块化。",
+  "summary": "A collection of Swift components.",
+  "description": "A collection of Swift components, Any module can installed.",
   "homepage": "https://github.com/panhub/MNSwiftKit",
   "license": {
     "type": "MIT",
@@ -22,26 +22,41 @@
   "default_subspecs": "Full",
   "subspecs": [
     {
-      "name": "UI",
+      "name": "Base",
       "frameworks": [
         "UIKit",
         "Foundation",
-        "AVFoundation",
         "CoreGraphics",
-        "QuartzCore",
-        "ImageIO",
-        "CoreServices",
-        "UniformTypeIdentifiers"
+        "WebKit"
       ],
-      "source_files": "MNSwiftKit/UI/Sources/**/*.swift",
+      "source_files": "MNSwiftKit/Base/Sources/**/*.swift",
       "resource_bundles": {
-        "MNSwiftKit_UI": [
-          "MNSwiftKit/UI/Resources/**/*.{png,jpg,jpeg}"
+        "MNSwiftKitBase": [
+          "MNSwiftKit/Base/Resources/*.{png,jpg,jpeg}"
         ]
       },
       "dependencies": {
+        "MNSwiftKit/Toast": [],
         "MNSwiftKit/Layout": [],
-        "MNSwiftKit/Extension": []
+        "MNSwiftKit/Refresh": [],
+        "MNSwiftKit/Request": [],
+        "MNSwiftKit/Definition": [],
+        "MNSwiftKit/EmptyView": [],
+        "MNSwiftKit/Transitioning": []
+      }
+    },
+    {
+      "name": "Toast",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "CoreGraphics"
+      ],
+      "source_files": "MNSwiftKit/Toast/Sources/**/*.swift",
+      "resource_bundles": {
+        "MNSwiftKitToast": [
+          "MNSwiftKit/Toast/Resources/*.{png,jpg,jpeg}"
+        ]
       }
     },
     {
@@ -55,23 +70,10 @@
         "CoreMedia",
         "Photos",
         "AdSupport",
-        "AppTrackingTransparency"
+        "AppTrackingTransparency",
+        "AuthenticationServices"
       ],
       "source_files": "MNSwiftKit/Utility/Sources/**/*.swift"
-    },
-    {
-      "name": "Toast",
-      "frameworks": [
-        "UIKit",
-        "Foundation",
-        "CoreGraphics"
-      ],
-      "source_files": "MNSwiftKit/Toast/Sources/**/*.swift",
-      "resource_bundles": {
-        "MNSwiftKit_Toast": [
-          "MNSwiftKit/Toast/Resources/*.{png,jpg,jpeg}"
-        ]
-      }
     },
     {
       "name": "Slider",
@@ -124,6 +126,18 @@
       "source_files": "MNSwiftKit/Refresh/Sources/**/*.swift"
     },
     {
+      "name": "Request",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "CoreGraphics"
+      ],
+      "source_files": "MNSwiftKit/Request/Sources/**/*.swift",
+      "dependencies": {
+        "MNSwiftKit/Networking": []
+      }
+    },
+    {
       "name": "Exporter",
       "frameworks": [
         "Foundation",
@@ -143,6 +157,7 @@
     },
     {
       "name": "Database",
+      "libraries": "sqlite3",
       "frameworks": [
         "Foundation",
         "AVFoundation",
@@ -172,30 +187,6 @@
       }
     },
     {
-      "name": "Controller",
-      "frameworks": [
-        "UIKit",
-        "Foundation",
-        "CoreGraphics",
-        "WebKit"
-      ],
-      "source_files": "MNSwiftKit/Controller/Sources/**/*.swift",
-      "resource_bundles": {
-        "MNSwiftKit_Controller": [
-          "MNSwiftKit/Controller/Resources/*.{png,jpg,jpeg}"
-        ]
-      },
-      "dependencies": {
-        "MNSwiftKit/Toast": [],
-        "MNSwiftKit/Layout": [],
-        "MNSwiftKit/Refresh": [],
-        "MNSwiftKit/Definition": [],
-        "MNSwiftKit/EmptyView": [],
-        "MNSwiftKit/Transitioning": [],
-        "MNSwiftKit/HTTPRequest": []
-      }
-    },
-    {
       "name": "EmptyView",
       "frameworks": [
         "UIKit",
@@ -217,7 +208,7 @@
       ],
       "source_files": "MNSwiftKit/Networking/Sources/**/*.swift",
       "resource_bundles": {
-        "MNSwiftKit_Networking": [
+        "MNSwiftKitNetworking": [
           "MNSwiftKit/Networking/Resources/*.json"
         ]
       }
@@ -234,7 +225,7 @@
       ],
       "source_files": "MNSwiftKit/AssetPicker/Sources/**/*.swift",
       "resource_bundles": {
-        "MNSwiftKit_AssetPicker": [
+        "MNSwiftKitAssetPicker": [
           "MNSwiftKit/AssetPicker/Resources/**/*.{png,jpg,jpeg}"
         ]
       },
@@ -251,6 +242,29 @@
       }
     },
     {
+      "name": "Components",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "AVFoundation",
+        "CoreGraphics",
+        "QuartzCore",
+        "ImageIO",
+        "CoreServices",
+        "UniformTypeIdentifiers"
+      ],
+      "source_files": "MNSwiftKit/Components/Sources/**/*.swift",
+      "resource_bundles": {
+        "MNSwiftKitComponents": [
+          "MNSwiftKit/Components/Resources/**/*.{png,jpg,jpeg}"
+        ]
+      },
+      "dependencies": {
+        "MNSwiftKit/Layout": [],
+        "MNSwiftKit/Extension": []
+      }
+    },
+    {
       "name": "Transitioning",
       "frameworks": [
         "UIKit",
@@ -260,33 +274,13 @@
       "source_files": "MNSwiftKit/Transitioning/Sources/**/*.swift"
     },
     {
-      "name": "HTTPRequest",
-      "frameworks": [
-        "UIKit",
-        "Foundation",
-        "CoreGraphics"
-      ],
-      "source_files": "MNSwiftKit/HTTPRequest/Sources/**/*.swift",
-      "dependencies": {
-        "MNSwiftKit/Networking": []
-      }
-    },
-    {
       "name": "AnimatedImage",
-      "frameworks": [
-        "UIKit",
-        "Foundation",
-        "CoreGraphics",
-        "ImageIO",
-        "CoreServices",
-        "UniformTypeIdentifiers"
-      ],
       "source_files": "MNSwiftKit/AnimatedImage/Sources/**/*.swift"
     },
     {
       "name": "Full",
       "dependencies": {
-        "MNSwiftKit/UI": [],
+        "MNSwiftKit/Base": [],
         "MNSwiftKit/Toast": [],
         "MNSwiftKit/Slider": [],
         "MNSwiftKit/Utility": [],
@@ -294,17 +288,17 @@
         "MNSwiftKit/Spliter": [],
         "MNSwiftKit/Layout": [],
         "MNSwiftKit/Refresh": [],
+        "MNSwiftKit/Request": [],
         "MNSwiftKit/Exporter": [],
         "MNSwiftKit/Purchase": [],
         "MNSwiftKit/Database": [],
         "MNSwiftKit/Definition": [],
         "MNSwiftKit/Extension": [],
-        "MNSwiftKit/Controller": [],
         "MNSwiftKit/EmptyView": [],
         "MNSwiftKit/Networking": [],
         "MNSwiftKit/AssetPicker": [],
+        "MNSwiftKit/Components": [],
         "MNSwiftKit/Transitioning": [],
-        "MNSwiftKit/HTTPRequest": [],
         "MNSwiftKit/AnimatedImage": []
       }
     }

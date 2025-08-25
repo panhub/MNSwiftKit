@@ -6,9 +6,9 @@
 //  裁剪时间
 
 import UIKit
-#if canImport(MNSwiftKit_Layout)
-import MNSwiftKit_Layout
-#endif
+//#if canImport(MNSwiftKit_Layout)
+//import MNSwiftKit_Layout
+//#endif
 
 class MNTailorTimeView: UIView {
     
