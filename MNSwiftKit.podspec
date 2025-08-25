@@ -149,7 +149,7 @@ Pod::Spec.new do |s|
     ext.dependency 'MNSwiftKit/AnimatedImage'
   end
   
-  # Empty <空数据视图>
+  # EmptyView <空数据视图>
   s.subspec 'EmptyView' do |em|
     #em.name = 'MNSwiftKitEmptyView'
     em.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
