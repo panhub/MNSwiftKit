@@ -22,6 +22,15 @@
   "default_subspecs": "Full",
   "subspecs": [
     {
+      "name": "Core",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "CoreGraphics"
+      ],
+      "source_files": "MNSwiftKit/Core/Sources/**/*.swift"
+    },
+    {
       "name": "Base",
       "frameworks": [
         "UIKit",
@@ -209,7 +218,7 @@
       "source_files": "MNSwiftKit/Networking/Sources/**/*.swift",
       "resource_bundles": {
         "MNSwiftKit_Networking": [
-          "MNSwiftKit/Networking/Resources/*.json"
+          "MNSwiftKit/Networking/Resources/**/*.json"
         ]
       }
     },
@@ -240,6 +249,11 @@
         "MNSwiftKit/EmptyView": [],
         "MNSwiftKit/AnimatedImage": []
       }
+    },
+    {
+      "name": "NameSpace",
+      "frameworks": "Foundation",
+      "source_files": "MNSwiftKit/NameSpace/Sources/**/*.swift"
     },
     {
       "name": "Components",
@@ -274,6 +288,25 @@
       "source_files": "MNSwiftKit/Transitioning/Sources/**/*.swift"
     },
     {
+      "name": "EmoticonKeyboard",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "CoreGraphics"
+      ],
+      "source_files": "MNSwiftKit/EmoticonKeyboard/Sources/**/*.swift",
+      "resource_bundles": {
+        "MNSwiftKit_EmoticonKeyboard": [
+          "MNSwiftKit/EmoticonKeyboard/Resources/*.{png,json}",
+          "MNSwiftKit/EmoticonKeyboard/Resources/default/*.{png,jpg,jpeg}"
+        ]
+      },
+      "dependencies": {
+        "MNSwiftKit/NameSpace": [],
+        "MNSwiftKit/AnimatedImage": []
+      }
+    },
+    {
       "name": "AnimatedImage",
       "frameworks": [
         "UIKit",
@@ -288,6 +321,7 @@
     {
       "name": "Full",
       "dependencies": {
+        "MNSwiftKit/Core": [],
         "MNSwiftKit/Base": [],
         "MNSwiftKit/Toast": [],
         "MNSwiftKit/Slider": [],
@@ -305,9 +339,11 @@
         "MNSwiftKit/EmptyView": [],
         "MNSwiftKit/Networking": [],
         "MNSwiftKit/AssetPicker": [],
+        "MNSwiftKit/NameSpace": [],
         "MNSwiftKit/Components": [],
         "MNSwiftKit/Transitioning": [],
-        "MNSwiftKit/AnimatedImage": []
+        "MNSwiftKit/AnimatedImage": [],
+        "MNSwiftKit/EmoticonKeyboard": []
       }
     }
   ],

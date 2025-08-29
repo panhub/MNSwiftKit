@@ -18,6 +18,7 @@ it, simply add the following line to your Podfile:
 
 ```ruby
 pod 'MNSwiftKit'
+pod 'MNSwiftKit/Core'
 pod 'MNSwiftKit/Base'
 pod 'MNSwiftKit/Toast'
 pod 'MNSwiftKit/Slider'
@@ -35,9 +36,11 @@ pod 'MNSwiftKit/Extension'
 pod 'MNSwiftKit/EmptyView'
 pod 'MNSwiftKit/Networking'
 pod 'MNSwiftKit/AssetPicker'
+pod 'MNSwiftKit/NameSpace'
 pod 'MNSwiftKit/Components'
 pod 'MNSwiftKit/Transitioning'
 pod 'MNSwiftKit/AnimatedImage'
+pod 'MNSwiftKit/EmoticonKeyboard'
 ```
 
 ## Author

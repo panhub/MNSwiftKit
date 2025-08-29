@@ -1,0 +1,455 @@
+{
+  "time" : 0,
+  "style" : 0,
+  "cover" : "cover.png",
+  "emoticons" : [
+    {
+      "desc" : "[微笑]",
+      "img" : "weixiao.png"
+    },
+    {
+      "desc" : "[撇嘴]",
+      "img" : "piezui.png"
+    },
+    {
+      "desc" : "[色]",
+      "img" : "se.png"
+    },
+    {
+      "desc" : "[发呆]",
+      "img" : "fadai.png"
+    },
+    {
+      "desc" : "[得意]",
+      "img" : "deyi.png"
+    },
+    {
+      "desc" : "[流泪]",
+      "img" : "liulei.png"
+    },
+    {
+      "desc" : "[害羞]",
+      "img" : "haixiu.png"
+    },
+    {
+      "desc" : "[闭嘴]",
+      "img" : "bizui.png"
+    },
+    {
+      "desc" : "[睡]",
+      "img" : "shui.png"
+    },
+    {
+      "desc" : "[大哭]",
+      "img" : "daku.png"
+    },
+    {
+      "desc" : "[尴尬]",
+      "img" : "ganga.png"
+    },
+    {
+      "desc" : "[发怒]",
+      "img" : "fanu.png"
+    },
+    {
+      "desc" : "[调皮]",
+      "img" : "tiaopi.png"
+    },
+    {
+      "desc" : "[呲牙]",
+      "img" : "ciya.png"
+    },
+    {
+      "desc" : "[惊讶]",
+      "img" : "jingya.png"
+    },
+    {
+      "desc" : "[难过]",
+      "img" : "nanguo.png"
+    },
+    {
+      "desc" : "[囧]",
+      "img" : "jiong.png"
+    },
+    {
+      "desc" : "[抓狂]",
+      "img" : "zhuakuang.png"
+    },
+    {
+      "desc" : "[吐]",
+      "img" : "tu.png"
+    },
+    {
+      "desc" : "[偷笑]",
+      "img" : "touxiao.png"
+    },
+    {
+      "desc" : "[愉快]",
+      "img" : "yukuai.png"
+    },
+    {
+      "desc" : "[白眼]",
+      "img" : "baiyan.png"
+    },
+    {
+      "desc" : "[傲慢]",
+      "img" : "aoman.png"
+    },
+    {
+      "desc" : "[困]",
+      "img" : "kun.png"
+    },
+    {
+      "desc" : "[惊恐]",
+      "img" : "jingkong.png"
+    },
+    {
+      "desc" : "[憨笑]",
+      "img" : "hanxiao.png"
+    },
+    {
+      "desc" : "[悠闲]",
+      "img" : "youxian.png"
+    },
+    {
+      "desc" : "[咒骂]",
+      "img" : "zhouma.png"
+    },
+    {
+      "desc" : "[疑问]",
+      "img" : "yiwen.png"
+    },
+    {
+      "desc" : "[嘘]",
+      "img" : "xu.png"
+    },
+    {
+      "desc" : "[晕]",
+      "img" : "yun.png"
+    },
+    {
+      "desc" : "[衰]",
+      "img" : "shuai.png"
+    },
+    {
+      "desc" : "[骷髅]",
+      "img" : "kulou.png"
+    },
+    {
+      "desc" : "[敲打]",
+      "img" : "qiaoda.png"
+    },
+    {
+      "desc" : "[再见]",
+      "img" : "zaijian.png"
+    },
+    {
+      "desc" : "[擦汗]",
+      "img" : "cahan.png"
+    },
+    {
+      "desc" : "[抠鼻]",
+      "img" : "koubi.png"
+    },
+    {
+      "desc" : "[鼓掌]",
+      "img" : "guzhang.png"
+    },
+    {
+      "desc" : "[坏笑]",
+      "img" : "huaixiao.png"
+    },
+    {
+      "desc" : "[左哼哼]",
+      "img" : "zuohengheng.png"
+    },
+    {
+      "desc" : "[右哼哼]",
+      "img" : "youhengheng.png"
+    },
+    {
+      "desc" : "[鄙视]",
+      "img" : "bishi.png"
+    },
+    {
+      "desc" : "[委屈]",
+      "img" : "weiqu.png"
+    },
+    {
+      "desc" : "[快哭了]",
+      "img" : "kuaikule.png"
+    },
+    {
+      "desc" : "[阴险]",
+      "img" : "yinxian.png"
+    },
+    {
+      "desc" : "[亲亲]",
+      "img" : "qinqin.png"
+    },
+    {
+      "desc" : "[可怜]",
+      "img" : "kelian.png"
+    },
+    {
+      "desc" : "[笑脸]",
+      "img" : "xiaolian.png"
+    },
+    {
+      "desc" : "[生病]",
+      "img" : "shengbing.png"
+    },
+    {
+      "desc" : "[脸红]",
+      "img" : "lianhong.png"
+    },
+    {
+      "desc" : "[破涕为笑]",
+      "img" : "potiweixiao.png"
+    },
+    {
+      "desc" : "[恐惧]",
+      "img" : "kongju.png"
+    },
+    {
+      "desc" : "[失望]",
+      "img" : "shiwang.png"
+    },
+    {
+      "desc" : "[无语]",
+      "img" : "wuyu.png"
+    },
+    {
+      "desc" : "[嘿哈]",
+      "img" : "heiha.png"
+    },
+    {
+      "desc" : "[捂脸]",
+      "img" : "wulian.png"
+    },
+    {
+      "desc" : "[奸笑]",
+      "img" : "jianxiao.png"
+    },
+    {
+      "desc" : "[机智]",
+      "img" : "jizhi.png"
+    },
+    {
+      "desc" : "[皱眉]",
+      "img" : "zhoumei.png"
+    },
+    {
+      "desc" : "[耶]",
+      "img" : "ye.png"
+    },
+    {
+      "desc" : "[吃瓜]",
+      "img" : "chigua.png"
+    },
+    {
+      "desc" : "[加油]",
+      "img" : "jiayou.png"
+    },
+    {
+      "desc" : "[汗]",
+      "img" : "han.png"
+    },
+    {
+      "desc" : "[天啊]",
+      "img" : "tiana.png"
+    },
+    {
+      "desc" : "[吐舌]",
+      "img" : "tushe.png"
+    },
+    {
+      "img" : "Emm.png",
+      "desc" : "Emm"
+    },
+    {
+      "img" : "shehui.png",
+      "desc" : "[社会社会]"
+    },
+    {
+      "img" : "wangcai.png",
+      "desc" : "[旺财]"
+    },
+    {
+      "img" : "haode.png",
+      "desc" : "[好的]"
+    },
+    {
+      "desc" : "[打脸]",
+      "img" : "dalian.png"
+    },
+    {
+      "desc" : "[哇]",
+      "img" : "wa.png"
+    },
+    {
+      "desc" : "[翻白眼]",
+      "img" : "fanbaiyan.png"
+    },
+    {
+      "desc" : "[666]",
+      "img" : "666.png"
+    },
+    {
+      "desc" : "[让我看看]",
+      "img" : "rangwokankan.png"
+    },
+    {
+      "desc" : "[叹气]",
+      "img" : "tanqi.png"
+    },
+    {
+      "desc" : "[苦涩]",
+      "img" : "kuse.png"
+    },
+    {
+      "desc" : "[裂开]",
+      "img" : "liekai.png"
+    },
+    {
+      "desc" : "[嘴唇]",
+      "img" : "zuichun.png"
+    },
+    {
+      "desc" : "[爱心]",
+      "img" : "aixin.png"
+    },
+    {
+      "desc" : "[心碎]",
+      "img" : "xinsui.png"
+    },
+    {
+      "desc" : "[拥抱]",
+      "img" : "yongbao.png"
+    },
+    {
+      "desc" : "[强]",
+      "img" : "qiang.png"
+    },
+    {
+      "desc" : "[弱]",
+      "img" : "ruo.png"
+    },
+    {
+      "desc" : "[握手]",
+      "img" : "woshou.png"
+    },
+    {
+      "desc" : "[胜利]",
+      "img" : "shengli.png"
+    },
+    {
+      "desc" : "[抱拳]",
+      "img" : "baoquan.png"
+    },
+    {
+      "desc" : "[勾引]",
+      "img" : "gouyin.png"
+    },
+    {
+      "desc" : "[拳头]",
+      "img" : "quantou.png"
+    },
+    {
+      "desc" : "[OK]",
+      "img" : "OK.png"
+    },
+    {
+      "desc" : "[合十]",
+      "img" : "heshi.png"
+    },
+    {
+      "desc" : "[啤酒]",
+      "img" : "pijiu.png"
+    },
+    {
+      "desc" : "[咖啡]",
+      "img" : "kafei.png"
+    },
+    {
+      "desc" : "[蛋糕]",
+      "img" : "dangao.png"
+    },
+    {
+      "desc" : "[玫瑰]",
+      "img" : "meigui.png"
+    },
+    {
+      "desc" : "[凋谢]",
+      "img" : "diaoxie.png"
+    },
+    {
+      "desc" : "[菜刀]",
+      "img" : "caidao.png"
+    },
+    {
+      "desc" : "[炸弹]",
+      "img" : "zhadan.png"
+    },
+    {
+      "desc" : "[便便]",
+      "img" : "bianbian.png"
+    },
+    {
+      "desc" : "[月亮]",
+      "img" : "yueliang.png"
+    },
+    {
+      "desc" : "[太阳]",
+      "img" : "taiyang.png"
+    },
+    {
+      "desc" : "[强壮]",
+      "img" : "qiangzhuang.png"
+    },
+    {
+      "desc" : "[鬼魂]",
+      "img" : "guihun.png"
+    },
+    {
+      "desc" : "[庆祝]",
+      "img" : "qingzhu.png"
+    },
+    {
+      "desc" : "[礼物]",
+      "img" : "liwu.png"
+    },
+    {
+      "desc" : "[红包]",
+      "img" : "hongbao.png"
+    },
+    {
+      "desc" : "[發]",
+      "img" : "fa.png"
+    },
+    {
+      "desc" : "[福]",
+      "img" : "fu.png"
+    },
+    {
+      "desc" : "[烟花]",
+      "img" : "yanhua.png"
+    },
+    {
+      "desc" : "[猪头]",
+      "img" : "zhutou.png"
+    },
+    {
+      "desc" : "[跳跳]",
+      "img" : "tiaotiao.png"
+    },
+    {
+      "desc" : "[发抖]",
+      "img" : "fadou.png"
+    },
+    {
+      "desc" : "[转圈]",
+      "img" : "zhuanquan.png"
+    }
+  ]
+}
