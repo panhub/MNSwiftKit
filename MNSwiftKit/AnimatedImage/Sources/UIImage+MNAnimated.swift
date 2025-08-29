@@ -19,7 +19,7 @@ extension UIImage {
     }
     
     /// 图片=>数据流
-    @objc public var contentData: Data? {
+    @objc public var imageData: Data? {
         return Data(image: self)
     }
     
@@ -27,8 +27,22 @@ extension UIImage {
     /// - Parameter filePath: 图片本地路径
     /// - Returns: image对象
     @objc public class func image(contentsAtFile filePath: String!) -> UIImage? {
-        guard let path = filePath, FileManager.default.fileExists(atPath: path) else { return nil }
-        return image(contentsOfData: try? Data(contentsOf: URL(fileURLWithPath: path)))
+        guard let filePath = filePath, FileManager.default.fileExists(atPath: filePath) else { return nil }
+        var fileURL: URL!
+        if #available(iOS 16.0, *) {
+            fileURL = URL(filePath: filePath)
+        } else {
+            fileURL = URL(fileURLWithPath: filePath)
+        }
+        do {
+            let imageData = try Data(contentsOf: fileURL)
+            return image(contentsOfData: imageData)
+        } catch {
+#if DEBUG
+            print("转换图片数据流失败: \(filePath)")
+#endif
+            return nil
+        }
     }
     
     /// 将图片数据流转换为image对象
@@ -108,6 +122,27 @@ extension Data {
             }
             guard CGImageDestinationFinalize(destination) else { return nil }
             imageData.append(frameData as Data)
+        } else if let pointer = pointer {
+            // 以外界图片格式优先
+            if pointer.pointee.lowercased() == "png" {
+                if let pngData = image.pngData() {
+                    // PNG
+                    format = "png"
+                    imageData.append(pngData)
+                } else if let jpegData = image.jpegData(compressionQuality: quality) {
+                    // JPEG
+                    format = "jpeg"
+                    imageData.append(jpegData)
+                }
+            } else if let jpegData = image.jpegData(compressionQuality: quality) {
+                // JPEG
+                format = "jpeg"
+                imageData.append(jpegData)
+            } else if let pngData = image.pngData() {
+                // PNG
+                format = "png"
+                imageData.append(pngData)
+            }
         } else if let jpegData = image.jpegData(compressionQuality: quality) {
             // JPEG
             format = "jpeg"

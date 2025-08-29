@@ -302,6 +302,7 @@
         ]
       },
       "dependencies": {
+        "MNSwiftKit/Core": [],
         "MNSwiftKit/NameSpace": [],
         "MNSwiftKit/AnimatedImage": []
       }

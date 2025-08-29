@@ -27,7 +27,7 @@ public class MNEmoticon: NSObject {
     /// 图像实例
     public var image: UIImage!
     /// 类型
-    public var style: MNEmoticonPacket.Style = .emoji
+    public var style: MNEmoticonPacket.Style = .emoticon
     
     public override init() {
         super.init()

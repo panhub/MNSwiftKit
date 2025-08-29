@@ -11,7 +11,7 @@ import Foundation
 public class MNEmoticonPacket {
     
     public enum Style: Int {
-        case emoji, image
+        case emoticon, image
     }
     
     public struct Name: RawRepresentable {
@@ -47,8 +47,8 @@ public class MNEmoticonPacket {
     /// 类型
     public let style: Style
     
-    /// 是否允许编辑
-    internal var allowsEditing: Bool = false
+    /// 是否是收藏夹
+    internal var isFavorites: Bool = false
     
     /// 表情集合
     public internal(set) var emoticons: [MNEmoticon] = [MNEmoticon]()
@@ -76,8 +76,8 @@ public class MNEmoticonPacket {
             } else {
                 self.directory = directoryURL.path
             }
-            if let value = json[MNEmoticonPacket.Key.editing.rawValue] as? Int, value == 1 {
-                self.allowsEditing = true
+            if let value = json[MNEmoticonPacket.Key.favorites.rawValue] as? Int, value == 1 {
+                self.isFavorites = true
             }
             let emoticons = array.compactMap { MNEmoticon(json: $0, in: directory) }
             self.emoticons.append(contentsOf: emoticons)
@@ -108,7 +108,7 @@ extension MNEmoticonPacket.Name {
     /// 默认表情包
     public static let `default`: MNEmoticonPacket.Name = MNEmoticonPacket.Name(rawValue: "default")
     /// 收藏夹
-    public static let favorites: MNEmoticonPacket.Name = MNEmoticonPacket.Name(rawValue: "favorites")
+    public static let favorites: MNEmoticonPacket.Name = MNEmoticonPacket.Name(rawValue: "收藏夹")
 }
 
 extension MNEmoticonPacket.Key {
@@ -120,8 +120,8 @@ extension MNEmoticonPacket.Key {
     public static let time: MNEmoticonPacket.Key = MNEmoticonPacket.Key(rawValue: "time")
     /// 封面字段
     public static let cover: MNEmoticonPacket.Key = MNEmoticonPacket.Key(rawValue: "cover")
-    /// 是否可编辑字段
-    public static let editing: MNEmoticonPacket.Key = MNEmoticonPacket.Key(rawValue: "editing")
+    /// 是否是收藏夹
+    public static let favorites: MNEmoticonPacket.Key = MNEmoticonPacket.Key(rawValue: "favorites")
     /// 表情字段
     public static let emoticons: MNEmoticonPacket.Key = MNEmoticonPacket.Key(rawValue: "emoticons")
 }
