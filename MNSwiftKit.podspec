@@ -180,6 +180,12 @@ Pod::Spec.new do |s|
     n.source_files = 'MNSwiftKit/NameSpace/Sources/**/*.swift'
   end
   
+  # PageControl <简单的页码指示器>
+  s.subspec 'PageControl' do |p|
+    p.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    p.source_files = 'MNSwiftKit/PageControl/Sources/**/*.swift'
+  end
+  
   # Components <基础控件>
   s.subspec 'Components' do |c|
     c.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'CoreGraphics', 'QuartzCore', 'ImageIO', 'CoreServices', 'UniformTypeIdentifiers'
@@ -238,6 +244,7 @@ Pod::Spec.new do |s|
     full.dependency 'MNSwiftKit/Networking'
     full.dependency 'MNSwiftKit/AssetPicker'
     full.dependency 'MNSwiftKit/NameSpace'
+    full.dependency 'MNSwiftKit/PageControl'
     full.dependency 'MNSwiftKit/Components'
     full.dependency 'MNSwiftKit/Transitioning'
     full.dependency 'MNSwiftKit/AnimatedImage'

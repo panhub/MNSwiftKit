@@ -10,6 +10,8 @@ import UIKit
 import MNSwiftKit
 
 class ViewController: UIViewController {
+    
+    lazy var pageC = MNPageControl(frame: .init(x: 0.0, y: 200.0, width: view.frame.width, height: 150.0))
 
     override func viewDidLoad() {
         super.viewDidLoad()

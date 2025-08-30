@@ -256,6 +256,15 @@
       "source_files": "MNSwiftKit/NameSpace/Sources/**/*.swift"
     },
     {
+      "name": "PageControl",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "CoreGraphics"
+      ],
+      "source_files": "MNSwiftKit/PageControl/Sources/**/*.swift"
+    },
+    {
       "name": "Components",
       "frameworks": [
         "UIKit",
@@ -341,6 +350,7 @@
         "MNSwiftKit/Networking": [],
         "MNSwiftKit/AssetPicker": [],
         "MNSwiftKit/NameSpace": [],
+        "MNSwiftKit/PageControl": [],
         "MNSwiftKit/Components": [],
         "MNSwiftKit/Transitioning": [],
         "MNSwiftKit/AnimatedImage": [],
