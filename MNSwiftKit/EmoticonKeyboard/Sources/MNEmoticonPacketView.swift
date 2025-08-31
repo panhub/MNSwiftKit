@@ -1,8 +1,8 @@
 //
 //  MNEmoticonPacketView.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2023/1/28.
+//  Created by panhub on 2023/1/28.
 //  表情包选择视图
 
 import UIKit
@@ -25,92 +25,98 @@ class MNEmoticonPacketView: UIView {
     var selectedIndex: Int = 0
     /// 事件代理
     weak var proxy: MNEmoticonPacketViewDelegate?
+    /// 样式
+    private let style: MNEmoticonKeyboard.Style
     /// 配置选项
-    private let options: MNEmoticonKeyboardOptions
+    private let options: MNEmoticonKeyboard.Options
     /// 表情包集合
     private var packets: [MNEmoticonPacket] = [MNEmoticonPacket]()
     /// 分割线
-    private lazy var separator: UIView = {
-        let separator: UIView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: frame.width, height: 0.7))
-        separator.isUserInteractionEnabled = false
-        separator.backgroundColor = options.separatorColor
-        separator.autoresizingMask = [.flexibleWidth, .flexibleBottomMargin]
-        return separator
-    }()
-    /// Return键
-    private lazy var returnButton: MNEmoticonButton = {
-        let returnButton: MNEmoticonButton = MNEmoticonButton(frame: CGRect(x: 0.0, y: separator.maxY, width: 75.0, height: frame.height - separator.maxY - (options.axis == .horizontal ? MN_BOTTOM_SAFE_HEIGHT : 0.0)))
-        if options.axis == .horizontal {
-            returnButton.isHidden = false
-            returnButton.maxX = frame.width
-            returnButton.text = options.returnKeyType.preferredTitle
-            returnButton.textFont = options.returnKeyTitleFont
-            returnButton.textColor = options.returnKeyTitleColor
-            returnButton.backgroundColor = options.returnKeyColor
-            returnButton.textInset = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
-        } else {
-            returnButton.isHidden = true
-            returnButton.minX = frame.width
-        }
-        returnButton.addTarget(self, action: #selector(returnButtonTouchUpInside(_:)), for: .touchUpInside)
-        return returnButton
-    }()
-    /// Return键阴影
-    private lazy var shadowView: UIView = {
-        let imageView = UIImageView()
-        imageView.isHidden = returnButton.isHidden
-        if let image = MNEmoticonKeyboard.image(named: "shadow") {
-            imageView.size = CGSize(width: floor(image.size.width/image.size.height*returnButton.frame.height), height: returnButton.frame.height)
-            imageView.image = image
-            imageView.contentMode = .scaleToFill
-        }
-        imageView.midY = returnButton.midY
-        imageView.midX = returnButton.minX
-        return imageView
-    }()
+    private let separatorView: UIView = .init()
     /// 表情包浏览
-    private lazy var collectionView: UICollectionView = {
+    private let collectionView: UICollectionView = .init()
+    /// Return键
+    private lazy var returnButton: MNEmoticonButton = .init()
+    /// Return键阴影
+    private lazy var shadowView: UIImageView = .init()
+    
+    
+    /// 构建表情包视图
+    /// - Parameters:
+    ///   - style: 样式
+    ///   - options: 键盘配置
+    init(style: MNEmoticonKeyboard.Style, options: MNEmoticonKeyboard.Options) {
+        self.style = style
+        self.options = options
+        super.init(frame: .zero)
+        
+        backgroundColor = options.tintColor
+        
+        separatorView.backgroundColor = options.separatorColor
+        separatorView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(separatorView)
+        NSLayoutConstraint.activate([
+            separatorView.topAnchor.constraint(equalTo: topAnchor),
+            separatorView.leftAnchor.constraint(equalTo: leftAnchor),
+            separatorView.rightAnchor.constraint(equalTo: rightAnchor),
+            separatorView.heightAnchor.constraint(equalToConstant: 0.7)
+        ])
+        
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.footerReferenceSize = .zero
         layout.headerReferenceSize = .zero
+        layout.sectionInset = options.packetSectionInset
         layout.minimumInteritemSpacing = options.packetInteritemSpacing
-        var sectionInset = options.packetContentInset
-        sectionInset.left = max(options.accessoryView?.frame.maxX ?? 0, sectionInset.left)
-        sectionInset.right = max(sectionInset.right, frame.width - returnButton.frame.minX)
-        layout.sectionInset = sectionInset
-        layout.itemSize = CGSize(width: returnButton.height - sectionInset.top - sectionInset.bottom, height: returnButton.height - sectionInset.top - sectionInset.bottom)
-        let collectionView = UICollectionView(frame: CGRect(x: 0.0, y: returnButton.minY, width: frame.width, height: returnButton.height), layout: layout)
+        collectionView.collectionViewLayout = layout
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColor = .clear
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
-        collectionView.autoresizingMask = [.flexibleWidth, .flexibleBottomMargin]
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.register(MNEmoticonPacketCell.self, forCellWithReuseIdentifier: "MNEmoticonPacketCell")
         if #available(iOS 11.0, *) {
             collectionView.contentInsetAdjustmentBehavior = .never
         }
-        if let accessoryView = options.accessoryView {
-            collectionView.addSubview(accessoryView)
+        addSubview(collectionView)
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: separatorView.bottomAnchor),
+            collectionView.leftAnchor.constraint(equalTo: leftAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: style == .compact ? 0.0 : MN_BOTTOM_SAFE_HEIGHT),
+            collectionView.rightAnchor.constraint(equalTo: rightAnchor, constant: style == .compact ? 0.0 : 75.0)
+        ])
+        
+        if style == .paging {
+            // 阴影
+            if let image = EmoticonResource.image(named: "shadow") {
+                shadowView.image = image
+                shadowView.contentMode = .scaleToFill
+                shadowView.translatesAutoresizingMaskIntoConstraints = false
+                addSubview(shadowView)
+                NSLayoutConstraint.activate([
+                    shadowView.topAnchor.constraint(equalTo: collectionView.topAnchor),
+                    shadowView.bottomAnchor.constraint(equalTo: collectionView.bottomAnchor),
+                    shadowView.widthAnchor.constraint(equalTo: shadowView.heightAnchor, multiplier: image.size.width/image.size.height),
+                    shadowView.centerXAnchor.constraint(equalTo: collectionView.rightAnchor)
+                ])
+            }
+            // Return键
+            returnButton.text = options.returnKeyType.preferredTitle
+            returnButton.textFont = options.returnKeyTitleFont
+            returnButton.textColor = options.returnKeyTitleColor
+            returnButton.backgroundColor = options.returnKeyColor
+            returnButton.textInset = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
+            returnButton.addTarget(self, action: #selector(returnButtonTouchUpInside(_:)), for: .touchUpInside)
+            returnButton.translatesAutoresizingMaskIntoConstraints = false
+            addSubview(returnButton)
+            NSLayoutConstraint.activate([
+                returnButton.topAnchor.constraint(equalTo: collectionView.topAnchor),
+                returnButton.leftAnchor.constraint(equalTo: collectionView.rightAnchor),
+                returnButton.bottomAnchor.constraint(equalTo: collectionView.bottomAnchor),
+                returnButton.rightAnchor.constraint(equalTo: rightAnchor)
+            ])
         }
-        return collectionView
-    }()
-    
-    init(frame: CGRect, options: MNEmoticonKeyboardOptions) {
-        self.options = options
-        super.init(frame: frame)
-        
-        backgroundColor = options.tintColor
-        
-        // 分割线
-        addSubview(separator)
-        // Return
-        addSubview(returnButton)
-        // 阴影
-        insertSubview(shadowView, belowSubview: returnButton)
-        // 表情包
-        insertSubview(collectionView, at: 0)
     }
     
     required init?(coder: NSCoder) {
@@ -147,6 +153,7 @@ class MNEmoticonPacketView: UIView {
     }
 }
 
+// MARK: - UICollectionViewDataSource & UICollectionViewDelegate
 extension MNEmoticonPacketView: UICollectionViewDataSource, UICollectionViewDelegate {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int { 1 }
@@ -173,5 +180,14 @@ extension MNEmoticonPacketView: UICollectionViewDataSource, UICollectionViewDele
             collectionView.reloadData()
         }
         proxy?.packetViewDidSelectPacket(at: indexPath.item)
+    }
+}
+
+// MARK: - UICollectionViewDelegateFlowLayout
+extension MNEmoticonPacketView: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let itemHeight = max(0.0, collectionView.frame.height - options.packetSectionInset.top - options.packetSectionInset.bottom)
+        return .init(width: itemHeight, height: itemHeight)
     }
 }

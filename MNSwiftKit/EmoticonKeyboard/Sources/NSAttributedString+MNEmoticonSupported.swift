@@ -1,6 +1,6 @@
 //
 //  NSAttributedString+MNEmojiSupported.swift
-//  MNKit
+//  MNSwiftKit
 //
 //  Created by 小斯 on 2023/2/13.
 //
@@ -44,8 +44,8 @@ extension NameSpaceWrapper where Base: NSMutableAttributedString {
     
     /// 匹配表情
     /// - Parameter font: 字体
-    public func matchsEmoji(font: UIFont! = nil) {
-        let attachments: [MNEmoticonAttachment] = MNEmoticonManager.shared.matchsEmoji(in: base.string)
+    public func matchsEmoticon(font: UIFont! = nil) {
+        let attachments: [MNEmoticonAttachment] = MNEmoticonManager.shared.matchsEmoticon(in: base.string)
         guard attachments.isEmpty == false else { return }
         var offset : Int = 0
         let bounds: CGRect = font == nil ? .zero : CGRect(x: 0.0, y: font.descender, width: font.lineHeight, height: font.lineHeight)

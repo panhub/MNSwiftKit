@@ -1,15 +1,20 @@
 //
 //  MNEmoticon.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2023/1/28.
+//  Created by panhub on 2023/1/28.
 //  表情
 
 import UIKit
 import Foundation
 
 /// 表情
-public class MNEmoticon: NSObject {
+public class MNEmoticon {
+    
+    @objc(MNEmoticonStyle)
+    public enum Style: Int {
+        case emoticon, image
+    }
     
     public struct Key: RawRepresentable {
         
@@ -27,27 +32,38 @@ public class MNEmoticon: NSObject {
     /// 图像实例
     public var image: UIImage!
     /// 类型
-    public var style: MNEmoticonPacket.Style = .emoticon
+    public var style: MNEmoticon.Style = .emoticon
     
-    public override init() {
-        super.init()
-    }
+    fileprivate init() {}
     
     /// 构造表情实例
     /// - Parameter json: 表情描述
-    public convenience init?(json: [String:String], in directory: String? = nil) {
-        guard let img = json[MNEmoticon.Key.img.rawValue] else { return nil }
-        guard let desc = json[MNEmoticon.Key.desc.rawValue] else { return nil }
+    public init?(json: [String:String], style: MNEmoticon.Style = .emoticon, in directory: String? = nil) {
+        guard let img = json[MNEmoticon.Key.img.rawValue], img.isEmpty == false else { return nil }
+        guard let desc = json[MNEmoticon.Key.desc.rawValue], desc.isEmpty == false else { return nil }
         var image: UIImage!
         if let directory = directory {
-            let path = (directory as NSString).appendingPathComponent(img)
+            let path = directory.appendingPathComponent(img)
             guard let emoticon = UIImage.image(contentsAtFile: path) else { return nil }
             image = emoticon
         }
-        self.init()
         self.img = img
         self.desc = desc
         self.image = image
+    }
+}
+
+extension MNEmoticon {
+    
+    class Adding: MNEmoticon {
+        
+        override init() {
+            super.init()
+            img = "add.png"
+            desc = "[添加]"
+            style = .image
+            image = EmoticonResource.image(named: "add")
+        }
     }
 }
 

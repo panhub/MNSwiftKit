@@ -41,6 +41,7 @@ pod 'MNSwiftKit/PageControl'
 pod 'MNSwiftKit/Components'
 pod 'MNSwiftKit/Transitioning'
 pod 'MNSwiftKit/AnimatedImage'
+pod 'MNSwiftKit/CollectionLayout'
 pod 'MNSwiftKit/EmoticonKeyboard'
 ```
 

@@ -211,14 +211,23 @@ Pod::Spec.new do |s|
         'MNSwiftKit_EmoticonKeyboard' => ['MNSwiftKit/EmoticonKeyboard/Resources/*.{png,json}','MNSwiftKit/EmoticonKeyboard/Resources/default/*.{png,jpg,jpeg}']
     }
     e.dependency 'MNSwiftKit/Core'
+    e.dependency 'MNSwiftKit/Definition'
     e.dependency 'MNSwiftKit/NameSpace'
+    e.dependency 'MNSwiftKit/PageControl'
     e.dependency 'MNSwiftKit/AnimatedImage'
+    e.dependency 'MNSwiftKit/CollectionLayout'
   end
   
   # AnimatedImage <动图支持>
   s.subspec 'AnimatedImage' do |a|
     a.frameworks = 'UIKit', 'Foundation', 'CoreGraphics', 'ImageIO', 'CoreServices', 'UniformTypeIdentifiers'
     a.source_files = 'MNSwiftKit/AnimatedImage/Sources/**/*.swift'
+  end
+  
+  # CollectionLayout <UICollectionView布局对象>
+  s.subspec 'CollectionLayout' do |c|
+    c.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    c.source_files = 'MNSwiftKit/CollectionLayout/Sources/**/*.swift'
   end
   
   # Full
@@ -248,6 +257,7 @@ Pod::Spec.new do |s|
     full.dependency 'MNSwiftKit/Components'
     full.dependency 'MNSwiftKit/Transitioning'
     full.dependency 'MNSwiftKit/AnimatedImage'
+    full.dependency 'MNSwiftKit/CollectionLayout'
     full.dependency 'MNSwiftKit/EmoticonKeyboard'
   end
 

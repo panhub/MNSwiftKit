@@ -1,31 +1,89 @@
 //
 //  MNEmoticonButton.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2023/1/28.
+//  Created by panhub on 2023/1/28.
 //  表情按钮
 
 import UIKit
 
 class MNEmoticonButton: UIControl {
-    /// 响应约束
-    var boundInset: UIEdgeInsets = .zero
+    /// 文字控件
+    private let textLabel = UILabel()
+    /// 图片控件
+    private let imageView = UIImageView()
     /// 标题约束
     var textInset: UIEdgeInsets {
-        get { .zero }
+        get {
+            var inset: UIEdgeInsets = .zero
+            constraints.forEach { constraint in
+                guard let firstItem = constraint.firstItem as? UILabel, firstItem == textLabel else { return }
+                switch constraint.firstAttribute {
+                case .top:
+                    inset.top = constraint.constant
+                case .left, .leading:
+                    inset.left = constraint.constant
+                case .bottom:
+                    inset.bottom = constraint.constant
+                case .right, .trailing:
+                    inset.right = constraint.constant
+                default: break
+                }
+            }
+            return inset
+        }
         set {
-            textLabel.autoresizingMask = []
-            textLabel.frame = bounds.inset(by: newValue)
-            textLabel.autoresizingMask = [.flexibleTopMargin, .flexibleBottomMargin, .flexibleLeftMargin, .flexibleRightMargin]
+            constraints.forEach { constraint in
+                guard let firstItem = constraint.firstItem as? UILabel, firstItem == textLabel else { return }
+                switch constraint.firstAttribute {
+                case .top:
+                    constraint.constant = newValue.top
+                case .left, .leading:
+                    constraint.constant = newValue.left
+                case .bottom:
+                    constraint.constant = newValue.bottom
+                case .right, .trailing:
+                    constraint.constant = newValue.right
+                default: break
+                }
+            }
         }
     }
     /// 图片约束
     var imageInset: UIEdgeInsets {
-        get { .zero }
+        get {
+            var inset: UIEdgeInsets = .zero
+            constraints.forEach { constraint in
+                guard let firstItem = constraint.firstItem as? UIImageView, firstItem == imageView else { return }
+                switch constraint.firstAttribute {
+                case .top:
+                    inset.top = constraint.constant
+                case .left, .leading:
+                    inset.left = constraint.constant
+                case .bottom:
+                    inset.bottom = constraint.constant
+                case .right, .trailing:
+                    inset.right = constraint.constant
+                default: break
+                }
+            }
+            return inset
+        }
         set {
-            imageView.autoresizingMask = []
-            imageView.frame = bounds.inset(by: newValue)
-            imageView.autoresizingMask = [.flexibleTopMargin, .flexibleBottomMargin, .flexibleLeftMargin, .flexibleRightMargin]
+            constraints.forEach { constraint in
+                guard let firstItem = constraint.firstItem as? UIImageView, firstItem == imageView else { return }
+                switch constraint.firstAttribute {
+                case .top:
+                    constraint.constant = newValue.top
+                case .left, .leading:
+                    constraint.constant = newValue.left
+                case .bottom:
+                    constraint.constant = newValue.bottom
+                case .right, .trailing:
+                    constraint.constant = newValue.right
+                default: break
+                }
+            }
         }
     }
     /// 文字
@@ -67,44 +125,37 @@ class MNEmoticonButton: UIControl {
         get { imageView.contentMode }
         set { imageView.contentMode = newValue }
     }
-    /// 图片控件
-    private lazy var imageView: UIImageView = {
-        let imageView = UIImageView(frame: bounds)
-        imageView.clipsToBounds = true
-        imageView.contentMode = .scaleAspectFit
-        imageView.isUserInteractionEnabled = false
-        imageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        return imageView
-    }()
-    /// 文字控件
-    private lazy var textLabel: UILabel = {
-        let textLabel = UILabel(frame: bounds)
-        textLabel.numberOfLines = 1
-        textLabel.textAlignment = .center
-        textLabel.isUserInteractionEnabled = false
-        textLabel.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        return textLabel
-    }()
+    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        clipsToBounds = true
-        
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFit
+        imageView.isUserInteractionEnabled = false
+        imageView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(imageView)
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: topAnchor),
+            imageView.leftAnchor.constraint(equalTo: leftAnchor),
+            imageView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            imageView.rightAnchor.constraint(equalTo: rightAnchor)
+        ])
+        
+        textLabel.numberOfLines = 1
+        textLabel.textAlignment = .center
+        textLabel.isUserInteractionEnabled = false
+        textLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(textLabel)
+        NSLayoutConstraint.activate([
+            textLabel.topAnchor.constraint(equalTo: topAnchor),
+            textLabel.leftAnchor.constraint(equalTo: leftAnchor),
+            textLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
+            textLabel.rightAnchor.constraint(equalTo: rightAnchor)
+        ])
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    /// 决定是否响应
-    /// - Parameters:
-    ///   - point: 发起响应的点
-    ///   - event: 响应事件
-    /// - Returns: 是否响应
-    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        CGRect(x: 0.0, y: 0.0, width: frame.width, height: frame.height).inset(by: boundInset).contains(point)
     }
 }

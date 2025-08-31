@@ -1,6 +1,6 @@
 //
 //  MNEmoticonBackedString.swift
-//  MNKit
+//  MNSwiftKit
 //
 //  Created by 小斯 on 2023/2/13.
 //  表情富文本描述

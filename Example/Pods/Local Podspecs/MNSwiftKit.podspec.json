@@ -312,8 +312,11 @@
       },
       "dependencies": {
         "MNSwiftKit/Core": [],
+        "MNSwiftKit/Definition": [],
         "MNSwiftKit/NameSpace": [],
-        "MNSwiftKit/AnimatedImage": []
+        "MNSwiftKit/PageControl": [],
+        "MNSwiftKit/AnimatedImage": [],
+        "MNSwiftKit/CollectionLayout": []
       }
     },
     {
@@ -327,6 +330,15 @@
         "UniformTypeIdentifiers"
       ],
       "source_files": "MNSwiftKit/AnimatedImage/Sources/**/*.swift"
+    },
+    {
+      "name": "CollectionLayout",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "CoreGraphics"
+      ],
+      "source_files": "MNSwiftKit/CollectionLayout/Sources/**/*.swift"
     },
     {
       "name": "Full",
@@ -354,6 +366,7 @@
         "MNSwiftKit/Components": [],
         "MNSwiftKit/Transitioning": [],
         "MNSwiftKit/AnimatedImage": [],
+        "MNSwiftKit/CollectionLayout": [],
         "MNSwiftKit/EmoticonKeyboard": []
       }
     }

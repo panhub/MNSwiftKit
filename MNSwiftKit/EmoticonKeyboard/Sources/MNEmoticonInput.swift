@@ -1,6 +1,6 @@
 //
 //  MNEmoticonInput.swift
-//  MNKit
+//  MNSwiftKit
 //
 //  Created by 小斯 on 2023/2/13.
 //  表情输入支持
@@ -77,14 +77,14 @@ extension MNEmoticonInput {
     
     /// 输入表情
     /// - Parameter emoji: 表情实例
-    public mutating func inputEmoji(_ emoji: MNEmoticon) {
-        guard let desc = emoji.desc, desc.count > 0 else { return }
+    public mutating func inputEmoticon(_ emoticon: MNEmoticon) {
+        guard let desc = emoticon.desc, desc.count > 0 else { return }
         // 匹配表情附件
         var attachment: MNEmoticonAttachment?
-        if let image = emoji.image {
+        if let image = emoticon.image {
             attachment = MNEmoticonAttachment(image: image, desc: desc)
         } else {
-            attachment = MNEmoticonManager.default.matchsEmoji(in: desc).first
+            attachment = MNEmoticonManager.shared.matchsEmoticon(in: desc).first
         }
         // 制作富文本
         var attributedString: NSAttributedString!

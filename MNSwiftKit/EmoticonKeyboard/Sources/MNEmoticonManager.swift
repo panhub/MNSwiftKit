@@ -1,8 +1,8 @@
 //
 //  MNEmoticonManager.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2023/1/29.
+//  Created by panhub on 2023/1/29.
 //  表情管理工具
 
 import UIKit
@@ -96,7 +96,7 @@ extension MNEmoticonManager {
                 let json: [String:Any] = [
                     MNEmoticonPacket.Key.time.rawValue:1,
                     MNEmoticonPacket.Key.favorites.rawValue:1,
-                    MNEmoticonPacket.Key.style.rawValue:MNEmoticonPacket.Style.image.rawValue,
+                    MNEmoticonPacket.Key.style.rawValue:MNEmoticon.Style.image.rawValue,
                     MNEmoticonPacket.Key.cover.rawValue:"favorites.png",
                     MNEmoticonPacket.Key.emoticons.rawValue:[[String:String]]()
                 ]
@@ -132,8 +132,8 @@ extension MNEmoticonManager {
     ///   - names: 表情包文件名集合
     ///   - queue: 执行队列
     ///   - completionHandler: 结果回调
-    public class func fetchEmoticonPacket(_ names: [String], using queue: DispatchQueue? = nil, completion completionHandler: @escaping ([MNEmoticonPacket])->Void) {
-        (queue ?? DispatchQueue.global(qos: .default)).async {
+    public class func fetchEmoticonPacket(_ names: [String], using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: @escaping ([MNEmoticonPacket])->Void) {
+        queue.async {
             let packets = MNEmoticonManager.shared.fetchEmoticonPacket(names)
             DispatchQueue.main.async {
                 completionHandler(packets)
@@ -153,8 +153,8 @@ extension MNEmoticonManager {
     ///   - names: 表情包名称集合
     ///   - queue: 执行队列
     ///   - completionHandler: 结果回调
-    public class func fetchEmoticonPacket(names: [MNEmoticonPacket.Name], using queue: DispatchQueue? = nil, completion completionHandler: @escaping ([MNEmoticonPacket])->Void) {
-        (queue ?? DispatchQueue.global(qos: .default)).async {
+    public class func fetchEmoticonPacket(names: [MNEmoticonPacket.Name], using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: @escaping ([MNEmoticonPacket])->Void) {
+        queue.async {
             let packets = MNEmoticonManager.shared.fetchEmoticonPacket(names: names)
             DispatchQueue.main.async {
                 completionHandler(packets)
@@ -170,7 +170,6 @@ extension MNEmoticonManager {
     /// - Parameter string: 字符串
     /// - Returns: 匹配到的表情
     public func matchsEmoticon(in string: String) -> [MNEmoticonAttachment] {
-        guard let expression = expression else { return [] }
         let results = expression.matches(in: string, options: [], range: NSRange(location: 0, length: string.utf16.count))
         var attachments: [MNEmoticonAttachment] = [MNEmoticonAttachment]()
         for result in results {
@@ -246,7 +245,7 @@ extension MNEmoticonManager {
             json[MNEmoticonPacket.Key.time.rawValue] = 1
             json[MNEmoticonPacket.Key.favorites.rawValue] = 1
             json[MNEmoticonPacket.Key.cover.rawValue] = "favorites.png"
-            json[MNEmoticonPacket.Key.style.rawValue] = MNEmoticonPacket.Style.image.rawValue
+            json[MNEmoticonPacket.Key.style.rawValue] = MNEmoticon.Style.image.rawValue
             json[MNEmoticonPacket.Key.emoticons.rawValue] = [[String:String]]()
         }
         // 复制图片到文件夹
@@ -302,13 +301,13 @@ extension MNEmoticonManager {
     ///   - imagePath: 图片路径
     ///   - queue: 执行队列
     ///   - completionHandler: 结束回调
-    public func addEmoticonToFavorites(atPath imagePath: String, using queue: DispatchQueue? = nil, completion completionHandler: ((_ isSuccess: Bool)->Void)?) {
-        (queue ?? DispatchQueue.global(qos: .default)).async {
+    public class func addEmoticonToFavorites(atPath imagePath: String, using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: ((_ isSuccess: Bool)->Void)?) {
+        queue.async {
             let isSuccess = MNEmoticonManager.shared.addEmoticonToFavorites(atPath: imagePath)
             DispatchQueue.main.async {
                 // 通知收藏夹变化
                 if isSuccess {
-                    NotificationCenter.default.post(name: MNEmoticonDidChangeNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:MNEmoticonPacket.Name.favorites])
+                    NotificationCenter.default.post(name: MNEmoticonDidChangeNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:MNEmoticonPacket.Name.favorites.rawValue])
                 }
                 // 回调
                 completionHandler?(isSuccess)
@@ -355,7 +354,7 @@ extension MNEmoticonManager {
             json[MNEmoticonPacket.Key.time.rawValue] = 1
             json[MNEmoticonPacket.Key.favorites.rawValue] = 1
             json[MNEmoticonPacket.Key.cover.rawValue] = "favorites.png"
-            json[MNEmoticonPacket.Key.style.rawValue] = MNEmoticonPacket.Style.image.rawValue
+            json[MNEmoticonPacket.Key.style.rawValue] = MNEmoticon.Style.image.rawValue
             json[MNEmoticonPacket.Key.emoticons.rawValue] = [[String:String]]()
         }
         // 写入图片
@@ -419,13 +418,13 @@ extension MNEmoticonManager {
     ///   - image: 图片
     ///   - queue: 执行队列
     ///   - completionHandler: 结束回调
-    public func addEmoticonToFavorites(_ image: UIImage, using queue: DispatchQueue? = nil, completion completionHandler: ((_ isSuccess: Bool)->Void)?) {
-        (queue ?? DispatchQueue.global(qos: .default)).async {
+    public class func addEmoticonToFavorites(_ image: UIImage, using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: ((_ isSuccess: Bool)->Void)?) {
+        queue.async {
             let isSuccess = MNEmoticonManager.shared.addEmoticonToFavorites(image)
             DispatchQueue.main.async {
                 // 通知收藏夹变化
                 if isSuccess {
-                    NotificationCenter.default.post(name: MNEmoticonDidChangeNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:MNEmoticonPacket.Name.favorites])
+                    NotificationCenter.default.post(name: MNEmoticonDidChangeNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:MNEmoticonPacket.Name.favorites.rawValue])
                 }
                 // 回调
                 completionHandler?(isSuccess)
@@ -513,13 +512,13 @@ extension MNEmoticonManager {
     ///   - imageName: 表情图片名称
     ///   - queue: 使用队列
     ///   - completionHandler: 结束回调
-    public func removeEmoticonFromFavorites(named imageName: String, using queue: DispatchQueue? = nil, completion completionHandler: ((_ isSuccess: Bool)->Void)?) {
-        (queue ?? DispatchQueue.global(qos: .default)).async {
+    public class func removeEmoticonFromFavorites(named imageName: String, using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: ((_ isSuccess: Bool)->Void)?) {
+        queue.async {
             let isSuccess = MNEmoticonManager.shared.removeEmoticonFromFavorites(named: imageName)
             DispatchQueue.main.async {
                 // 通知收藏夹变化
                 if isSuccess {
-                    NotificationCenter.default.post(name: MNEmoticonDidChangeNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:MNEmoticonPacket.Name.favorites])
+                    NotificationCenter.default.post(name: MNEmoticonDidChangeNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:MNEmoticonPacket.Name.favorites.rawValue])
                 }
                 // 回调
                 completionHandler?(isSuccess)
@@ -539,13 +538,13 @@ extension MNEmoticonManager {
     ///   - emoticon: 表情
     ///   - queue: 使用队列
     ///   - completionHandler: 结束回调
-    public func removeEmoticonFromFavorites(_ emoticon: MNEmoticon, using queue: DispatchQueue? = nil, completion completionHandler: ((_ isSuccess: Bool)->Void)?) {
-        (queue ?? DispatchQueue.global(qos: .default)).async {
+    public class func removeEmoticonFromFavorites(_ emoticon: MNEmoticon, using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: ((_ isSuccess: Bool)->Void)?) {
+        queue.async {
             let isSuccess = MNEmoticonManager.shared.removeEmoticonFromFavorites(emoticon)
             DispatchQueue.main.async {
                 // 通知收藏夹变化
                 if isSuccess {
-                    NotificationCenter.default.post(name: MNEmoticonDidChangeNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:MNEmoticonPacket.Name.favorites])
+                    NotificationCenter.default.post(name: MNEmoticonDidChangeNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:MNEmoticonPacket.Name.favorites.rawValue])
                 }
                 // 回调
                 completionHandler?(isSuccess)

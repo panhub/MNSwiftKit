@@ -2,7 +2,7 @@
 //  MNPageControl.swift
 //  MNTest
 //
-//  Created by 冯盼 on 2022/9/27.
+//  Created by panhub on 2022/9/27.
 //  简单页码指示器
 
 import UIKit

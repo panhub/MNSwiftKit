@@ -1,8 +1,8 @@
 //
 //  MNEmoticonPreview.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2023/2/6.
+//  Created by panhub on 2023/2/6.
 //  表情预览视图
 
 import UIKit
@@ -20,8 +20,7 @@ class MNEmoticonPreview: UIView {
         imageView.contentMode = .scaleAspectFit
         addSubview(imageView)
         
-        textLabel.minY = imageView.maxY + 3.0
-        textLabel.height = 13.0
+        textLabel.frame = .init(x: 0.0, y: imageView.frame.maxY + 3.0, width: 0.0, height: 13.0)
         textLabel.font = .systemFont(ofSize: 13.0)
         textLabel.textColor = .darkText.withAlphaComponent(0.3)
         textLabel.numberOfLines = 1
@@ -61,11 +60,13 @@ class MNEmoticonPreview: UIView {
     }
     
     /// 更新表情
-    /// - Parameter emoji: 表情
-    func updateEmoji(_ emoji: MNEmoticon) {
-        imageView.image = emoji.image
-        textLabel.text = emoji.desc.replacingOccurrences(of: "[", with: "").replacingOccurrences(of: "]", with: "")
+    /// - Parameter emoticon: 表情
+    func updateEmoticon(_ emoticon: MNEmoticon) {
+        imageView.image = emoticon.image
+        textLabel.text = emoticon.desc.replacingOccurrences(of: "[", with: "").replacingOccurrences(of: "]", with: "")
         textLabel.sizeToFit()
-        textLabel.midX = imageView.midX
+        var rect = textLabel.frame
+        rect.origin.x = imageView.center.x - textLabel.frame.width/2.0
+        textLabel.frame = rect
     }
 }

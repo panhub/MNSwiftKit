@@ -1,8 +1,8 @@
 //
 //  MNEmoticonInputView.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2023/1/28.
+//  Created by panhub on 2023/1/28.
 //  表情输入复合视图
 
 import UIKit
@@ -11,69 +11,78 @@ import UIKit
 protocol MNEmoticonInputViewDelegate: NSObjectProtocol {
     /// 表情包切换时告知
     /// - Parameter index: 表情包索引
-    func inputViewDidSelectPage(at index: Int) -> Void
+    func inputViewDidSelectPage(at index: Int)
     /// 告知当前表情包页数
     /// - Parameter count: 页数
-    func inputViewDidUpdateEmoji(with count: Int) -> Void
+    func inputViewDidUpdateEmoticon(with count: Int)
     /// 告知当前表情包页码
     /// - Parameter index: 页码
-    func inputViewDidScrollEmoji(to index: Int) -> Void
+    func inputViewDidScrollEmoticon(to index: Int)
     /// 表情选择告知
-    /// - Parameter emoji: 表情
-    func inputViewDidSelectEmoji(_ emoji: MNEmoticon) -> Void
+    /// - Parameter emoticon: 表情
+    func inputViewDidSelectEmoticon(_ emoticon: MNEmoticon)
     /// 收藏夹添加事件告知
     /// - Parameter inputView: 输入复合视图
-    func inputViewShouldAddToFavorites(_ inputView: MNEmoticonInputView) -> Void
+    func inputViewShouldAddToFavorites(_ inputView: MNEmoticonInputView)
     /// 删除按钮事件告知
     /// - Parameter inputView: 输入复合视图
-    func inputViewDeleteButtonTouchUpInside(_ inputView: MNEmoticonInputView) -> Void
+    func inputViewDeleteButtonTouchUpInside(_ inputView: MNEmoticonInputView)
     /// Return键事件告知
     /// - Parameter inputView: 输入复合视图
-    func inputViewReturnButtonTouchUpInside(_ inputView: MNEmoticonInputView) -> Void
+    func inputViewReturnButtonTouchUpInside(_ inputView: MNEmoticonInputView)
 }
 
 /// 表情输入视图
-class MNEmoticonInputView: MNPageScrollView {
+class MNEmoticonInputView: MNEmoticonPageView {
+    /// 样式
+    private let style: MNEmoticonKeyboard.Style
     /// 配置选项
-    private let options: MNEmoticonKeyboardOptions
-    /// 表情包
-    private(set) var packets: [MNEmoticonPacket] = [MNEmoticonPacket]()
-    /// 缓存
-    private var emojiViews: [Int:MNEmoticonView] = [Int:MNEmoticonView]()
-    /// 预览视图
-    private let preview: MNEmoticonPreview = MNEmoticonPreview()
-    /// 开始滑动时的偏移
-    private var startOffsetX: CGFloat = 0.0
-    /// 猜想滑动到的界面索引
-    private var guessPageIndex: Int = 0
+    private let options: MNEmoticonKeyboard.Options
     /// 事件代理
     weak var proxy: MNEmoticonInputViewDelegate?
+    /// 表情包
+    private(set) var packets: [MNEmoticonPacket] = []
+    /// 缓存
+    private var emoticonViews: [Int:MNEmoticonView] = [:]
+    /// 预览视图
+    private let preview: MNEmoticonPreview = MNEmoticonPreview()
+    /// 分割线
+    private let separatorView: UIView = .init()
+    /// 猜想滑动到的界面索引
+    private var guessPageIndex: Int = 0
+    /// 开始滑动时的偏移
+    private var startOffsetX: CGFloat = 0.0
     /// 选择的页面索引
     private var selectedIndex: Int = 0
-    /// 分割线
-    private lazy var separator: UIView = {
-        let separator: UIView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: frame.width, height: 0.7))
-        separator.backgroundColor = options.separatorColor
-        separator.autoresizingMask = [.flexibleWidth, .flexibleBottomMargin]
-        return separator
-    }()
     
-    init(frame: CGRect, options: MNEmoticonKeyboardOptions) {
+    /// 构建表情输入视图
+    /// - Parameters:
+    ///   - style: 样式
+    ///   - options: 键盘配置
+    init(style: MNEmoticonKeyboard.Style, options: MNEmoticonKeyboard.Options) {
+        self.style = style
         self.options = options
-        super.init(frame: frame)
+        super.init(frame: .zero)
         
         delegate = self
         clipsToBounds = false
         backgroundColor = .clear
+        axis = .horizontal
         
-        separator.frame = CGRect(x: 0.0, y: 0.0, width: frame.width, height: 0.7)
-        separator.backgroundColor = options.separatorColor
-        addSubview(separator)
+        separatorView.backgroundColor = options.separatorColor
+        separatorView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(separatorView)
+        NSLayoutConstraint.activate([
+            separatorView.topAnchor.constraint(equalTo: topAnchor),
+            separatorView.leftAnchor.constraint(equalTo: leftAnchor),
+            separatorView.rightAnchor.constraint(equalTo: rightAnchor),
+            separatorView.heightAnchor.constraint(equalToConstant: 0.7)
+        ])
         
         preview.isHidden = true
         addSubview(preview)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(emojiDidChangeNotification(_:)), name: MNEmoticonDidChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(emoticonDidChangeNotification(_:)), name: MNEmoticonDidChangeNotification, object: nil)
     }
     
     required init?(coder: NSCoder) {
@@ -88,10 +97,8 @@ class MNEmoticonInputView: MNPageScrollView {
     /// - Parameter packets: 表情包集合
     func reloadPackets(_ packets: [MNEmoticonPacket]) {
         // 删除子界面
-        for (_, emojiView) in emojiViews {
-            emojiView.removeFromSuperview()
-        }
-        emojiViews.removeAll()
+        emoticonViews.forEach { $0.value.removeFromSuperview() }
+        emoticonViews.removeAll()
         // 重载数据
         self.packets.removeAll()
         self.packets.append(contentsOf: packets)
@@ -109,37 +116,44 @@ class MNEmoticonInputView: MNPageScrollView {
         guard pageIndex < packets.count else { return }
         super.setCurrentPage(at: pageIndex, animated: animated)
         selectedIndex = currentPageIndex
-        guard let emojiView = emojiView(at: pageIndex) else { return }
-        emojiView.setCurrentPage(at: 0, animated: false)
-        proxy?.inputViewDidUpdateEmoji(with: emojiView.numberOfPages)
-        proxy?.inputViewDidScrollEmoji(to: emojiView.currentPageIndex)
+        guard let emoticonView = emoticonView(at: pageIndex) else { return }
+        emoticonView.setCurrentPage(at: 0, animated: false)
+        guard style == .paging, let proxy = proxy else { return }
+        proxy.inputViewDidUpdateEmoticon(with: emoticonView.numberOfPages)
+        proxy.inputViewDidScrollEmoticon(to: emoticonView.currentPageIndex)
     }
     
     /// 滑动表情到指定页码
     /// - Parameters:
     ///   - pageIndex: 页码
     ///   - animated: 是否动态
-    func scrollEmoji(to pageIndex: Int, animated: Bool) {
-        guard let emojiView = emojiView(at: currentPageIndex, allowsAcquire: false) else { return }
-        emojiView.setCurrentPage(at: pageIndex, animated: animated)
+    func scrollEmoticon(to pageIndex: Int, animated: Bool) {
+        guard let emoticonView = emoticonView(at: currentPageIndex, create: false) else { return }
+        emoticonView.setCurrentPage(at: pageIndex, animated: animated)
     }
     
     /// 获取子界面
     /// - Parameters:
     ///   - pageIndex: 页码
-    ///   - allowsAcquire: 是否允许存取
+    ///   - create: 没有缓存时是否允许创建
     /// - Returns: 表情子界面
-    func emojiView(at pageIndex: Int, allowsAcquire: Bool = true) -> MNEmoticonView? {
-        if let inputView = emojiViews[pageIndex] { return inputView }
-        guard allowsAcquire else { return nil }
+    func emoticonView(at pageIndex: Int, create: Bool = true) -> MNEmoticonView? {
+        if let inputView = emoticonViews[pageIndex] { return inputView }
+        guard create else { return nil }
         guard pageIndex < packets.count else { return nil }
-        let emojiView = MNEmoticonView(frame: bounds, options: options)
-        emojiView.proxy = self
-        emojiView.origin = contentOffset(for: pageIndex)
-        emojiView.reloadEmojis(packets[pageIndex])
-        insertSubview(emojiView, belowSubview: separator)
-        emojiViews[pageIndex] = emojiView
-        return emojiView
+        let emoticonView = MNEmoticonView(style: style, options: options)
+        emoticonView.delegate = self
+        emoticonView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(emoticonView)
+        NSLayoutConstraint.activate([
+            emoticonView.topAnchor.constraint(equalTo: separatorView.bottomAnchor),
+            emoticonView.leftAnchor.constraint(equalTo: leftAnchor, constant: contentOffset(for: pageIndex).x),
+            emoticonView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            emoticonView.rightAnchor.constraint(equalTo: rightAnchor)
+        ])
+        emoticonView.reloadEmoticon(packet: packets[pageIndex])
+        emoticonViews[pageIndex] = emoticonView
+        return emoticonView
     }
 }
 
@@ -148,21 +162,15 @@ extension MNEmoticonInputView {
     
     /// 添加图片到收藏夹事件
     /// - Parameter notify: 通知
-    @objc private func emojiDidChangeNotification(_ notify: Notification) {
+    @objc private func emoticonDidChangeNotification(_ notify: Notification) {
         guard let userInfo = notify.userInfo else { return }
-        guard let name = userInfo[MNEmoticonPacketNameUserInfoKey] as? MNEmoticonPacket.Name else { return }
-        guard let pageIndex = packets.firstIndex(where: { $0.name == name.rawValue }) else { return }
-        let packet = packets[pageIndex]
-        if let emoji = userInfo[MNEmoticonAddedUserInfoKey] as? MNEmoticon {
-            // 添加事件
-            packet.emojis.insert(emoji, at: 1)
-        } else if let emoji = userInfo[MNEmoticonRemovedUserInfoKey] as? MNEmoticon {
-            // 删除事件
-            guard let desc = emoji.desc else { return }
-            packet.emojis.removeAll { $0.desc == desc }
+        guard let name = userInfo[MNEmoticonPacketNameUserInfoKey] as? String else { return }
+        guard let pageIndex = packets.firstIndex(where: { $0.name == name }) else { return }
+        MNEmoticonManager.fetchEmoticonPacket([name]) { [weak self] packets in
+            guard let self = self, let packet = packets.first else { return }
+            guard let emoticonView = emoticonView(at: pageIndex, create: false) else { return }
+            emoticonView.reloadEmoticon(packet: packet)
         }
-        guard let emojiView = emojiView(at: pageIndex, allowsAcquire: false) else { return }
-        emojiView.reloadEmojis(packet)
     }
 }
 
@@ -191,8 +199,8 @@ extension MNEmoticonInputView: UIScrollViewDelegate {
         }
         // 更新界面
         if guessPageIndex != lastGuessIndex, guessPageIndex != selectedIndex {
-            guard let emojiView = emojiView(at: guessPageIndex) else { return }
-            emojiView.setCurrentPage(at: 0, animated: false)
+            guard let emoticonView = emoticonView(at: guessPageIndex) else { return }
+            emoticonView.setCurrentPage(at: 0, animated: false)
         }
     }
     
@@ -202,44 +210,51 @@ extension MNEmoticonInputView: UIScrollViewDelegate {
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        guard let proxy = proxy else { return }
         let currentPageIndex = currentPageIndex
         if selectedIndex == currentPageIndex { return }
         selectedIndex = currentPageIndex
-        guard let emojiView = emojiView(at: currentPageIndex) else { return }
-        proxy?.inputViewDidSelectPage(at: currentPageIndex)
-        proxy?.inputViewDidUpdateEmoji(with: emojiView.numberOfPages)
-        proxy?.inputViewDidScrollEmoji(to: emojiView.currentPageIndex)
+        guard let emoticonView = emoticonView(at: currentPageIndex) else { return }
+        proxy.inputViewDidSelectPage(at: currentPageIndex)
+        proxy.inputViewDidUpdateEmoticon(with: emoticonView.numberOfPages)
+        proxy.inputViewDidScrollEmoticon(to: emoticonView.currentPageIndex)
     }
 }
 
-// MARK: - MNEmojiViewDelegate
-extension MNEmoticonInputView: MNEmojiViewDelegate {
+// MARK: - MNEmoticonViewDelegate
+extension MNEmoticonInputView: MNEmoticonViewDelegate {
     
-    func emojiViewDidSelectEmoji(_ emoji: MNEmoticon) {
-        proxy?.inputViewDidSelectEmoji(emoji)
+    func emoticonViewDidSelectEmoticon(_ emoji: MNEmoticon) {
+        guard let proxy = proxy else { return }
+        proxy.inputViewDidSelectEmoticon(emoji)
     }
     
-    func emojiViewShouldAddToFavorites(_ emojiView: MNEmoticonView) {
-        proxy?.inputViewShouldAddToFavorites(self)
+    func emoticonViewShouldAddToFavorites(_ emojiView: MNEmoticonView) {
+        guard let proxy = proxy else { return }
+        proxy.inputViewShouldAddToFavorites(self)
     }
     
-    func emojiViewDeleteButtonTouchUpInside(_ emojiView: MNEmoticonView) {
-        proxy?.inputViewDeleteButtonTouchUpInside(self)
+    func emoticonViewDeleteButtonTouchUpInside(_ emojiView: MNEmoticonView) {
+        guard let proxy = proxy else { return }
+        proxy.inputViewDeleteButtonTouchUpInside(self)
     }
     
-    func emojiViewReturnButtonTouchUpInside(_ emojiView: MNEmoticonView) {
-        proxy?.inputViewReturnButtonTouchUpInside(self)
+    func emoticonViewReturnButtonTouchUpInside(_ emojiView: MNEmoticonView) {
+        guard let proxy = proxy else { return }
+        proxy.inputViewReturnButtonTouchUpInside(self)
     }
     
-    func emojiViewDidScrollPage(to index: Int) {
-        proxy?.inputViewDidScrollEmoji(to: index)
+    func emoticonViewDidScrollPage(to index: Int) {
+        guard let proxy = proxy else { return }
+        proxy.inputViewDidScrollEmoticon(to: index)
     }
     
-    func emojiViewShouldPreviewEmoji(_ emoji: MNEmoticon?, at rect: CGRect) {
-        if let emoji = emoji {
-            preview.midX = rect.midX
-            preview.maxY = rect.maxY
-            preview.updateEmoji(emoji)
+    func emoticonViewShouldPreviewEmoticon(_ emoticon: MNEmoticon?, at rect: CGRect) {
+        if let emoticon = emoticon {
+            var frame = preview.frame
+            frame.origin = .init(x: rect.midX - frame.width/2.0, y: rect.maxY - frame.height)
+            preview.frame = frame
+            preview.updateEmoticon(emoticon)
             preview.isHidden = false
         } else {
             preview.isHidden = true

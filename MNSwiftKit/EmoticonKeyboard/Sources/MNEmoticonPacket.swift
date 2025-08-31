@@ -1,18 +1,14 @@
 //
 //  MNEmoticonPacket.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2023/1/28.
+//  Created by panhub on 2023/1/28.
 //  表情包
 
 import UIKit
 import Foundation
 
 public class MNEmoticonPacket {
-    
-    public enum Style: Int {
-        case emoticon, image
-    }
     
     public struct Name: RawRepresentable {
         
@@ -45,13 +41,13 @@ public class MNEmoticonPacket {
     public let directory: String
     
     /// 类型
-    public let style: Style
+    public let style: MNEmoticon.Style
     
     /// 是否是收藏夹
     internal var isFavorites: Bool = false
     
     /// 表情集合
-    public internal(set) var emoticons: [MNEmoticon] = [MNEmoticon]()
+    public internal(set) var emoticons: [MNEmoticon] = []
     
     
     /// 构造表情包
@@ -62,7 +58,7 @@ public class MNEmoticonPacket {
             let jsonData = try Data(contentsOf: url, options: [])
             let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
             guard let json = jsonObject as? [String:Any] else { return nil }
-            guard let rawValue = json[MNEmoticonPacket.Key.style.rawValue] as? Int, let style = MNEmoticonPacket.Style(rawValue: rawValue) else { return nil }
+            guard let rawValue = json[MNEmoticonPacket.Key.style.rawValue] as? Int, let style = MNEmoticon.Style(rawValue: rawValue) else { return nil }
             guard let time = json[MNEmoticonPacket.Key.style.rawValue] as? Int else { return nil }
             guard let cover = json[MNEmoticonPacket.Key.cover.rawValue] as? String else { return nil }
             guard let array = json[MNEmoticonPacket.Key.emoticons.rawValue] as? [[String:String]] else { return nil }
@@ -79,7 +75,7 @@ public class MNEmoticonPacket {
             if let value = json[MNEmoticonPacket.Key.favorites.rawValue] as? Int, value == 1 {
                 self.isFavorites = true
             }
-            let emoticons = array.compactMap { MNEmoticon(json: $0, in: directory) }
+            let emoticons = array.compactMap { MNEmoticon(json: $0, style: style, in: directory) }
             self.emoticons.append(contentsOf: emoticons)
         } catch {
 #if DEBUG

@@ -1,0 +1,165 @@
+//
+//  MNCollectionViewWordLayout.swift
+//  anhe
+//
+//  Created by panhub on 2022/6/2.
+//  标签约束
+
+import UIKit
+
+class MNCollectionViewWordLayout: MNCollectionViewLayout {
+    
+    /// 标签对齐方式
+    /// - left: 居左
+    /// - center: 居中
+    /// - right: 居右
+    enum Alignment: Int {
+        case left, center, right
+    }
+    
+    /// 对齐方式
+    var alignment: Alignment = .left
+    
+    override func prepare() {
+        super.prepare()
+        
+        // 区数
+        guard let collectionView = collectionView else { return }
+        let numberOfSections = collectionView.numberOfSections
+        guard numberOfSections > 0 else { return }
+        
+        let contentSize: CGSize = CGRect(origin: .zero, size: collectionView.frame.size).inset(by: collectionView.contentInset).size
+        guard contentSize.width > 0.0, contentSize.height > 0.0 else { return }
+        
+        // 占位
+        for _ in 0..<numberOfSections {
+            caches.append([0.0])
+        }
+        
+        var top: CGFloat = 0.0
+        
+        // 分区约束
+        for section in 0..<numberOfSections {
+            // 区边缘约束
+            let sectionInset = sectionInset(atIndex: section)
+            // 区顶部间隔
+            top += sectionInset.top
+            // 区头间隔
+            let headerInset = headerInset(inSection: section)
+            let headerHeight = referenceSizeForHeader(inSection: section).height
+            top += headerInset.top
+            if headerHeight > 0.0 {
+                let attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, with: IndexPath(item: 0, section: section))
+                attributes.frame = CGRect(x: sectionInset.left + headerInset.left, y: top, width: contentSize.width - sectionInset.left - sectionInset.right - headerInset.left - headerInset.right, height: headerHeight)
+                headerAttributes[section] = attributes
+                self.attributes.append(attributes)
+                top = attributes.frame.maxY
+            }
+            top += headerInset.bottom
+            
+            let left: CGFloat = sectionInset.left
+            let right: CGFloat = sectionInset.right
+            let itemCount = collectionView.numberOfItems(inSection: section)
+            var items: [UICollectionViewLayoutAttributes] = [UICollectionViewLayoutAttributes]()
+            var itemAttributes: [UICollectionViewLayoutAttributes] = [UICollectionViewLayoutAttributes]()
+            let minimumLineSpacing: CGFloat = minimumLineSpacing(inSection: section)
+            let minimumInteritemSpacing: CGFloat = minimumInteritemSpacing(inSection: section)
+            
+            var x: CGFloat = left
+            var y: CGFloat = top
+            let maxWidth: CGFloat = contentSize.width - left - right
+            
+            for idx in 0..<itemCount {
+                let indexPath = IndexPath(item: idx, section: section)
+                var itemSize: CGSize = itemSize(at: indexPath)
+                itemSize.width = min(itemSize.width, maxWidth)
+                let paddingX: CGFloat = (x > left && itemSize.width > 0.0) ? minimumInteritemSpacing : 0.0
+                // 判断是否需要换行
+                if (x + paddingX + itemSize.width + right) > contentSize.width {
+                    // 换行
+                    layout(attributes: items, surplus: contentSize.width - x - right)
+                    x = left
+                    y = items.reduce(0.0, { max($0, $1.frame.maxY) })
+                    items.removeAll()
+                } else {
+                    x += paddingX
+                }
+                let paddingY: CGFloat = (y > top && itemSize.height > 0.0) ? minimumLineSpacing : 0.0
+                let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
+                attributes.frame = CGRect(x: x, y: y + paddingY, width: itemSize.width, height: itemSize.height)
+                items.append(attributes)
+                itemAttributes.append(attributes)
+                self.attributes.append(attributes)
+                x = attributes.frame.maxX
+            }
+            
+            // 保存区内约束
+            sectionAttributes.append(itemAttributes)
+            
+            // 结束时再约束一下位置
+            if items.count > 0 {
+                layout(attributes: items, surplus: contentSize.width - x - right)
+                top = items.reduce(0.0, { max($0, $1.frame.maxY) })
+                items.removeAll()
+            }
+            // 更新顶部位置
+            if itemAttributes.count > 0 {
+                top = itemAttributes.reduce(0.0, { max($0, $1.frame.maxY) })
+            }
+            
+            // 区尾间隔
+            let footerInset = footerInset(inSection: section)
+            let footerHeight = referenceSizeForFooter(inSection: section).height
+            top += footerInset.top
+            if footerHeight > 0.0 {
+                let attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, with: IndexPath(item: 0, section: section))
+                attributes.frame = CGRect(x: sectionInset.left + footerInset.left, y: top, width: contentSize.width - sectionInset.left - sectionInset.right - footerInset.left - footerInset.right, height: footerHeight)
+                footerAttributes[section] = attributes
+                self.attributes.append(attributes)
+                top = attributes.frame.maxY
+            }
+            top += footerInset.bottom
+            
+            // 区底部间隔
+            top += sectionInset.bottom
+            
+            // 标记此时高度
+            caches[section][0] = top
+        }
+        
+        // 更新区块
+        updateUnions()
+    }
+    
+    /// 依据对齐方式调整约束对象
+    /// - Parameters:
+    ///   - attributes: 约束对象集合
+    ///   - surplus: 剩余宽度
+    private func layout(attributes: [UICollectionViewLayoutAttributes], surplus: CGFloat) {
+        guard attributes.count > 0 else { return }
+        let maxY: CGFloat = attributes.reduce(0.0) { max($0, $1.frame.minY) }
+        let maxHeight: CGFloat = attributes.reduce(0.0) { max($0, $1.frame.height) }
+        // 横向约束
+        switch alignment {
+        case .center:
+            for attribute in attributes {
+                var frame = attribute.frame
+                frame.origin.x += surplus/2.0
+                attribute.frame = frame
+            }
+        case .right:
+            for attribute in attributes {
+                var frame = attribute.frame
+                frame.origin.x += surplus
+                attribute.frame = frame
+            }
+        default: break
+        }
+        // 纵向约束
+        for attribute in attributes {
+            var frame = attribute.frame
+            frame.origin.y = (maxHeight - frame.height)/2.0 + maxY
+            attribute.frame = frame
+        }
+    }
+}

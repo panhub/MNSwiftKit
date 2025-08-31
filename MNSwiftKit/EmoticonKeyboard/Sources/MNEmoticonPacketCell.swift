@@ -1,8 +1,8 @@
 //
 //  MNEmoticonPacketCell.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2023/1/28.
+//  Created by panhub on 2023/1/28.
 //  表情表格
 
 import UIKit
@@ -16,15 +16,10 @@ class MNEmoticonPacketCell: UICollectionViewCell {
         
         backgroundColor = .clear
         contentView.backgroundColor = .clear
-        contentView.layer.cornerRadius = 5.0
-        contentView.clipsToBounds = true
         
-        let wh: CGFloat = 23.0
-        let hm = (contentView.frame.width - wh)/2.0
-        let vm = (contentView.frame.height - wh)/2.0
-        
-        imageView.frame = contentView.bounds.inset(by: UIEdgeInsets(top: vm, left: hm, bottom: vm, right: hm))
-        imageView.autoresizingMask = [.flexibleTopMargin, .flexibleBottomMargin, .flexibleLeftMargin, .flexibleRightMargin]
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 5.0
+        imageView.frame = contentView.bounds
         contentView.addSubview(imageView)
     }
     
@@ -37,8 +32,14 @@ class MNEmoticonPacketCell: UICollectionViewCell {
     ///   - packet: 表情包
     ///   - options: 配置信息
     ///   - highlighted: 是否高亮
-    func updatePacket(_ packet: MNEmoticonPacket, options: MNEmoticonKeyboardOptions, highlighted: Bool) {
-        imageView.image = packet.image
-        contentView.backgroundColor = highlighted ? options.highlightedColor : .clear
+    func updatePacket(_ packet: MNEmoticonPacket, options: MNEmoticonKeyboard.Options, highlighted: Bool) {
+        if let image = UIImage(contentsOfFile: packet.directory.appendingPathComponent(packet.cover)) {
+            imageView.image = image
+        } else if let image = EmoticonResource.image(named: packet.cover.deletingPathExtension) {
+            // 使用默认图片
+            imageView.image = image
+        }
+        imageView.backgroundColor = highlighted ? options.highlightedColor : .clear
+        imageView.frame = contentView.bounds.inset(by: options.packetItemInset)
     }
 }

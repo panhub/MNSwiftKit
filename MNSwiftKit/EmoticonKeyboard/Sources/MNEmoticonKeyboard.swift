@@ -1,26 +1,30 @@
 //
 //  MNEmoticonKeyboard.swift
-//  MNKit
+//  MNSwiftKit
 //
-//  Created by 冯盼 on 2023/1/28.
+//  Created by panhub on 2023/1/28.
 //  表情键盘
 
 import UIKit
 
 /// 表情键盘事件代理
 @objc public protocol MNEmoticonKeyboardDelegate: NSObjectProtocol {
+    
     /// 表情点击事件
-    /// - Parameter emoji: 表情
-    func emojiKeyboardDidTouchEmoji(_ emoji: MNEmoticon) -> Void
+    /// - Parameters:
+    ///   - emoticon: 表情图片
+    ///   - desc: 表情描述
+    ///   - style: 样式
+    func emoticonKeyboardShouldInput(emoticon: UIImage!, desc: String, style: MNEmoticon.Style)
     /// Return键点击事件
     /// - Parameter keyboard: 表情键盘
-    func emojiKeyboardReturnButtonTouchUpInside(_ keyboard: MNEmoticonKeyboard) -> Void
+    func emoticonKeyboardReturnButtonTouchUpInside(_ keyboard: MNEmoticonKeyboard)
     /// 删除事件
     /// - Parameter keyboard: 表情键盘
-    func emojiKeyboardDeleteButtonTouchUpInside(_ keyboard: MNEmoticonKeyboard) -> Void
+    func emoticonKeyboardDeleteButtonTouchUpInside(_ keyboard: MNEmoticonKeyboard)
     /// 收藏夹添加事件
     /// - Parameter keyboard: 表情键盘
-    @objc optional func emojiKeyboardShouldAddToFavorites(_ keyboard: MNEmoticonKeyboard) -> Void
+    @objc optional func emoticonKeyboardShouldAddToFavorites(_ keyboard: MNEmoticonKeyboard)
 }
 
 public class MNEmoticonKeyboard: UIView {
@@ -28,66 +32,80 @@ public class MNEmoticonKeyboard: UIView {
     private var isLoaded: Bool = false
     /// 事件代理
     public weak var delegate: MNEmoticonKeyboardDelegate?
+    /// 样式
+    private let style: MNEmoticonKeyboard.Style
+    /// 布局视图
+    private let stackView: UIStackView = UIStackView()
     /// 配置选项
-    public private(set) var options: MNEmoticonKeyboardOptions = MNEmoticonKeyboardOptions()
-    /// 表情包选择视图
-    private lazy var packetView: MNEmoticonPacketView = {
-        let packetView = MNEmoticonPacketView(frame: CGRect(x: 0.0, y: 0.0, width: frame.width, height: options.packetViewHeight + (options.axis == .horizontal ? MN_BOTTOM_SAFE_HEIGHT : 0.0)), options: options)
-        if options.axis == .horizontal {
-            packetView.maxY = frame.height
-        } else if options.packets.count <= 1, options.hidesForSinglePacket {
-            packetView.isHidden = true
-        }
-        packetView.proxy = self
-        return packetView
-    }()
+    public let options: MNEmoticonKeyboard.Options
     /// 页码选择器
-    private lazy var pageControl: MNPageControl = {
-        let pageControl = MNPageControl(frame: CGRect(x: 0.0, y: 0.0, width: frame.width, height: options.pageControlHeight))
-        if options.axis == .horizontal {
-            pageControl.maxY = packetView.minY
-        } else {
-            pageControl.isHidden = true
-        }
-        pageControl.delegate = self
-        pageControl.axis = .horizontal
-        pageControl.spacing = 11.0
-        pageControl.alignment = .center
-        pageControl.hidesForSinglePage = true
-        pageControl.pageIndicatorTintColor = .gray.withAlphaComponent(0.37)
-        pageControl.currentPageIndicatorTintColor = .gray.withAlphaComponent(0.88)
-        pageControl.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: pageControl.frame.height - 7.0, right: 0.0)
-        pageControl.pageIndicatorTouchInset = UIEdgeInsets(top: 0.0, left: -pageControl.spacing/2.0, bottom: -pageControl.contentInset.bottom, right: -pageControl.spacing/2.0)
-        pageControl.autoresizingMask = [.flexibleTopMargin, .flexibleBottomMargin, .flexibleLeftMargin, .flexibleRightMargin]
-        return pageControl
-    }()
+    private lazy var pageControl = MNPageControl()
+    /// 表情包选择视图
+    private lazy var packetView = MNEmoticonPacketView(style: style, options: options)
     /// 表情视图
-    private lazy var emojiView: MNEmoticonInputView = {
-        var rect: CGRect = .zero
-        rect.origin.y = options.axis == .horizontal ? 0.0 : (packetView.isHidden ? 0.0 : packetView.maxY)
-        rect.size.width = frame.width
-        rect.size.height = options.axis == .horizontal ? pageControl.minY : (frame.height - (packetView.isHidden ? 0.0 : packetView.maxY))
-        let emojiView = MNEmoticonInputView(frame: rect, options: options)
-        emojiView.proxy = self
-        emojiView.keyboardDismissMode = .none
-        return emojiView
-    }()
+    private lazy var emoticonView = MNEmoticonInputView(style: style, options: options)
     
-    /// 实例化键盘
-    /// - Parameter options: 键盘选项
-    public init(options: MNEmoticonKeyboardOptions) {
-        super.init(frame: CGRect(x: 0.0, y: 0.0, width: UIScreen.main.bounds.width, height: max(options.preferredHeight, options.leastNormalRect.height)))
+    /// 构建表情键盘
+    /// - Parameters:
+    ///   - frame: 位置
+    ///   - style: 样式
+    ///   - options: 配置
+    public init(frame: CGRect, style: MNEmoticonKeyboard.Style = .compact, options: MNEmoticonKeyboard.Options = .init()) {
+        self.style = style
         self.options = options
+        super.init(frame: frame)
         isMultipleTouchEnabled = false
         backgroundColor = options.backgroundColor
-        addSubview(packetView)
-        addSubview(pageControl)
-        insertSubview(emojiView, belowSubview: pageControl)
-    }
-    
-    /// 依据默认配置构造
-    public convenience init() {
-        self.init(options: MNEmoticonKeyboardOptions())
+        
+        stackView.axis = .vertical
+        stackView.spacing = 0.0
+        stackView.alignment = .fill
+        stackView.distribution = .fill
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(stackView)
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: topAnchor),
+            stackView.leftAnchor.constraint(equalTo: leftAnchor),
+            stackView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            stackView.rightAnchor.constraint(equalTo: rightAnchor)
+        ])
+        
+        emoticonView.proxy = self
+        emoticonView.keyboardDismissMode = .none
+        stackView.addArrangedSubview(emoticonView)
+        
+        switch style {
+        case .compact:
+            
+            packetView.translatesAutoresizingMaskIntoConstraints = false
+            stackView.insertArrangedSubview(packetView, at: 0)
+            NSLayoutConstraint.activate([
+                packetView.heightAnchor.constraint(equalToConstant: 50.0)
+            ])
+            
+        case .paging:
+            
+            pageControl.delegate = self
+            pageControl.axis = .horizontal
+            pageControl.spacing = 11.0
+            pageControl.hidesForSinglePage = true
+            pageControl.contentVerticalAlignment = .top
+            pageControl.contentHorizontalAlignment = .center
+            pageControl.pageIndicatorSize = .init(width: 7.0, height: 7.0)
+            pageControl.pageIndicatorTintColor = .gray.withAlphaComponent(0.37)
+            pageControl.currentPageIndicatorTintColor = .gray.withAlphaComponent(0.88)
+            pageControl.translatesAutoresizingMaskIntoConstraints = false
+            stackView.addArrangedSubview(pageControl)
+            NSLayoutConstraint.activate([
+                packetView.heightAnchor.constraint(equalToConstant: 20.0)
+            ])
+            
+            packetView.translatesAutoresizingMaskIntoConstraints = false
+            stackView.addArrangedSubview(packetView)
+            NSLayoutConstraint.activate([
+                packetView.heightAnchor.constraint(equalToConstant: 50.0 + MN_BOTTOM_SAFE_HEIGHT)
+            ])
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -97,29 +115,27 @@ public class MNEmoticonKeyboard: UIView {
     /// 设置当前表情包
     /// - Parameter name: 表情包名称
     /// - Parameter animated: 是否动态
-    public func setCurrentEmojiPacket(_ name: MNEmoticonPacket.Name, animated: Bool) {
-        let index = emojiView.packets.firstIndex { $0.name == name.rawValue }
-        guard let index = index else { return }
-        setEmojiPacket(at: index, animated: animated)
+    public func setCurrentEmoticonPacket(_ name: String, animated: Bool) {
+        guard let index = emoticonView.packets.firstIndex(where: { $0.name == name }) else { return }
+        setEmoticonPacket(at: index, animated: animated)
     }
     
     /// 设置当前所在的表情包
     /// - Parameter index: 索引
     /// - Parameter animated: 是否动态
-    public func setEmojiPacket(at index: Int, animated: Bool) {
+    public func setEmoticonPacket(at index: Int, animated: Bool) {
         packetView.setSelected(at: index)
-        emojiView.setCurrentPage(at: index, animated: animated)
+        emoticonView.setCurrentPage(at: index, animated: animated)
     }
     
     public override func didMoveToSuperview() {
         super.didMoveToSuperview()
-        guard let _ = superview, isLoaded == false else { return }
-        isLoaded = true
-        MNEmoticonManager.fetchEmojiPackets(with: options.packets) { [weak self] packets in
+        guard let _ = superview, emoticonView.packets.isEmpty else { return }
+        MNEmoticonManager.fetchEmoticonPacket(options.packets) { [weak self] packets in
             guard let self = self else { return }
             self.packetView.reloadPackets(packets)
-            self.emojiView.reloadPackets(packets)
-            self.setEmojiPacket(at: self.packetView.selectedIndex, animated: false)
+            self.emoticonView.reloadPackets(packets)
+            self.setEmoticonPacket(at: self.packetView.selectedIndex, animated: false)
         }
     }
 }
@@ -128,11 +144,12 @@ public class MNEmoticonKeyboard: UIView {
 extension MNEmoticonKeyboard: MNEmoticonPacketViewDelegate {
     
     func packetViewDidSelectPacket(at index: Int) {
-        emojiView.setCurrentPage(at: index, animated: false)
+        emoticonView.setCurrentPage(at: index, animated: false)
     }
     
     func packetViewReturnButtonTouchUpInside(_ packetView: MNEmoticonPacketView) {
-        delegate?.emojiKeyboardReturnButtonTouchUpInside(self)
+        guard let delegate = delegate else { return }
+        delegate.emoticonKeyboardReturnButtonTouchUpInside(self)
     }
 }
 
@@ -140,7 +157,7 @@ extension MNEmoticonKeyboard: MNEmoticonPacketViewDelegate {
 extension MNEmoticonKeyboard: MNPageControlDelegate {
     
     public func pageControl(_ pageControl: MNPageControl, didSelectPageAt index: Int) {
-        emojiView.scrollEmoji(to: index, animated: false)
+        emoticonView.scrollEmoticon(to: index, animated: false)
     }
 }
 
@@ -151,30 +168,34 @@ extension MNEmoticonKeyboard: MNEmoticonInputViewDelegate {
         packetView.selectedIndex = index
     }
     
-    func inputViewDidUpdateEmoji(with count: Int) {
+    func inputViewDidUpdateEmoticon(with count: Int) {
         guard pageControl.isHidden == false else { return }
         pageControl.numberOfPages = count
     }
     
-    func inputViewDidScrollEmoji(to index: Int) {
+    func inputViewDidScrollEmoticon(to index: Int) {
         guard pageControl.isHidden == false else { return }
         pageControl.currentPageIndex = index
     }
     
-    func inputViewDidSelectEmoji(_ emoji: MNEmoticon) {
-        delegate?.emojiKeyboardDidTouchEmoji(emoji)
+    func inputViewDidSelectEmoticon(_ emoticon: MNEmoticon) {
+        guard let delegate = delegate else { return }
+        delegate.emoticonKeyboardShouldInput(emoticon: emoticon.image, desc: emoticon.desc, style: emoticon.style)
     }
     
     func inputViewShouldAddToFavorites(_ inputView: MNEmoticonInputView) {
-        delegate?.emojiKeyboardShouldAddToFavorites?(self)
+        guard let delegate = delegate else { return }
+        delegate.emoticonKeyboardShouldAddToFavorites?(self)
     }
     
     func inputViewDeleteButtonTouchUpInside(_ inputView: MNEmoticonInputView) {
-        delegate?.emojiKeyboardDeleteButtonTouchUpInside(self)
+        guard let delegate = delegate else { return }
+        delegate.emoticonKeyboardDeleteButtonTouchUpInside(self)
     }
     
     func inputViewReturnButtonTouchUpInside(_ inputView: MNEmoticonInputView) {
-        delegate?.emojiKeyboardReturnButtonTouchUpInside(self)
+        guard let delegate = delegate else { return }
+        delegate.emoticonKeyboardReturnButtonTouchUpInside(self)
     }
 }
 
