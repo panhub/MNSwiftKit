@@ -26,8 +26,8 @@ class MNEmoticonCollection {
             let jsonData = try Data(contentsOf: url, options: [])
             let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
             guard let json = jsonObject as? [String:Any] else { return nil }
-            guard let style = json[MNEmoticonPacket.Key.style.rawValue] as? Int, style == MNEmoticon.Style.emoticon.rawValue else { return nil }
-            guard let emoticons = json[MNEmoticonPacket.Key.emoticons.rawValue] as? [[String:String]] else { return nil }
+            guard let style = json[MNEmoticon.Packet.Key.style.rawValue] as? Int, style == MNEmoticon.Style.emoticon.rawValue else { return nil }
+            guard let emoticons = json[MNEmoticon.Packet.Key.emoticons.rawValue] as? [[String:String]] else { return nil }
             self.emoticons = emoticons.reduce(into: [String:String](), { partialResult, dic in
                 partialResult.merge(dic) { _, new in new }
             })

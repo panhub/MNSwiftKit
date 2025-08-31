@@ -30,11 +30,11 @@ class MNEmoticonPacketView: UIView {
     /// 配置选项
     private let options: MNEmoticonKeyboard.Options
     /// 表情包集合
-    private var packets: [MNEmoticonPacket] = [MNEmoticonPacket]()
+    private var packets: [MNEmoticon.Packet] = [MNEmoticon.Packet]()
     /// 分割线
     private let separatorView: UIView = .init()
     /// 表情包浏览
-    private let collectionView: UICollectionView = .init()
+    private let collectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     /// Return键
     private lazy var returnButton: MNEmoticonButton = .init()
     /// Return键阴影
@@ -48,7 +48,7 @@ class MNEmoticonPacketView: UIView {
     init(style: MNEmoticonKeyboard.Style, options: MNEmoticonKeyboard.Options) {
         self.style = style
         self.options = options
-        super.init(frame: .zero)
+        super.init(frame: .init(x: 0.0, y: 0.0, width: 300.0, height: 50.0))
         
         backgroundColor = options.tintColor
         
@@ -62,13 +62,12 @@ class MNEmoticonPacketView: UIView {
             separatorView.heightAnchor.constraint(equalToConstant: 0.7)
         ])
         
-        let layout = UICollectionViewFlowLayout()
+        let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
         layout.scrollDirection = .horizontal
         layout.footerReferenceSize = .zero
         layout.headerReferenceSize = .zero
         layout.sectionInset = options.packetSectionInset
-        layout.minimumInteritemSpacing = options.packetInteritemSpacing
-        collectionView.collectionViewLayout = layout
+        layout.minimumLineSpacing = options.packetInteritemSpacing
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColor = .clear
@@ -125,7 +124,7 @@ class MNEmoticonPacketView: UIView {
     
     /// 重载表情包
     /// - Parameter packets: 表情包集合
-    func reloadPackets(_ packets: [MNEmoticonPacket]? = nil) {
+    func reloadPackets(_ packets: [MNEmoticon.Packet]? = nil) {
         if let packets = packets {
             self.packets.removeAll()
             self.packets.append(contentsOf: packets)
@@ -187,7 +186,8 @@ extension MNEmoticonPacketView: UICollectionViewDataSource, UICollectionViewDele
 extension MNEmoticonPacketView: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let itemHeight = max(0.0, collectionView.frame.height - options.packetSectionInset.top - options.packetSectionInset.bottom)
+        let contentHeight = CGRect(origin: .zero, size: collectionView.frame.size).inset(by: collectionView.contentInset).height - options.packetSectionInset.top - options.packetSectionInset.bottom
+        let itemHeight = max(0.0, contentHeight)
         return .init(width: itemHeight, height: itemHeight)
     }
 }

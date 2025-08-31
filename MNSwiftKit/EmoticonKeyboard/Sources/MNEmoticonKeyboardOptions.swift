@@ -20,11 +20,10 @@ extension MNEmoticonKeyboard {
     
     @objc(MNEmoticonKeyboardOptions)
     public class Options: NSObject {
-        
         /// returnKey类型
         @objc public var returnKeyType: UIReturnKeyType = .default
         /// 表情包
-        @objc public var packets: [String] = [MNEmoticonPacket.Name.default.rawValue, MNEmoticonPacket.Name.favorites.rawValue]
+        @objc public var packets: [String] = [MNEmoticon.Packet.Name.default.rawValue, MNEmoticon.Packet.Name.favorites.rawValue]
         /// 表情包相邻间隔
         @objc public var packetInteritemSpacing: CGFloat = 6.0
         /// 表情包视图四周约束

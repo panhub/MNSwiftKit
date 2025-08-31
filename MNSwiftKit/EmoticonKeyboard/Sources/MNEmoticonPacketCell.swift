@@ -32,7 +32,7 @@ class MNEmoticonPacketCell: UICollectionViewCell {
     ///   - packet: 表情包
     ///   - options: 配置信息
     ///   - highlighted: 是否高亮
-    func updatePacket(_ packet: MNEmoticonPacket, options: MNEmoticonKeyboard.Options, highlighted: Bool) {
+    func updatePacket(_ packet: MNEmoticon.Packet, options: MNEmoticonKeyboard.Options, highlighted: Bool) {
         if let image = UIImage(contentsOfFile: packet.directory.appendingPathComponent(packet.cover)) {
             imageView.image = image
         } else if let image = EmoticonResource.image(named: packet.cover.deletingPathExtension) {

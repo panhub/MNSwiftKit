@@ -13,12 +13,12 @@ public class EmoticonResource {
     
     /// 资源束
     nonisolated(unsafe) private static var bundle: Bundle = {
-        // 尝试从 CocoaPods 生成的 bundle 中加载（库作为 Pod 使用时）
-        if let url = Bundle.main.url(forResource: "MNSwiftKit_EmoticonKeyboard", withExtension: "bundle"), let bundle = Bundle(url: url) {
-            return bundle
-        }
         // 尝试从当前框架/模块的 bundle 中加载（库作为 Pod 使用时）
         if let url = Bundle(for: EmoticonResource.self).url(forResource: "MNSwiftKit_EmoticonKeyboard", withExtension: "bundle"), let bundle = Bundle(url: url) {
+            return bundle
+        }
+        // 尝试从 CocoaPods 生成的 bundle 中加载（库作为 Pod 使用时）
+        if let url = Bundle.main.url(forResource: "MNSwiftKit_EmoticonKeyboard", withExtension: "bundle"), let bundle = Bundle(url: url) {
             return bundle
         }
         // 可能是直接源代码集成，尝试在框架 bundle 的上级目录查找

@@ -138,6 +138,12 @@ public class MNEmoticonKeyboard: UIView {
             self.setEmoticonPacket(at: self.packetView.selectedIndex, animated: false)
         }
     }
+    
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        print(self.frame)
+    }
 }
 
 // MARK: - MNEmoticonPacketViewDelegate

@@ -11,13 +11,30 @@ import MNSwiftKit
 
 class ViewController: UIViewController {
     
-    //lazy var pageC = MNPageControl(frame: .init(x: 0.0, y: 200.0, width: view.frame.width, height: 150.0))
+    lazy var textField = UITextField(frame: .init(x: 40.0, y: 100.0, width: view.frame.width - 80.0, height: 50.0))
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
         view.backgroundColor = .white
+        
+        textField.borderStyle = .roundedRect
+        textField.font = .systemFont(ofSize: 17.0)
+        textField.leftViewMode = .always
+        textField.leftView = .init(frame: .init(origin: .zero, size: .init(width: 30.0, height: 50.0)))
+        textField.rightViewMode = .always
+        textField.rightView = .init(frame: .init(origin: .zero, size: .init(width: 30.0, height: 50.0)))
+        view.addSubview(textField)
+        
+        let em = MNEmoticonKeyboard.Options()
+        em.returnKeyType = .done
+        let keyboard = MNEmoticonKeyboard(frame: .init(origin: .zero, size: .init(width: MN_SCREEN_WIDTH, height: 300.0 + MN_BOTTOM_SAFE_HEIGHT)), style: .paging, options: em)
+        keyboard.delegate = self
+        textField.inputView = keyboard
+        
+        
+        
         
 //        print("============\(MN_SCREEN_WIDTH)============")
 //        print("============\(MN_SCREEN_HEIGHT)============")
@@ -33,9 +50,30 @@ class ViewController: UIViewController {
 //        print("============\(String.uuid)============")
     }
     
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        textField.resignFirstResponder()
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
 }
 
+extension ViewController: MNEmoticonKeyboardDelegate {
+    
+    func emoticonKeyboardShouldInput(emoticon: UIImage!, desc: String, style: MNSwiftKit.MNEmoticon.Style) {
+        
+        textField.input(emoticon: emoticon, desc: desc)
+    }
+    
+    func emoticonKeyboardReturnButtonTouchUpInside(_ keyboard: MNSwiftKit.MNEmoticonKeyboard) {
+        
+        textField.resignFirstResponder()
+    }
+    
+    func emoticonKeyboardDeleteButtonTouchUpInside(_ keyboard: MNSwiftKit.MNEmoticonKeyboard) {
+        textField.deleteBackward()
+    }
+}

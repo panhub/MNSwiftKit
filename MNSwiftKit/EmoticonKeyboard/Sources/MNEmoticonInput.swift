@@ -77,11 +77,11 @@ extension MNEmoticonInput {
     
     /// 输入表情
     /// - Parameter emoji: 表情实例
-    public mutating func inputEmoticon(_ emoticon: MNEmoticon) {
-        guard let desc = emoticon.desc, desc.count > 0 else { return }
+    public mutating func input(emoticon: UIImage!, desc: String) {
+        guard desc.isEmpty == false else { return }
         // 匹配表情附件
-        var attachment: MNEmoticonAttachment?
-        if let image = emoticon.image {
+        var attachment: MNEmoticonAttachment!
+        if let image = emoticon {
             attachment = MNEmoticonAttachment(image: image, desc: desc)
         } else {
             attachment = MNEmoticonManager.shared.matchsEmoticon(in: desc).first

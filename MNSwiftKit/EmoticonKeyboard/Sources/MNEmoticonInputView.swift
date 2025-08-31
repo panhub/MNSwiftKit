@@ -41,7 +41,7 @@ class MNEmoticonInputView: MNEmoticonPageView {
     /// 事件代理
     weak var proxy: MNEmoticonInputViewDelegate?
     /// 表情包
-    private(set) var packets: [MNEmoticonPacket] = []
+    private(set) var packets: [MNEmoticon.Packet] = []
     /// 缓存
     private var emoticonViews: [Int:MNEmoticonView] = [:]
     /// 预览视图
@@ -95,7 +95,7 @@ class MNEmoticonInputView: MNEmoticonPageView {
     
     /// 更新表情包
     /// - Parameter packets: 表情包集合
-    func reloadPackets(_ packets: [MNEmoticonPacket]) {
+    func reloadPackets(_ packets: [MNEmoticon.Packet]) {
         // 删除子界面
         emoticonViews.forEach { $0.value.removeFromSuperview() }
         emoticonViews.removeAll()

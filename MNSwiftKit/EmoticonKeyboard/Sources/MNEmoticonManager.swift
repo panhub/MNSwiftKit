@@ -27,7 +27,7 @@ public class MNEmoticonManager {
     /// 用户缓存目录
     public let userCacheDirectory = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first! + "/MNEmoticon"
     /// 收藏夹路径
-    public private(set) lazy var favoritesDirectory = userCacheDirectory.appendingPathComponent(MNEmoticonPacket.Name.favorites.rawValue)
+    public private(set) lazy var favoritesDirectory = userCacheDirectory.appendingPathComponent(MNEmoticon.Packet.Name.favorites.rawValue)
     
     private init() {
         // 解析表情
@@ -58,7 +58,7 @@ extension MNEmoticonManager {
     /// 获取表情包
     /// - Parameter names: 表情包文件名集合
     /// - Returns: 查询结果
-    public func fetchEmoticonPacket(_ names: [String]) -> [MNEmoticonPacket] {
+    public func fetchEmoticonPacket(_ names: [String]) -> [MNEmoticon.Packet] {
         // 先去重
         let elements = names.reduce(into: [String]()) { partialResult, name in
             guard partialResult.contains(name) == false else { return }
@@ -80,7 +80,7 @@ extension MNEmoticonManager {
             }
             if FileManager.default.fileExists(atPath: jsonPath) {
                 urls.append(jsonURL)
-            } else if name == MNEmoticonPacket.Name.favorites.rawValue {
+            } else if name == MNEmoticon.Packet.Name.favorites.rawValue {
                 // 没有收藏夹, 主动创建
                 if FileManager.default.fileExists(atPath: favoritesDirectory) == false {
                     do {
@@ -94,11 +94,11 @@ extension MNEmoticonManager {
                 }
                 // 创建json文件
                 let json: [String:Any] = [
-                    MNEmoticonPacket.Key.time.rawValue:1,
-                    MNEmoticonPacket.Key.favorites.rawValue:1,
-                    MNEmoticonPacket.Key.style.rawValue:MNEmoticon.Style.image.rawValue,
-                    MNEmoticonPacket.Key.cover.rawValue:"favorites.png",
-                    MNEmoticonPacket.Key.emoticons.rawValue:[[String:String]]()
+                    MNEmoticon.Packet.Key.time.rawValue:1,
+                    MNEmoticon.Packet.Key.favorites.rawValue:1,
+                    MNEmoticon.Packet.Key.style.rawValue:MNEmoticon.Style.image.rawValue,
+                    MNEmoticon.Packet.Key.cover.rawValue:"favorites.png",
+                    MNEmoticon.Packet.Key.emoticons.rawValue:[[String:String]]()
                 ]
                 if #available(iOS 11.0, *) {
                     do {
@@ -122,7 +122,7 @@ extension MNEmoticonManager {
                 urls.append(jsonURL)
             }
         }
-        var packets = urls.compactMap { MNEmoticonPacket(url: $0) }
+        var packets = urls.compactMap { MNEmoticon.Packet(url: $0) }
         packets.sort { $0.time <= $1.time }
         return packets
     }
@@ -132,7 +132,7 @@ extension MNEmoticonManager {
     ///   - names: 表情包文件名集合
     ///   - queue: 执行队列
     ///   - completionHandler: 结果回调
-    public class func fetchEmoticonPacket(_ names: [String], using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: @escaping ([MNEmoticonPacket])->Void) {
+    public class func fetchEmoticonPacket(_ names: [String], using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: @escaping ([MNEmoticon.Packet])->Void) {
         queue.async {
             let packets = MNEmoticonManager.shared.fetchEmoticonPacket(names)
             DispatchQueue.main.async {
@@ -144,7 +144,7 @@ extension MNEmoticonManager {
     /// 获取表情包
     /// - Parameter names: 表情包名称集合
     /// - Returns: 查询结果
-    public func fetchEmoticonPacket(names: [MNEmoticonPacket.Name]) -> [MNEmoticonPacket] {
+    public func fetchEmoticonPacket(names: [MNEmoticon.Packet.Name]) -> [MNEmoticon.Packet] {
         fetchEmoticonPacket(names.compactMap({ $0.rawValue }))
     }
     
@@ -153,7 +153,7 @@ extension MNEmoticonManager {
     ///   - names: 表情包名称集合
     ///   - queue: 执行队列
     ///   - completionHandler: 结果回调
-    public class func fetchEmoticonPacket(names: [MNEmoticonPacket.Name], using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: @escaping ([MNEmoticonPacket])->Void) {
+    public class func fetchEmoticonPacket(names: [MNEmoticon.Packet.Name], using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: @escaping ([MNEmoticon.Packet])->Void) {
         queue.async {
             let packets = MNEmoticonManager.shared.fetchEmoticonPacket(names: names)
             DispatchQueue.main.async {
@@ -242,11 +242,11 @@ extension MNEmoticonManager {
                 return false
             }
             // 默认信息
-            json[MNEmoticonPacket.Key.time.rawValue] = 1
-            json[MNEmoticonPacket.Key.favorites.rawValue] = 1
-            json[MNEmoticonPacket.Key.cover.rawValue] = "favorites.png"
-            json[MNEmoticonPacket.Key.style.rawValue] = MNEmoticon.Style.image.rawValue
-            json[MNEmoticonPacket.Key.emoticons.rawValue] = [[String:String]]()
+            json[MNEmoticon.Packet.Key.time.rawValue] = 1
+            json[MNEmoticon.Packet.Key.favorites.rawValue] = 1
+            json[MNEmoticon.Packet.Key.cover.rawValue] = "favorites.png"
+            json[MNEmoticon.Packet.Key.style.rawValue] = MNEmoticon.Style.image.rawValue
+            json[MNEmoticon.Packet.Key.emoticons.rawValue] = [[String:String]]()
         }
         // 复制图片到文件夹
         var isDirectory: ObjCBool = true
@@ -271,9 +271,9 @@ extension MNEmoticonManager {
             return false
         }
         let emoticon: [String:String] = [MNEmoticon.Key.img.rawValue:targetPath.lastPathComponent,MNEmoticon.Key.desc.rawValue:targetPath.deletingPathExtension.lastPathComponent]
-        var emoticons = json[MNEmoticonPacket.Key.emoticons.rawValue] as? [[String:String]] ?? []
+        var emoticons = json[MNEmoticon.Packet.Key.emoticons.rawValue] as? [[String:String]] ?? []
         emoticons.insert(emoticon, at: 0)
-        json[MNEmoticonPacket.Key.emoticons.rawValue] = emoticons
+        json[MNEmoticon.Packet.Key.emoticons.rawValue] = emoticons
         if #available(iOS 11.0, *) {
             do {
                 try (json as NSDictionary).write(to: jsonURL)
@@ -307,7 +307,7 @@ extension MNEmoticonManager {
             DispatchQueue.main.async {
                 // 通知收藏夹变化
                 if isSuccess {
-                    NotificationCenter.default.post(name: MNEmoticonDidChangeNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:MNEmoticonPacket.Name.favorites.rawValue])
+                    NotificationCenter.default.post(name: MNEmoticonDidChangeNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:MNEmoticon.Packet.Name.favorites.rawValue])
                 }
                 // 回调
                 completionHandler?(isSuccess)
@@ -351,11 +351,11 @@ extension MNEmoticonManager {
                 return false
             }
             // 默认信息
-            json[MNEmoticonPacket.Key.time.rawValue] = 1
-            json[MNEmoticonPacket.Key.favorites.rawValue] = 1
-            json[MNEmoticonPacket.Key.cover.rawValue] = "favorites.png"
-            json[MNEmoticonPacket.Key.style.rawValue] = MNEmoticon.Style.image.rawValue
-            json[MNEmoticonPacket.Key.emoticons.rawValue] = [[String:String]]()
+            json[MNEmoticon.Packet.Key.time.rawValue] = 1
+            json[MNEmoticon.Packet.Key.favorites.rawValue] = 1
+            json[MNEmoticon.Packet.Key.cover.rawValue] = "favorites.png"
+            json[MNEmoticon.Packet.Key.style.rawValue] = MNEmoticon.Style.image.rawValue
+            json[MNEmoticon.Packet.Key.emoticons.rawValue] = [[String:String]]()
         }
         // 写入图片
         guard let imagePath = favoritesDirectory.appendingPathComponent("\(Int(Date().timeIntervalSince1970*1000.0)).png").absolutePath else {
@@ -388,9 +388,9 @@ extension MNEmoticonManager {
         }
         // 更新json
         let emoticon: [String:String] = [MNEmoticon.Key.img.rawValue:targetPath.lastPathComponent,MNEmoticon.Key.desc.rawValue:targetPath.deletingPathExtension.lastPathComponent]
-        var emoticons = json[MNEmoticonPacket.Key.emoticons.rawValue] as? [[String:String]] ?? []
+        var emoticons = json[MNEmoticon.Packet.Key.emoticons.rawValue] as? [[String:String]] ?? []
         emoticons.insert(emoticon, at: 0)
-        json[MNEmoticonPacket.Key.emoticons.rawValue] = emoticons
+        json[MNEmoticon.Packet.Key.emoticons.rawValue] = emoticons
         if #available(iOS 11.0, *) {
             do {
                 try (json as NSDictionary).write(to: jsonURL)
@@ -424,7 +424,7 @@ extension MNEmoticonManager {
             DispatchQueue.main.async {
                 // 通知收藏夹变化
                 if isSuccess {
-                    NotificationCenter.default.post(name: MNEmoticonDidChangeNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:MNEmoticonPacket.Name.favorites.rawValue])
+                    NotificationCenter.default.post(name: MNEmoticonDidChangeNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:MNEmoticon.Packet.Name.favorites.rawValue])
                 }
                 // 回调
                 completionHandler?(isSuccess)
@@ -468,7 +468,7 @@ extension MNEmoticonManager {
 #endif
             return false
         }
-        guard var emoticons = json[MNEmoticonPacket.Key.emoticons.rawValue] as? [[String:String]] else {
+        guard var emoticons = json[MNEmoticon.Packet.Key.emoticons.rawValue] as? [[String:String]] else {
 #if DEBUG
             print("当前为空收藏夹")
 #endif
@@ -478,7 +478,7 @@ extension MNEmoticonManager {
             guard let img = item[MNEmoticon.Key.img.rawValue], img == imageName else { return false }
             return true
         }
-        json[MNEmoticonPacket.Key.emoticons.rawValue] = emoticons
+        json[MNEmoticon.Packet.Key.emoticons.rawValue] = emoticons
         if #available(iOS 11.0, *) {
             do {
                 try (json as NSDictionary).write(to: jsonURL)
@@ -518,7 +518,7 @@ extension MNEmoticonManager {
             DispatchQueue.main.async {
                 // 通知收藏夹变化
                 if isSuccess {
-                    NotificationCenter.default.post(name: MNEmoticonDidChangeNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:MNEmoticonPacket.Name.favorites.rawValue])
+                    NotificationCenter.default.post(name: MNEmoticonDidChangeNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:MNEmoticon.Packet.Name.favorites.rawValue])
                 }
                 // 回调
                 completionHandler?(isSuccess)
@@ -544,7 +544,7 @@ extension MNEmoticonManager {
             DispatchQueue.main.async {
                 // 通知收藏夹变化
                 if isSuccess {
-                    NotificationCenter.default.post(name: MNEmoticonDidChangeNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:MNEmoticonPacket.Name.favorites.rawValue])
+                    NotificationCenter.default.post(name: MNEmoticonDidChangeNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:MNEmoticon.Packet.Name.favorites.rawValue])
                 }
                 // 回调
                 completionHandler?(isSuccess)

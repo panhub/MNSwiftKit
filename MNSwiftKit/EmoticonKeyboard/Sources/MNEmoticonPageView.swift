@@ -41,11 +41,15 @@ open class MNEmoticonPageView: UIScrollView {
             switch axis {
             case .horizontal:
                 let x = contentOffset.x
+                if x.isFinite || x.isNaN { return 0 }
                 let w = frame.width
+                if w.isFinite || w.isNaN { return 0 }
                 index = Int(round(x/w))
             default:
                 let y = contentOffset.y
+                if y.isFinite || y.isNaN { return 0 }
                 let h = frame.height
+                if h.isFinite || h.isNaN { return 0 }
                 index = Int(round(y/h))
             }
             return index

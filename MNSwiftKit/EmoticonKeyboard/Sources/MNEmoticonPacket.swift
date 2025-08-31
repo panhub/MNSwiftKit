@@ -8,116 +8,120 @@
 import UIKit
 import Foundation
 
-public class MNEmoticonPacket {
+extension MNEmoticon {
     
-    public struct Name: RawRepresentable {
+    public class Packet {
         
-        public let rawValue: String
-        
-        public init(rawValue: String) {
-            self.rawValue = rawValue
-        }
-    }
-    
-    public struct Key: RawRepresentable {
-        
-        public let rawValue: String
-        
-        public init(rawValue: String) {
-            self.rawValue = rawValue
-        }
-    }
-    
-    /// 创建时间戳
-    public let time: Int
-    
-    /// 名称
-    public let name: String
-    
-    /// 封面文件名
-    public let cover: String
-    
-    /// 文件目录
-    public let directory: String
-    
-    /// 类型
-    public let style: MNEmoticon.Style
-    
-    /// 是否是收藏夹
-    internal var isFavorites: Bool = false
-    
-    /// 表情集合
-    public internal(set) var emoticons: [MNEmoticon] = []
-    
-    
-    /// 构造表情包
-    /// - Parameters:
-    ///   - url: json文件地址
-    public init?(url: URL) {
-        do {
-            let jsonData = try Data(contentsOf: url, options: [])
-            let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
-            guard let json = jsonObject as? [String:Any] else { return nil }
-            guard let rawValue = json[MNEmoticonPacket.Key.style.rawValue] as? Int, let style = MNEmoticon.Style(rawValue: rawValue) else { return nil }
-            guard let time = json[MNEmoticonPacket.Key.style.rawValue] as? Int else { return nil }
-            guard let cover = json[MNEmoticonPacket.Key.cover.rawValue] as? String else { return nil }
-            guard let array = json[MNEmoticonPacket.Key.emoticons.rawValue] as? [[String:String]] else { return nil }
-            self.time = time
-            self.cover = cover
-            self.style = style
-            let directoryURL = url.deletingPathExtension()
-            self.name = directoryURL.lastPathComponent
-            if #available(iOS 16.0, *) {
-                self.directory = directoryURL.path(percentEncoded: false)
-            } else {
-                self.directory = directoryURL.path
+        public struct Name: RawRepresentable {
+            
+            public let rawValue: String
+            
+            public init(rawValue: String) {
+                self.rawValue = rawValue
             }
-            if let value = json[MNEmoticonPacket.Key.favorites.rawValue] as? Int, value == 1 {
-                self.isFavorites = true
+        }
+        
+        public struct Key: RawRepresentable {
+            
+            public let rawValue: String
+            
+            public init(rawValue: String) {
+                self.rawValue = rawValue
             }
-            let emoticons = array.compactMap { MNEmoticon(json: $0, style: style, in: directory) }
-            self.emoticons.append(contentsOf: emoticons)
-        } catch {
+        }
+        
+        /// 创建时间戳
+        public let time: Int
+        
+        /// 名称
+        public let name: String
+        
+        /// 封面文件名
+        public let cover: String
+        
+        /// 文件目录
+        public let directory: String
+        
+        /// 类型
+        public let style: MNEmoticon.Style
+        
+        /// 是否是收藏夹
+        internal var isFavorites: Bool = false
+        
+        /// 表情集合
+        public internal(set) var emoticons: [MNEmoticon] = []
+        
+        
+        /// 构造表情包
+        /// - Parameters:
+        ///   - url: json文件地址
+        public init?(url: URL) {
+            do {
+                let jsonData = try Data(contentsOf: url, options: [])
+                let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
+                guard let json = jsonObject as? [String:Any] else { return nil }
+                guard let rawValue = json[MNEmoticon.Packet.Key.style.rawValue] as? Int, let style = MNEmoticon.Style(rawValue: rawValue) else { return nil }
+                guard let time = json[MNEmoticon.Packet.Key.style.rawValue] as? Int else { return nil }
+                guard let cover = json[MNEmoticon.Packet.Key.cover.rawValue] as? String else { return nil }
+                guard let array = json[MNEmoticon.Packet.Key.emoticons.rawValue] as? [[String:String]] else { return nil }
+                self.time = time
+                self.cover = cover
+                self.style = style
+                self.name = url.deletingPathExtension().lastPathComponent
+                let directoryURL = url.deletingLastPathComponent()
+                if #available(iOS 16.0, *) {
+                    self.directory = directoryURL.path(percentEncoded: false)
+                } else {
+                    self.directory = directoryURL.path
+                }
+                if let value = json[MNEmoticon.Packet.Key.favorites.rawValue] as? Int, value == 1 {
+                    self.isFavorites = true
+                }
+                let emoticons = array.compactMap { MNEmoticon(json: $0, style: style, in: directory) }
+                self.emoticons.append(contentsOf: emoticons)
+            } catch {
 #if DEBUG
-            print("解析json失败: \(url)")
+                print("解析json失败: \(url)")
 #endif
-            return nil
+                return nil
+            }
         }
     }
 }
 
-extension MNEmoticonPacket: Equatable {
+
+extension MNEmoticon.Packet: Equatable {
     
-    public static func == (lhs: MNEmoticonPacket, rhs: MNEmoticonPacket) -> Bool {
+    public static func == (lhs: MNEmoticon.Packet, rhs: MNEmoticon.Packet) -> Bool {
         lhs.name == rhs.name
     }
 }
 
-extension MNEmoticonPacket.Name: Equatable {
+extension MNEmoticon.Packet.Name: Equatable {
     
-    public static func == (lhs: MNEmoticonPacket.Name, rhs: MNEmoticonPacket.Name) -> Bool {
+    public static func == (lhs: MNEmoticon.Packet.Name, rhs: MNEmoticon.Packet.Name) -> Bool {
         lhs.rawValue == rhs.rawValue
     }
 }
 
-extension MNEmoticonPacket.Name {
+extension MNEmoticon.Packet.Name {
     /// 默认表情包
-    public static let `default`: MNEmoticonPacket.Name = MNEmoticonPacket.Name(rawValue: "default")
+    public static let `default`: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "default")
     /// 收藏夹
-    public static let favorites: MNEmoticonPacket.Name = MNEmoticonPacket.Name(rawValue: "收藏夹")
+    public static let favorites: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "收藏夹")
 }
 
-extension MNEmoticonPacket.Key {
+extension MNEmoticon.Packet.Key {
     /// 名字字段
-    public static let name: MNEmoticonPacket.Key = MNEmoticonPacket.Key(rawValue: "name")
+    public static let name: MNEmoticon.Packet.Key = MNEmoticon.Packet.Key(rawValue: "name")
     /// 样式字段
-    public static let style: MNEmoticonPacket.Key = MNEmoticonPacket.Key(rawValue: "style")
+    public static let style: MNEmoticon.Packet.Key = MNEmoticon.Packet.Key(rawValue: "style")
     /// 时间字段
-    public static let time: MNEmoticonPacket.Key = MNEmoticonPacket.Key(rawValue: "time")
+    public static let time: MNEmoticon.Packet.Key = MNEmoticon.Packet.Key(rawValue: "time")
     /// 封面字段
-    public static let cover: MNEmoticonPacket.Key = MNEmoticonPacket.Key(rawValue: "cover")
+    public static let cover: MNEmoticon.Packet.Key = MNEmoticon.Packet.Key(rawValue: "cover")
     /// 是否是收藏夹
-    public static let favorites: MNEmoticonPacket.Key = MNEmoticonPacket.Key(rawValue: "favorites")
+    public static let favorites: MNEmoticon.Packet.Key = MNEmoticon.Packet.Key(rawValue: "favorites")
     /// 表情字段
-    public static let emoticons: MNEmoticonPacket.Key = MNEmoticonPacket.Key(rawValue: "emoticons")
+    public static let emoticons: MNEmoticon.Packet.Key = MNEmoticon.Packet.Key(rawValue: "emoticons")
 }

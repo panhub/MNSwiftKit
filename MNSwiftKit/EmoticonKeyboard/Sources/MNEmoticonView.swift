@@ -37,7 +37,7 @@ class MNEmoticonView: UIView {
     /// 对于分页布局, 总页数
     var numberOfPages = 0
     /// 表情包
-    private var packet: MNEmoticonPacket!
+    private var packet: MNEmoticon.Packet!
     /// 事件代理
     weak var delegate: MNEmoticonViewDelegate?
     /// 表情包集合
@@ -49,11 +49,17 @@ class MNEmoticonView: UIView {
     /// 添加模型
     private lazy var adding = MNEmoticon.Adding()
     /// 表情布局视图
-    private let collectionView: UICollectionView = UICollectionView()
+    private let collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: MNEmoticonCollectionLayout())
     /// 功能视图
     private lazy var elementView: MNEmoticonElementView = MNEmoticonElementView(options: options)
     /// 当前页码 仅对 style == paging有效
-    var currentPageIndex: Int { Int(round(collectionView.contentOffset.x/collectionView.frame.width)) }
+    var currentPageIndex: Int {
+        let offsetX = collectionView.contentOffset.x
+        if offsetX.isFinite || offsetX.isNaN { return 0 }
+        let width = collectionView.frame.width
+        if width.isFinite || width.isNaN { return 0 }
+        return Int(round(offsetX/width))
+    }
     
     
     /// 构建表情视图
@@ -63,11 +69,11 @@ class MNEmoticonView: UIView {
     init(style: MNEmoticonKeyboard.Style, options: MNEmoticonKeyboard.Options) {
         self.style = style
         self.options = options
-        super.init(frame: .zero)
+        super.init(frame: .init(x: 0.0, y: 0.0, width: 100.0, height: 100.0))
         
         backgroundColor = .clear
         
-        let layout = MNEmoticonCollectionLayout()
+        let layout = collectionView.collectionViewLayout as! MNEmoticonCollectionLayout
         layout.sectionInset = .zero
         layout.numberOfColumns = 5
         layout.itemSize = .init(width: 30.0, height: 30.0)
@@ -76,7 +82,6 @@ class MNEmoticonView: UIView {
         layout.minimumInteritemSpacing = 0.0
         layout.headerReferenceSize = .zero
         layout.footerReferenceSize = .zero
-        collectionView.collectionViewLayout = layout
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColor = .clear
@@ -120,7 +125,7 @@ class MNEmoticonView: UIView {
     /// 重载表情
     /// - Parameters:
     ///   - packet: 表情包
-    func reloadEmoticon(packet: MNEmoticonPacket) {
+    func reloadEmoticon(packet: MNEmoticon.Packet) {
         self.packet = packet
         emoticons.removeAll()
         var itemSize: CGSize = .zero
