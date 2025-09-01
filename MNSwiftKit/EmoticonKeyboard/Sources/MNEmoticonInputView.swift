@@ -33,13 +33,13 @@ protocol MNEmoticonInputViewDelegate: NSObjectProtocol {
 }
 
 /// 表情输入视图
-class MNEmoticonInputView: MNEmoticonPageView {
+class MNEmoticonInputView: UIView {
     /// 样式
     private let style: MNEmoticonKeyboard.Style
     /// 配置选项
     private let options: MNEmoticonKeyboard.Options
     /// 事件代理
-    weak var proxy: MNEmoticonInputViewDelegate?
+    weak var delegate: MNEmoticonInputViewDelegate?
     /// 表情包
     private(set) var packets: [MNEmoticon.Packet] = []
     /// 缓存
@@ -47,7 +47,9 @@ class MNEmoticonInputView: MNEmoticonPageView {
     /// 预览视图
     private let preview: MNEmoticonPreview = MNEmoticonPreview()
     /// 分割线
-    private let separatorView: UIView = .init()
+    private let separatorView = UIView()
+    /// 分页控制视图
+    private let pageView = MNEmoticonPageView()
     /// 猜想滑动到的界面索引
     private var guessPageIndex: Int = 0
     /// 开始滑动时的偏移
@@ -64,10 +66,8 @@ class MNEmoticonInputView: MNEmoticonPageView {
         self.options = options
         super.init(frame: .zero)
         
-        delegate = self
         clipsToBounds = false
         backgroundColor = .clear
-        axis = .horizontal
         
         separatorView.backgroundColor = options.separatorColor
         separatorView.translatesAutoresizingMaskIntoConstraints = false
@@ -77,6 +77,19 @@ class MNEmoticonInputView: MNEmoticonPageView {
             separatorView.leftAnchor.constraint(equalTo: leftAnchor),
             separatorView.rightAnchor.constraint(equalTo: rightAnchor),
             separatorView.heightAnchor.constraint(equalToConstant: 0.7)
+        ])
+        
+        pageView.delegate = self
+        pageView.axis = .horizontal
+        pageView.backgroundColor = .clear
+        pageView.keyboardDismissMode = .none
+        pageView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(pageView)
+        NSLayoutConstraint.activate([
+            pageView.topAnchor.constraint(equalTo: separatorView.bottomAnchor),
+            pageView.leftAnchor.constraint(equalTo: leftAnchor),
+            pageView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            pageView.rightAnchor.constraint(equalTo: rightAnchor)
         ])
         
         preview.isHidden = true
@@ -103,8 +116,8 @@ class MNEmoticonInputView: MNEmoticonPageView {
         self.packets.removeAll()
         self.packets.append(contentsOf: packets)
         // 刷新页面
-        numberOfPages = packets.count
-        currentPageIndex = 0
+        pageView.numberOfPages = packets.count
+        pageView.currentPageIndex = 0
         selectedIndex = 0
     }
     
@@ -112,15 +125,15 @@ class MNEmoticonInputView: MNEmoticonPageView {
     /// - Parameters:
     ///   - pageIndex: 页码
     ///   - animated: 是否动态
-    override func setCurrentPage(at pageIndex: Int, animated: Bool) {
+    func setCurrentPage(at pageIndex: Int, animated: Bool) {
         guard pageIndex < packets.count else { return }
-        super.setCurrentPage(at: pageIndex, animated: animated)
-        selectedIndex = currentPageIndex
+        pageView.setCurrentPage(at: pageIndex, animated: animated)
+        selectedIndex = pageView.currentPageIndex
         guard let emoticonView = emoticonView(at: pageIndex) else { return }
         emoticonView.setCurrentPage(at: 0, animated: false)
-        guard style == .paging, let proxy = proxy else { return }
-        proxy.inputViewDidUpdateEmoticon(with: emoticonView.numberOfPages)
-        proxy.inputViewDidScrollEmoticon(to: emoticonView.currentPageIndex)
+        guard style == .paging, let delegate = delegate else { return }
+        delegate.inputViewDidUpdateEmoticon(with: emoticonView.numberOfPages)
+        delegate.inputViewDidScrollEmoticon(to: emoticonView.currentPageIndex)
     }
     
     /// 滑动表情到指定页码
@@ -128,7 +141,7 @@ class MNEmoticonInputView: MNEmoticonPageView {
     ///   - pageIndex: 页码
     ///   - animated: 是否动态
     func scrollEmoticon(to pageIndex: Int, animated: Bool) {
-        guard let emoticonView = emoticonView(at: currentPageIndex, create: false) else { return }
+        guard let emoticonView = emoticonView(at: pageView.currentPageIndex, create: false) else { return }
         emoticonView.setCurrentPage(at: pageIndex, animated: animated)
     }
     
@@ -144,15 +157,17 @@ class MNEmoticonInputView: MNEmoticonPageView {
         let emoticonView = MNEmoticonView(style: style, options: options)
         emoticonView.delegate = self
         emoticonView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(emoticonView)
+        pageView.addSubview(emoticonView)
         NSLayoutConstraint.activate([
-            emoticonView.topAnchor.constraint(equalTo: separatorView.bottomAnchor),
-            emoticonView.leftAnchor.constraint(equalTo: leftAnchor, constant: contentOffset(for: pageIndex).x),
-            emoticonView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            emoticonView.rightAnchor.constraint(equalTo: rightAnchor)
+            emoticonView.leftAnchor.constraint(equalTo: pageView.leftAnchor, constant: pageView.contentOffset(for: pageIndex).x),
+            emoticonView.widthAnchor.constraint(equalTo: pageView.widthAnchor),
+            emoticonView.topAnchor.constraint(equalTo: pageView.topAnchor),
+            emoticonView.heightAnchor.constraint(equalTo: pageView.heightAnchor)
         ])
-        emoticonView.reloadEmoticon(packet: packets[pageIndex])
         emoticonViews[pageIndex] = emoticonView
+        pageView.layoutIfNeeded()
+        let packet = packets[pageIndex]
+        emoticonView.reloadEmoticon(packet: packet)
         return emoticonView
     }
 }
@@ -178,7 +193,7 @@ extension MNEmoticonInputView {
 extension MNEmoticonInputView: UIScrollViewDelegate {
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        guessPageIndex = currentPageIndex
+        guessPageIndex = pageView.currentPageIndex
         if let x = scrollView.value(forKey: "startOffsetX") as? CGFloat {
             startOffsetX = x
         } else {
@@ -210,14 +225,14 @@ extension MNEmoticonInputView: UIScrollViewDelegate {
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        guard let proxy = proxy else { return }
-        let currentPageIndex = currentPageIndex
+        let currentPageIndex = pageView.currentPageIndex
         if selectedIndex == currentPageIndex { return }
         selectedIndex = currentPageIndex
+        guard let delegate = delegate else { return }
         guard let emoticonView = emoticonView(at: currentPageIndex) else { return }
-        proxy.inputViewDidSelectPage(at: currentPageIndex)
-        proxy.inputViewDidUpdateEmoticon(with: emoticonView.numberOfPages)
-        proxy.inputViewDidScrollEmoticon(to: emoticonView.currentPageIndex)
+        delegate.inputViewDidSelectPage(at: currentPageIndex)
+        delegate.inputViewDidUpdateEmoticon(with: emoticonView.numberOfPages)
+        delegate.inputViewDidScrollEmoticon(to: emoticonView.currentPageIndex)
     }
 }
 
@@ -225,28 +240,28 @@ extension MNEmoticonInputView: UIScrollViewDelegate {
 extension MNEmoticonInputView: MNEmoticonViewDelegate {
     
     func emoticonViewDidSelectEmoticon(_ emoji: MNEmoticon) {
-        guard let proxy = proxy else { return }
-        proxy.inputViewDidSelectEmoticon(emoji)
+        guard let delegate = delegate else { return }
+        delegate.inputViewDidSelectEmoticon(emoji)
     }
     
     func emoticonViewShouldAddToFavorites(_ emojiView: MNEmoticonView) {
-        guard let proxy = proxy else { return }
-        proxy.inputViewShouldAddToFavorites(self)
+        guard let delegate = delegate else { return }
+        delegate.inputViewShouldAddToFavorites(self)
     }
     
     func emoticonViewDeleteButtonTouchUpInside(_ emojiView: MNEmoticonView) {
-        guard let proxy = proxy else { return }
-        proxy.inputViewDeleteButtonTouchUpInside(self)
+        guard let delegate = delegate else { return }
+        delegate.inputViewDeleteButtonTouchUpInside(self)
     }
     
     func emoticonViewReturnButtonTouchUpInside(_ emojiView: MNEmoticonView) {
-        guard let proxy = proxy else { return }
-        proxy.inputViewReturnButtonTouchUpInside(self)
+        guard let delegate = delegate else { return }
+        delegate.inputViewReturnButtonTouchUpInside(self)
     }
     
     func emoticonViewDidScrollPage(to index: Int) {
-        guard let proxy = proxy else { return }
-        proxy.inputViewDidScrollEmoticon(to: index)
+        guard let delegate = delegate else { return }
+        delegate.inputViewDidScrollEmoticon(to: index)
     }
     
     func emoticonViewShouldPreviewEmoticon(_ emoticon: MNEmoticon?, at rect: CGRect) {

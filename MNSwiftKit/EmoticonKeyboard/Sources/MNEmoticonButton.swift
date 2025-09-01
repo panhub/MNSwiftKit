@@ -24,9 +24,9 @@ class MNEmoticonButton: UIControl {
                 case .left, .leading:
                     inset.left = constraint.constant
                 case .bottom:
-                    inset.bottom = constraint.constant
+                    inset.bottom = -constraint.constant
                 case .right, .trailing:
-                    inset.right = constraint.constant
+                    inset.right = -constraint.constant
                 default: break
                 }
             }
@@ -41,9 +41,9 @@ class MNEmoticonButton: UIControl {
                 case .left, .leading:
                     constraint.constant = newValue.left
                 case .bottom:
-                    constraint.constant = newValue.bottom
+                    constraint.constant = -newValue.bottom
                 case .right, .trailing:
-                    constraint.constant = newValue.right
+                    constraint.constant = -newValue.right
                 default: break
                 }
             }
@@ -61,9 +61,9 @@ class MNEmoticonButton: UIControl {
                 case .left, .leading:
                     inset.left = constraint.constant
                 case .bottom:
-                    inset.bottom = constraint.constant
+                    inset.bottom = -constraint.constant
                 case .right, .trailing:
-                    inset.right = constraint.constant
+                    inset.right = -constraint.constant
                 default: break
                 }
             }
@@ -78,9 +78,9 @@ class MNEmoticonButton: UIControl {
                 case .left, .leading:
                     constraint.constant = newValue.left
                 case .bottom:
-                    constraint.constant = newValue.bottom
+                    constraint.constant = -newValue.bottom
                 case .right, .trailing:
-                    constraint.constant = newValue.right
+                    constraint.constant = -newValue.right
                 default: break
                 }
             }
@@ -107,13 +107,13 @@ class MNEmoticonButton: UIControl {
         set { imageView.image = newValue }
     }
     /// 表情
-    private var emojiRawValue: MNEmoticon!
-    var emoji: MNEmoticon! {
-        get { emojiRawValue }
+    private var rawEmoticon: MNEmoticon!
+    var emoticon: MNEmoticon! {
+        get { rawEmoticon }
         set {
-            emojiRawValue = newValue
+            rawEmoticon = newValue
             let image = newValue.image
-            if let images = image?.images, images.count > 0 {
+            if let image = image, let images = image.images, images.count > 1 {
                 imageView.image = images.first
             } else {
                 imageView.image = image

@@ -24,21 +24,21 @@ class MNEmoticonPacketView: UIView {
     /// 选择索引
     var selectedIndex: Int = 0
     /// 事件代理
-    weak var proxy: MNEmoticonPacketViewDelegate?
+    weak var delegate: MNEmoticonPacketViewDelegate?
     /// 样式
     private let style: MNEmoticonKeyboard.Style
     /// 配置选项
     private let options: MNEmoticonKeyboard.Options
     /// 表情包集合
-    private var packets: [MNEmoticon.Packet] = [MNEmoticon.Packet]()
+    private(set) var packets: [MNEmoticon.Packet] = []
     /// 分割线
-    private let separatorView: UIView = .init()
-    /// 表情包浏览
-    private let collectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-    /// Return键
-    private lazy var returnButton: MNEmoticonButton = .init()
+    private let separatorView = UIView()
     /// Return键阴影
-    private lazy var shadowView: UIImageView = .init()
+    private lazy var shadowView = UIImageView()
+    /// Return键
+    private lazy var returnButton = MNEmoticonButton()
+    /// 表情包浏览
+    private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
     
     /// 构建表情包视图
@@ -48,7 +48,7 @@ class MNEmoticonPacketView: UIView {
     init(style: MNEmoticonKeyboard.Style, options: MNEmoticonKeyboard.Options) {
         self.style = style
         self.options = options
-        super.init(frame: .init(x: 0.0, y: 0.0, width: 300.0, height: 50.0))
+        super.init(frame: .zero)
         
         backgroundColor = options.tintColor
         
@@ -82,8 +82,8 @@ class MNEmoticonPacketView: UIView {
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: separatorView.bottomAnchor),
             collectionView.leftAnchor.constraint(equalTo: leftAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: style == .compact ? 0.0 : MN_BOTTOM_SAFE_HEIGHT),
-            collectionView.rightAnchor.constraint(equalTo: rightAnchor, constant: style == .compact ? 0.0 : 75.0)
+            collectionView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: style == .compact ? 0.0 : -MN_BOTTOM_SAFE_HEIGHT),
+            collectionView.rightAnchor.constraint(equalTo: rightAnchor, constant: style == .compact ? 0.0 : -78.0)
         ])
         
         if style == .paging {
@@ -96,7 +96,7 @@ class MNEmoticonPacketView: UIView {
                 NSLayoutConstraint.activate([
                     shadowView.topAnchor.constraint(equalTo: collectionView.topAnchor),
                     shadowView.bottomAnchor.constraint(equalTo: collectionView.bottomAnchor),
-                    shadowView.widthAnchor.constraint(equalTo: shadowView.heightAnchor, multiplier: image.size.width/image.size.height),
+                    shadowView.widthAnchor.constraint(equalTo: shadowView.heightAnchor, multiplier: floor(image.size.width/image.size.height*10.0)/10.0),
                     shadowView.centerXAnchor.constraint(equalTo: collectionView.rightAnchor)
                 ])
             }
@@ -105,7 +105,7 @@ class MNEmoticonPacketView: UIView {
             returnButton.textFont = options.returnKeyTitleFont
             returnButton.textColor = options.returnKeyTitleColor
             returnButton.backgroundColor = options.returnKeyColor
-            returnButton.textInset = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
+            returnButton.textInset = UIEdgeInsets(top: 0.0, left: 5.0, bottom: 0.0, right: 5.0)
             returnButton.addTarget(self, action: #selector(returnButtonTouchUpInside(_:)), for: .touchUpInside)
             returnButton.translatesAutoresizingMaskIntoConstraints = false
             addSubview(returnButton)
@@ -124,7 +124,7 @@ class MNEmoticonPacketView: UIView {
     
     /// 重载表情包
     /// - Parameter packets: 表情包集合
-    func reloadPackets(_ packets: [MNEmoticon.Packet]? = nil) {
+    func reloadPackets(_ packets: [MNEmoticon.Packet]! = nil) {
         if let packets = packets {
             self.packets.removeAll()
             self.packets.append(contentsOf: packets)
@@ -132,7 +132,9 @@ class MNEmoticonPacketView: UIView {
         if selectedIndex >= self.packets.count {
             selectedIndex = max(0, min(selectedIndex, self.packets.count - 1))
         }
-        collectionView.reloadData()
+        UIView.performWithoutAnimation {
+            self.collectionView.reloadData()
+        }
     }
     
     /// 设置选择索引
@@ -148,7 +150,8 @@ class MNEmoticonPacketView: UIView {
     /// Return键点击事件
     /// - Parameter sender: 按钮
     @objc private func returnButtonTouchUpInside(_ sender: MNEmoticonButton) {
-        proxy?.packetViewReturnButtonTouchUpInside(self)
+        guard let delegate = delegate else { return }
+        delegate.packetViewReturnButtonTouchUpInside(self)
     }
 }
 
@@ -178,7 +181,8 @@ extension MNEmoticonPacketView: UICollectionViewDataSource, UICollectionViewDele
         UIView.performWithoutAnimation {
             collectionView.reloadData()
         }
-        proxy?.packetViewDidSelectPacket(at: indexPath.item)
+        guard let delegate = delegate else { return }
+        delegate.packetViewDidSelectPacket(at: indexPath.item)
     }
 }
 

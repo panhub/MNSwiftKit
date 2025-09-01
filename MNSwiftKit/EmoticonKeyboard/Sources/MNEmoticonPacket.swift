@@ -68,7 +68,13 @@ extension MNEmoticon {
                 self.cover = cover
                 self.style = style
                 self.name = url.deletingPathExtension().lastPathComponent
-                let directoryURL = url.deletingLastPathComponent()
+                var directoryURL = url.deletingPathExtension()
+#if canImport(MNSwiftKit)
+                if self.name == MNEmoticon.Packet.Name.default.rawValue {
+                    // 在bundle中
+                    directoryURL = url.deletingLastPathComponent()
+                }
+#endif
                 if #available(iOS 16.0, *) {
                     self.directory = directoryURL.path(percentEncoded: false)
                 } else {

@@ -69,7 +69,7 @@ class MNEmoticonView: UIView {
     init(style: MNEmoticonKeyboard.Style, options: MNEmoticonKeyboard.Options) {
         self.style = style
         self.options = options
-        super.init(frame: .init(x: 0.0, y: 0.0, width: 100.0, height: 100.0))
+        super.init(frame: .zero)
         
         backgroundColor = .clear
         
@@ -134,12 +134,15 @@ class MNEmoticonView: UIView {
         var minimumInteritemSpacing = 0.0
         var sectionInset: UIEdgeInsets = .zero
         var preferredContentSize: CGSize = .zero
+        var elements = packet.emoticons
         if packet.style == .emoticon {
             // 文字表情
-            numberOfColumns = frame.width >= 414.0 ? 8 : 7
-            itemSize.width = frame.width >= 390.0 ? 32.0 : 30.0
+            let x = frame.size
+            let z = collectionView.frame.size
+            numberOfColumns = collectionView.frame.width >= 414.0 ? 8 : 7
+            itemSize.width = collectionView.frame.width >= 390.0 ? 32.0 : 30.0
             itemSize.height = itemSize.width
-            minimumInteritemSpacing = (frame.width - itemSize.width*CGFloat(numberOfColumns))/(CGFloat(numberOfColumns) + 0.5)
+            minimumInteritemSpacing = (collectionView.frame.width - itemSize.width*CGFloat(numberOfColumns))/(CGFloat(numberOfColumns) + 0.5)
             sectionInset.left = minimumInteritemSpacing*0.75
             sectionInset.right = sectionInset.left
             minimumLineSpacing = sectionInset.left
@@ -152,15 +155,15 @@ class MNEmoticonView: UIView {
             itemSize.height = itemSize.width
             sectionInset.left = minimumInteritemSpacing/2.0
             sectionInset.right = minimumInteritemSpacing/2.0
+            var elements = packet.emoticons
+            if packet.isFavorites {
+                elements.insert(adding, at: 0)
+            }
         }
         if style == .compact {
             sectionInset.top = minimumLineSpacing
             sectionInset.bottom = max(MN_BOTTOM_SAFE_HEIGHT, minimumLineSpacing)
             elementView.isHidden = packet.style == .emoticon
-            var elements = packet.emoticons
-            if packet.isFavorites {
-                elements.insert(adding, at: 0)
-            }
             if elements.isEmpty == false {
                 emoticons.append(elements)
             }
@@ -170,14 +173,14 @@ class MNEmoticonView: UIView {
             sectionInset.top = top
             sectionInset.bottom = top
             pageCount = numberOfColumns*numberOfRows
-            numberOfPages = Int(ceil(Double(emoticons.count)/Double(pageCount)))
-            preferredContentSize.width = frame.width*CGFloat(numberOfPages)
-            preferredContentSize.height = frame.height
-            let elements = stride(from: 0, to: packet.emoticons.count, by: pageCount).map {
-                Array(packet.emoticons[$0..<Swift.min($0 + pageCount, packet.emoticons.count)])
+            numberOfPages = pageCount > 0 ? Int(ceil(Double(elements.count)/Double(pageCount))) : 0
+            preferredContentSize.width = max(collectionView.frame.width*CGFloat(numberOfPages), collectionView.frame.width)
+            preferredContentSize.height = collectionView.frame.height
+            let array = stride(from: 0, to: elements.count, by: pageCount).map {
+                Array(elements[$0..<Swift.min($0 + pageCount, elements.count)])
             }
-            if elements.isEmpty == false {
-                emoticons.append(contentsOf: elements)
+            if array.isEmpty == false {
+                emoticons.append(contentsOf: array)
             }
         }
         let collectionLayout = collectionView.collectionViewLayout as! MNEmoticonCollectionLayout
@@ -186,11 +189,13 @@ class MNEmoticonView: UIView {
         collectionLayout.minimumLineSpacing = minimumLineSpacing
         collectionLayout.minimumInteritemSpacing = minimumInteritemSpacing
         collectionLayout.preferredContentSize = preferredContentSize
-        collectionView.reloadData()
+        UIView.performWithoutAnimation {
+            self.collectionView.reloadData()
+        }
     }
     
     func setCurrentPage(at pageIndex: Int, animated: Bool) {
-        collectionView.setContentOffset(CGPoint(x: frame.width*CGFloat(pageIndex), y: 0.0), animated: animated)
+        collectionView.setContentOffset(CGPoint(x: collectionView.frame.width*CGFloat(pageIndex), y: 0.0), animated: animated)
     }
 }
 

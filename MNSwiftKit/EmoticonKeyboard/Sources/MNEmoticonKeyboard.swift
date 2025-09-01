@@ -9,7 +9,6 @@ import UIKit
 
 /// 表情键盘事件代理
 @objc public protocol MNEmoticonKeyboardDelegate: NSObjectProtocol {
-    
     /// 表情点击事件
     /// - Parameters:
     ///   - emoticon: 表情图片
@@ -28,14 +27,12 @@ import UIKit
 }
 
 public class MNEmoticonKeyboard: UIView {
-    /// 是否已加载表情包
+    /// 标记是否在加载数据
     private var isLoaded: Bool = false
     /// 事件代理
     public weak var delegate: MNEmoticonKeyboardDelegate?
     /// 样式
     private let style: MNEmoticonKeyboard.Style
-    /// 布局视图
-    private let stackView: UIStackView = UIStackView()
     /// 配置选项
     public let options: MNEmoticonKeyboard.Options
     /// 页码选择器
@@ -57,33 +54,37 @@ public class MNEmoticonKeyboard: UIView {
         isMultipleTouchEnabled = false
         backgroundColor = options.backgroundColor
         
-        stackView.axis = .vertical
-        stackView.spacing = 0.0
-        stackView.alignment = .fill
-        stackView.distribution = .fill
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(stackView)
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: topAnchor),
-            stackView.leftAnchor.constraint(equalTo: leftAnchor),
-            stackView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            stackView.rightAnchor.constraint(equalTo: rightAnchor)
-        ])
-        
-        emoticonView.proxy = self
-        emoticonView.keyboardDismissMode = .none
-        stackView.addArrangedSubview(emoticonView)
-        
         switch style {
         case .compact:
-            
+            // 纵向滑动
             packetView.translatesAutoresizingMaskIntoConstraints = false
-            stackView.insertArrangedSubview(packetView, at: 0)
+            addSubview(packetView)
             NSLayoutConstraint.activate([
+                packetView.topAnchor.constraint(equalTo: topAnchor),
+                packetView.leftAnchor.constraint(equalTo: leftAnchor),
+                packetView.rightAnchor.constraint(equalTo: rightAnchor),
                 packetView.heightAnchor.constraint(equalToConstant: 50.0)
             ])
             
+            emoticonView.delegate = self
+            emoticonView.translatesAutoresizingMaskIntoConstraints = false
+            addSubview(emoticonView)
+            NSLayoutConstraint.activate([
+                emoticonView.topAnchor.constraint(equalTo: packetView.bottomAnchor),
+                emoticonView.leftAnchor.constraint(equalTo: leftAnchor),
+                emoticonView.bottomAnchor.constraint(equalTo: bottomAnchor),
+                emoticonView.rightAnchor.constraint(equalTo: rightAnchor)
+            ])
         case .paging:
+            // 横向分页滑动
+            packetView.translatesAutoresizingMaskIntoConstraints = false
+            addSubview(packetView)
+            NSLayoutConstraint.activate([
+                packetView.leftAnchor.constraint(equalTo: leftAnchor),
+                packetView.bottomAnchor.constraint(equalTo: bottomAnchor),
+                packetView.rightAnchor.constraint(equalTo: rightAnchor),
+                packetView.heightAnchor.constraint(equalToConstant: 50.0 + MN_BOTTOM_SAFE_HEIGHT)
+            ])
             
             pageControl.delegate = self
             pageControl.axis = .horizontal
@@ -95,15 +96,21 @@ public class MNEmoticonKeyboard: UIView {
             pageControl.pageIndicatorTintColor = .gray.withAlphaComponent(0.37)
             pageControl.currentPageIndicatorTintColor = .gray.withAlphaComponent(0.88)
             pageControl.translatesAutoresizingMaskIntoConstraints = false
-            stackView.addArrangedSubview(pageControl)
+            addSubview(pageControl)
             NSLayoutConstraint.activate([
-                packetView.heightAnchor.constraint(equalToConstant: 20.0)
+                pageControl.leftAnchor.constraint(equalTo: leftAnchor),
+                pageControl.bottomAnchor.constraint(equalTo: packetView.topAnchor),
+                pageControl.rightAnchor.constraint(equalTo: rightAnchor),
+                pageControl.heightAnchor.constraint(equalToConstant: 20.0)
             ])
-            
-            packetView.translatesAutoresizingMaskIntoConstraints = false
-            stackView.addArrangedSubview(packetView)
+            emoticonView.delegate = self
+            emoticonView.translatesAutoresizingMaskIntoConstraints = false
+            addSubview(emoticonView)
             NSLayoutConstraint.activate([
-                packetView.heightAnchor.constraint(equalToConstant: 50.0 + MN_BOTTOM_SAFE_HEIGHT)
+                emoticonView.topAnchor.constraint(equalTo: topAnchor),
+                emoticonView.leftAnchor.constraint(equalTo: leftAnchor),
+                emoticonView.bottomAnchor.constraint(equalTo: pageControl.topAnchor),
+                emoticonView.rightAnchor.constraint(equalTo: rightAnchor)
             ])
         }
     }
@@ -130,7 +137,8 @@ public class MNEmoticonKeyboard: UIView {
     
     public override func didMoveToSuperview() {
         super.didMoveToSuperview()
-        guard let _ = superview, emoticonView.packets.isEmpty else { return }
+        guard let _ = superview, isLoaded == false else { return }
+        isLoaded = true
         MNEmoticonManager.fetchEmoticonPacket(options.packets) { [weak self] packets in
             guard let self = self else { return }
             self.packetView.reloadPackets(packets)
@@ -141,7 +149,6 @@ public class MNEmoticonKeyboard: UIView {
     
     public override func layoutSubviews() {
         super.layoutSubviews()
-        
         print(self.frame)
     }
 }
