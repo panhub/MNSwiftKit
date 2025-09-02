@@ -55,9 +55,9 @@ class MNEmoticonView: UIView {
     /// 当前页码 仅对 style == paging有效
     var currentPageIndex: Int {
         let offsetX = collectionView.contentOffset.x
-        if offsetX.isFinite || offsetX.isNaN { return 0 }
+        guard offsetX.isNormal, offsetX.isNaN == false else { return 0 }
         let width = collectionView.frame.width
-        if width.isFinite || width.isNaN { return 0 }
+        guard width.isNormal, width.isNaN == false else { return 0 }
         return Int(round(offsetX/width))
     }
     
@@ -74,14 +74,8 @@ class MNEmoticonView: UIView {
         backgroundColor = .clear
         
         let layout = collectionView.collectionViewLayout as! MNEmoticonCollectionLayout
-        layout.sectionInset = .zero
-        layout.numberOfColumns = 5
         layout.itemSize = .init(width: 30.0, height: 30.0)
         layout.scrollDirection = style == .compact ? .vertical : .horizontal
-        layout.minimumLineSpacing = 0.0
-        layout.minimumInteritemSpacing = 0.0
-        layout.headerReferenceSize = .zero
-        layout.footerReferenceSize = .zero
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColor = .clear
@@ -109,7 +103,12 @@ class MNEmoticonView: UIView {
             elementView.addTarget(self, forDeleteButtonTouchUpInside: #selector(deleteButtonTouchUpInside(_:)))
             elementView.addTarget(self, forReturnButtonTouchUpInside: #selector(returnButtonTouchUpInside(_:)))
             addSubview(elementView)
-            // TODO 约束
+            NSLayoutConstraint.activate([
+                elementView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -25.0),
+                elementView.rightAnchor.constraint(equalTo: rightAnchor, constant: -10.0),
+                elementView.widthAnchor.constraint(equalToConstant: 130.0),
+                elementView.heightAnchor.constraint(equalToConstant: 45.0)
+            ])
         }
         
         /// 添加长按手势
@@ -137,12 +136,10 @@ class MNEmoticonView: UIView {
         var elements = packet.emoticons
         if packet.style == .emoticon {
             // 文字表情
-            let x = frame.size
-            let z = collectionView.frame.size
             numberOfColumns = collectionView.frame.width >= 414.0 ? 8 : 7
             itemSize.width = collectionView.frame.width >= 390.0 ? 32.0 : 30.0
             itemSize.height = itemSize.width
-            minimumInteritemSpacing = (collectionView.frame.width - itemSize.width*CGFloat(numberOfColumns))/(CGFloat(numberOfColumns) + 0.5)
+            minimumInteritemSpacing = floor((collectionView.frame.width - itemSize.width*CGFloat(numberOfColumns))/(CGFloat(numberOfColumns) + 0.5)*10.0)/10.0
             sectionInset.left = minimumInteritemSpacing*0.75
             sectionInset.right = sectionInset.left
             minimumLineSpacing = sectionInset.left
@@ -151,41 +148,65 @@ class MNEmoticonView: UIView {
             numberOfColumns = 4
             minimumLineSpacing = 10.0
             minimumInteritemSpacing = 20.0
-            itemSize.width = (frame.width - minimumInteritemSpacing*CGFloat(numberOfColumns))/CGFloat(numberOfColumns)
+            itemSize.width = (collectionView.frame.width - minimumInteritemSpacing*CGFloat(numberOfColumns - 1) - minimumLineSpacing*2.0)/CGFloat(numberOfColumns)
             itemSize.height = itemSize.width
-            sectionInset.left = minimumInteritemSpacing/2.0
-            sectionInset.right = minimumInteritemSpacing/2.0
-            var elements = packet.emoticons
+            sectionInset.left = minimumLineSpacing
+            sectionInset.right = minimumLineSpacing
             if packet.isFavorites {
                 elements.insert(adding, at: 0)
             }
         }
         if style == .compact {
             sectionInset.top = minimumLineSpacing
-            sectionInset.bottom = max(MN_BOTTOM_SAFE_HEIGHT, minimumLineSpacing)
-            elementView.isHidden = packet.style == .emoticon
+            if packet.style == .emoticon {
+                // 文字表情
+                elementView.isHidden = false
+                let height = floor((itemSize.height + minimumLineSpacing*2.0)*0.9)
+                let width = ceil((itemSize.width + minimumInteritemSpacing)*2.0 + itemSize.width/2.0)
+                let bottom = max(minimumLineSpacing, MN_BOTTOM_SAFE_HEIGHT) + 8.0
+                sectionInset.bottom = (height - itemSize.height)/2.0 + bottom
+                elementView.constraints.forEach { constraint in
+                    if constraint.firstAttribute == .width {
+                        constraint.constant = width
+                    } else if constraint.firstAttribute == .height {
+                        constraint.constant = height
+                    }
+                }
+                constraints.forEach { constraint in
+                    guard let firstItem = constraint.firstItem as? MNEmoticonElementView, firstItem == elementView else { return }
+                    if constraint.firstAttribute == .bottom {
+                        constraint.constant = -bottom
+                    } else if constraint.firstAttribute == .right {
+                        constraint.constant = -sectionInset.right
+                    }
+                }
+            } else {
+                elementView.isHidden = true
+                sectionInset.bottom = max(MN_BOTTOM_SAFE_HEIGHT, minimumLineSpacing)
+            }
             if elements.isEmpty == false {
                 emoticons.append(elements)
             }
         } else {
-            let numberOfRows = max(0, Int((frame.height - minimumLineSpacing)/(itemSize.height + minimumLineSpacing)))
-            let top = (frame.height - itemSize.height*CGFloat(numberOfRows) - minimumLineSpacing*CGFloat(max(0, numberOfRows - 1)))/2.0
+            let numberOfRows = max(0, Int((collectionView.frame.height - minimumLineSpacing)/(itemSize.height + minimumLineSpacing)))
+            let top = (collectionView.frame.height - itemSize.height*CGFloat(numberOfRows) - minimumLineSpacing*CGFloat(max(0, numberOfRows - 1)))/2.0
             sectionInset.top = top
             sectionInset.bottom = top
             pageCount = numberOfColumns*numberOfRows
             numberOfPages = pageCount > 0 ? Int(ceil(Double(elements.count)/Double(pageCount))) : 0
             preferredContentSize.width = max(collectionView.frame.width*CGFloat(numberOfPages), collectionView.frame.width)
             preferredContentSize.height = collectionView.frame.height
-            let array = stride(from: 0, to: elements.count, by: pageCount).map {
-                Array(elements[$0..<Swift.min($0 + pageCount, elements.count)])
-            }
-            if array.isEmpty == false {
+            if pageCount > 0, elements.isEmpty == false {
+                let array = stride(from: 0, to: elements.count, by: pageCount).map {
+                    Array(elements[$0..<Swift.min($0 + pageCount, elements.count)])
+                }
                 emoticons.append(contentsOf: array)
             }
         }
         let collectionLayout = collectionView.collectionViewLayout as! MNEmoticonCollectionLayout
         collectionLayout.itemSize = itemSize
         collectionLayout.sectionInset = sectionInset
+        collectionLayout.numberOfColumns = numberOfColumns
         collectionLayout.minimumLineSpacing = minimumLineSpacing
         collectionLayout.minimumInteritemSpacing = minimumInteritemSpacing
         collectionLayout.preferredContentSize = preferredContentSize
@@ -238,11 +259,11 @@ extension MNEmoticonView: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? MNEmoticonCell else { return }
         cell.updateEmoticon(emoticons[indexPath.section][indexPath.item])
-        if elementView.isHidden {
-            cell.contentView.alpha = 1.0
-        } else {
-            cell.contentView.alpha = alpha(for: cell, intersects: (collectionView.isDragging || collectionView.isDecelerating))
-        }
+//        if elementView.isHidden {
+//            cell.contentView.alpha = 1.0
+//        } else {
+//            cell.contentView.alpha = alpha(for: cell, intersects: (collectionView.isDragging || collectionView.isDecelerating))
+//        }
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -259,12 +280,12 @@ extension MNEmoticonView: UICollectionViewDataSource, UICollectionViewDelegate {
 // MARK: - UIScrollViewDelegate
 extension MNEmoticonView: UIScrollViewDelegate {
     
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard elementView.isHidden == false else { return }
-        for cell in collectionView.visibleCells {
-            cell.contentView.alpha = alpha(for: cell, intersects: collectionView.isDragging)
-        }
-    }
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        guard style == .compact else { return }
+//        for cell in collectionView.visibleCells {
+//            cell.contentView.alpha = alpha(for: cell, intersects: collectionView.isDragging)
+//        }
+//    }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         guard decelerate == false else { return }
@@ -302,20 +323,20 @@ private extension MNEmoticonView {
         case .changed:
             previewEmoticon(at: recognizer.location(in: self))
         default:
-            previewEmoticon(at: .zero)
+            guard let delegate = delegate else { break }
+            delegate.emoticonViewShouldPreviewEmoticon(nil, at: .zero)
         }
     }
     
     private func previewEmoticon(at location: CGPoint) {
         guard let delegate = delegate else { return }
-        for cell in collectionView.visibleCells {
-            guard cell.contentView.alpha == 1.0 else { continue }
-            let frame = collectionView.convert(cell.frame, to: self)
-            guard frame.contains(location) else { continue }
-            guard let indexPath = collectionView.indexPath(for: cell) else { continue }
+        let offsetX = collectionView.contentOffset.x
+        if let indexPath = collectionView.indexPathForItem(at: .init(x: location.x + offsetX, y: location.y)), let cell = collectionView.cellForItem(at: indexPath), cell.alpha == 1.0 {
+            let rect = collectionView.convert(cell.frame, to: self)
             let emoticon = emoticons[indexPath.section][indexPath.item]
-            delegate.emoticonViewShouldPreviewEmoticon(emoticon, at: collectionView.convert(cell.frame, to: self))
-            break
+            delegate.emoticonViewShouldPreviewEmoticon(emoticon, at: rect)
+        } else {
+            delegate.emoticonViewShouldPreviewEmoticon(nil, at: .zero)
         }
     }
 }

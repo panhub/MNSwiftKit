@@ -25,19 +25,19 @@ public class MNCollectionViewFlowLayout: MNCollectionViewLayout {
     
     public override var collectionViewContentSize: CGSize {
         guard let collectionView = collectionView else { return .zero }
-        var size = collectionView.bounds.inset(by: collectionView.contentInset).size
-        if let last = caches.last, let height = last.first {
+        var contentSize = CGRect(origin: .zero, size: collectionView.frame.size).inset(by: collectionView.contentInset).size
+        if let last = caches.last, let value = last.first {
             if scrollDirection == .vertical {
-                size.height = max(preferredContentSize.height, height)
+                contentSize.height = max(preferredContentSize.height, value)
             } else {
-                size.width = max(preferredContentSize.width, height)
+                contentSize.width = max(preferredContentSize.width, value)
             }
         } else if scrollDirection == .vertical {
-            size.height = preferredContentSize.height
+            contentSize.height = preferredContentSize.height
         } else {
-            size.width = preferredContentSize.width
+            contentSize.width = preferredContentSize.width
         }
-        return size
+        return contentSize
     }
     
     /// 纵向约束

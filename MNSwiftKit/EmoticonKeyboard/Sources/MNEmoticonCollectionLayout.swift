@@ -50,7 +50,6 @@ class MNEmoticonCollectionLayout: MNCollectionViewFlowLayout {
             sectionAttributes.append(itemAttributes)
             
             if numberOfSections == 1 {
-                
                 right = contentSize.width
             } else if section == 0 {
                 right = collectionView.frame.width - contentInset.left

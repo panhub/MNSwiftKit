@@ -30,6 +30,8 @@ extension MNEmoticonKeyboard {
         @objc public var packetSectionInset: UIEdgeInsets = UIEdgeInsets(top: 6.0, left: 10.0, bottom: 6.0, right: 10.0)
         /// 表情包图片四周约束
         @objc public var packetItemInset: UIEdgeInsets = UIEdgeInsets(top: 5.0, left: 5.0, bottom: 5.0, right: 5.0)
+        /// 表情包选择背景颜色
+        @objc public var packetHighlightedColor: UIColor! = nil
         /// returnKey颜色
         @objc public var returnKeyColor: UIColor! = .white
         /// returnKey标题颜色
@@ -38,8 +40,6 @@ extension MNEmoticonKeyboard {
         @objc public var returnKeyTitleFont: UIFont = .systemFont(ofSize: 17.0, weight: .medium)
         /// 表情包导航栏背景颜色
         @objc public var tintColor: UIColor! = UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0)
-        /// 表情包选择背景颜色
-        @objc public var highlightedColor: UIColor! = .white
         /// 分割线颜色
         @objc public var separatorColor: UIColor! = .darkGray.withAlphaComponent(0.15)
         /// 背景颜色

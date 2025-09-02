@@ -52,16 +52,6 @@ class MNEmoticonPacketView: UIView {
         
         backgroundColor = options.tintColor
         
-        separatorView.backgroundColor = options.separatorColor
-        separatorView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(separatorView)
-        NSLayoutConstraint.activate([
-            separatorView.topAnchor.constraint(equalTo: topAnchor),
-            separatorView.leftAnchor.constraint(equalTo: leftAnchor),
-            separatorView.rightAnchor.constraint(equalTo: rightAnchor),
-            separatorView.heightAnchor.constraint(equalToConstant: 0.7)
-        ])
-        
         let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
         layout.scrollDirection = .horizontal
         layout.footerReferenceSize = .zero
@@ -80,7 +70,7 @@ class MNEmoticonPacketView: UIView {
         }
         addSubview(collectionView)
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: separatorView.bottomAnchor),
+            collectionView.topAnchor.constraint(equalTo: topAnchor),
             collectionView.leftAnchor.constraint(equalTo: leftAnchor),
             collectionView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: style == .compact ? 0.0 : -MN_BOTTOM_SAFE_HEIGHT),
             collectionView.rightAnchor.constraint(equalTo: rightAnchor, constant: style == .compact ? 0.0 : -78.0)
@@ -116,6 +106,16 @@ class MNEmoticonPacketView: UIView {
                 returnButton.rightAnchor.constraint(equalTo: rightAnchor)
             ])
         }
+        
+        separatorView.backgroundColor = options.separatorColor
+        separatorView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(separatorView)
+        NSLayoutConstraint.activate([
+            separatorView.topAnchor.constraint(equalTo: topAnchor),
+            separatorView.leftAnchor.constraint(equalTo: leftAnchor),
+            separatorView.rightAnchor.constraint(equalTo: rightAnchor),
+            separatorView.heightAnchor.constraint(equalToConstant: 0.7)
+        ])
     }
     
     required init?(coder: NSCoder) {

@@ -69,6 +69,19 @@ class MNEmoticonInputView: UIView {
         clipsToBounds = false
         backgroundColor = .clear
         
+        pageView.delegate = self
+        pageView.axis = .horizontal
+        pageView.backgroundColor = .clear
+        pageView.keyboardDismissMode = .none
+        pageView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(pageView)
+        NSLayoutConstraint.activate([
+            pageView.topAnchor.constraint(equalTo: topAnchor),
+            pageView.leftAnchor.constraint(equalTo: leftAnchor),
+            pageView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            pageView.rightAnchor.constraint(equalTo: rightAnchor)
+        ])
+        
         separatorView.backgroundColor = options.separatorColor
         separatorView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(separatorView)
@@ -77,19 +90,6 @@ class MNEmoticonInputView: UIView {
             separatorView.leftAnchor.constraint(equalTo: leftAnchor),
             separatorView.rightAnchor.constraint(equalTo: rightAnchor),
             separatorView.heightAnchor.constraint(equalToConstant: 0.7)
-        ])
-        
-        pageView.delegate = self
-        pageView.axis = .horizontal
-        pageView.backgroundColor = .clear
-        pageView.keyboardDismissMode = .none
-        pageView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(pageView)
-        NSLayoutConstraint.activate([
-            pageView.topAnchor.constraint(equalTo: separatorView.bottomAnchor),
-            pageView.leftAnchor.constraint(equalTo: leftAnchor),
-            pageView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            pageView.rightAnchor.constraint(equalTo: rightAnchor)
         ])
         
         preview.isHidden = true

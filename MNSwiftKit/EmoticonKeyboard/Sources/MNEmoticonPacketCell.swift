@@ -39,7 +39,7 @@ class MNEmoticonPacketCell: UICollectionViewCell {
             // 使用默认图片
             imageView.image = image
         }
-        imageView.backgroundColor = highlighted ? options.highlightedColor : .clear
+        imageView.backgroundColor = highlighted ? options.packetHighlightedColor : nil
         imageView.frame = contentView.bounds.inset(by: options.packetItemInset)
     }
 }

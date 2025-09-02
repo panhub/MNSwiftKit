@@ -22,10 +22,10 @@ class MNEmoticonCell: UICollectionViewCell {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(imageView)
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: topAnchor),
-            imageView.leftAnchor.constraint(equalTo: leftAnchor),
-            imageView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            imageView.rightAnchor.constraint(equalTo: rightAnchor)
+            imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            imageView.leftAnchor.constraint(equalTo: contentView.leftAnchor),
+            imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            imageView.rightAnchor.constraint(equalTo: contentView.rightAnchor)
         ])
     }
     

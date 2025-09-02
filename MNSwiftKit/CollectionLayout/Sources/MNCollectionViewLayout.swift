@@ -112,8 +112,8 @@ public class MNCollectionViewLayout: UICollectionViewLayout {
     public override var collectionViewContentSize: CGSize {
         guard let collectionView = collectionView else { return .zero }
         var contentSize = CGRect(origin: .zero, size: collectionView.frame.size).inset(by: collectionView.contentInset).size
-        if let last = caches.last, let height = last.first {
-            contentSize.height = max(preferredContentSize.height, height)
+        if let last = caches.last, let value = last.first {
+            contentSize.height = max(preferredContentSize.height, value)
         } else {
             contentSize.height = preferredContentSize.height
         }
