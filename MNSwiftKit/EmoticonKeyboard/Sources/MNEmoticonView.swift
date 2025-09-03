@@ -32,12 +32,6 @@ protocol MNEmoticonViewDelegate: NSObjectProtocol {
 }
 
 class MNEmoticonView: UIView {
-    /// 对于分页布局, 每页表情数量
-    private var pageCount: Int = 0
-    /// 对于分页布局, 总页数
-    var numberOfPages = 0
-    /// 表情包
-    private var packet: MNEmoticon.Packet!
     /// 事件代理
     weak var delegate: MNEmoticonViewDelegate?
     /// 表情包集合
@@ -52,6 +46,14 @@ class MNEmoticonView: UIView {
     private let collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: MNEmoticonCollectionLayout())
     /// 功能视图
     private lazy var elementView: MNEmoticonElementView = MNEmoticonElementView(options: options)
+    /// 页数 仅对 style == paging有效
+    var numberOfPages: Int {
+        let contentWidth = collectionView.contentSize.width
+        guard contentWidth.isNormal, contentWidth.isNaN == false else { return 0 }
+        let width = collectionView.frame.width
+        guard width.isNormal, width.isNaN == false else { return 0 }
+        return Int(ceil(contentWidth/width))
+    }
     /// 当前页码 仅对 style == paging有效
     var currentPageIndex: Int {
         let offsetX = collectionView.contentOffset.x
@@ -70,7 +72,6 @@ class MNEmoticonView: UIView {
         self.style = style
         self.options = options
         super.init(frame: .zero)
-        
         backgroundColor = .clear
         
         let layout = collectionView.collectionViewLayout as! MNEmoticonCollectionLayout
@@ -100,6 +101,7 @@ class MNEmoticonView: UIView {
         
         if style == .compact {
             elementView.isHidden = true
+            elementView.translatesAutoresizingMaskIntoConstraints = false
             elementView.addTarget(self, forDeleteButtonTouchUpInside: #selector(deleteButtonTouchUpInside(_:)))
             elementView.addTarget(self, forReturnButtonTouchUpInside: #selector(returnButtonTouchUpInside(_:)))
             addSubview(elementView)
@@ -111,9 +113,10 @@ class MNEmoticonView: UIView {
             ])
         }
         
-        /// 添加长按手势
+        // 添加长按手势
         let recognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPress(_:)))
         recognizer.minimumPressDuration = 0.3
+        recognizer.numberOfTouchesRequired = 1
         addGestureRecognizer(recognizer)
     }
     
@@ -124,8 +127,7 @@ class MNEmoticonView: UIView {
     /// 重载表情
     /// - Parameters:
     ///   - packet: 表情包
-    func reloadEmoticon(packet: MNEmoticon.Packet) {
-        self.packet = packet
+    func reload(packet: MNEmoticon.Packet) {
         emoticons.removeAll()
         var itemSize: CGSize = .zero
         var numberOfColumns = 0
@@ -161,11 +163,12 @@ class MNEmoticonView: UIView {
             if packet.style == .emoticon {
                 // 文字表情
                 elementView.isHidden = false
-                let height = floor((itemSize.height + minimumLineSpacing*2.0)*0.9)
+                let height = ceil(itemSize.height + minimumLineSpacing*0.7)
                 let width = ceil((itemSize.width + minimumInteritemSpacing)*2.0 + itemSize.width/2.0)
-                let bottom = max(minimumLineSpacing, MN_BOTTOM_SAFE_HEIGHT) + 8.0
+                let bottom = max(minimumLineSpacing, MN_BOTTOM_SAFE_HEIGHT) + 5.0
                 sectionInset.bottom = (height - itemSize.height)/2.0 + bottom
                 elementView.constraints.forEach { constraint in
+                    guard let firstItem = constraint.firstItem as? MNEmoticonElementView, firstItem == elementView else { return }
                     if constraint.firstAttribute == .width {
                         constraint.constant = width
                     } else if constraint.firstAttribute == .height {
@@ -192,8 +195,8 @@ class MNEmoticonView: UIView {
             let top = (collectionView.frame.height - itemSize.height*CGFloat(numberOfRows) - minimumLineSpacing*CGFloat(max(0, numberOfRows - 1)))/2.0
             sectionInset.top = top
             sectionInset.bottom = top
-            pageCount = numberOfColumns*numberOfRows
-            numberOfPages = pageCount > 0 ? Int(ceil(Double(elements.count)/Double(pageCount))) : 0
+            let pageCount = numberOfColumns*numberOfRows
+            let numberOfPages = pageCount > 0 ? Int(ceil(Double(elements.count)/Double(pageCount))) : 0
             preferredContentSize.width = max(collectionView.frame.width*CGFloat(numberOfPages), collectionView.frame.width)
             preferredContentSize.height = collectionView.frame.height
             if pageCount > 0, elements.isEmpty == false {
@@ -213,10 +216,17 @@ class MNEmoticonView: UIView {
         UIView.performWithoutAnimation {
             self.collectionView.reloadData()
         }
+        if let gestureRecognizers = gestureRecognizers, let gestureRecognizer = gestureRecognizers.first(where: { $0 is UILongPressGestureRecognizer }) {
+            gestureRecognizer.isEnabled = packet.style == .emoticon
+        }
     }
     
     func setCurrentPage(at pageIndex: Int, animated: Bool) {
-        collectionView.setContentOffset(CGPoint(x: collectionView.frame.width*CGFloat(pageIndex), y: 0.0), animated: animated)
+        if style == .paging {
+            collectionView.setContentOffset(CGPoint(x: collectionView.frame.width*CGFloat(pageIndex), y: 0.0), animated: animated)
+        } else {
+            collectionView.setContentOffset(.zero, animated: animated)
+        }
     }
 }
 
@@ -259,11 +269,12 @@ extension MNEmoticonView: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? MNEmoticonCell else { return }
         cell.updateEmoticon(emoticons[indexPath.section][indexPath.item])
-//        if elementView.isHidden {
-//            cell.contentView.alpha = 1.0
-//        } else {
-//            cell.contentView.alpha = alpha(for: cell, intersects: (collectionView.isDragging || collectionView.isDecelerating))
-//        }
+        guard style == .compact else { return }
+        if elementView.isHidden {
+            cell.contentView.alpha = 1.0
+        } else {
+            cell.contentView.alpha = alpha(for: cell, intersects: (collectionView.isDragging || collectionView.isDecelerating))
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -280,12 +291,12 @@ extension MNEmoticonView: UICollectionViewDataSource, UICollectionViewDelegate {
 // MARK: - UIScrollViewDelegate
 extension MNEmoticonView: UIScrollViewDelegate {
     
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        guard style == .compact else { return }
-//        for cell in collectionView.visibleCells {
-//            cell.contentView.alpha = alpha(for: cell, intersects: collectionView.isDragging)
-//        }
-//    }
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard style == .compact, elementView.isHidden == false else { return }
+        for cell in collectionView.visibleCells {
+            cell.contentView.alpha = alpha(for: cell, intersects: collectionView.isDragging)
+        }
+    }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         guard decelerate == false else { return }
@@ -316,22 +327,21 @@ private extension MNEmoticonView {
 private extension MNEmoticonView {
     
     @objc func longPress(_ recognizer: UILongPressGestureRecognizer) {
-        guard let packet = packet, packet.style == .emoticon else { return }
         switch recognizer.state {
         case .began:
-            previewEmoticon(at: recognizer.location(in: self))
+            preview(at: recognizer.location(in: self))
         case .changed:
-            previewEmoticon(at: recognizer.location(in: self))
+            preview(at: recognizer.location(in: self))
         default:
             guard let delegate = delegate else { break }
             delegate.emoticonViewShouldPreviewEmoticon(nil, at: .zero)
         }
     }
     
-    private func previewEmoticon(at location: CGPoint) {
+    private func preview(at location: CGPoint) {
         guard let delegate = delegate else { return }
         let offsetX = collectionView.contentOffset.x
-        if let indexPath = collectionView.indexPathForItem(at: .init(x: location.x + offsetX, y: location.y)), let cell = collectionView.cellForItem(at: indexPath), cell.alpha == 1.0 {
+        if let indexPath = collectionView.indexPathForItem(at: .init(x: location.x + offsetX, y: location.y)), let cell = collectionView.cellForItem(at: indexPath), cell.contentView.alpha == 1.0 {
             let rect = collectionView.convert(cell.frame, to: self)
             let emoticon = emoticons[indexPath.section][indexPath.item]
             delegate.emoticonViewShouldPreviewEmoticon(emoticon, at: rect)

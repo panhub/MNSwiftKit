@@ -18,40 +18,33 @@ class MNEmoticonElementView: UIView {
     init(options: MNEmoticonKeyboard.Options) {
         super.init(frame: .zero)
         
-        if let image = EmoticonResource.image(named: "delete-ver") {
-            let height: CGFloat = 20.0
-            let width: CGFloat = ceil(image.size.width/image.size.height*height)
-            deleteButton.image = image
-            deleteButton.imageMode = .scaleAspectFit
-            // TODO
-            //deleteButton.imageInset = UIEdgeInsets(top: (deleteButton.frame.height - height)/2.0, left: (deleteButton.frame.width - width)/2.0, bottom: (deleteButton.frame.height - height)/2.0, right: (deleteButton.frame.width - width)/2.0)
-        }
+        clipsToBounds = true
+        
         deleteButton.clipsToBounds = true
         deleteButton.layer.cornerRadius = 6.0
         deleteButton.backgroundColor = .white
         deleteButton.translatesAutoresizingMaskIntoConstraints = false
+        deleteButton.activate(image: EmoticonResource.image(named: "delete-ver"), height: 20.0)
         addSubview(deleteButton)
         NSLayoutConstraint.activate([
             deleteButton.topAnchor.constraint(equalTo: topAnchor),
             deleteButton.leftAnchor.constraint(equalTo: leftAnchor),
             deleteButton.bottomAnchor.constraint(equalTo: bottomAnchor),
-            deleteButton.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.5, constant: -4.0)
+            deleteButton.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.5, constant: -5.0)
         ])
         
         returnButton.text = options.returnKeyType.preferredTitle
         returnButton.textFont = options.returnKeyTitleFont
         returnButton.textColor = options.returnKeyTitleColor
         returnButton.backgroundColor = options.returnKeyColor
-        returnButton.clipsToBounds = true
-        returnButton.layer.cornerRadius = 6.0
-        returnButton.backgroundColor = .white
-        returnButton.textInset = UIEdgeInsets(top: 6.0, left: 6.0, bottom: 6.0, right: 6.0)
+        returnButton.layer.cornerRadius = deleteButton.layer.cornerRadius
+        returnButton.textInset = UIEdgeInsets(top: 0.0, left: 6.0, bottom: 0.0, right: 6.0)
         returnButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(returnButton)
         NSLayoutConstraint.activate([
-            returnButton.topAnchor.constraint(equalTo: deleteButton.topAnchor),
-            returnButton.leftAnchor.constraint(equalTo: deleteButton.rightAnchor, constant: 4.0),
-            returnButton.bottomAnchor.constraint(equalTo: deleteButton.bottomAnchor),
+            returnButton.topAnchor.constraint(equalTo: topAnchor),
+            returnButton.leftAnchor.constraint(equalTo: deleteButton.rightAnchor, constant: 5.0),
+            returnButton.bottomAnchor.constraint(equalTo: bottomAnchor),
             returnButton.rightAnchor.constraint(equalTo: rightAnchor)
         ])
     }
@@ -59,6 +52,17 @@ class MNEmoticonElementView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+//    override func updateConstraints() {
+//        
+//        deleteButton.constraints.forEach { constraint in
+//            if constraint.firstAttribute == .width {
+//                constraint.constant = frame.width/2.0
+//            }
+//        }
+//        
+//        super.updateConstraints()
+//    }
     
     func addTarget(_ target: Any, forReturnButtonTouchUpInside action: Selector) {
         returnButton.addTarget(target, action: action, for: .touchUpInside)

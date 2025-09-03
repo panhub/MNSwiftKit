@@ -29,7 +29,7 @@ class ViewController: UIViewController {
         
         let em = MNEmoticonKeyboard.Options()
         em.returnKeyType = .done
-        let keyboard = MNEmoticonKeyboard(frame: .init(origin: .zero, size: .init(width: MN_SCREEN_WIDTH, height: 300.0 + MN_BOTTOM_SAFE_HEIGHT)), style: .paging, options: em)
+        let keyboard = MNEmoticonKeyboard(frame: .init(origin: .zero, size: .init(width: MN_SCREEN_WIDTH, height: 300.0 + MN_BOTTOM_SAFE_HEIGHT)), style: .compact, options: em)
         keyboard.delegate = self
         textField.inputView = keyboard
         

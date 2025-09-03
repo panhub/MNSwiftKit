@@ -70,20 +70,19 @@ class MNEmoticonButton: UIControl {
             return inset
         }
         set {
-            constraints.forEach { constraint in
-                guard let firstItem = constraint.firstItem as? UIImageView, firstItem == imageView else { return }
-                switch constraint.firstAttribute {
-                case .top:
-                    constraint.constant = newValue.top
-                case .left, .leading:
-                    constraint.constant = newValue.left
-                case .bottom:
-                    constraint.constant = -newValue.bottom
-                case .right, .trailing:
-                    constraint.constant = -newValue.right
-                default: break
-                }
-            }
+            NSLayoutConstraint.deactivate(imageView.constraints.filter({ constraint in
+                return constraint.firstAttribute == .width || constraint.firstAttribute == .height
+            }))
+            NSLayoutConstraint.deactivate(constraints.filter({ constraint in
+                guard let firstItem = constraint.firstItem as? UIImageView, firstItem == imageView else { return false }
+                return true
+            }))
+            NSLayoutConstraint.activate([
+                imageView.topAnchor.constraint(equalTo: topAnchor, constant: newValue.top),
+                imageView.leftAnchor.constraint(equalTo: leftAnchor, constant: newValue.left),
+                imageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -newValue.bottom),
+                imageView.rightAnchor.constraint(equalTo: rightAnchor, constant: -newValue.right)
+            ])
         }
     }
     /// 文字
@@ -157,5 +156,47 @@ class MNEmoticonButton: UIControl {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    /// 自适应图片并居中显示
+    func activate(image: UIImage!, width: CGFloat) {
+        imageView.image = image
+        guard let image = image else { return }
+        NSLayoutConstraint.deactivate(imageView.constraints.filter({ constraint in
+            return constraint.firstAttribute == .width || constraint.firstAttribute == .height
+        }))
+        NSLayoutConstraint.deactivate(constraints.filter({ constraint in
+            guard let firstItem = constraint.firstItem as? UIImageView, firstItem == imageView else { return false }
+            return true
+        }))
+        NSLayoutConstraint.activate([
+            imageView.widthAnchor.constraint(equalToConstant: width),
+            imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor, multiplier: image.size.height/image.size.width)
+        ])
+        NSLayoutConstraint.activate([
+            imageView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            imageView.centerYAnchor.constraint(equalTo: centerYAnchor)
+        ])
+    }
+    
+    /// 自适应图片并居中显示
+    func activate(image: UIImage!, height: CGFloat) {
+        imageView.image = image
+        guard let image = image else { return }
+        NSLayoutConstraint.deactivate(imageView.constraints.filter({ constraint in
+            return constraint.firstAttribute == .width || constraint.firstAttribute == .height
+        }))
+        NSLayoutConstraint.deactivate(constraints.filter({ constraint in
+            guard let firstItem = constraint.firstItem as? UIImageView, firstItem == imageView else { return false }
+            return true
+        }))
+        NSLayoutConstraint.activate([
+            imageView.heightAnchor.constraint(equalToConstant: height),
+            imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: image.size.width/image.size.height)
+        ])
+        NSLayoutConstraint.activate([
+            imageView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            imageView.centerYAnchor.constraint(equalTo: centerYAnchor)
+        ])
     }
 }

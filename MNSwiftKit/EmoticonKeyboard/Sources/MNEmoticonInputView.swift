@@ -118,7 +118,7 @@ class MNEmoticonInputView: UIView {
         // 刷新页面
         pageView.numberOfPages = packets.count
         pageView.currentPageIndex = 0
-        selectedIndex = 0
+        selectedIndex = pageView.currentPageIndex
     }
     
     /// 设置当前页码
@@ -167,7 +167,7 @@ class MNEmoticonInputView: UIView {
         emoticonViews[pageIndex] = emoticonView
         pageView.layoutIfNeeded()
         let packet = packets[pageIndex]
-        emoticonView.reloadEmoticon(packet: packet)
+        emoticonView.reload(packet: packet)
         return emoticonView
     }
 }
@@ -231,6 +231,7 @@ extension MNEmoticonInputView: UIScrollViewDelegate {
         guard let delegate = delegate else { return }
         guard let emoticonView = emoticonView(at: currentPageIndex) else { return }
         delegate.inputViewDidSelectPage(at: currentPageIndex)
+        guard style == .paging else { return }
         delegate.inputViewDidUpdateEmoticon(with: emoticonView.numberOfPages)
         delegate.inputViewDidScrollEmoticon(to: emoticonView.currentPageIndex)
     }
