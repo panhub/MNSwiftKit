@@ -38,6 +38,7 @@ Pod::Spec.new do |s|
   s.subspec 'Core' do |c|
     c.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
     c.source_files = 'MNSwiftKit/Core/Sources/**/*.swift'
+    c.dependency 'MNSwiftKit/NameSpace'
   end
   
   # Base <控制器基类>

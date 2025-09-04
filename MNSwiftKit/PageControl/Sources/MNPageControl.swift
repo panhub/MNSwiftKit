@@ -236,7 +236,7 @@ public class MNPageControl: UIControl {
             return true
         }))
         NSLayoutConstraint.deactivate(constraints.filter({ constraint in
-            guard let firstItem = constraint.firstItem as? UIStackView, firstItem == stackView else { return false }
+            guard let firstItem = constraint.firstItem, firstItem is UIStackView else { return false }
             return true
         }))
         // 更新指示器约束

@@ -31,24 +31,19 @@ public class MNEmoticonManager {
     
     private init() {
         // 解析表情
-        var urls: [URL] = []
-        if let elements = EmoticonResource.urls(forResourcesWithExtension: "json") {
-            urls.append(contentsOf: elements)
+        var paths: [String] = []
+        if let path = EmoticonResource.path(forResource: MNEmoticon.Packet.Name.default.rawValue, ofType: "json") {
+            paths.append(path)
         }
         if let subpaths = FileManager.default.subpaths(atPath: userCacheDirectory) {
             for subpath in subpaths {
-                if subpath.pathExtension == "json" {
-                    let jsonPath = userCacheDirectory.appendingPathComponent(subpath)
-                    if #available(iOS 16.0, *) {
-                        urls.append(URL(filePath: jsonPath))
-                    } else {
-                        urls.append(URL(fileURLWithPath: jsonPath))
-                    }
-                }
+                guard subpath.pathExtension == "json" else { continue }
+                let jsonPath = userCacheDirectory.appendingPathComponent(subpath)
+                paths.append(jsonPath)
             }
         }
-        let collections = urls.compactMap { MNEmoticonCollection(url: $0) }
-        self.collections.append(contentsOf: collections)
+        let elements = paths.compactMap { MNEmoticonCollection(fileAtPath: $0) }
+        collections.append(contentsOf: elements)
     }
 }
 

@@ -184,7 +184,7 @@ extension MNEmoticonInputView {
         MNEmoticonManager.fetchEmoticonPacket([name]) { [weak self] packets in
             guard let self = self, let packet = packets.first else { return }
             guard let emoticonView = emoticonView(at: pageIndex, create: false) else { return }
-            emoticonView.reloadEmoticon(packet: packet)
+            emoticonView.reload(packet: packet)
         }
     }
 }
