@@ -27,7 +27,7 @@ public class MNEmoticonManager {
     /// 用户缓存目录
     public let userCacheDirectory = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first! + "/MNEmoticon"
     /// 收藏夹路径
-    public private(set) lazy var favoritesDirectory = userCacheDirectory.appendingPathComponent(MNEmoticon.Packet.Name.favorites.rawValue)
+    public private(set) lazy var favoritesDirectory = userCacheDirectory.appendingPathComponent(MNEmoticon.Packet.Name.favorites.rawValue.mn.md5)
     
     private init() {
         // 解析表情
@@ -66,7 +66,7 @@ extension MNEmoticonManager {
                 urls.append(url)
                 continue
             }
-            let jsonPath = userCacheDirectory.appendingPathComponent(name + ".json")
+            let jsonPath = userCacheDirectory.appendingPathComponent(name.mn.md5 + ".json")
             var jsonURL: URL!
             if #available(iOS 16.0, *) {
                 jsonURL = URL(filePath: jsonPath)

@@ -28,7 +28,10 @@
         "Foundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/Core/Sources/**/*.swift"
+      "source_files": "MNSwiftKit/Core/Sources/**/*.swift",
+      "dependencies": {
+        "MNSwiftKit/NameSpace": []
+      }
     },
     {
       "name": "Base",

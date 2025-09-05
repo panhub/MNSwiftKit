@@ -3,7 +3,7 @@
 //  MNSwiftKit
 //
 //  Created by panhub on 2022/11/11.
-//  定义命名空间
+//  MNSwiftKit命名空间
 
 import Foundation
 import ObjectiveC.runtime
@@ -16,31 +16,36 @@ public class NameSpaceWrapper<Base> {
     }
 }
 
-/// 支持命名空间的协议
+/// 命名空间支持
 public protocol NameSpaceConvertible {
     
     associatedtype NameSpaceBase
     
+    /// 实例构造MNSwiftKit命名空间入口
     var mn: NameSpaceWrapper<NameSpaceBase> { get }
     
+    /// 非实例构造MNSwiftKit命名空间入口
     static var mn: NameSpaceWrapper<NameSpaceBase>.Type { get }
 }
 
 /// 为命名空间添加属性
 extension NameSpaceConvertible {
     
+    /// 实例的MNSwiftKit命名空间
     public var mn: NameSpaceWrapper<Self> { NameSpaceWrapper<Self>(base: self) }
     
+    /// 非实例的MNSwiftKit命名空间
     public static var mn: NameSpaceWrapper<Self>.Type { NameSpaceWrapper<Self>.self }
 }
 
-/// 为NSObject添加`mn`命名空间
+/// 为String添加`MNSwiftKit`命名空间
+extension String: NameSpaceConvertible {}
+
+/// 为Objective-C对象添加`MNSwiftKit`命名空间
 extension NSObject: NameSpaceConvertible {}
 
 /// 关联属性
-public struct MNAssociatedKey {}
-
-extension MNAssociatedKey {
+public struct MNAssociatedKey {
     
     /// 关联用户自定义信息
     nonisolated(unsafe) fileprivate static var userInfo: String = "com.mn.object.user.info"

@@ -8,20 +8,11 @@
 import Foundation
 import CommonCrypto
 
-public class MNCrypto {
+extension NameSpaceWrapper where Base == String {
     
-    public let content: String
-    
-    init(content: String) {
-        self.content = content
-    }
-}
-
-extension MNCrypto {
-    
-    /// 计算md5(小写)
+    /// md5加密(小写)
     public var md5: String {
-        guard let data = content.data(using: .utf8) else { return content }
+        guard let data = base.data(using: .utf8) else { return base }
         let message = data.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
             return [UInt8](bytes)
         }
@@ -31,35 +22,11 @@ extension MNCrypto {
         return components.joined()
     }
     
-    /// 计算MD5(大写)
+    /// MD5加密(大写)
     public var MD5: String {
         
         md5.uppercased()
     }
-}
-
-extension String {
-    
-    /// 获取MD5计算器
-    public var crypto: MNCrypto {
-        MNCrypto(content: self)
-    }
-    
-    /*
-    /// 唯一字符串
-    public static var uuid: String {
-        var components: [String] = [String]()
-        let uuid: String = UIDevice.current.identifierForVendor?.uuidString ?? UIDevice.current.name
-        if uuid.count > 0 { components.append(uuid) }
-        let model: String = UIDevice.current.model
-        if model.count > 0 { components.append(model) }
-        components.append(UIDevice.current.systemVersion)
-        components.append(UUID().uuidString)
-        components.append("\(Int(Date().timeIntervalSince1970*1000.0))")
-        let string: String = components.joined(separator: "-")
-        return string.crypto.md5
-    }
-    */
 }
 
 private protocol MNHashConvertible {

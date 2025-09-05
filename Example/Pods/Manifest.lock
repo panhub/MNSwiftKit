@@ -1,7 +1,8 @@
 PODS:
   - MNSwiftKit/AnimatedImage (0.1.1)
   - MNSwiftKit/CollectionLayout (0.1.1)
-  - MNSwiftKit/Core (0.1.1)
+  - MNSwiftKit/Core (0.1.1):
+    - MNSwiftKit/NameSpace
   - MNSwiftKit/Definition (0.1.1)
   - MNSwiftKit/EmoticonKeyboard (0.1.1):
     - MNSwiftKit/AnimatedImage
@@ -21,7 +22,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: 1831aa3c40639d0a47f9624b813cd8a7d91f322d
+  MNSwiftKit: 973a4ce41378fac5ad0ebb8875e70981c90f816a
 
 PODFILE CHECKSUM: b1a16a8a4a6f3c6a98b2855a541cd43f34fd22cb
 
