@@ -20,47 +20,33 @@ class MNEmoticonCollection {
     let emoticons: [String:String]
     
     /// 构造表情集合
-    /// - Parameter filePath: json文件路径
-    init?(fileAtPath filePath: String) {
-        guard let fileHandle = FileHandle(forReadingAtPath: filePath) else { return nil }
-        var jsonData: Data!
-        if #available(iOS 13.4, *) {
-            do {
-                jsonData = try fileHandle.readToEnd()
-            } catch {
-#if DEBUG
-                print("读取json文件失败: \(error)")
-#endif
-                return nil
-            }
-        } else {
-            jsonData = fileHandle.readDataToEndOfFile()
-        }
-        guard let jsonData = jsonData, jsonData.isEmpty == false else {
-#if DEBUG
-            print("未发现json数据: \(filePath)")
-#endif
-            return nil
-        }
+    /// - Parameter url: json文件地址
+    init?(url: URL) {
         do {
+            let jsonData = try Data(contentsOf: url, options: [])
             let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
             guard let json = jsonObject as? [String:Any] else { return nil }
             guard let style = json[MNEmoticon.Packet.Key.style.rawValue] as? Int, style == MNEmoticon.Style.emoticon.rawValue else { return nil }
-            guard let elements = json[MNEmoticon.Packet.Key.emoticons.rawValue] as? [[String:String]] else { return nil }
-            emoticons = elements.reduce(into: [String:String](), { partialResult, dic in
-                guard let key = dic[MNEmoticon.Key.desc.rawValue], let value = dic[MNEmoticon.Key.img.rawValue] else { return }
-                partialResult[key] = value
+            guard let name = json[MNEmoticon.Packet.Key.name.rawValue] as? String, name.isEmpty == false else { return nil }
+            guard let emoticons = json[MNEmoticon.Packet.Key.emoticons.rawValue] as? [[String:String]] else { return nil }
+            self.emoticons = emoticons.reduce(into: [String:String](), { partialResult, dic in
+                partialResult.merge(dic) { $1 }
             })
-            let path = filePath.deletingPathExtension
-            name = path.lastPathComponent
+            self.name = name
+            var directoryURL = url.deletingPathExtension()
+#if canImport(MNSwiftKit)
             if name == MNEmoticon.Packet.Name.default.rawValue {
-                directory = path.deletingLastPathComponent
+                directoryURL = url.deletingLastPathComponent()
+            }
+#endif
+            if #available(iOS 16.0, *) {
+                self.directory = directoryURL.path(percentEncoded: false)
             } else {
-                directory = path
+                self.directory = directoryURL.path
             }
         } catch {
 #if DEBUG
-            print("解析json失败: \(filePath)")
+            print("解析表情包配置失败: \(url)")
 #endif
             return nil
         }

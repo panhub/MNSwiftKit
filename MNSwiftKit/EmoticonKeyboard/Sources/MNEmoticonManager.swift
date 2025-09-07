@@ -29,21 +29,25 @@ public class MNEmoticonManager {
     /// 收藏夹路径
     public private(set) lazy var favoritesDirectory = userEmoticonDirectory.appendingPathComponent(MNEmoticon.Packet.Name.favorites.rawValue.mn.md5)
     
+    /// 构造表情管理者
     private init() {
-        // 解析表情
-        var paths: [String] = []
-        if let path = EmoticonResource.path(forResource: MNEmoticon.Packet.Name.default.rawValue, ofType: "json") {
-            paths.append(path)
+        var urls: [URL] = []
+        if let url = EmoticonResource.url(forResource: MNEmoticon.Packet.Name.default.rawValue, withExtension: "json") {
+            urls.append(url)
         }
         if let subpaths = FileManager.default.subpaths(atPath: userEmoticonDirectory) {
             for subpath in subpaths {
                 guard subpath.pathExtension == "json" else { continue }
                 let jsonPath = userEmoticonDirectory.appendingPathComponent(subpath)
-                paths.append(jsonPath)
+                if #available(iOS 16.0, *) {
+                    urls.append(URL(filePath: jsonPath))
+                } else {
+                    urls.append(URL(fileURLWithPath: jsonPath))
+                }
             }
         }
-        let elements = paths.compactMap { MNEmoticonCollection(fileAtPath: $0) }
-        collections.append(contentsOf: elements)
+        let collections = urls.compactMap { MNEmoticonCollection(url: $0) }
+        self.collections.append(contentsOf: collections)
     }
 }
 
@@ -134,6 +138,12 @@ extension MNEmoticonManager {
 #endif
             return false
         }
+        if name == MNEmoticon.Packet.Name.default.rawValue {
+#if DEBUG
+            print("'default'表情包不可编辑")
+#endif
+            return false
+        }
         let packetDirectory = userEmoticonDirectory.appendingPathComponent(name.mn.md5)
         let jsonPath = packetDirectory + ".json"
         if FileManager.default.fileExists(atPath: jsonPath) { return true }
@@ -212,6 +222,12 @@ extension MNEmoticonManager {
         guard name.isEmpty == false else {
 #if DEBUG
             print("表情包名称不合法")
+#endif
+            return false
+        }
+        if name == MNEmoticon.Packet.Name.default.rawValue {
+#if DEBUG
+            print("'default'表情包不可编辑")
 #endif
             return false
         }
@@ -548,15 +564,21 @@ extension MNEmoticonManager {
     ///   - name: 表情包名称
     /// - Returns: 是否删除成功
     @discardableResult public func removeEmoticon(desc: String, from name: String) -> Bool {
+        guard name.isEmpty == false else {
+#if DEBUG
+            print("表情包名称不合法")
+#endif
+            return false
+        }
         guard desc.isEmpty == false else {
 #if DEBUG
             print("表情描述不合法")
 #endif
             return false
         }
-        guard name.isEmpty == false else {
+        if name == MNEmoticon.Packet.Name.default.rawValue {
 #if DEBUG
-            print("表情包名称不合法")
+            print("'default'表情包不可编辑")
 #endif
             return false
         }
@@ -692,6 +714,12 @@ extension MNEmoticonManager {
 #endif
             return false
         }
+        if name == MNEmoticon.Packet.Name.default.rawValue {
+#if DEBUG
+            print("'default'表情包不可编辑")
+#endif
+            return false
+        }
         var isDirectory: ObjCBool = true
         guard FileManager.default.fileExists(atPath: imagePath, isDirectory: &isDirectory), isDirectory.boolValue == false else {
 #if DEBUG
@@ -812,6 +840,12 @@ extension MNEmoticonManager {
         guard name.isEmpty == false else {
 #if DEBUG
             print("表情包名称不合法")
+#endif
+            return false
+        }
+        if name == MNEmoticon.Packet.Name.default.rawValue {
+#if DEBUG
+            print("'default'表情包不可编辑")
 #endif
             return false
         }
