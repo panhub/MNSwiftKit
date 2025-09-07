@@ -33,11 +33,11 @@ class MNEmoticonPacketCell: UICollectionViewCell {
     ///   - options: 配置信息
     ///   - highlighted: 是否高亮
     func updatePacket(_ packet: MNEmoticon.Packet, options: MNEmoticonKeyboard.Options, highlighted: Bool) {
-        if let image = UIImage(contentsOfFile: packet.directory.appendingPathComponent(packet.cover)) {
-            imageView.image = image
-        } else if let image = EmoticonResource.image(named: packet.cover.deletingPathExtension) {
-            // 使用默认图片
-            imageView.image = image
+        let imagePath = packet.directory.appendingPathComponent(packet.cover)
+        if FileManager.default.fileExists(atPath: imagePath) {
+            imageView.image = UIImage(contentsOfFile: imagePath)
+        } else {
+            imageView.image = EmoticonResource.image(named: packet.cover.deletingPathExtension)
         }
         imageView.backgroundColor = highlighted ? options.packetHighlightedColor : nil
         imageView.frame = contentView.bounds.inset(by: options.packetItemInset)

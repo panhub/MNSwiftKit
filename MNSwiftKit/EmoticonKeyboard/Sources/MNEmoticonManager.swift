@@ -8,14 +8,14 @@
 import UIKit
 import Foundation
 
-/// 通知-添加表情键
-public let MNEmoticonAddedUserInfoKey: String = "add.emoticon"
-/// 通知-删除表情键
-public let MNEmoticonRemovedUserInfoKey: String = "removed.emoticon"
-/// 通知-删除表情键
+/// 通知-表情包名称键
 public let MNEmoticonPacketNameUserInfoKey: String = "emoticon.packet.name"
-/// 表情变化通知
-public let MNEmoticonDidChangeNotification: Notification.Name = Notification.Name(rawValue: "com.mn.emoticon.changed")
+/// 添加表情包通知
+public let MNEmoticonPacketAddedNotification: Notification.Name = Notification.Name(rawValue: "com.mn.emoticon.packet.added")
+/// 删除表情包通知
+public let MNEmoticonPacketRemovedNotification: Notification.Name = Notification.Name(rawValue: "com.mn.emoticon.packet.removed")
+/// 表情包变化通知(删除/添加表情)
+public let MNEmoticonPacketChangedNotification: Notification.Name = Notification.Name(rawValue: "com.mn.emoticon.packet.changed")
 
 public class MNEmoticonManager {
     /// 表情检索表达式
@@ -25,9 +25,9 @@ public class MNEmoticonManager {
     /// 内部加载的表情集合
     private(set) var collections: [MNEmoticonCollection] = []
     /// 用户缓存目录
-    public let userCacheDirectory = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first! + "/MNEmoticon"
+    public let userEmoticonDirectory = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first! + "/MNEmoticon"
     /// 收藏夹路径
-    public private(set) lazy var favoritesDirectory = userCacheDirectory.appendingPathComponent(MNEmoticon.Packet.Name.favorites.rawValue.mn.md5)
+    public private(set) lazy var favoritesDirectory = userEmoticonDirectory.appendingPathComponent(MNEmoticon.Packet.Name.favorites.rawValue.mn.md5)
     
     private init() {
         // 解析表情
@@ -35,10 +35,10 @@ public class MNEmoticonManager {
         if let path = EmoticonResource.path(forResource: MNEmoticon.Packet.Name.default.rawValue, ofType: "json") {
             paths.append(path)
         }
-        if let subpaths = FileManager.default.subpaths(atPath: userCacheDirectory) {
+        if let subpaths = FileManager.default.subpaths(atPath: userEmoticonDirectory) {
             for subpath in subpaths {
                 guard subpath.pathExtension == "json" else { continue }
-                let jsonPath = userCacheDirectory.appendingPathComponent(subpath)
+                let jsonPath = userEmoticonDirectory.appendingPathComponent(subpath)
                 paths.append(jsonPath)
             }
         }
@@ -66,7 +66,7 @@ extension MNEmoticonManager {
                 urls.append(url)
                 continue
             }
-            let jsonPath = userCacheDirectory.appendingPathComponent(name.mn.md5 + ".json")
+            let jsonPath = userEmoticonDirectory.appendingPathComponent(name.mn.md5 + ".json")
             var jsonURL: URL!
             if #available(iOS 16.0, *) {
                 jsonURL = URL(filePath: jsonPath)
@@ -77,48 +77,11 @@ extension MNEmoticonManager {
                 urls.append(jsonURL)
             } else if name == MNEmoticon.Packet.Name.favorites.rawValue {
                 // 没有收藏夹, 主动创建
-                if FileManager.default.fileExists(atPath: favoritesDirectory) == false {
-                    do {
-                        try FileManager.default.createDirectory(atPath: favoritesDirectory, withIntermediateDirectories: true)
-                    } catch {
-#if DEBUG
-                        print("创建收藏夹文件夹失败: \(error)")
-#endif
-                        continue
-                    }
-                }
-                // 创建json文件
-                let json: [String:Any] = [
-                    MNEmoticon.Packet.Key.time.rawValue:1,
-                    MNEmoticon.Packet.Key.favorites.rawValue:1,
-                    MNEmoticon.Packet.Key.style.rawValue:MNEmoticon.Style.image.rawValue,
-                    MNEmoticon.Packet.Key.cover.rawValue:"favorites.png",
-                    MNEmoticon.Packet.Key.emoticons.rawValue:[[String:String]]()
-                ]
-                if #available(iOS 11.0, *) {
-                    do {
-                        try (json as NSDictionary).write(to: jsonURL)
-                    } catch  {
-                        try? FileManager.default.removeItem(atPath: favoritesDirectory)
-        #if DEBUG
-                        print("创建收藏夹json失败: \(error)")
-        #endif
-                        continue
-                    }
-                } else {
-                    guard (json as NSDictionary).write(to: jsonURL, atomically: true) else {
-                        try? FileManager.default.removeItem(atPath: favoritesDirectory)
-        #if DEBUG
-                        print("创建收藏夹json失败")
-        #endif
-                        continue
-                    }
-                }
+                guard createEmoticonPacket(name: name) else { continue }
                 urls.append(jsonURL)
             }
         }
-        var packets = urls.compactMap { MNEmoticon.Packet(url: $0) }
-        packets.sort { $0.time <= $1.time }
+        let packets = urls.compactMap { MNEmoticon.Packet(url: $0) }
         return packets
     }
     
@@ -158,6 +121,814 @@ extension MNEmoticonManager {
     }
 }
 
+// MARK: - 收藏夹
+extension MNEmoticonManager {
+    
+    /// 创建表情包
+    /// - Parameter name: 表情包名称
+    /// - Returns: 是否创建成功
+    @discardableResult public func createEmoticonPacket(name: String) -> Bool {
+        guard name.isEmpty == false else {
+#if DEBUG
+            print("表情包名称不合法")
+#endif
+            return false
+        }
+        let packetDirectory = userEmoticonDirectory.appendingPathComponent(name.mn.md5)
+        let jsonPath = packetDirectory + ".json"
+        if FileManager.default.fileExists(atPath: jsonPath) { return true }
+        // 不存在就创建文件夹
+        if FileManager.default.fileExists(atPath: packetDirectory) == false {
+            do {
+                try FileManager.default.createDirectory(atPath: packetDirectory, withIntermediateDirectories: true)
+            } catch {
+#if DEBUG
+                print("创建表情包文件夹失败: \(error)")
+#endif
+                return false
+            }
+        }
+        var json: [String:Any] = [:]
+        json[MNEmoticon.Packet.Key.name.rawValue] = name
+        json[MNEmoticon.Packet.Key.cover.rawValue] = "favorites.png"
+        json[MNEmoticon.Packet.Key.style.rawValue] = MNEmoticon.Style.image.rawValue
+        json[MNEmoticon.Packet.Key.emoticons.rawValue] = [[String:String]]()
+        var jsonURL: URL!
+        if #available(iOS 16.0, *) {
+            jsonURL = URL(filePath: jsonPath)
+        } else {
+            jsonURL = URL(fileURLWithPath: jsonPath)
+        }
+        if #available(iOS 11.0, *) {
+            do {
+                try (json as NSDictionary).write(to: jsonURL)
+            } catch  {
+                try? FileManager.default.removeItem(atPath: packetDirectory)
+#if DEBUG
+                print("创建表情包配置失败: \(error)")
+#endif
+                return false
+            }
+        } else {
+            guard (json as NSDictionary).write(to: jsonURL, atomically: true) else {
+                try? FileManager.default.removeItem(atPath: packetDirectory)
+#if DEBUG
+                print("创建表情包配置失败")
+#endif
+                return false
+            }
+        }
+        // 通知表情包变化
+        let notifyHandler: ()->Void = {
+            NotificationCenter.default.post(name: MNEmoticonPacketAddedNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:name])
+        }
+        if Thread.isMainThread {
+            notifyHandler()
+        } else {
+            DispatchQueue.main.async(execute: notifyHandler)
+        }
+        return true
+    }
+    
+    /// 异步创建表情包
+    /// - Parameters:
+    ///   - name: 表情包名称
+    ///   - queue: 操作队列
+    ///   - completionHandler: 结果回调
+    public func createEmoticonPacket(name: String, using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: ((_ isSuccess: Bool)->Void)?) {
+        queue.async {
+            let isSuccess = MNEmoticonManager.shared.createEmoticonPacket(name: name)
+            DispatchQueue.main.async {
+                // 回调
+                completionHandler?(isSuccess)
+            }
+        }
+    }
+    
+    /// 删除表情包
+    /// - Parameter name: 表情包名称
+    /// - Returns: 是否删除成功
+    @discardableResult public func removeEmoticonPacket(name: String) -> Bool {
+        guard name.isEmpty == false else {
+#if DEBUG
+            print("表情包名称不合法")
+#endif
+            return false
+        }
+        let packetDirectory = userEmoticonDirectory.appendingPathComponent(name.mn.md5)
+        let jsonPath = packetDirectory + ".json"
+        guard FileManager.default.fileExists(atPath: jsonPath) else {
+#if DEBUG
+            print("表情包不存在: \(name)")
+#endif
+            return false
+        }
+        do {
+            try FileManager.default.removeItem(atPath: jsonPath)
+        } catch {
+#if DEBUG
+            print("删除表情包配置失败: \(error)")
+#endif
+            return false
+        }
+        do {
+            try FileManager.default.removeItem(atPath: packetDirectory)
+        } catch {
+#if DEBUG
+            print("删除表情包文件夹失败: \(error)")
+#endif
+        }
+        // 通知删除表情包
+        let notifyHandler: ()->Void = {
+            NotificationCenter.default.post(name: MNEmoticonPacketRemovedNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:name])
+        }
+        if Thread.isMainThread {
+            notifyHandler()
+        } else {
+            DispatchQueue.main.async(execute: notifyHandler)
+        }
+        return true
+    }
+    
+    /// 异步删除表情包
+    /// - Parameters:
+    ///   - name: 表情包名称
+    ///   - queue: 操作队列
+    ///   - completionHandler: 结果回调
+    public func removeEmoticonPacket(name: String, using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: ((_ isSuccess: Bool)->Void)?) {
+        queue.async {
+            let isSuccess = MNEmoticonManager.shared.removeEmoticonPacket(name: name)
+            DispatchQueue.main.async {
+                // 回调
+                completionHandler?(isSuccess)
+            }
+        }
+    }
+    
+    /// 添加图片到表情包
+    /// - Parameters:
+    ///   - imagePath: 表情图片路径
+    ///   - desc: 表情描述
+    ///   - name: 表情包名称
+    /// - Returns: 是否添加成功
+    @discardableResult public func addEmoticon(atPath imagePath: String, desc: String? = nil, to name: String) -> Bool {
+        var isDirectory: ObjCBool = true
+        guard FileManager.default.fileExists(atPath: imagePath, isDirectory: &isDirectory), isDirectory.boolValue == false else {
+#if DEBUG
+            print("表情图片不存在或路径不合法: \(imagePath)")
+#endif
+            return false
+        }
+        // 创建表情包
+        guard createEmoticonPacket(name: name) else { return false }
+        let packetDirectory = userEmoticonDirectory.appendingPathComponent(name.mn.md5)
+        var json: [String:Any] = [:]
+        let jsonPath = packetDirectory + ".json"
+        var jsonURL: URL!
+        if #available(iOS 16.0, *) {
+            jsonURL = URL(filePath: jsonPath)
+        } else {
+            jsonURL = URL(fileURLWithPath: jsonPath)
+        }
+        // 解析表情包
+        do {
+            let jsonData = try Data(contentsOf: jsonURL, options: [])
+            let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
+            guard let dic = jsonObject as? [String:Any] else { return false }
+            json.merge(dic) { $1 }
+        } catch {
+#if DEBUG
+            print("解析表情包失败: \(error)")
+#endif
+            return false
+        }
+        // 复制图片到文件夹
+        guard let targetPath = packetDirectory.appendingPathComponent(imagePath.lastPathComponent).absolutePath else {
+#if DEBUG
+            print("计算表情图片目标路径失败: \(imagePath)")
+#endif
+            return false
+        }
+        do {
+            try FileManager.default.copyItem(atPath: imagePath, toPath: targetPath)
+        } catch {
+#if DEBUG
+            print("复制表情图片失败: \(targetPath)")
+#endif
+            return false
+        }
+        var emoticonDesc = targetPath.deletingPathExtension.lastPathComponent
+        if let desc = desc, desc.isEmpty == false {
+            emoticonDesc = desc
+        }
+        let emoticon: [String:String] = [MNEmoticon.Key.img.rawValue:targetPath.lastPathComponent,MNEmoticon.Key.desc.rawValue:emoticonDesc]
+        var emoticons = json[MNEmoticon.Packet.Key.emoticons.rawValue] as? [[String:String]] ?? []
+        emoticons.insert(emoticon, at: 0)
+        json[MNEmoticon.Packet.Key.emoticons.rawValue] = emoticons
+        if #available(iOS 11.0, *) {
+            do {
+                try (json as NSDictionary).write(to: jsonURL)
+            } catch  {
+                try? FileManager.default.removeItem(atPath: targetPath)
+#if DEBUG
+                print("更新表情包配置失败: \(error)")
+#endif
+                return false
+            }
+        } else {
+            guard (json as NSDictionary).write(to: jsonURL, atomically: true) else {
+                try? FileManager.default.removeItem(atPath: targetPath)
+#if DEBUG
+                print("更新表情包配置失败")
+#endif
+                return false
+            }
+        }
+        // 通知表情包变化
+        let notifyHandler: ()->Void = {
+            NotificationCenter.default.post(name: MNEmoticonPacketChangedNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:name])
+        }
+        if Thread.isMainThread {
+            notifyHandler()
+        } else {
+            DispatchQueue.main.async(execute: notifyHandler)
+        }
+        return true
+    }
+    
+    /// 异步添加图片到表情包
+    /// - Parameters:
+    ///   - imagePath: 表情图片路径
+    ///   - desc: 表情描述
+    ///   - name: 表情包名称
+    ///   - queue: 执行队列
+    ///   - completionHandler: 结束回调
+    public class func addEmoticon(atPath imagePath: String, desc: String? = nil, to name: String,  using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: ((_ isSuccess: Bool)->Void)?) {
+        queue.async {
+            let isSuccess = MNEmoticonManager.shared.addEmoticon(atPath: imagePath, desc: desc, to: name)
+            DispatchQueue.main.async {
+                // 回调
+                completionHandler?(isSuccess)
+            }
+        }
+    }
+    
+    
+    /// 添加图片到表情包
+    /// - Parameters:
+    ///   - image: 表情图片
+    ///   - desc: 表情描述
+    ///   - name: 表情包名称
+    /// - Returns: 是否添加成功
+    @discardableResult public func addEmoticon(image: UIImage, desc: String? = nil, to name: String) -> Bool {
+        // 创建表情包
+        guard createEmoticonPacket(name: name) else { return false }
+        let packetDirectory = userEmoticonDirectory.appendingPathComponent(name.mn.md5)
+        let jsonPath = packetDirectory + ".json"
+        var json: [String:Any] = [:]
+        var jsonURL: URL!
+        if #available(iOS 16.0, *) {
+            jsonURL = URL(filePath: jsonPath)
+        } else {
+            jsonURL = URL(fileURLWithPath: jsonPath)
+        }
+        // 解析表情包
+        do {
+            let jsonData = try Data(contentsOf: jsonURL, options: [])
+            let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
+            guard let dic = jsonObject as? [String:Any] else { return false }
+            json.merge(dic) { $1 }
+        } catch {
+#if DEBUG
+            print("解析收藏夹失败: \(error)")
+#endif
+            return false
+        }
+        // 写入图片
+        guard let imagePath = packetDirectory.appendingPathComponent("\(Int(Date().timeIntervalSince1970*1000.0)).png").absolutePath else {
+#if DEBUG
+            print("计算表情图片目标路径失败")
+#endif
+            return false
+        }
+        var ext = imagePath.pathExtension
+        guard let imageData = Data(image: image, compression: 0.75, extension: &ext) else {
+#if DEBUG
+            print("解压表情图片失败")
+#endif
+            return false
+        }
+        let targetPath = imagePath.deletingPathExtension + "." + ext
+        var targetURL: URL!
+        if #available(iOS 16.0, *) {
+            targetURL = URL(filePath: targetPath)
+        } else {
+            targetURL = URL(fileURLWithPath: targetPath)
+        }
+        do {
+            try imageData.write(to: targetURL, options: .atomic)
+        } catch {
+#if DEBUG
+            print("保存表情图片失败: \(error)")
+#endif
+            return false
+        }
+        // 更新json
+        var emoticonDesc = targetPath.deletingPathExtension.lastPathComponent
+        if let desc = desc, desc.isEmpty == false {
+            emoticonDesc = desc
+        }
+        let emoticon: [String:String] = [MNEmoticon.Key.img.rawValue:targetPath.lastPathComponent,MNEmoticon.Key.desc.rawValue:emoticonDesc]
+        var emoticons = json[MNEmoticon.Packet.Key.emoticons.rawValue] as? [[String:String]] ?? []
+        emoticons.insert(emoticon, at: 0)
+        json[MNEmoticon.Packet.Key.emoticons.rawValue] = emoticons
+        if #available(iOS 11.0, *) {
+            do {
+                try (json as NSDictionary).write(to: jsonURL)
+            } catch  {
+                try? FileManager.default.removeItem(atPath: targetPath)
+#if DEBUG
+                print("更新收藏夹失败: \(error)")
+#endif
+                return false
+            }
+        } else {
+            guard (json as NSDictionary).write(to: jsonURL, atomically: true) else {
+                try? FileManager.default.removeItem(atPath: targetPath)
+#if DEBUG
+                print("更新收藏夹失败")
+#endif
+                return false
+            }
+        }
+        // 通知表情包变化
+        let notifyHandler: ()->Void = {
+            NotificationCenter.default.post(name: MNEmoticonPacketChangedNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:name])
+        }
+        if Thread.isMainThread {
+            notifyHandler()
+        } else {
+            DispatchQueue.main.async(execute: notifyHandler)
+        }
+        return true
+    }
+    
+    
+    /// 异步添加图片到表情包
+    /// - Parameters:
+    ///   - image: 表情图片
+    ///   - desc: 表情描述
+    ///   - name: 表情包名称
+    ///   - queue: 操作队列
+    ///   - completionHandler: 回调结果
+    public class func addEmoticon(image: UIImage, desc: String? = nil, to name: String, using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: ((_ isSuccess: Bool)->Void)?) {
+        queue.async {
+            let isSuccess = MNEmoticonManager.shared.addEmoticon(image: image, desc: desc, to: name)
+            DispatchQueue.main.async {
+                // 回调
+                completionHandler?(isSuccess)
+            }
+        }
+    }
+    
+    
+    /// 收藏表情到收藏夹
+    /// - Parameters:
+    ///   - imagePath: 表情图片路径
+    ///   - desc: 表情描述
+    /// - Returns: 是否收藏成功
+    @discardableResult public func addEmoticonToFavorites(atPath imagePath: String, desc: String? = nil) -> Bool {
+        addEmoticon(atPath: imagePath, desc: desc, to: MNEmoticon.Packet.Name.favorites.rawValue)
+    }
+    
+    /// 异步收藏表情到收藏夹
+    /// - Parameters:
+    ///   - imagePath: 表情图片路径
+    ///   - desc: 表情描述
+    ///   - queue: 执行队列
+    ///   - completionHandler: 结束回调
+    public class func addEmoticonToFavorites(atPath imagePath: String, desc: String? = nil, using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: ((_ isSuccess: Bool)->Void)?) {
+        queue.async {
+            let isSuccess = MNEmoticonManager.shared.addEmoticonToFavorites(atPath: imagePath, desc: desc)
+            DispatchQueue.main.async {
+                // 回调
+                completionHandler?(isSuccess)
+            }
+        }
+    }
+    
+    /// 收藏表情到收藏夹
+    /// - Parameters:
+    ///   - image: 表情图片
+    ///   - desc: 表情描述
+    /// - Returns: 是否收藏成功
+    @discardableResult public func addEmoticonToFavorites(image: UIImage, desc: String? = nil) -> Bool {
+        addEmoticon(image: image, desc: desc, to: MNEmoticon.Packet.Name.favorites.rawValue)
+    }
+    
+    /// 异步收藏表情到收藏夹
+    /// - Parameters:
+    ///   - image: 表情图片
+    ///   - desc: 表情描述
+    ///   - queue: 执行队列
+    ///   - completionHandler: 结束回调
+    public class func addEmoticonToFavorites(image: UIImage, desc: String? = nil, using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: ((_ isSuccess: Bool)->Void)?) {
+        queue.async {
+            let isSuccess = MNEmoticonManager.shared.addEmoticonToFavorites(image: image, desc: desc)
+            DispatchQueue.main.async {
+                // 回调
+                completionHandler?(isSuccess)
+            }
+        }
+    }
+    
+    /// 从表情包中删除表情
+    /// - Parameters:
+    ///   - desc: 表情描述
+    ///   - name: 表情包名称
+    /// - Returns: 是否删除成功
+    @discardableResult public func removeEmoticon(desc: String, from name: String) -> Bool {
+        guard desc.isEmpty == false else {
+#if DEBUG
+            print("表情描述不合法")
+#endif
+            return false
+        }
+        guard name.isEmpty == false else {
+#if DEBUG
+            print("表情包名称不合法")
+#endif
+            return false
+        }
+        let packetDirectory = userEmoticonDirectory.appendingPathComponent(name.mn.md5)
+        let jsonPath = packetDirectory + ".json"
+        guard FileManager.default.fileExists(atPath: jsonPath) else {
+#if DEBUG
+            print("表情包不存在: \(name)")
+#endif
+            return false
+        }
+        // 解析表情包
+        var json: [String:Any] = [:]
+        var jsonURL: URL!
+        if #available(iOS 16.0, *) {
+            jsonURL = URL(filePath: jsonPath)
+        } else {
+            jsonURL = URL(fileURLWithPath: jsonPath)
+        }
+        do {
+            let jsonData = try Data(contentsOf: jsonURL, options: [])
+            let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
+            guard let dic = jsonObject as? [String:Any] else { return false }
+            json.merge(dic) { $1 }
+        } catch {
+#if DEBUG
+            print("解析表情包失败: \(error)")
+#endif
+            return false
+        }
+        guard var emoticons = json[MNEmoticon.Packet.Key.emoticons.rawValue] as? [[String:String]] else {
+#if DEBUG
+            print("表情包内无表情")
+#endif
+            return false
+        }
+        var imgs: [String] = []
+        emoticons.removeAll { item in
+            guard let string = item[MNEmoticon.Key.desc.rawValue], string == desc else { return false }
+            if let img = item[MNEmoticon.Key.img.rawValue] {
+                imgs.append(img)
+            }
+            return true
+        }
+        json[MNEmoticon.Packet.Key.emoticons.rawValue] = emoticons
+        if #available(iOS 11.0, *) {
+            do {
+                try (json as NSDictionary).write(to: jsonURL)
+            } catch  {
+#if DEBUG
+                print("更新收藏夹失败: \(error)")
+#endif
+                return false
+            }
+        } else {
+            guard (json as NSDictionary).write(to: jsonURL, atomically: true) else {
+#if DEBUG
+                print("更新收藏夹失败")
+#endif
+                return false
+            }
+        }
+        for img in imgs {
+            let imagePath = packetDirectory.appendingPathComponent(img)
+            do {
+                try FileManager.default.removeItem(atPath: imagePath)
+            } catch {
+#if DEBUG
+                print("删除收藏夹内图片失败: \(error)")
+#endif
+            }
+        }
+        // 通知表情包变化
+        let notifyHandler: ()->Void = {
+            NotificationCenter.default.post(name: MNEmoticonPacketChangedNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:name])
+        }
+        if Thread.isMainThread {
+            notifyHandler()
+        } else {
+            DispatchQueue.main.async(execute: notifyHandler)
+        }
+        return true
+    }
+    
+    
+    /// 异步删除表情包内表情
+    /// - Parameters:
+    ///   - desc: 表情描述
+    ///   - name: 表情包名称
+    ///   - queue: 操作队列
+    ///   - completionHandler: 结果回调
+    public class func removeEmoticon(desc: String, from name: String, using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: ((_ isSuccess: Bool)->Void)?) {
+        queue.async {
+            let isSuccess = MNEmoticonManager.shared.removeEmoticon(desc: desc, from: name)
+            DispatchQueue.main.async {
+                // 回调
+                completionHandler?(isSuccess)
+            }
+        }
+    }
+    
+    /// 从收藏夹删除表情
+    /// - Parameter desc: 表情描述
+    /// - Returns: 是否删除成功
+    @discardableResult public func removeEmoticonFromFavorites(desc: String) -> Bool {
+        removeEmoticon(desc: desc, from: MNEmoticon.Packet.Name.favorites.rawValue)
+    }
+    
+    /// 异步从收藏夹删除表情
+    /// - Parameters:
+    ///   - desc: 表情描述
+    ///   - queue: 操作队列
+    ///   - completionHandler: 结束回调
+    public class func removeEmoticonFromFavorites(desc: String, using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: ((_ isSuccess: Bool)->Void)?) {
+        queue.async {
+            let isSuccess = MNEmoticonManager.shared.removeEmoticonFromFavorites(desc: desc)
+            DispatchQueue.main.async {
+                // 回调
+                completionHandler?(isSuccess)
+            }
+        }
+    }
+    
+    /// 更新表情包封面
+    /// - Parameters:
+    ///   - imagePath: 封面图片路径
+    ///   - name: 表情包名称
+    /// - Returns: 是否更换成功
+    @discardableResult public func updateCover(atPath imagePath: String, to name: String) -> Bool {
+        guard name.isEmpty == false else {
+#if DEBUG
+            print("表情包名称不合法")
+#endif
+            return false
+        }
+        var isDirectory: ObjCBool = true
+        guard FileManager.default.fileExists(atPath: imagePath, isDirectory: &isDirectory), isDirectory.boolValue == false else {
+#if DEBUG
+            print("封面图片不存在或路径不合法: \(imagePath)")
+#endif
+            return false
+        }
+        let packetDirectory = userEmoticonDirectory.appendingPathComponent(name.mn.md5)
+        let jsonPath = packetDirectory + ".json"
+        guard FileManager.default.fileExists(atPath: jsonPath) else {
+#if DEBUG
+            print("表情包不存在: \(name)")
+#endif
+            return false
+        }
+        var json: [String:Any] = [:]
+        var jsonURL: URL!
+        if #available(iOS 16.0, *) {
+            jsonURL = URL(filePath: jsonPath)
+        } else {
+            jsonURL = URL(fileURLWithPath: jsonPath)
+        }
+        // 解析表情包
+        do {
+            let jsonData = try Data(contentsOf: jsonURL, options: [])
+            let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
+            guard let dic = jsonObject as? [String:Any] else { return false }
+            json.merge(dic) { $1 }
+        } catch {
+#if DEBUG
+            print("解析表情包失败: \(error)")
+#endif
+            return false
+        }
+        // 复制图片到文件夹
+        guard let targetPath = packetDirectory.appendingPathComponent(imagePath.lastPathComponent).absolutePath else {
+#if DEBUG
+            print("计算封面目标路径失败: \(imagePath)")
+#endif
+            return false
+        }
+        do {
+            try FileManager.default.copyItem(atPath: imagePath, toPath: targetPath)
+        } catch {
+#if DEBUG
+            print("复制封面图片失败: \(targetPath)")
+#endif
+            return false
+        }
+        let oldCoverName = json[MNEmoticon.Packet.Key.cover.rawValue] as? String
+        json[MNEmoticon.Packet.Key.cover.rawValue] = targetPath.lastPathComponent
+        if #available(iOS 11.0, *) {
+            do {
+                try (json as NSDictionary).write(to: jsonURL)
+            } catch  {
+                try? FileManager.default.removeItem(atPath: targetPath)
+#if DEBUG
+                print("更新表情包配置失败: \(error)")
+#endif
+                return false
+            }
+        } else {
+            guard (json as NSDictionary).write(to: jsonURL, atomically: true) else {
+                try? FileManager.default.removeItem(atPath: targetPath)
+#if DEBUG
+                print("更新表情包配置失败")
+#endif
+                return false
+            }
+        }
+        // 删除原封面
+        if let oldCoverName = oldCoverName, oldCoverName.pathExtension.isEmpty == false {
+            let coverPath = packetDirectory.appendingPathComponent(oldCoverName)
+            if FileManager.default.fileExists(atPath: coverPath) {
+                do {
+                    try FileManager.default.removeItem(atPath: coverPath)
+                } catch {
+#if DEBUG
+                print("删除原封面图片失败: \(error)")
+#endif
+                }
+            }
+        }
+        // 通知表情包变化
+        let notifyHandler: ()->Void = {
+            NotificationCenter.default.post(name: MNEmoticonPacketChangedNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:name])
+        }
+        if Thread.isMainThread {
+            notifyHandler()
+        } else {
+            DispatchQueue.main.async(execute: notifyHandler)
+        }
+        return false
+    }
+    
+    /// 异步更新表情包封面
+    /// - Parameters:
+    ///   - imagePath: 封面路径
+    ///   - name: 表情包名称
+    ///   - queue: 操作的队列
+    ///   - completionHandler: 结果回调
+    public func updateCover(atPath imagePath: String, to name: String, using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: ((_ isSuccess: Bool)->Void)?) {
+        queue.async {
+            let isSuccess = MNEmoticonManager.shared.updateCover(atPath: imagePath, to: name)
+            DispatchQueue.main.async {
+                // 回调
+                completionHandler?(isSuccess)
+            }
+        }
+    }
+    
+    /// 更新表情包封面
+    /// - Parameters:
+    ///   - image: 封面图片
+    ///   - name: 表情包名称
+    /// - Returns: 是否更新成功
+    @discardableResult public func updateCover(image: UIImage, to name: String) -> Bool {
+        guard name.isEmpty == false else {
+#if DEBUG
+            print("表情包名称不合法")
+#endif
+            return false
+        }
+        let packetDirectory = userEmoticonDirectory.appendingPathComponent(name.mn.md5)
+        let jsonPath = packetDirectory + ".json"
+        var json: [String:Any] = [:]
+        var jsonURL: URL!
+        if #available(iOS 16.0, *) {
+            jsonURL = URL(filePath: jsonPath)
+        } else {
+            jsonURL = URL(fileURLWithPath: jsonPath)
+        }
+        // 解析表情包
+        do {
+            let jsonData = try Data(contentsOf: jsonURL, options: [])
+            let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
+            guard let dic = jsonObject as? [String:Any] else { return false }
+            json.merge(dic) { $1 }
+        } catch {
+#if DEBUG
+            print("解析收藏夹失败: \(error)")
+#endif
+            return false
+        }
+        // 写入图片
+        guard let imagePath = packetDirectory.appendingPathComponent("\(Int(Date().timeIntervalSince1970*1000.0)).png").absolutePath else {
+#if DEBUG
+            print("计算封面图片目标路径失败")
+#endif
+            return false
+        }
+        var ext = imagePath.pathExtension
+        guard let imageData = Data(image: image, compression: 0.75, extension: &ext) else {
+#if DEBUG
+            print("解压封面图片失败")
+#endif
+            return false
+        }
+        let targetPath = imagePath.deletingPathExtension + "." + ext
+        var targetURL: URL!
+        if #available(iOS 16.0, *) {
+            targetURL = URL(filePath: targetPath)
+        } else {
+            targetURL = URL(fileURLWithPath: targetPath)
+        }
+        do {
+            try imageData.write(to: targetURL, options: .atomic)
+        } catch {
+#if DEBUG
+            print("保存表情图片失败: \(error)")
+#endif
+            return false
+        }
+        // 更新json
+        let oldCoverName = json[MNEmoticon.Packet.Key.cover.rawValue] as? String
+        json[MNEmoticon.Packet.Key.cover.rawValue] = targetPath.lastPathComponent
+        if #available(iOS 11.0, *) {
+            do {
+                try (json as NSDictionary).write(to: jsonURL)
+            } catch  {
+                try? FileManager.default.removeItem(atPath: targetPath)
+#if DEBUG
+                print("更新收藏夹失败: \(error)")
+#endif
+                return false
+            }
+        } else {
+            guard (json as NSDictionary).write(to: jsonURL, atomically: true) else {
+                try? FileManager.default.removeItem(atPath: targetPath)
+#if DEBUG
+                print("更新收藏夹失败")
+#endif
+                return false
+            }
+        }
+        // 删除原封面
+        if let oldCoverName = oldCoverName, oldCoverName.pathExtension.isEmpty == false {
+            let coverPath = packetDirectory.appendingPathComponent(oldCoverName)
+            if FileManager.default.fileExists(atPath: coverPath) {
+                do {
+                    try FileManager.default.removeItem(atPath: coverPath)
+                } catch {
+#if DEBUG
+                print("删除原封面图片失败: \(error)")
+#endif
+                }
+            }
+        }
+        // 通知表情包变化
+        let notifyHandler: ()->Void = {
+            NotificationCenter.default.post(name: MNEmoticonPacketChangedNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:name])
+        }
+        if Thread.isMainThread {
+            notifyHandler()
+        } else {
+            DispatchQueue.main.async(execute: notifyHandler)
+        }
+        return true
+    }
+    
+    /// 异步更新表情包封面
+    /// - Parameters:
+    ///   - image: 封面图片
+    ///   - name: 表情包名称
+    ///   - queue: 操作队列
+    ///   - completionHandler: 结果回调
+    public func updateCover(image: UIImage, to name: String, using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: ((_ isSuccess: Bool)->Void)?) {
+        queue.async {
+            let isSuccess = MNEmoticonManager.shared.updateCover(image: image, to: name)
+            DispatchQueue.main.async {
+                // 回调
+                completionHandler?(isSuccess)
+            }
+        }
+    }
+}
+
 // MARK: - 表情
 extension MNEmoticonManager {
     
@@ -182,12 +953,6 @@ extension MNEmoticonManager {
     }
     
     /// 获取表情图片
-    public subscript(_ desc: String) -> UIImage? {
-        guard let path = collections.path(for: desc) else { return nil }
-        return UIImage(contentsOfFile: path)
-    }
-    
-    /// 获取表情图片
     /// - Parameters:
     ///   - desc: 表情描述
     ///   - packet: 指定表情包
@@ -196,354 +961,10 @@ extension MNEmoticonManager {
         guard let path = collections.path(for: desc, in: packet) else { return nil }
         return UIImage(contentsOfFile: path)
     }
-}
-
-// MARK: - 收藏夹
-extension MNEmoticonManager {
     
-    /// 添加图片到收藏夹
-    /// - Parameter imagePath: 图片路径
-    /// - Returns: 是否添加成功
-    private func addEmoticonToFavorites(atPath imagePath: String) -> Bool {
-        var json: [String:Any] = [:]
-        let jsonPath = favoritesDirectory + ".json"
-        var jsonURL: URL!
-        if #available(iOS 16.0, *) {
-            jsonURL = URL(filePath: jsonPath)
-        } else {
-            jsonURL = URL(fileURLWithPath: jsonPath)
-        }
-        if FileManager.default.fileExists(atPath: jsonPath) {
-            // 已存在收藏夹, 解析数据
-            do {
-                let jsonData = try Data(contentsOf: jsonURL, options: [])
-                let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
-                guard let dic = jsonObject as? [String:Any] else { return false }
-                json.merge(dic) { $1 }
-            } catch {
-#if DEBUG
-                print("解析收藏夹失败: \(error)")
-#endif
-                return false
-            }
-        } else if FileManager.default.fileExists(atPath: favoritesDirectory) == false {
-            // 创建收藏夹文件夹
-            do {
-                try FileManager.default.createDirectory(atPath: favoritesDirectory, withIntermediateDirectories: true)
-            } catch {
-#if DEBUG
-                print("创建收藏文件夹失败: \(error)")
-#endif
-                return false
-            }
-            // 默认信息
-            json[MNEmoticon.Packet.Key.time.rawValue] = 1
-            json[MNEmoticon.Packet.Key.favorites.rawValue] = 1
-            json[MNEmoticon.Packet.Key.cover.rawValue] = "favorites.png"
-            json[MNEmoticon.Packet.Key.style.rawValue] = MNEmoticon.Style.image.rawValue
-            json[MNEmoticon.Packet.Key.emoticons.rawValue] = [[String:String]]()
-        }
-        // 复制图片到文件夹
-        var isDirectory: ObjCBool = true
-        guard FileManager.default.fileExists(atPath: imagePath, isDirectory: &isDirectory), isDirectory.boolValue == false else {
-#if DEBUG
-            print("图片路径不合法或文件不存在: \(imagePath)")
-#endif
-            return false
-        }
-        guard let targetPath = favoritesDirectory.appendingPathComponent(imagePath.lastPathComponent).absolutePath else {
-#if DEBUG
-            print("计算目标路径失败: \(imagePath)")
-#endif
-            return false
-        }
-        do {
-            try FileManager.default.copyItem(atPath: imagePath, toPath: targetPath)
-        } catch {
-#if DEBUG
-            print("复制图片失败: \(targetPath)")
-#endif
-            return false
-        }
-        let emoticon: [String:String] = [MNEmoticon.Key.img.rawValue:targetPath.lastPathComponent,MNEmoticon.Key.desc.rawValue:targetPath.deletingPathExtension.lastPathComponent]
-        var emoticons = json[MNEmoticon.Packet.Key.emoticons.rawValue] as? [[String:String]] ?? []
-        emoticons.insert(emoticon, at: 0)
-        json[MNEmoticon.Packet.Key.emoticons.rawValue] = emoticons
-        if #available(iOS 11.0, *) {
-            do {
-                try (json as NSDictionary).write(to: jsonURL)
-            } catch  {
-                try? FileManager.default.removeItem(atPath: targetPath)
-#if DEBUG
-                print("更新收藏夹失败: \(error)")
-#endif
-                return false
-            }
-        } else {
-            guard (json as NSDictionary).write(to: jsonURL, atomically: true) else {
-                try? FileManager.default.removeItem(atPath: targetPath)
-#if DEBUG
-                print("更新收藏夹失败")
-#endif
-                return false
-            }
-        }
-        return true
-    }
-    
-    /// 异步添加图片到收藏夹
-    /// - Parameters:
-    ///   - imagePath: 图片路径
-    ///   - queue: 执行队列
-    ///   - completionHandler: 结束回调
-    public class func addEmoticonToFavorites(atPath imagePath: String, using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: ((_ isSuccess: Bool)->Void)?) {
-        queue.async {
-            let isSuccess = MNEmoticonManager.shared.addEmoticonToFavorites(atPath: imagePath)
-            DispatchQueue.main.async {
-                // 通知收藏夹变化
-                if isSuccess {
-                    NotificationCenter.default.post(name: MNEmoticonDidChangeNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:MNEmoticon.Packet.Name.favorites.rawValue])
-                }
-                // 回调
-                completionHandler?(isSuccess)
-            }
-        }
-    }
-    
-    /// 添加图片到收藏夹
-    /// - Parameter image: 图片
-    /// - Returns: 是否添加成功
-    public func addEmoticonToFavorites(_ image: UIImage) -> Bool {
-        var json: [String:Any] = [:]
-        let jsonPath = favoritesDirectory + ".json"
-        var jsonURL: URL!
-        if #available(iOS 16.0, *) {
-            jsonURL = URL(filePath: jsonPath)
-        } else {
-            jsonURL = URL(fileURLWithPath: jsonPath)
-        }
-        if FileManager.default.fileExists(atPath: jsonPath) {
-            // 已存在收藏夹, 解析数据
-            do {
-                let jsonData = try Data(contentsOf: jsonURL, options: [])
-                let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
-                guard let dic = jsonObject as? [String:Any] else { return false }
-                json.merge(dic) { $1 }
-            } catch {
-#if DEBUG
-                print("解析收藏夹失败: \(error)")
-#endif
-                return false
-            }
-        } else if FileManager.default.fileExists(atPath: favoritesDirectory) == false {
-            // 创建收藏夹文件夹
-            do {
-                try FileManager.default.createDirectory(atPath: favoritesDirectory, withIntermediateDirectories: true)
-            } catch {
-#if DEBUG
-                print("创建收藏文件夹失败: \(error)")
-#endif
-                return false
-            }
-            // 默认信息
-            json[MNEmoticon.Packet.Key.time.rawValue] = 1
-            json[MNEmoticon.Packet.Key.favorites.rawValue] = 1
-            json[MNEmoticon.Packet.Key.cover.rawValue] = "favorites.png"
-            json[MNEmoticon.Packet.Key.style.rawValue] = MNEmoticon.Style.image.rawValue
-            json[MNEmoticon.Packet.Key.emoticons.rawValue] = [[String:String]]()
-        }
-        // 写入图片
-        guard let imagePath = favoritesDirectory.appendingPathComponent("\(Int(Date().timeIntervalSince1970*1000.0)).png").absolutePath else {
-#if DEBUG
-            print("计算图片路径失败")
-#endif
-            return false
-        }
-        var ext = imagePath.pathExtension
-        guard let imageData = Data(image: image, compression: 0.75, extension: &ext) else {
-#if DEBUG
-            print("转换图片数据流失败")
-#endif
-            return false
-        }
-        let targetPath = imagePath.deletingPathExtension + "." + ext
-        var targetURL: URL!
-        if #available(iOS 16.0, *) {
-            targetURL = URL(filePath: targetPath)
-        } else {
-            targetURL = URL(fileURLWithPath: targetPath)
-        }
-        do {
-            try imageData.write(to: targetURL, options: .atomic)
-        } catch {
-#if DEBUG
-            print("写入图片失败: \(error)")
-#endif
-            return false
-        }
-        // 更新json
-        let emoticon: [String:String] = [MNEmoticon.Key.img.rawValue:targetPath.lastPathComponent,MNEmoticon.Key.desc.rawValue:targetPath.deletingPathExtension.lastPathComponent]
-        var emoticons = json[MNEmoticon.Packet.Key.emoticons.rawValue] as? [[String:String]] ?? []
-        emoticons.insert(emoticon, at: 0)
-        json[MNEmoticon.Packet.Key.emoticons.rawValue] = emoticons
-        if #available(iOS 11.0, *) {
-            do {
-                try (json as NSDictionary).write(to: jsonURL)
-            } catch  {
-                try? FileManager.default.removeItem(atPath: targetPath)
-#if DEBUG
-                print("更新收藏夹失败: \(error)")
-#endif
-                return false
-            }
-        } else {
-            guard (json as NSDictionary).write(to: jsonURL, atomically: true) else {
-                try? FileManager.default.removeItem(atPath: targetPath)
-#if DEBUG
-                print("更新收藏夹失败")
-#endif
-                return false
-            }
-        }
-        return true
-    }
-    
-    /// 异步添加图片到收藏夹
-    /// - Parameters:
-    ///   - image: 图片
-    ///   - queue: 执行队列
-    ///   - completionHandler: 结束回调
-    public class func addEmoticonToFavorites(_ image: UIImage, using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: ((_ isSuccess: Bool)->Void)?) {
-        queue.async {
-            let isSuccess = MNEmoticonManager.shared.addEmoticonToFavorites(image)
-            DispatchQueue.main.async {
-                // 通知收藏夹变化
-                if isSuccess {
-                    NotificationCenter.default.post(name: MNEmoticonDidChangeNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:MNEmoticon.Packet.Name.favorites.rawValue])
-                }
-                // 回调
-                completionHandler?(isSuccess)
-            }
-        }
-    }
-    
-    /// 从收藏夹删除表情
-    /// - Parameter imageName: 表情图片名称
-    /// - Returns: 是否删除成功
-    private func removeEmoticonFromFavorites(named imageName: String) -> Bool {
-        guard imageName.isEmpty == false else {
-#if DEBUG
-            print("表情图片名称不合法: \(imageName)")
-#endif
-            return false
-        }
-        let jsonPath = favoritesDirectory + ".json"
-        guard FileManager.default.fileExists(atPath: jsonPath) else {
-#if DEBUG
-            print("未发现收藏夹")
-#endif
-            return false
-        }
-        var json: [String:Any] = [:]
-        var jsonURL: URL!
-        if #available(iOS 16.0, *) {
-            jsonURL = URL(filePath: jsonPath)
-        } else {
-            jsonURL = URL(fileURLWithPath: jsonPath)
-        }
-        // 已存在收藏夹, 解析数据
-        do {
-            let jsonData = try Data(contentsOf: jsonURL, options: [])
-            let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
-            guard let dic = jsonObject as? [String:Any] else { return false }
-            json.merge(dic) { $1 }
-        } catch {
-#if DEBUG
-            print("解析收藏夹失败: \(error)")
-#endif
-            return false
-        }
-        guard var emoticons = json[MNEmoticon.Packet.Key.emoticons.rawValue] as? [[String:String]] else {
-#if DEBUG
-            print("当前为空收藏夹")
-#endif
-            return false
-        }
-        emoticons.removeAll { item in
-            guard let img = item[MNEmoticon.Key.img.rawValue], img == imageName else { return false }
-            return true
-        }
-        json[MNEmoticon.Packet.Key.emoticons.rawValue] = emoticons
-        if #available(iOS 11.0, *) {
-            do {
-                try (json as NSDictionary).write(to: jsonURL)
-            } catch  {
-#if DEBUG
-                print("更新收藏夹失败: \(error)")
-#endif
-                return false
-            }
-        } else {
-            guard (json as NSDictionary).write(to: jsonURL, atomically: true) else {
-#if DEBUG
-                print("更新收藏夹失败")
-#endif
-                return false
-            }
-        }
-        let imagePath = favoritesDirectory.appendingPathComponent(imageName)
-        do {
-            try FileManager.default.removeItem(atPath: imagePath)
-        } catch {
-#if DEBUG
-            print("删除收藏夹内图片失败: \(error)")
-#endif
-        }
-        return true
-    }
-    
-    /// 异步从收藏夹删除表情
-    /// - Parameters:
-    ///   - imageName: 表情图片名称
-    ///   - queue: 使用队列
-    ///   - completionHandler: 结束回调
-    public class func removeEmoticonFromFavorites(named imageName: String, using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: ((_ isSuccess: Bool)->Void)?) {
-        queue.async {
-            let isSuccess = MNEmoticonManager.shared.removeEmoticonFromFavorites(named: imageName)
-            DispatchQueue.main.async {
-                // 通知收藏夹变化
-                if isSuccess {
-                    NotificationCenter.default.post(name: MNEmoticonDidChangeNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:MNEmoticon.Packet.Name.favorites.rawValue])
-                }
-                // 回调
-                completionHandler?(isSuccess)
-            }
-        }
-    }
-    
-    /// 从收藏夹删除表情
-    /// - Parameter emoticon: 表情
-    /// - Returns: 是否删除成功
-    private func removeEmoticonFromFavorites(_ emoticon: MNEmoticon) -> Bool {
-        removeEmoticonFromFavorites(named: emoticon.img)
-    }
-    
-    /// 异步从收藏夹删除表情
-    /// - Parameters:
-    ///   - emoticon: 表情
-    ///   - queue: 使用队列
-    ///   - completionHandler: 结束回调
-    public class func removeEmoticonFromFavorites(_ emoticon: MNEmoticon, using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: ((_ isSuccess: Bool)->Void)?) {
-        queue.async {
-            let isSuccess = MNEmoticonManager.shared.removeEmoticonFromFavorites(emoticon)
-            DispatchQueue.main.async {
-                // 通知收藏夹变化
-                if isSuccess {
-                    NotificationCenter.default.post(name: MNEmoticonDidChangeNotification, object: self, userInfo: [MNEmoticonPacketNameUserInfoKey:MNEmoticon.Packet.Name.favorites.rawValue])
-                }
-                // 回调
-                completionHandler?(isSuccess)
-            }
-        }
+    /// 获取表情图片
+    public subscript(_ desc: String) -> UIImage? {
+        guard let path = collections.path(for: desc) else { return nil }
+        return UIImage(contentsOfFile: path)
     }
 }

@@ -29,6 +29,8 @@ public class MNEmoticon {
     public var img: String!
     /// 表情描述
     public var desc: String!
+    /// 资源所在文件目录
+    public var directory: String!
     /// 图像实例
     public var image: UIImage!
     /// 类型
@@ -38,18 +40,15 @@ public class MNEmoticon {
     
     /// 构造表情实例
     /// - Parameter json: 表情描述
-    public init?(json: [String:String], style: MNEmoticon.Style = .emoticon, in directory: String? = nil) {
+    public init?(json: [String:String], style: MNEmoticon.Style = .emoticon, in directory: String) {
         guard let img = json[MNEmoticon.Key.img.rawValue], img.isEmpty == false else { return nil }
         guard let desc = json[MNEmoticon.Key.desc.rawValue], desc.isEmpty == false else { return nil }
-        var image: UIImage!
-        if let directory = directory {
-            let path = directory.appendingPathComponent(img)
-            guard let emoticon = UIImage.image(contentsAtFile: path) else { return nil }
-            image = emoticon
-        }
+        let imagePath = directory.appendingPathComponent(img)
+        guard FileManager.default.fileExists(atPath: imagePath) else { return nil }
         self.img = img
         self.desc = desc
-        self.image = image
+        self.directory = directory
+        self.image = UIImage.image(contentsAtFile: imagePath)
     }
 }
 
@@ -62,6 +61,7 @@ extension MNEmoticon {
             img = "add.png"
             desc = "[添加]"
             style = .image
+            directory = EmoticonResource.path(forResource: "add", ofType: "png")
             image = EmoticonResource.image(named: "add")
         }
     }

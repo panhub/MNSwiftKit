@@ -95,7 +95,7 @@ class MNEmoticonInputView: UIView {
         preview.isHidden = true
         addSubview(preview)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(emoticonDidChangeNotification(_:)), name: MNEmoticonDidChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(emoticonDidChangeNotification(_:)), name: MNEmoticonPacketChangedNotification, object: nil)
     }
     
     required init?(coder: NSCoder) {

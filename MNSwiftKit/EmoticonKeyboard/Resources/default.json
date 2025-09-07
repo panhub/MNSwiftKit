@@ -1,7 +1,6 @@
 {
-  "time" : 0,
   "style" : 0,
-  "favorites" : 0,
+  "name" : "default",
   "cover" : "cover.png",
   "emoticons" : [
     {

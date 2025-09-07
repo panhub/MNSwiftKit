@@ -30,9 +30,6 @@ extension MNEmoticon {
             }
         }
         
-        /// 创建时间戳
-        public let time: Int
-        
         /// 名称
         public let name: String
         
@@ -61,16 +58,15 @@ extension MNEmoticon {
                 let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
                 guard let json = jsonObject as? [String:Any] else { return nil }
                 guard let rawValue = json[MNEmoticon.Packet.Key.style.rawValue] as? Int, let style = MNEmoticon.Style(rawValue: rawValue) else { return nil }
-                guard let time = json[MNEmoticon.Packet.Key.style.rawValue] as? Int else { return nil }
+                guard let name = json[MNEmoticon.Packet.Key.name.rawValue] as? String else { return nil }
                 guard let cover = json[MNEmoticon.Packet.Key.cover.rawValue] as? String else { return nil }
                 guard let array = json[MNEmoticon.Packet.Key.emoticons.rawValue] as? [[String:String]] else { return nil }
-                self.time = time
-                self.cover = cover
                 self.style = style
-                self.name = url.deletingPathExtension().lastPathComponent
+                self.name = name
+                self.cover = cover
                 var directoryURL = url.deletingPathExtension()
 #if canImport(MNSwiftKit)
-                if self.name == MNEmoticon.Packet.Name.default.rawValue {
+                if name == MNEmoticon.Packet.Name.default.rawValue {
                     // 在bundle中
                     directoryURL = url.deletingLastPathComponent()
                 }
@@ -80,14 +76,11 @@ extension MNEmoticon {
                 } else {
                     self.directory = directoryURL.path
                 }
-                if let value = json[MNEmoticon.Packet.Key.favorites.rawValue] as? Int, value == 1 {
-                    self.isFavorites = true
-                }
                 let emoticons = array.compactMap { MNEmoticon(json: $0, style: style, in: directory) }
                 self.emoticons.append(contentsOf: emoticons)
             } catch {
 #if DEBUG
-                print("解析json失败: \(url)")
+                print("解析表情包失败: \(url)")
 #endif
                 return nil
             }
@@ -118,16 +111,12 @@ extension MNEmoticon.Packet.Name {
 }
 
 extension MNEmoticon.Packet.Key {
-    /// 名字字段
-    public static let name: MNEmoticon.Packet.Key = MNEmoticon.Packet.Key(rawValue: "name")
     /// 样式字段
     public static let style: MNEmoticon.Packet.Key = MNEmoticon.Packet.Key(rawValue: "style")
-    /// 时间字段
-    public static let time: MNEmoticon.Packet.Key = MNEmoticon.Packet.Key(rawValue: "time")
+    /// 名字字段
+    public static let name: MNEmoticon.Packet.Key = MNEmoticon.Packet.Key(rawValue: "name")
     /// 封面字段
     public static let cover: MNEmoticon.Packet.Key = MNEmoticon.Packet.Key(rawValue: "cover")
-    /// 是否是收藏夹
-    public static let favorites: MNEmoticon.Packet.Key = MNEmoticon.Packet.Key(rawValue: "favorites")
     /// 表情字段
     public static let emoticons: MNEmoticon.Packet.Key = MNEmoticon.Packet.Key(rawValue: "emoticons")
 }
