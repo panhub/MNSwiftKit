@@ -20,38 +20,46 @@ extension MNEmoticonKeyboard {
     
     @objc(MNEmoticonKeyboardOptions)
     public class Options: NSObject {
-        /// returnKey类型
-        @objc public var returnKeyType: UIReturnKeyType = .default
         /// 表情包
         @objc public var packets: [String] = [MNEmoticon.Packet.Name.default.rawValue, MNEmoticon.Packet.Name.favorites.rawValue]
+        /// returnKey类型
+        @objc public var returnKeyType: UIReturnKeyType = .default
+        /// 只有一个表情包时 是否隐藏表情包栏 (由于横向布局发送键在表情包栏, 仅对纵向布局有效)
+        @objc public var hidesBarForSinglePacket: Bool = true
+        /// 表情包栏高度, 内部会自行根据需要加上底部安全区域高度
+        @objc public var packetBarHeight: CGFloat = 50.0
         /// 表情包相邻间隔
-        @objc public var packetInteritemSpacing: CGFloat = 6.0
+        @objc public var packetInteritemSpacing: CGFloat = 12.0
         /// 表情包视图四周约束
-        @objc public var packetSectionInset: UIEdgeInsets = UIEdgeInsets(top: 6.0, left: 10.0, bottom: 6.0, right: 10.0)
+        @objc public var packetSectionInset: UIEdgeInsets = UIEdgeInsets(top: 6.0, left: 12.0, bottom: 6.0, right: 12.0)
         /// 表情包图片四周约束
         @objc public var packetItemInset: UIEdgeInsets = UIEdgeInsets(top: 5.0, left: 5.0, bottom: 5.0, right: 5.0)
         /// 表情包选择背景颜色
         @objc public var packetHighlightedColor: UIColor! = nil
+        /// 表情包栏背景颜色
+        @objc public var packetBarColor: UIColor! = UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0)
         /// returnKey颜色
         @objc public var returnKeyColor: UIColor! = .white
         /// returnKey标题颜色
         @objc public var returnKeyTitleColor: UIColor! = .black
         /// returnKey标题字体
         @objc public var returnKeyTitleFont: UIFont = .systemFont(ofSize: 17.0, weight: .medium)
-        /// 表情包导航栏背景颜色
-        @objc public var tintColor: UIColor! = UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0)
         /// 分割线颜色
         @objc public var separatorColor: UIColor! = .darkGray.withAlphaComponent(0.15)
         /// 背景颜色
         @objc public var backgroundColor: UIColor! = UIColor(red: 237.0/255.0, green: 237.0/255.0, blue: 237.0/255.0, alpha: 1.0)
+        /// 表情包栏高度, 内部会自行根据需要加上底部安全区域高度
+        @objc public var pageIndicatorSize: CGSize = .init(width: 7.0, height: 7.0)
         /// 页码指示器颜色
         @objc public var pageIndicatorColor: UIColor! = .gray.withAlphaComponent(0.37)
         /// 页码指示器选中颜色
         @objc public var currentPageIndicatorColor: UIColor! = .gray.withAlphaComponent(0.9)
+        /// 页码指示器纵向对齐方式
+        @objc public var pageIndicatorVerticalAlignment: UIControl.ContentVerticalAlignment = .top
+        /// 页码指示器横向对齐方式
+        @objc public var pageIndicatorHorizontalAlignment: UIControl.ContentHorizontalAlignment = .center
         /// 是否允许播放音效
         @objc public var enableFeedbackWhenInputClicks: Bool = false
-        /// 只有一个表情包时 是否隐藏表情包栏 (由于横向布局发送键在表情包栏, 仅对纵向布局有效)
-        @objc public var hidesForSinglePacket: Bool = true
     }
 }
 

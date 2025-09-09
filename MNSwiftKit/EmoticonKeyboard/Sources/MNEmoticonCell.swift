@@ -10,7 +10,7 @@ import UIKit
 class MNEmoticonCell: UICollectionViewCell {
     
     /// 表情控件
-    private let imageView = UIImageView()
+    let imageView = UIImageView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)

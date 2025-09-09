@@ -166,7 +166,6 @@ class MNEmoticonView: UIView {
                 let height = ceil(itemSize.height + minimumLineSpacing*0.7)
                 let width = ceil((itemSize.width + minimumInteritemSpacing)*2.0 + itemSize.width/2.0)
                 let bottom = max(minimumLineSpacing, MN_BOTTOM_SAFE_HEIGHT) + 5.0
-                sectionInset.bottom = (height - itemSize.height)/2.0 + bottom
                 elementView.constraints.forEach { constraint in
                     guard let firstItem = constraint.firstItem as? MNEmoticonElementView, firstItem == elementView else { return }
                     if constraint.firstAttribute == .width {
@@ -183,9 +182,16 @@ class MNEmoticonView: UIView {
                         constraint.constant = -sectionInset.right
                     }
                 }
+                // 底部间隔
+                let residue = elements.count % numberOfColumns
+                if residue > 0, numberOfColumns - residue >= 3 {
+                    sectionInset.bottom = (height - itemSize.height)/2.0 + bottom
+                } else {
+                    sectionInset.bottom = ceil(bottom + height + minimumLineSpacing/2.0)
+                }
             } else {
                 elementView.isHidden = true
-                sectionInset.bottom = max(MN_BOTTOM_SAFE_HEIGHT, minimumLineSpacing)
+                sectionInset.bottom = max(MN_BOTTOM_SAFE_HEIGHT, minimumLineSpacing) + 5.0
             }
             if elements.isEmpty == false {
                 emoticons.append(elements)
@@ -271,9 +277,9 @@ extension MNEmoticonView: UICollectionViewDataSource, UICollectionViewDelegate {
         cell.updateEmoticon(emoticons[indexPath.section][indexPath.item])
         guard style == .compact else { return }
         if elementView.isHidden {
-            cell.contentView.alpha = 1.0
+            cell.imageView.alpha = 1.0
         } else {
-            cell.contentView.alpha = alpha(for: cell, intersects: (collectionView.isDragging || collectionView.isDecelerating))
+            cell.imageView.alpha = alpha(for: cell, intersects: (collectionView.isDragging || collectionView.isDecelerating))
         }
     }
     
@@ -294,7 +300,8 @@ extension MNEmoticonView: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard style == .compact, elementView.isHidden == false else { return }
         for cell in collectionView.visibleCells {
-            cell.contentView.alpha = alpha(for: cell, intersects: collectionView.isDragging)
+            guard let cell = cell as? MNEmoticonCell else { continue }
+            cell.imageView.alpha = alpha(for: cell, intersects: collectionView.isDragging)
         }
     }
     
@@ -340,8 +347,8 @@ private extension MNEmoticonView {
     
     private func preview(at location: CGPoint) {
         guard let delegate = delegate else { return }
-        let offsetX = collectionView.contentOffset.x
-        if let indexPath = collectionView.indexPathForItem(at: .init(x: location.x + offsetX, y: location.y)), let cell = collectionView.cellForItem(at: indexPath), cell.contentView.alpha == 1.0 {
+        let point = CGPoint(x: location.x + collectionView.contentOffset.x, y: location.y)
+        if let indexPath = collectionView.indexPathForItem(at: point), let cell = collectionView.cellForItem(at: indexPath) as? MNEmoticonCell, cell.imageView.alpha == 1.0 {
             let rect = collectionView.convert(cell.frame, to: self)
             let emoticon = emoticons[indexPath.section][indexPath.item]
             delegate.emoticonViewShouldPreviewEmoticon(emoticon, at: rect)

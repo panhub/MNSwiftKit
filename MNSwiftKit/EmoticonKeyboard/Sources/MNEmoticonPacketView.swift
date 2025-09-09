@@ -116,10 +116,16 @@ class MNEmoticonPacketView: UIView {
             separatorView.rightAnchor.constraint(equalTo: rightAnchor),
             separatorView.heightAnchor.constraint(equalToConstant: 0.7)
         ])
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(emoticonDidChangeNotification(_:)), name: MNEmoticonPacketChangedNotification, object: nil)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     /// 重载表情包
@@ -193,5 +199,24 @@ extension MNEmoticonPacketView: UICollectionViewDelegateFlowLayout {
         let contentHeight = CGRect(origin: .zero, size: collectionView.frame.size).inset(by: collectionView.contentInset).height - options.packetSectionInset.top - options.packetSectionInset.bottom
         let itemHeight = max(0.0, contentHeight)
         return .init(width: itemHeight, height: itemHeight)
+    }
+}
+
+// MARK: - Notification
+extension MNEmoticonPacketView {
+    
+    /// 添加图片到收藏夹事件
+    /// - Parameter notify: 通知
+    @objc private func emoticonDidChangeNotification(_ notify: Notification) {
+        guard let userInfo = notify.userInfo else { return }
+        guard let name = userInfo[MNEmoticonPacketNameUserInfoKey] as? String else { return }
+        guard let pageIndex = packets.firstIndex(where: { $0.name == name }) else { return }
+        MNEmoticonManager.fetchEmoticonPacket([name]) { [weak self] packets in
+            guard let self = self, let packet = packets.first else { return }
+            self.packets[pageIndex] = packet
+            UIView.performWithoutAnimation {
+                self.collectionView.reloadItems(at: [IndexPath(item: pageIndex, section: 0)])
+            }
+        }
     }
 }

@@ -163,30 +163,21 @@ extension MNEmoticonManager {
         json[MNEmoticon.Packet.Key.cover.rawValue] = "favorites.png"
         json[MNEmoticon.Packet.Key.style.rawValue] = MNEmoticon.Style.image.rawValue
         json[MNEmoticon.Packet.Key.emoticons.rawValue] = [[String:String]]()
+        // 保存配置文件
         var jsonURL: URL!
         if #available(iOS 16.0, *) {
             jsonURL = URL(filePath: jsonPath)
         } else {
             jsonURL = URL(fileURLWithPath: jsonPath)
         }
-        if #available(iOS 11.0, *) {
-            do {
-                try (json as NSDictionary).write(to: jsonURL)
-            } catch  {
-                try? FileManager.default.removeItem(atPath: packetDirectory)
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
+            try jsonData.write(to: jsonURL, options: .atomic)
+        } catch {
 #if DEBUG
-                print("创建表情包配置失败: \(error)")
+            print("保存表情包配置失败: \(error)")
 #endif
-                return false
-            }
-        } else {
-            guard (json as NSDictionary).write(to: jsonURL, atomically: true) else {
-                try? FileManager.default.removeItem(atPath: packetDirectory)
-#if DEBUG
-                print("创建表情包配置失败")
-#endif
-                return false
-            }
+            return false
         }
         // 通知表情包变化
         let notifyHandler: ()->Void = {
@@ -298,7 +289,6 @@ extension MNEmoticonManager {
         // 创建表情包
         guard createEmoticonPacket(name: name) else { return false }
         let packetDirectory = userEmoticonDirectory.appendingPathComponent(name.mn.md5)
-        var json: [String:Any] = [:]
         let jsonPath = packetDirectory + ".json"
         var jsonURL: URL!
         if #available(iOS 16.0, *) {
@@ -307,6 +297,7 @@ extension MNEmoticonManager {
             jsonURL = URL(fileURLWithPath: jsonPath)
         }
         // 解析表情包
+        var json: [String:Any] = [:]
         do {
             let jsonData = try Data(contentsOf: jsonURL, options: [])
             let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
@@ -341,24 +332,15 @@ extension MNEmoticonManager {
         var emoticons = json[MNEmoticon.Packet.Key.emoticons.rawValue] as? [[String:String]] ?? []
         emoticons.insert(emoticon, at: 0)
         json[MNEmoticon.Packet.Key.emoticons.rawValue] = emoticons
-        if #available(iOS 11.0, *) {
-            do {
-                try (json as NSDictionary).write(to: jsonURL)
-            } catch  {
-                try? FileManager.default.removeItem(atPath: targetPath)
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
+            try jsonData.write(to: jsonURL, options: .atomic)
+        } catch {
+            try? FileManager.default.removeItem(atPath: targetPath)
 #if DEBUG
-                print("更新表情包配置失败: \(error)")
+            print("更新表情包配置失败: \(error)")
 #endif
-                return false
-            }
-        } else {
-            guard (json as NSDictionary).write(to: jsonURL, atomically: true) else {
-                try? FileManager.default.removeItem(atPath: targetPath)
-#if DEBUG
-                print("更新表情包配置失败")
-#endif
-                return false
-            }
+            return false
         }
         // 通知表情包变化
         let notifyHandler: ()->Void = {
@@ -401,7 +383,6 @@ extension MNEmoticonManager {
         guard createEmoticonPacket(name: name) else { return false }
         let packetDirectory = userEmoticonDirectory.appendingPathComponent(name.mn.md5)
         let jsonPath = packetDirectory + ".json"
-        var json: [String:Any] = [:]
         var jsonURL: URL!
         if #available(iOS 16.0, *) {
             jsonURL = URL(filePath: jsonPath)
@@ -409,6 +390,7 @@ extension MNEmoticonManager {
             jsonURL = URL(fileURLWithPath: jsonPath)
         }
         // 解析表情包
+        var json: [String:Any] = [:]
         do {
             let jsonData = try Data(contentsOf: jsonURL, options: [])
             let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
@@ -458,24 +440,15 @@ extension MNEmoticonManager {
         var emoticons = json[MNEmoticon.Packet.Key.emoticons.rawValue] as? [[String:String]] ?? []
         emoticons.insert(emoticon, at: 0)
         json[MNEmoticon.Packet.Key.emoticons.rawValue] = emoticons
-        if #available(iOS 11.0, *) {
-            do {
-                try (json as NSDictionary).write(to: jsonURL)
-            } catch  {
-                try? FileManager.default.removeItem(atPath: targetPath)
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
+            try jsonData.write(to: jsonURL, options: .atomic)
+        } catch {
+            try? FileManager.default.removeItem(atPath: targetPath)
 #if DEBUG
-                print("更新收藏夹失败: \(error)")
+            print("更新表情包配置失败: \(error)")
 #endif
-                return false
-            }
-        } else {
-            guard (json as NSDictionary).write(to: jsonURL, atomically: true) else {
-                try? FileManager.default.removeItem(atPath: targetPath)
-#if DEBUG
-                print("更新收藏夹失败")
-#endif
-                return false
-            }
+            return false
         }
         // 通知表情包变化
         let notifyHandler: ()->Void = {
@@ -591,13 +564,13 @@ extension MNEmoticonManager {
             return false
         }
         // 解析表情包
-        var json: [String:Any] = [:]
         var jsonURL: URL!
         if #available(iOS 16.0, *) {
             jsonURL = URL(filePath: jsonPath)
         } else {
             jsonURL = URL(fileURLWithPath: jsonPath)
         }
+        var json: [String:Any] = [:]
         do {
             let jsonData = try Data(contentsOf: jsonURL, options: [])
             let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
@@ -624,22 +597,14 @@ extension MNEmoticonManager {
             return true
         }
         json[MNEmoticon.Packet.Key.emoticons.rawValue] = emoticons
-        if #available(iOS 11.0, *) {
-            do {
-                try (json as NSDictionary).write(to: jsonURL)
-            } catch  {
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
+            try jsonData.write(to: jsonURL, options: .atomic)
+        } catch {
 #if DEBUG
-                print("更新收藏夹失败: \(error)")
+            print("更新表情包配置失败: \(error)")
 #endif
-                return false
-            }
-        } else {
-            guard (json as NSDictionary).write(to: jsonURL, atomically: true) else {
-#if DEBUG
-                print("更新收藏夹失败")
-#endif
-                return false
-            }
+            return false
         }
         for img in imgs {
             let imagePath = packetDirectory.appendingPathComponent(img)
@@ -735,14 +700,14 @@ extension MNEmoticonManager {
 #endif
             return false
         }
-        var json: [String:Any] = [:]
+        // 解析表情包
         var jsonURL: URL!
         if #available(iOS 16.0, *) {
             jsonURL = URL(filePath: jsonPath)
         } else {
             jsonURL = URL(fileURLWithPath: jsonPath)
         }
-        // 解析表情包
+        var json: [String:Any] = [:]
         do {
             let jsonData = try Data(contentsOf: jsonURL, options: [])
             let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
@@ -771,24 +736,15 @@ extension MNEmoticonManager {
         }
         let oldCoverName = json[MNEmoticon.Packet.Key.cover.rawValue] as? String
         json[MNEmoticon.Packet.Key.cover.rawValue] = targetPath.lastPathComponent
-        if #available(iOS 11.0, *) {
-            do {
-                try (json as NSDictionary).write(to: jsonURL)
-            } catch  {
-                try? FileManager.default.removeItem(atPath: targetPath)
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
+            try jsonData.write(to: jsonURL, options: .atomic)
+        } catch {
+            try? FileManager.default.removeItem(atPath: targetPath)
 #if DEBUG
-                print("更新表情包配置失败: \(error)")
+            print("更新表情包配置失败: \(error)")
 #endif
-                return false
-            }
-        } else {
-            guard (json as NSDictionary).write(to: jsonURL, atomically: true) else {
-                try? FileManager.default.removeItem(atPath: targetPath)
-#if DEBUG
-                print("更新表情包配置失败")
-#endif
-                return false
-            }
+            return false
         }
         // 删除原封面
         if let oldCoverName = oldCoverName, oldCoverName.pathExtension.isEmpty == false {
@@ -851,7 +807,6 @@ extension MNEmoticonManager {
         }
         let packetDirectory = userEmoticonDirectory.appendingPathComponent(name.mn.md5)
         let jsonPath = packetDirectory + ".json"
-        var json: [String:Any] = [:]
         var jsonURL: URL!
         if #available(iOS 16.0, *) {
             jsonURL = URL(filePath: jsonPath)
@@ -859,6 +814,7 @@ extension MNEmoticonManager {
             jsonURL = URL(fileURLWithPath: jsonPath)
         }
         // 解析表情包
+        var json: [String:Any] = [:]
         do {
             let jsonData = try Data(contentsOf: jsonURL, options: [])
             let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
@@ -902,24 +858,15 @@ extension MNEmoticonManager {
         // 更新json
         let oldCoverName = json[MNEmoticon.Packet.Key.cover.rawValue] as? String
         json[MNEmoticon.Packet.Key.cover.rawValue] = targetPath.lastPathComponent
-        if #available(iOS 11.0, *) {
-            do {
-                try (json as NSDictionary).write(to: jsonURL)
-            } catch  {
-                try? FileManager.default.removeItem(atPath: targetPath)
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
+            try jsonData.write(to: jsonURL, options: .atomic)
+        } catch {
+            try? FileManager.default.removeItem(atPath: targetPath)
 #if DEBUG
-                print("更新收藏夹失败: \(error)")
+            print("更新表情包配置失败: \(error)")
 #endif
-                return false
-            }
-        } else {
-            guard (json as NSDictionary).write(to: jsonURL, atomically: true) else {
-                try? FileManager.default.removeItem(atPath: targetPath)
-#if DEBUG
-                print("更新收藏夹失败")
-#endif
-                return false
-            }
+            return false
         }
         // 删除原封面
         if let oldCoverName = oldCoverName, oldCoverName.pathExtension.isEmpty == false {

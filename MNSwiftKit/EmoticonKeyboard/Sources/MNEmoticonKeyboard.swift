@@ -27,8 +27,8 @@ import UIKit
 }
 
 public class MNEmoticonKeyboard: UIView {
-    /// 标记是否在加载数据
-    private var isLoaded: Bool = false
+    /// 标记需要加载表情包
+    private var needsReloadEmoticonPacket: Bool = true
     /// 事件代理
     public weak var delegate: MNEmoticonKeyboardDelegate?
     /// 样式
@@ -113,10 +113,16 @@ public class MNEmoticonKeyboard: UIView {
                 emoticonView.rightAnchor.constraint(equalTo: rightAnchor)
             ])
         }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(removedEmoticonPacket(_:)), name: MNEmoticonPacketRemovedNotification, object: nil)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     /// 设置当前表情包
@@ -135,10 +141,15 @@ public class MNEmoticonKeyboard: UIView {
         emoticonView.setCurrentPage(at: index, animated: animated)
     }
     
-    public override func didMoveToSuperview() {
-        super.didMoveToSuperview()
-        guard let _ = superview, isLoaded == false else { return }
-        isLoaded = true
+    public override func didMoveToWindow() {
+        super.didMoveToWindow()
+        guard needsReloadEmoticonPacket else { return }
+        needsReloadEmoticonPacket = false
+        reloadEmoticonPackets()
+    }
+    
+    /// 重载表情包
+    private func reloadEmoticonPackets() {
         MNEmoticonManager.fetchEmoticonPacket(options.packets) { [weak self] packets in
             guard let self = self else { return }
             self.packetView.reloadPackets(packets)
@@ -146,10 +157,20 @@ public class MNEmoticonKeyboard: UIView {
             self.setEmoticonPacket(at: self.packetView.selectedIndex, animated: false)
         }
     }
+}
+
+// MARK: - Notification
+extension MNEmoticonKeyboard {
     
-    public override func layoutSubviews() {
-        super.layoutSubviews()
-        print(self.frame)
+    /// 删除表情包通知
+    @objc private func removedEmoticonPacket(_ notify: Notification) {
+        guard let userInfo = notify.userInfo, let name = userInfo[MNEmoticonPacketNameUserInfoKey] as? String else { return }
+        guard emoticonView.packets.contains(where: { $0.name == name }) else { return }
+        if let _ = window {
+            reloadEmoticonPackets()
+        } else {
+            needsReloadEmoticonPacket = true
+        }
     }
 }
 
