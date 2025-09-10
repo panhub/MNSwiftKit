@@ -38,7 +38,7 @@ public class MNEmoticonKeyboard: UIView {
     /// 页码选择器
     private lazy var pageControl = MNPageControl()
     /// 表情包选择视图
-    private lazy var packetView = MNEmoticonPacketView(style: style, options: options)
+    private var packetView: MNEmoticonPacketView!
     /// 表情视图
     private lazy var emoticonView = MNEmoticonInputView(style: style, options: options)
     
@@ -57,52 +57,60 @@ public class MNEmoticonKeyboard: UIView {
         switch style {
         case .compact:
             // 纵向滑动
-            packetView.translatesAutoresizingMaskIntoConstraints = false
-            addSubview(packetView)
-            NSLayoutConstraint.activate([
-                packetView.topAnchor.constraint(equalTo: topAnchor),
-                packetView.leftAnchor.constraint(equalTo: leftAnchor),
-                packetView.rightAnchor.constraint(equalTo: rightAnchor),
-                packetView.heightAnchor.constraint(equalToConstant: 50.0)
-            ])
+            let hasPacketBar = (options.hidesForSingle == false || options.packets.count > 1)
+            if hasPacketBar {
+                packetView = MNEmoticonPacketView(style: .compact, options: options)
+                packetView.delegate = self
+                packetView.translatesAutoresizingMaskIntoConstraints = false
+                addSubview(packetView)
+                NSLayoutConstraint.activate([
+                    packetView.topAnchor.constraint(equalTo: topAnchor),
+                    packetView.leftAnchor.constraint(equalTo: leftAnchor),
+                    packetView.rightAnchor.constraint(equalTo: rightAnchor),
+                    packetView.heightAnchor.constraint(equalToConstant: options.packetBarHeight)
+                ])
+            }
             
             emoticonView.delegate = self
             emoticonView.translatesAutoresizingMaskIntoConstraints = false
             addSubview(emoticonView)
             NSLayoutConstraint.activate([
-                emoticonView.topAnchor.constraint(equalTo: packetView.bottomAnchor),
+                emoticonView.topAnchor.constraint(equalTo: hasPacketBar ? packetView.bottomAnchor : topAnchor),
                 emoticonView.leftAnchor.constraint(equalTo: leftAnchor),
                 emoticonView.bottomAnchor.constraint(equalTo: bottomAnchor),
                 emoticonView.rightAnchor.constraint(equalTo: rightAnchor)
             ])
         case .paging:
             // 横向分页滑动
+            packetView = MNEmoticonPacketView(style: .paging, options: options)
+            packetView.delegate = self
             packetView.translatesAutoresizingMaskIntoConstraints = false
             addSubview(packetView)
             NSLayoutConstraint.activate([
                 packetView.leftAnchor.constraint(equalTo: leftAnchor),
                 packetView.bottomAnchor.constraint(equalTo: bottomAnchor),
                 packetView.rightAnchor.constraint(equalTo: rightAnchor),
-                packetView.heightAnchor.constraint(equalToConstant: 50.0 + MN_BOTTOM_SAFE_HEIGHT)
+                packetView.heightAnchor.constraint(equalToConstant: options.packetBarHeight + MN_BOTTOM_SAFE_HEIGHT)
             ])
             
             pageControl.delegate = self
             pageControl.axis = .horizontal
-            pageControl.spacing = 11.0
-            pageControl.hidesForSinglePage = true
-            pageControl.contentVerticalAlignment = .top
-            pageControl.contentHorizontalAlignment = .center
-            pageControl.pageIndicatorSize = .init(width: 7.0, height: 7.0)
-            pageControl.pageIndicatorTintColor = .gray.withAlphaComponent(0.37)
-            pageControl.currentPageIndicatorTintColor = .gray.withAlphaComponent(0.88)
+            pageControl.spacing = options.pageIndicatorSpacing
+            pageControl.hidesForSinglePage = options.hidesForSingle
+            pageControl.contentVerticalAlignment = options.pageIndicatorVerticalAlignment
+            pageControl.contentHorizontalAlignment = options.pageIndicatorHorizontalAlignment
+            pageControl.pageIndicatorSize = options.pageIndicatorSize
+            pageControl.pageIndicatorTintColor = options.pageIndicatorColor
+            pageControl.currentPageIndicatorTintColor = options.currentPageIndicatorColor
             pageControl.translatesAutoresizingMaskIntoConstraints = false
             addSubview(pageControl)
             NSLayoutConstraint.activate([
                 pageControl.leftAnchor.constraint(equalTo: leftAnchor),
                 pageControl.bottomAnchor.constraint(equalTo: packetView.topAnchor),
                 pageControl.rightAnchor.constraint(equalTo: rightAnchor),
-                pageControl.heightAnchor.constraint(equalToConstant: 20.0)
+                pageControl.heightAnchor.constraint(equalToConstant: options.pageControlHeight)
             ])
+            
             emoticonView.delegate = self
             emoticonView.translatesAutoresizingMaskIntoConstraints = false
             addSubview(emoticonView)
@@ -137,7 +145,9 @@ public class MNEmoticonKeyboard: UIView {
     /// - Parameter index: 索引
     /// - Parameter animated: 是否动态
     public func setEmoticonPacket(at index: Int, animated: Bool) {
-        packetView.setSelected(at: index)
+        if let packetView = packetView {
+            packetView.setSelected(at: index)
+        }
         emoticonView.setCurrentPage(at: index, animated: animated)
     }
     
@@ -150,11 +160,18 @@ public class MNEmoticonKeyboard: UIView {
     
     /// 重载表情包
     private func reloadEmoticonPackets() {
+        var currentIndex: Int = 0
+        if let packetView = packetView {
+            currentIndex = packetView.selectedIndex
+        }
         MNEmoticonManager.fetchEmoticonPacket(options.packets) { [weak self] packets in
             guard let self = self else { return }
-            self.packetView.reloadPackets(packets)
+            if let packetView = self.packetView {
+                packetView.reloadPackets(packets)
+            }
             self.emoticonView.reloadPackets(packets)
-            self.setEmoticonPacket(at: self.packetView.selectedIndex, animated: false)
+            let selectedIndex = max(0, min(currentIndex, packets.count - 1))
+            self.setEmoticonPacket(at: selectedIndex, animated: false)
         }
     }
 }
@@ -199,16 +216,15 @@ extension MNEmoticonKeyboard: MNPageControlDelegate {
 extension MNEmoticonKeyboard: MNEmoticonInputViewDelegate {
     
     func inputViewDidSelectPage(at index: Int) {
+        guard let packetView = packetView else { return }
         packetView.selectedIndex = index
     }
     
     func inputViewDidUpdateEmoticon(with count: Int) {
-        guard pageControl.isHidden == false else { return }
         pageControl.numberOfPages = count
     }
     
     func inputViewDidScrollEmoticon(to index: Int) {
-        guard pageControl.isHidden == false else { return }
         pageControl.currentPageIndex = index
     }
     

@@ -8,8 +8,10 @@
 import UIKit
 
 class MNEmoticonPacketCell: UICollectionViewCell {
+    /// 边界
+    private let borderView = UIView()
     /// 图片控件
-    private let imageView: UIImageView = UIImageView()
+    private let imageView = UIImageView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -17,9 +19,19 @@ class MNEmoticonPacketCell: UICollectionViewCell {
         backgroundColor = .clear
         contentView.backgroundColor = .clear
         
-        imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 5.0
+        borderView.clipsToBounds = true
+        borderView.layer.cornerRadius = 7.0
+        borderView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(borderView)
+        NSLayoutConstraint.activate([
+            borderView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            borderView.leftAnchor.constraint(equalTo: contentView.leftAnchor),
+            borderView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            borderView.rightAnchor.constraint(equalTo: contentView.rightAnchor)
+        ])
+        
         imageView.frame = contentView.bounds
+        imageView.contentMode = .scaleAspectFit
         contentView.addSubview(imageView)
     }
     
@@ -39,7 +51,7 @@ class MNEmoticonPacketCell: UICollectionViewCell {
         } else {
             imageView.image = EmoticonResource.image(named: packet.cover.deletingPathExtension)
         }
-        imageView.backgroundColor = highlighted ? options.packetHighlightedColor : nil
         imageView.frame = contentView.bounds.inset(by: options.packetItemInset)
+        borderView.backgroundColor = highlighted ? options.packetHighlightedColor : nil
     }
 }

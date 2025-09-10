@@ -50,7 +50,7 @@ class MNEmoticonPacketView: UIView {
         self.options = options
         super.init(frame: .zero)
         
-        backgroundColor = options.tintColor
+        backgroundColor = options.packetBarColor
         
         let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
         layout.scrollDirection = .horizontal
@@ -130,14 +130,10 @@ class MNEmoticonPacketView: UIView {
     
     /// 重载表情包
     /// - Parameter packets: 表情包集合
-    func reloadPackets(_ packets: [MNEmoticon.Packet]! = nil) {
-        if let packets = packets {
-            self.packets.removeAll()
-            self.packets.append(contentsOf: packets)
-        }
-        if selectedIndex >= self.packets.count {
-            selectedIndex = max(0, min(selectedIndex, self.packets.count - 1))
-        }
+    func reloadPackets(_ packets: [MNEmoticon.Packet]) {
+        self.packets.removeAll()
+        self.packets.append(contentsOf: packets)
+        selectedIndex = 0
         UIView.performWithoutAnimation {
             self.collectionView.reloadData()
         }
@@ -149,7 +145,7 @@ class MNEmoticonPacketView: UIView {
         guard index < packets.count else { return }
         selectedIndex = index
         UIView.performWithoutAnimation {
-            self.collectionView.reloadData()
+            self.collectionView.reloadItems(at: self.collectionView.indexPathsForVisibleItems)
         }
     }
     
@@ -185,7 +181,7 @@ extension MNEmoticonPacketView: UICollectionViewDataSource, UICollectionViewDele
         guard indexPath.item < packets.count else { return }
         selectedIndex = indexPath.item
         UIView.performWithoutAnimation {
-            collectionView.reloadData()
+            collectionView.reloadItems(at: collectionView.indexPathsForVisibleItems)
         }
         guard let delegate = delegate else { return }
         delegate.packetViewDidSelectPacket(at: indexPath.item)

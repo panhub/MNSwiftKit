@@ -165,7 +165,7 @@ class MNEmoticonInputView: UIView {
             emoticonView.heightAnchor.constraint(equalTo: pageView.heightAnchor)
         ])
         emoticonViews[pageIndex] = emoticonView
-        pageView.layoutIfNeeded()
+        emoticonView.layoutIfNeeded()
         let packet = packets[pageIndex]
         emoticonView.reload(packet: packet)
         return emoticonView

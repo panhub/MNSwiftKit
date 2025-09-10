@@ -42,8 +42,8 @@ extension MNEmoticon {
         /// 类型
         public let style: MNEmoticon.Style
         
-        /// 是否是收藏夹
-        internal var isFavorites: Bool = false
+        /// 是否允许编辑
+        private(set) var allowsEditing: Bool = false
         
         /// 表情集合
         public internal(set) var emoticons: [MNEmoticon] = []
@@ -64,6 +64,7 @@ extension MNEmoticon {
                 self.style = style
                 self.name = name
                 self.cover = cover
+                self.allowsEditing = name == MNEmoticon.Packet.Name.favorites.rawValue
                 var directoryURL = url.deletingPathExtension()
 #if canImport(MNSwiftKit)
                 if name == MNEmoticon.Packet.Name.default.rawValue {

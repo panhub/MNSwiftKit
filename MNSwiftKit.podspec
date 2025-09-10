@@ -216,7 +216,6 @@ Pod::Spec.new do |s|
     e.dependency 'MNSwiftKit/NameSpace'
     e.dependency 'MNSwiftKit/PageControl'
     e.dependency 'MNSwiftKit/AnimatedImage'
-    e.dependency 'MNSwiftKit/CollectionLayout'
   end
   
   # AnimatedImage <动图支持>

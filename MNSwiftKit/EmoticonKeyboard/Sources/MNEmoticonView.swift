@@ -32,6 +32,10 @@ protocol MNEmoticonViewDelegate: NSObjectProtocol {
 }
 
 class MNEmoticonView: UIView {
+    /// 页数 仅对 style == paging有效
+    private(set) var numberOfPages: Int = 1
+    /// 当前页码 仅对 style == paging有效
+    private(set) var currentPageIndex: Int = 0
     /// 事件代理
     weak var delegate: MNEmoticonViewDelegate?
     /// 表情包集合
@@ -46,22 +50,6 @@ class MNEmoticonView: UIView {
     private let collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: MNEmoticonCollectionLayout())
     /// 功能视图
     private lazy var elementView: MNEmoticonElementView = MNEmoticonElementView(options: options)
-    /// 页数 仅对 style == paging有效
-    var numberOfPages: Int {
-        let contentWidth = collectionView.contentSize.width
-        guard contentWidth.isNormal, contentWidth.isNaN == false else { return 0 }
-        let width = collectionView.frame.width
-        guard width.isNormal, width.isNaN == false else { return 0 }
-        return Int(ceil(contentWidth/width))
-    }
-    /// 当前页码 仅对 style == paging有效
-    var currentPageIndex: Int {
-        let offsetX = collectionView.contentOffset.x
-        guard offsetX.isNormal, offsetX.isNaN == false else { return 0 }
-        let width = collectionView.frame.width
-        guard width.isNormal, width.isNaN == false else { return 0 }
-        return Int(round(offsetX/width))
-    }
     
     
     /// 构建表情视图
@@ -154,7 +142,7 @@ class MNEmoticonView: UIView {
             itemSize.height = itemSize.width
             sectionInset.left = minimumLineSpacing
             sectionInset.right = minimumLineSpacing
-            if packet.isFavorites {
+            if packet.allowsEditing {
                 elements.insert(adding, at: 0)
             }
         }
