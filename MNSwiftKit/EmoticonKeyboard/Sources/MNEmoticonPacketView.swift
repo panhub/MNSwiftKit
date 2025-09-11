@@ -22,7 +22,7 @@ protocol MNEmoticonPacketViewDelegate: NSObjectProtocol {
 /// 表情包选择视图
 class MNEmoticonPacketView: UIView {
     /// 选择索引
-    var selectedIndex: Int = 0
+    private(set) var selectedIndex: Int = 0
     /// 事件代理
     weak var delegate: MNEmoticonPacketViewDelegate?
     /// 样式

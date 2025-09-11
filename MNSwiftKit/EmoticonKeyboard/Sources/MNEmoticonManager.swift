@@ -915,18 +915,15 @@ extension MNEmoticonManager {
     
     /// 匹配字符串中的表情
     /// - Parameter string: 字符串
-    /// - Returns: 匹配到的表情
+    /// - Returns: 匹配到的表情配件
     public func matchsEmoticon(in string: String) -> [MNEmoticonAttachment] {
+        var attachments: [MNEmoticonAttachment] = []
         let results = expression.matches(in: string, options: [], range: NSRange(location: 0, length: string.utf16.count))
-        var attachments: [MNEmoticonAttachment] = [MNEmoticonAttachment]()
         for result in results {
             if result.range.location == NSNotFound { continue }
-            guard result.range.length > 2 else { continue }
             let desc = (string as NSString).substring(with: result.range)
-            guard let image = self[desc] else { continue }
-            let attachment = MNEmoticonAttachment()
-            attachment.desc = desc
-            attachment.image = image
+            guard let image = emoticonImage(for: desc) else { continue }
+            let attachment = MNEmoticonAttachment(image: image, desc: desc)
             attachment.range = result.range
             attachments.append(attachment)
         }
@@ -938,7 +935,7 @@ extension MNEmoticonManager {
     ///   - desc: 表情描述
     ///   - packet: 指定表情包
     /// - Returns: 表情图片
-    public func emoticon(for desc: String, in packet: String) -> UIImage? {
+    public func emoticonImage(for desc: String, in packet: String? = nil) -> UIImage? {
         guard let path = collections.path(for: desc, in: packet) else { return nil }
         return UIImage(contentsOfFile: path)
     }

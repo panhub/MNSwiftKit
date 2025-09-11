@@ -47,7 +47,7 @@ class MNEmoticonView: UIView {
     /// 添加模型
     private lazy var adding = MNEmoticon.Adding()
     /// 表情布局视图
-    private let collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: MNEmoticonCollectionLayout())
+    private let collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: MNEmoticonLayout())
     /// 功能视图
     private lazy var elementView: MNEmoticonElementView = MNEmoticonElementView(options: options)
     
@@ -62,7 +62,7 @@ class MNEmoticonView: UIView {
         super.init(frame: .zero)
         backgroundColor = .clear
         
-        let layout = collectionView.collectionViewLayout as! MNEmoticonCollectionLayout
+        let layout = collectionView.collectionViewLayout as! MNEmoticonLayout
         layout.itemSize = .init(width: 30.0, height: 30.0)
         layout.scrollDirection = style == .compact ? .vertical : .horizontal
         collectionView.delegate = self
@@ -202,7 +202,7 @@ class MNEmoticonView: UIView {
                 emoticons.append(contentsOf: array)
             }
         }
-        let collectionLayout = collectionView.collectionViewLayout as! MNEmoticonCollectionLayout
+        let collectionLayout = collectionView.collectionViewLayout as! MNEmoticonLayout
         collectionLayout.itemSize = itemSize
         collectionLayout.sectionInset = sectionInset
         collectionLayout.numberOfColumns = numberOfColumns
@@ -218,8 +218,8 @@ class MNEmoticonView: UIView {
     }
     
     func setCurrentPage(at pageIndex: Int, animated: Bool) {
-        currentPageIndex = pageIndex
         if style == .paging {
+            currentPageIndex = pageIndex
             collectionView.setContentOffset(CGPoint(x: collectionView.frame.width*CGFloat(pageIndex), y: 0.0), animated: animated)
         } else {
             collectionView.setContentOffset(.zero, animated: animated)
@@ -304,9 +304,8 @@ extension MNEmoticonView: UIScrollViewDelegate {
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         guard style == .paging else { return }
         let width = scrollView.frame.width
-        if width > 0.0 {
-            currentPageIndex = Int(round(scrollView.contentOffset.x/width))
-        }
+        guard width > 0.0 else { return }
+        currentPageIndex = Int(round(scrollView.contentOffset.x/width))
         guard let delegate = delegate else { return }
         delegate.emoticonViewDidScrollPage(to: currentPageIndex)
     }

@@ -1,5 +1,5 @@
 //
-//  MNEmoticonCollectionLayout.swift
+//  MNEmoticonLayout.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2025/8/30.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class MNEmoticonCollectionLayout: UICollectionViewFlowLayout {
+class MNEmoticonLayout: UICollectionViewFlowLayout {
     /// 列数
     public var numberOfColumns: Int = 3 {
         didSet { invalidateLayout() }

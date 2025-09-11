@@ -7,185 +7,185 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0119B1458480CAD4900CB2B0A8904D98 /* xu.png in Resources */ = {isa = PBXBuildFile; fileRef = 1A6BF34449D5527937293AC75E9C2F5B /* xu.png */; };
-		01A03601B31EDD8AB8DC7B99BF3E27D5 /* kun.png in Resources */ = {isa = PBXBuildFile; fileRef = F8151BEEA2D8E271E0042E60FFC744BF /* kun.png */; };
-		024DB909613246AC812437624ACCB1DD /* tanqi.png in Resources */ = {isa = PBXBuildFile; fileRef = DE3753E1FBD5977419856EC5ADCCA08C /* tanqi.png */; };
-		050727E2EC23B3BCA5DA0CF1AA5EBB74 /* NibInspectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97AACEA7FD47AFC0EC968467E562C7A /* NibInspectable.swift */; };
-		0522023E1DDEC4AA9D8BF2F0964F77E0 /* NameSpaceWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6415EABDF9EA47CD325BCE7993B97BAB /* NameSpaceWrapper.swift */; };
-		05C60CB474A7DA9CFFC1DE7E85FB550B /* MNEmoticonPacketView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 911CD4C6C51A5BBAE32EE1AE85AA8CB8 /* MNEmoticonPacketView.swift */; };
-		05E4027AE7AA9D8B3BA51333F23C125A /* qiang.png in Resources */ = {isa = PBXBuildFile; fileRef = FC679FF3AE98A677D524F9FDC82153BD /* qiang.png */; };
-		064FDF72A27BFE7BA927666E32C31371 /* MNEmoticonElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E851C752D16C6AB23D42A79042C430A5 /* MNEmoticonElementView.swift */; };
-		07D7ABE3F9C01CE9DA90DBDBA9137B39 /* huaixiao.png in Resources */ = {isa = PBXBuildFile; fileRef = 4058333B7F1006B4C91754CECFAD97C0 /* huaixiao.png */; };
-		07E763A5C633ACCE78A1BD312A891C56 /* kuse.png in Resources */ = {isa = PBXBuildFile; fileRef = 3819F5596E340A7675ADF9074FC6A63C /* kuse.png */; };
-		08A21701BA1C33666A1F0880B91C99B7 /* PathUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BFE0ED6CC565C715B0EEFFB7F41C66A /* PathUtilities.swift */; };
-		091D6ADB3078303F965835A5C2DE688A /* FileHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7E08BD13C2F1672FACCEEFA2D7E6B4 /* FileHandle.swift */; };
+		0119B1458480CAD4900CB2B0A8904D98 /* xu.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B850F071FA60EBDFEDFE69ECA5A09B4 /* xu.png */; };
+		0166D054AA13A58C59EDEABABA0C6B15 /* MNSwizzleWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E957E7DEB4C053A6E530A9F40D01AC /* MNSwizzleWrapper.swift */; };
+		01A03601B31EDD8AB8DC7B99BF3E27D5 /* kun.png in Resources */ = {isa = PBXBuildFile; fileRef = 289B28DA6BE858DE809C47598828C5AF /* kun.png */; };
+		024DB909613246AC812437624ACCB1DD /* tanqi.png in Resources */ = {isa = PBXBuildFile; fileRef = 71F00FC4D15107DC931D8DA395E49184 /* tanqi.png */; };
+		05E4027AE7AA9D8B3BA51333F23C125A /* qiang.png in Resources */ = {isa = PBXBuildFile; fileRef = 47C2F533391160AA5D1DD1FC697235F3 /* qiang.png */; };
+		07D7ABE3F9C01CE9DA90DBDBA9137B39 /* huaixiao.png in Resources */ = {isa = PBXBuildFile; fileRef = 18C5C32AE729E1335DAA2E3ACCD301CC /* huaixiao.png */; };
+		07E763A5C633ACCE78A1BD312A891C56 /* kuse.png in Resources */ = {isa = PBXBuildFile; fileRef = 82B5BC3630BB4CC27D4B5B088E9ACD7F /* kuse.png */; };
 		0928CD2F79F6D0C4B53F6E138C74FDE8 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B76EC269EAAAB24351D1D259EFEFA309 /* CoreServices.framework */; };
-		0A73DAA24E7C816A2BCE0D241521E75A /* xiaolian.png in Resources */ = {isa = PBXBuildFile; fileRef = 16AFC977A9F0FF984CE6D820AE09D5EF /* xiaolian.png */; };
-		0B0921EDAB2CC3D951916884311793D2 /* chigua.png in Resources */ = {isa = PBXBuildFile; fileRef = 62FAA45B09749D8207E62A9430803137 /* chigua.png */; };
-		0B47D526927E42B108B275A19E063318 /* UIWindow+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FBCEF10F5841453D7295EEC832BEA98 /* UIWindow+MNHelper.swift */; };
-		0D8CB524F9AFEFA6C2BFC729BD58170E /* UIApplication+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A4005B32BDDD7E4A1B69E8CC00E1C8E /* UIApplication+MNHelper.swift */; };
-		0F63ECDD533CDBCEF67F4F490104A018 /* youhengheng.png in Resources */ = {isa = PBXBuildFile; fileRef = 66DDEC3074D809FE8A2F7DB41FF13AFF /* youhengheng.png */; };
-		0F6809B7113D6C3BA31C74DAE4472468 /* qingzhu.png in Resources */ = {isa = PBXBuildFile; fileRef = 19C269BEE709A01DF2E01C38B5EE183A /* qingzhu.png */; };
-		0F9FE0507A841DEA60C703B0FCA16041 /* EmoticonResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F246EE4A85EACE3D91B53ACF3D474021 /* EmoticonResource.swift */; };
+		09620AC78142C65E753B714E6AAA50CB /* MNEmoticonBackedString.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC36A69A6FDDB7383AA939CC1C75A2AE /* MNEmoticonBackedString.swift */; };
+		0996692991485B404EF4CDB584154F8C /* CFNotificationCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9E541EEFC18CAB84359A8E2C9D69CA /* CFNotificationCenter.swift */; };
+		0A73DAA24E7C816A2BCE0D241521E75A /* xiaolian.png in Resources */ = {isa = PBXBuildFile; fileRef = 4A64D82934DF18378D79A549B45CA670 /* xiaolian.png */; };
+		0B0921EDAB2CC3D951916884311793D2 /* chigua.png in Resources */ = {isa = PBXBuildFile; fileRef = 61B94942BF39524FDAE3C355D72E0FC5 /* chigua.png */; };
+		0F49C5411418E09C3CBC225B3D7D26D5 /* md5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C450F4E2BEB5272F8CC3F96EBD2A75 /* md5.swift */; };
+		0F63ECDD533CDBCEF67F4F490104A018 /* youhengheng.png in Resources */ = {isa = PBXBuildFile; fileRef = 6F74DF9B1E250DE9B8D5E0C121A358B9 /* youhengheng.png */; };
+		0F6809B7113D6C3BA31C74DAE4472468 /* qingzhu.png in Resources */ = {isa = PBXBuildFile; fileRef = D376F1DD5FFE1C56F263FAD2D5ED9C1A /* qingzhu.png */; };
 		0FD8D0CA2B21E495F22DDF5296CFD00F /* Pods-MNSwiftKit_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F1DF06A3ABBD3DF7D4AD5DE02C312882 /* Pods-MNSwiftKit_Example-dummy.m */; };
-		105339791101B9A8CEAD7C838B9FC532 /* MNSwiftKit-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3308DE1AC36E022B9FE7A9DA3D3946D7 /* MNSwiftKit-dummy.m */; };
-		11086F309BE09FCF210CB295829B8E29 /* bishi.png in Resources */ = {isa = PBXBuildFile; fileRef = 639B71C56EE6783B441A756598273D2A /* bishi.png */; };
-		12DA59B68A2747C02F2C42F5D6514FF4 /* daku.png in Resources */ = {isa = PBXBuildFile; fileRef = 2950E00A0F26EFFEF86A1126A08B7987 /* daku.png */; };
+		11086F309BE09FCF210CB295829B8E29 /* bishi.png in Resources */ = {isa = PBXBuildFile; fileRef = FB40BCCBA75217CCF1449477979B7482 /* bishi.png */; };
+		12DA59B68A2747C02F2C42F5D6514FF4 /* daku.png in Resources */ = {isa = PBXBuildFile; fileRef = D0FEEA00D2B47D7E990AB77FB9BF51E9 /* daku.png */; };
 		13BBAB17DCE56DE08C4F9AEB66C74001 /* Pods-MNSwiftKit_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = B0263D3209BDE181DC416E26B555E41B /* Pods-MNSwiftKit_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		14031EAE6E965E87239DCCD54AFF2DEB /* UIScreen+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE60799F022DCA687EA343D8260F4B6 /* UIScreen+MNHelper.swift */; };
-		14E9AFF8D92E6CF479ADC44A592B17B7 /* shuai.png in Resources */ = {isa = PBXBuildFile; fileRef = 6BF28E82C168F2BB70332AACA63814AE /* shuai.png */; };
-		16637DDF6D50EB05B2ACA57203E95F9A /* MNEmoticonHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8BF93972C19E5AE9218FE35EF3B9A6 /* MNEmoticonHelper.swift */; };
-		171D270A6C4F1F339689B670E43D1254 /* NSAttributedString+MNEmoticonSupported.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F3C6AB4F08F7B9A1F75DB30DDC1F96 /* NSAttributedString+MNEmoticonSupported.swift */; };
-		1873B8292522F50C5AAAD20E3774AAD3 /* lianhong.png in Resources */ = {isa = PBXBuildFile; fileRef = A78708DF1C66300E26A538C76CF46DCE /* lianhong.png */; };
-		1907461CEB939253819859674F94ADA1 /* jingkong.png in Resources */ = {isa = PBXBuildFile; fileRef = AC305C6D371F8B2CA27B1048420492C5 /* jingkong.png */; };
+		143FC807BED27BAA7D826206A6533444 /* NSAttributedString+MNEmoticonSupported.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA805319114B82E32382AF8494F8D1C3 /* NSAttributedString+MNEmoticonSupported.swift */; };
+		144A1BBC6BE63D0795927AA47B74F38B /* NameSpaceWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6415EABDF9EA47CD325BCE7993B97BAB /* NameSpaceWrapper.swift */; };
+		14E9AFF8D92E6CF479ADC44A592B17B7 /* shuai.png in Resources */ = {isa = PBXBuildFile; fileRef = C8A2FB4D0DE9EFBDA546AB4738896C3E /* shuai.png */; };
+		15366EFD24419B43BA8A4EE2C0ADE586 /* MNEmoticonCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8054AFC59D3A26C042AFE312546BA7 /* MNEmoticonCollection.swift */; };
+		1873B8292522F50C5AAAD20E3774AAD3 /* lianhong.png in Resources */ = {isa = PBXBuildFile; fileRef = BA263BB00F68EF683148A8252FE0E001 /* lianhong.png */; };
+		1907461CEB939253819859674F94ADA1 /* jingkong.png in Resources */ = {isa = PBXBuildFile; fileRef = DC9888A93801A98EA0A9432CBCC05F2F /* jingkong.png */; };
 		19D4660912237482F2EC98D14CCDED73 /* Pods-MNSwiftKit_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 185C901814D5AC8E96A52C19D94B898C /* Pods-MNSwiftKit_Tests-dummy.m */; };
-		1A8A7745B57DF8DC2D5F67A803ED8A1A /* fadai.png in Resources */ = {isa = PBXBuildFile; fileRef = 0DAF5655406C73C3CB2DF34439D5A2DF /* fadai.png */; };
-		1C0978551BD346595B075674C7547B6D /* fanbaiyan.png in Resources */ = {isa = PBXBuildFile; fileRef = 8DC463DFC380B4B1F4C00B6AF34AD368 /* fanbaiyan.png */; };
+		19D7A26EFD2DFF15A7CF856A3149C876 /* NibInspectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97AACEA7FD47AFC0EC968467E562C7A /* NibInspectable.swift */; };
+		1A8A7745B57DF8DC2D5F67A803ED8A1A /* fadai.png in Resources */ = {isa = PBXBuildFile; fileRef = 3C04941A76A61CD926121EA6ACCF2134 /* fadai.png */; };
+		1C0978551BD346595B075674C7547B6D /* fanbaiyan.png in Resources */ = {isa = PBXBuildFile; fileRef = BD9E2B238BFFBA588C4005CE0F15164E /* fanbaiyan.png */; };
 		1CC2C47EEC7BA042DAC9FE7197F6187B /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57023E58571C42C5523641C407D0BD38 /* ImageIO.framework */; };
-		1CF0F8B094641F29F87873B26337938D /* cover.png in Resources */ = {isa = PBXBuildFile; fileRef = F073E5529AB112D05A706F33B63570FD /* cover.png */; };
-		24306B0FAAFDDAF55A76891E007EF540 /* qie.png in Resources */ = {isa = PBXBuildFile; fileRef = 501BC8D89DB0F9AC4ABFAA4D18392559 /* qie.png */; };
-		244EAB926D662D07CB4315887AC64221 /* baiyan.png in Resources */ = {isa = PBXBuildFile; fileRef = 44DA30A5F2BD9EC46FD5134C8A524458 /* baiyan.png */; };
-		2476BB2D1B8CCA23BBAA2F8FBEAC2002 /* MNEmoticonPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1950F82338E55D0342FD28DB5C5117C /* MNEmoticonPreview.swift */; };
-		25078A946906B5FF022029106AE9957B /* MNEmoticonManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58151DCB295924159E7177E7A06EBFB6 /* MNEmoticonManager.swift */; };
-		28B86EED484074A6BE05E78B765908D6 /* ciya.png in Resources */ = {isa = PBXBuildFile; fileRef = 7AF0D8FFBEB99EB90707F58C842E8BD0 /* ciya.png */; };
-		2BEF3ECA94F057B995B9ED17CF9070BB /* tiaopi.png in Resources */ = {isa = PBXBuildFile; fileRef = 269085294950319DAEA890858C4CDD92 /* tiaopi.png */; };
-		2F0FC2CE7D0DC17315D75FFECCF26865 /* woshou.png in Resources */ = {isa = PBXBuildFile; fileRef = 27F2D2207FABAB14386C621B228941F1 /* woshou.png */; };
-		2F7CEE0506E689E52E85B6C580F9EB7D /* qinqin.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C8DA65A321B9FB6FB1609836075358C /* qinqin.png */; };
-		2FAD3654D1D3D3914B7FDAAA99C632CA /* zhutou.png in Resources */ = {isa = PBXBuildFile; fileRef = EABA83B4F5E04C79507077F22C4B75D6 /* zhutou.png */; };
-		310C8BD881DECB1B0D749CC503DA2A68 /* rangwokankan.png in Resources */ = {isa = PBXBuildFile; fileRef = F1B0F7882AE7F6F68167FF9D917363A9 /* rangwokankan.png */; };
+		1CF0F8B094641F29F87873B26337938D /* cover.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E5D3AB8626010DB8948B5CCCCE04BFD /* cover.png */; };
+		20409951DB9B90F8B6A4CF51DD8437BF /* MNEmoticonInputSupported.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184F43B3D90ABF31A85317D6551C53CE /* MNEmoticonInputSupported.swift */; };
+		2169DA02F6D1739EA0BAF6627CC81FB6 /* UINavigationBar+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8244DB2C7F6C2C4FD17AD6D6A21861D /* UINavigationBar+MNHelper.swift */; };
+		24306B0FAAFDDAF55A76891E007EF540 /* qie.png in Resources */ = {isa = PBXBuildFile; fileRef = 6D8C7BB4D54A89BFCD75EF09FED6088E /* qie.png */; };
+		244EAB926D662D07CB4315887AC64221 /* baiyan.png in Resources */ = {isa = PBXBuildFile; fileRef = 2FAEB868792A48091054FD6CB1D6ED60 /* baiyan.png */; };
+		28B86EED484074A6BE05E78B765908D6 /* ciya.png in Resources */ = {isa = PBXBuildFile; fileRef = 22514CE0ADA14C3DBCFD440524C0C399 /* ciya.png */; };
+		293E4220D18EFD34BEC3E0AECD4EA0D6 /* UITabBar+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E733F680CB486124AC444BC8BE17FAC /* UITabBar+MNHelper.swift */; };
+		2AD62830C4123530173C3A305405A977 /* MNEmoticonAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = E438BC86DA593D15F580799F4DE48A4D /* MNEmoticonAttachment.swift */; };
+		2BEF3ECA94F057B995B9ED17CF9070BB /* tiaopi.png in Resources */ = {isa = PBXBuildFile; fileRef = D24E3FED391B9A5A5A41A5DE43ADE9EA /* tiaopi.png */; };
+		2F0FC2CE7D0DC17315D75FFECCF26865 /* woshou.png in Resources */ = {isa = PBXBuildFile; fileRef = E585C90218348592E293ABD9A064E9FB /* woshou.png */; };
+		2F7CEE0506E689E52E85B6C580F9EB7D /* qinqin.png in Resources */ = {isa = PBXBuildFile; fileRef = E6139B52FA5839030B0E43DEB2997FEC /* qinqin.png */; };
+		2FAD3654D1D3D3914B7FDAAA99C632CA /* zhutou.png in Resources */ = {isa = PBXBuildFile; fileRef = 599B059E352D70CE4D89AF4392700F30 /* zhutou.png */; };
+		310C8BD881DECB1B0D749CC503DA2A68 /* rangwokankan.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E7281F1C1DF90BB0AB3B5AAAA3A413C /* rangwokankan.png */; };
 		318107C4CD6C307CBC3B838A53795321 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0F55A22E0BB91F7B3E93776035CF512 /* Foundation.framework */; };
-		326775D4CF556E3604F31A34A30C2DFE /* wa.png in Resources */ = {isa = PBXBuildFile; fileRef = B74CE4E364E83AAF7009807F2265E8F3 /* wa.png */; };
+		326775D4CF556E3604F31A34A30C2DFE /* wa.png in Resources */ = {isa = PBXBuildFile; fileRef = AF653080115A642AF5EC864184AC5ADA /* wa.png */; };
 		32B0F7E356F21C928CD4535CC24BD967 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0F55A22E0BB91F7B3E93776035CF512 /* Foundation.framework */; };
-		330D0BFF48D79E01EAF61F3CEB747084 /* quantou.png in Resources */ = {isa = PBXBuildFile; fileRef = 4E1BE4DE9CC5FF7D48DDD3179C79280D /* quantou.png */; };
-		3434B888050899A4F0A3DA2C5B800BCA /* cahan.png in Resources */ = {isa = PBXBuildFile; fileRef = 6F90187730FAD710531A8E9CC31EAA45 /* cahan.png */; };
-		344BC78BEE98DAA58508ED90C8B7A72F /* fu.png in Resources */ = {isa = PBXBuildFile; fileRef = 734F179F180B89A55AC6489D2A62AE80 /* fu.png */; };
-		365A1F27398DDE777D6636D20E612AF2 /* kongju.png in Resources */ = {isa = PBXBuildFile; fileRef = 73F5A0F7823B23731C3B9EC2D6FC6330 /* kongju.png */; };
-		39015A25BE806115ADD4D7F21FE1923F /* xinsui.png in Resources */ = {isa = PBXBuildFile; fileRef = BD24501BFA57815C8BA9779ED75F9B02 /* xinsui.png */; };
-		391171509EA75668805A1A4F3C6AAC8B /* taiyang.png in Resources */ = {isa = PBXBuildFile; fileRef = 33A0D3C1DF73247A2ABCC2306D6784B3 /* taiyang.png */; };
-		39388F1133661BFBB999162C07BAE0B6 /* yanhua.png in Resources */ = {isa = PBXBuildFile; fileRef = 60353614C9421D1A02C4B4C1D79D48AB /* yanhua.png */; };
-		397E0256438E659FA9EB4CBD01751C2F /* han.png in Resources */ = {isa = PBXBuildFile; fileRef = 3E0A75A1968051E0070AA5A4B864F9A7 /* han.png */; };
-		3AB6A6E3C77AA1B34F8B4AF69A155C8B /* kuaikule.png in Resources */ = {isa = PBXBuildFile; fileRef = 01085BAA3B06BE91170F38CEF4FA6037 /* kuaikule.png */; };
-		3ACD2AD70DF2A1D374A7F3673367699F /* kafei.png in Resources */ = {isa = PBXBuildFile; fileRef = 81F2BC8154677AF9A6A9C18C17D0E729 /* kafei.png */; };
-		3B146974D5F99AFB9BF14F1F2AEB281C /* diaoxie.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C0961C2531C5F9B463B74FE3BE0F0C /* diaoxie.png */; };
-		3B96FFF88939001F23F58A5C448D880D /* dalian.png in Resources */ = {isa = PBXBuildFile; fileRef = 0D4F8D84A68EE1070D5FC534EC55529C /* dalian.png */; };
-		3EC0B1BBC4FBB044950010875D241CC5 /* UINavigationBar+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8244DB2C7F6C2C4FD17AD6D6A21861D /* UINavigationBar+MNHelper.swift */; };
-		4132744658E7BB73C6C04255948F2A4A /* zuichun.png in Resources */ = {isa = PBXBuildFile; fileRef = 823C5CCB21572D2022FED7DE13618265 /* zuichun.png */; };
-		41A315880B349A6560C108622FE06852 /* md5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C450F4E2BEB5272F8CC3F96EBD2A75 /* md5.swift */; };
-		43E555A5789B7E54F52B52EC1FA4D1FA /* xigua.png in Resources */ = {isa = PBXBuildFile; fileRef = D0FFC85F5CC17CAA385263B1B5F36F52 /* xigua.png */; };
-		43FDB7C5019D405DCAFEA0D26C50781D /* baoquan.png in Resources */ = {isa = PBXBuildFile; fileRef = 642DF66002C7AB0B7EA7A6DF98931E1B /* baoquan.png */; };
-		441A42BA4B4859A40C184833F79E0B4E /* xiangai.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0815FB57BC3218D11DC30C3E53C44E /* xiangai.png */; };
-		4535F241555EA0DDDCC467905AD23B13 /* MNEmoticonCollectionLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551177854AFA200C0058F316491719A8 /* MNEmoticonCollectionLayout.swift */; };
-		4A7709552B316CC522A2B30C4C4AB822 /* jiayou.png in Resources */ = {isa = PBXBuildFile; fileRef = 0694F36125572A15FCDF417B5960F90C /* jiayou.png */; };
-		4AC456B0D4B4A7EEFB629120029F9C20 /* UIImage+MNAnimated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C78C8E03A5F89235AC5585B24C2A3A /* UIImage+MNAnimated.swift */; };
-		4BB201F9794C3A98E14CAFCA4CFAF6F0 /* caidao.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EFBF2EAECFFD05E59529F041AB32BFC /* caidao.png */; };
-		4C864009014928A6143FEF8911A37420 /* delete-ver.png in Resources */ = {isa = PBXBuildFile; fileRef = 55851C8663BA36C6EF4015A0A66AD053 /* delete-ver.png */; };
-		4C999039C258283F8AF4847FC2D3970F /* MNEmoticon.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDCDA4176648A0B6C27C50581850E051 /* MNEmoticon.swift */; };
-		4D189E6CA178AEEE58D36919A0EFB6CB /* pijiu.png in Resources */ = {isa = PBXBuildFile; fileRef = 11DDBA71FEEFBBD8D566FB79EEBC62AA /* pijiu.png */; };
-		4E896C2E69E3690EED9320D169654962 /* CFNotificationCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9E541EEFC18CAB84359A8E2C9D69CA /* CFNotificationCenter.swift */; };
-		51FECD41B00C10073D1E9AD8EB8BB5EA /* bianbian.png in Resources */ = {isa = PBXBuildFile; fileRef = 38D84FCAC39E4C9F4FE8B6BC56B1DA54 /* bianbian.png */; };
-		52615EED629C34F4F760775D1BC331DD /* aoman.png in Resources */ = {isa = PBXBuildFile; fileRef = 6D1B930A72FA9A2F1A0004816609B414 /* aoman.png */; };
-		545A74B71C1E83BC8544E433A164D436 /* hanxiao.png in Resources */ = {isa = PBXBuildFile; fileRef = 85A68B391860598A8AFFF6B05ACC96D1 /* hanxiao.png */; };
-		56FD7FE89493871EE55606FA5FF449FA /* hongbao.png in Resources */ = {isa = PBXBuildFile; fileRef = 1F80933797F41C6753CE9B4F419121B2 /* hongbao.png */; };
-		5A6AF17AD5867FC4C6386E92328BE2F8 /* zhouma.png in Resources */ = {isa = PBXBuildFile; fileRef = 100473ED0CBFADD456717283F23C4BA9 /* zhouma.png */; };
-		5BAC298C52EAB5B47A24991946B72A1E /* Emm.png in Resources */ = {isa = PBXBuildFile; fileRef = F5E7EDB3B19BC96071B9AEA2B658F45B /* Emm.png */; };
+		32D13A4E976B997C971C918BABFD25B3 /* MNEmoticonInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A8F19A73EE3F9A6805F1D4D465CE85 /* MNEmoticonInputView.swift */; };
+		330D0BFF48D79E01EAF61F3CEB747084 /* quantou.png in Resources */ = {isa = PBXBuildFile; fileRef = 71FF9F190E93E53405047E89622835B6 /* quantou.png */; };
+		3434B888050899A4F0A3DA2C5B800BCA /* cahan.png in Resources */ = {isa = PBXBuildFile; fileRef = 3796AF655BCC96AAC6B0066AB8ADF695 /* cahan.png */; };
+		344BC78BEE98DAA58508ED90C8B7A72F /* fu.png in Resources */ = {isa = PBXBuildFile; fileRef = E8E8AF30A1B7EB544BB9EE8902B12B75 /* fu.png */; };
+		365A1F27398DDE777D6636D20E612AF2 /* kongju.png in Resources */ = {isa = PBXBuildFile; fileRef = ACD39F51C35C7B12BA69B84408D78A12 /* kongju.png */; };
+		3898FD4506AC624268C9A215D3A84154 /* MNPageControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3D2DE854E9174348AC15B65A9C88BD /* MNPageControl.swift */; };
+		39015A25BE806115ADD4D7F21FE1923F /* xinsui.png in Resources */ = {isa = PBXBuildFile; fileRef = AA1C6897758B6E4324E971ED870F22AB /* xinsui.png */; };
+		391171509EA75668805A1A4F3C6AAC8B /* taiyang.png in Resources */ = {isa = PBXBuildFile; fileRef = 68FF7E83A2E9B347041F657FF802DE34 /* taiyang.png */; };
+		39388F1133661BFBB999162C07BAE0B6 /* yanhua.png in Resources */ = {isa = PBXBuildFile; fileRef = 1679B015BCF2343A5C24C8CA174F36B0 /* yanhua.png */; };
+		397E0256438E659FA9EB4CBD01751C2F /* han.png in Resources */ = {isa = PBXBuildFile; fileRef = CE17108241CBCECA82343B99B7D5A785 /* han.png */; };
+		3AB6A6E3C77AA1B34F8B4AF69A155C8B /* kuaikule.png in Resources */ = {isa = PBXBuildFile; fileRef = 3636429C2D53808CB0CB65763CCA943B /* kuaikule.png */; };
+		3ACD2AD70DF2A1D374A7F3673367699F /* kafei.png in Resources */ = {isa = PBXBuildFile; fileRef = AE4F49F4A5AD960C0A6226B95BD5E52C /* kafei.png */; };
+		3B146974D5F99AFB9BF14F1F2AEB281C /* diaoxie.png in Resources */ = {isa = PBXBuildFile; fileRef = A8D8CBA7B0BC4381C950CB76D44F80F8 /* diaoxie.png */; };
+		3B96FFF88939001F23F58A5C448D880D /* dalian.png in Resources */ = {isa = PBXBuildFile; fileRef = 02B173C602C330B2E33F0650560FDC00 /* dalian.png */; };
+		4132744658E7BB73C6C04255948F2A4A /* zuichun.png in Resources */ = {isa = PBXBuildFile; fileRef = 12597D51915A5E53B4031BCBAFE3F9FC /* zuichun.png */; };
+		416C0E952615AD6A1991F6D32AFC0CBF /* MNEmoticonPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D460A91AF340A393E1C1BBF0F4854AB /* MNEmoticonPreview.swift */; };
+		41ADF7A4405ABDF7D168AD739EF5C0CC /* UIResponder+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE0893F67AE670B84244D0150C748847 /* UIResponder+MNHelper.swift */; };
+		43E555A5789B7E54F52B52EC1FA4D1FA /* xigua.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B2149FB0829F9C039875355DF099F1D /* xigua.png */; };
+		43FDB7C5019D405DCAFEA0D26C50781D /* baoquan.png in Resources */ = {isa = PBXBuildFile; fileRef = FD11A36173B1842AB2A5C7DBEC84F9FC /* baoquan.png */; };
+		441A42BA4B4859A40C184833F79E0B4E /* xiangai.png in Resources */ = {isa = PBXBuildFile; fileRef = 55AAB77358EA5230D9E7AEB7CDCCD7A9 /* xiangai.png */; };
+		464E850E3A6137D0ED46025CF9460487 /* MNDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = C956DD25A3D88E4B0EA609B162F3ED56 /* MNDefinition.swift */; };
+		4A7709552B316CC522A2B30C4C4AB822 /* jiayou.png in Resources */ = {isa = PBXBuildFile; fileRef = CD5F8D6B92B7AB89F00566D59FBFCF94 /* jiayou.png */; };
+		4BB201F9794C3A98E14CAFCA4CFAF6F0 /* caidao.png in Resources */ = {isa = PBXBuildFile; fileRef = BB98E2431E873AEB93EC7C145BF84AA5 /* caidao.png */; };
+		4C864009014928A6143FEF8911A37420 /* delete-ver.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DB76F3E67B154FBF448F107BF7BEFBD /* delete-ver.png */; };
+		4D189E6CA178AEEE58D36919A0EFB6CB /* pijiu.png in Resources */ = {isa = PBXBuildFile; fileRef = 00AE0A45AF9E731A18BB75E145BD24D6 /* pijiu.png */; };
+		51FECD41B00C10073D1E9AD8EB8BB5EA /* bianbian.png in Resources */ = {isa = PBXBuildFile; fileRef = A5DADD3852905F123205239C38E6F14E /* bianbian.png */; };
+		52615EED629C34F4F760775D1BC331DD /* aoman.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B4D9F04A5E17945E456D3C8EB35C6B9 /* aoman.png */; };
+		545A74B71C1E83BC8544E433A164D436 /* hanxiao.png in Resources */ = {isa = PBXBuildFile; fileRef = A9A093D766A80CD3E8B89A4E1614AA56 /* hanxiao.png */; };
+		56FD7FE89493871EE55606FA5FF449FA /* hongbao.png in Resources */ = {isa = PBXBuildFile; fileRef = 05740DB0EDBA52232EC00AD6CC0659C8 /* hongbao.png */; };
+		5A6AF17AD5867FC4C6386E92328BE2F8 /* zhouma.png in Resources */ = {isa = PBXBuildFile; fileRef = 79CE741C792880EF96AFA1B13D435439 /* zhouma.png */; };
+		5BAC298C52EAB5B47A24991946B72A1E /* Emm.png in Resources */ = {isa = PBXBuildFile; fileRef = 56AA5D7F3F9B1DB903B07A9561720091 /* Emm.png */; };
 		5BACB6E9CBFF5948DB37D2B2D91BEBED /* Pods-MNSwiftKit_Example-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 7EADCB6756F36B6C8D4E54CF14F278AF /* Pods-MNSwiftKit_Example-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		5D1C6B0AD1EE34BC31DC9CE2EE9D667C /* wangcai.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B601D7B1E64F5972DC552A2D15BFE31 /* wangcai.png */; };
-		5E26108586E6E71AEA5F3B1543EEA3E1 /* meigui.png in Resources */ = {isa = PBXBuildFile; fileRef = 24D7CE2E1381D80E1668A7F32A3F6BC4 /* meigui.png */; };
-		5FCA84FE11151161D671F09FA4D49638 /* qiangzhuang.png in Resources */ = {isa = PBXBuildFile; fileRef = 64E91AB9B4F6F2F942E4F0BF772B2DA7 /* qiangzhuang.png */; };
-		6069DC88E68239EF2315D8A4F0AFE303 /* delete-hor.png in Resources */ = {isa = PBXBuildFile; fileRef = 44CE4C3B99C8AF5603452806FC5E6AE6 /* delete-hor.png */; };
-		6376A20F3CCDEE20C2D9F2B5E0FD3C11 /* weixiao.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD6FB58F149E9B57C00C54A1878A52A /* weixiao.png */; };
-		65458F677FA29699A79F994335BAAAAC /* shehui.png in Resources */ = {isa = PBXBuildFile; fileRef = 1726FCE5096D94ECFA3BECED12D480F1 /* shehui.png */; };
-		69A3775EED7FCF8EB48882DB946AC45F /* MNEmoticonPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D219E9010D28990AC06CD18680391F0 /* MNEmoticonPacket.swift */; };
-		6EB42DD3470847931911744767DAC6D7 /* MNEmoticonPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C20143126F180E8F8A3CFF99A7F99D /* MNEmoticonPageView.swift */; };
-		7168251072F9D69D2C6A9CF636007E5E /* jingya.png in Resources */ = {isa = PBXBuildFile; fileRef = 608220ADD03BA25C26E779A3900C4FE9 /* jingya.png */; };
-		72A25886F98B8586093C373E4FE929BD /* MNEmoticonInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0826FC7756DCD0E1CD5654254474559E /* MNEmoticonInput.swift */; };
-		73BFAACA2B39291400E1AAB7F5F245DD /* wulian.png in Resources */ = {isa = PBXBuildFile; fileRef = F217866F14C4ED66C124AA7A8D0BFF4E /* wulian.png */; };
-		74F23399840C174525D5F3A50DD8A7F8 /* MNNibSupported.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C4A9356A9F5CBCB70EB8971AC5E7F0 /* MNNibSupported.swift */; };
-		76B0DF424E938168E74912CEE0D6C97C /* MNDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = C956DD25A3D88E4B0EA609B162F3ED56 /* MNDefinition.swift */; };
-		77B6813763B57AFBC8AADCAB56EA1B85 /* MNEmoticonBackedString.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8310CE0CA179F0BA2AB8AAC5D9D90F7 /* MNEmoticonBackedString.swift */; };
-		7A861A3C84B9879552724D46DBA0844C /* tushe.png in Resources */ = {isa = PBXBuildFile; fileRef = 382F5B61A38A08C83AB7C6EF9B452B5D /* tushe.png */; };
-		7B6DE7C7E23FD9A4E18DFFA52294024D /* yueliang.png in Resources */ = {isa = PBXBuildFile; fileRef = 50B1FEBECA9641C4736EEBD3D18D6F0D /* yueliang.png */; };
-		7C5FC5674526AAC75207AE41F1CAA969 /* MNSwizzleWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E957E7DEB4C053A6E530A9F40D01AC /* MNSwizzleWrapper.swift */; };
-		7D9A25386CBA56D1ED3E0A250C5360EC /* tu.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E6D6F7A9F8190ED600A406CC88BDDC4 /* tu.png */; };
-		7E8F95A1C3FF33BF3F7C8812F9EE9334 /* yinxian.png in Resources */ = {isa = PBXBuildFile; fileRef = 0D49E71A856DA1EFBA4D0B089DC137BA /* yinxian.png */; };
+		5BCF5276F6B73D0986979152948258DC /* FileHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7E08BD13C2F1672FACCEEFA2D7E6B4 /* FileHandle.swift */; };
+		5D1C6B0AD1EE34BC31DC9CE2EE9D667C /* wangcai.png in Resources */ = {isa = PBXBuildFile; fileRef = E0AB50489BC3F54C0FA9FF162773ECA9 /* wangcai.png */; };
+		5E26108586E6E71AEA5F3B1543EEA3E1 /* meigui.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D503811784DB0A58083E56A9FDE84FE /* meigui.png */; };
+		5FCA84FE11151161D671F09FA4D49638 /* qiangzhuang.png in Resources */ = {isa = PBXBuildFile; fileRef = B031DCAC66506FBC3EC5433214976A78 /* qiangzhuang.png */; };
+		6069DC88E68239EF2315D8A4F0AFE303 /* delete-hor.png in Resources */ = {isa = PBXBuildFile; fileRef = 01874401E09E12A62EDB852B09C835A8 /* delete-hor.png */; };
+		6376A20F3CCDEE20C2D9F2B5E0FD3C11 /* weixiao.png in Resources */ = {isa = PBXBuildFile; fileRef = 40539D7C7F4E8DA61F63D6FDFEC7B816 /* weixiao.png */; };
+		64B95F3E80AE38DD5B5B1EEBB41E36A7 /* MNEmoticonPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E06721894BDE2EBB9B6D59CCE808F213 /* MNEmoticonPageView.swift */; };
+		65458F677FA29699A79F994335BAAAAC /* shehui.png in Resources */ = {isa = PBXBuildFile; fileRef = 9ED57A0FABD96919B45E3331C0309AA4 /* shehui.png */; };
+		68D1CB2625A15B41A179C3D94CC870E4 /* MNEmoticonLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 422E28438B9DE574FC618CC01178A453 /* MNEmoticonLayout.swift */; };
+		7168251072F9D69D2C6A9CF636007E5E /* jingya.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D08EE7C80C0BA97D09585DF6C4731D5 /* jingya.png */; };
+		73283E041D9AF83D06B161DA6BCC673E /* MNFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4C23E8ED80824521B16CC14AD50C95 /* MNFileManager.swift */; };
+		73BFAACA2B39291400E1AAB7F5F245DD /* wulian.png in Resources */ = {isa = PBXBuildFile; fileRef = BD8240CA2092F9647E4C9F55E69CAA5C /* wulian.png */; };
+		7A861A3C84B9879552724D46DBA0844C /* tushe.png in Resources */ = {isa = PBXBuildFile; fileRef = 992B0F237F18447A0C758CA7E44E0971 /* tushe.png */; };
+		7B6DE7C7E23FD9A4E18DFFA52294024D /* yueliang.png in Resources */ = {isa = PBXBuildFile; fileRef = 8D5870F08FA80AB2BCD409412A42540B /* yueliang.png */; };
+		7D9A25386CBA56D1ED3E0A250C5360EC /* tu.png in Resources */ = {isa = PBXBuildFile; fileRef = BC281A4AC0A6039FA0BA8C42472BEC0C /* tu.png */; };
+		7E8F95A1C3FF33BF3F7C8812F9EE9334 /* yinxian.png in Resources */ = {isa = PBXBuildFile; fileRef = 7962F875058AF9D137DBB0134F1A5450 /* yinxian.png */; };
+		7E946314437857C128F9C28E7926AC89 /* UIImage+MNAnimated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C78C8E03A5F89235AC5585B24C2A3A /* UIImage+MNAnimated.swift */; };
 		823E4773C65A1738148041490B671D05 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D552D6313EAD2BDDF63A73E892F790F7 /* UniformTypeIdentifiers.framework */; };
-		838EF8FE730AA29DE35765B952A1F896 /* zhuakuang.png in Resources */ = {isa = PBXBuildFile; fileRef = E3826CEFEAC95ECAC9E078D477ABDAD1 /* zhuakuang.png */; };
-		83D84179D8397D4274E942C5706FA408 /* MNEmoticonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1942312FE50A5169B4B0F32C4BDDE40A /* MNEmoticonCell.swift */; };
-		85A104C8976D60F6F65453C792E60824 /* heshi.png in Resources */ = {isa = PBXBuildFile; fileRef = 6D6E62F7BAF462FEC52FB91ADA967CAD /* heshi.png */; };
-		85AE4A777332BFD8688EACC10275031D /* zhoumei.png in Resources */ = {isa = PBXBuildFile; fileRef = 20E5639D43CCBCA457A542B13E535FD2 /* zhoumei.png */; };
-		86AC6E1031325E9F993BDB96874FD7A5 /* MNEmoticonCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AF31793C4350B4F180509CA959BFB02 /* MNEmoticonCollection.swift */; };
-		89018090C1CAAE319EA1EE16150A15C3 /* fa.png in Resources */ = {isa = PBXBuildFile; fileRef = D4F7936AC2D0D739D15B275F5F0CAC70 /* fa.png */; };
-		8A2D8C15C6793AA95B0887B482F970B7 /* UITabBar+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E733F680CB486124AC444BC8BE17FAC /* UITabBar+MNHelper.swift */; };
-		8CE5B6BE4CB7CD6F505D52496D5F90E2 /* hei.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EB44FC96090395B46949300AAC085CC /* hei.png */; };
+		838EF8FE730AA29DE35765B952A1F896 /* zhuakuang.png in Resources */ = {isa = PBXBuildFile; fileRef = 5116CEF16019BDB4D4F2C63319275E80 /* zhuakuang.png */; };
+		85A104C8976D60F6F65453C792E60824 /* heshi.png in Resources */ = {isa = PBXBuildFile; fileRef = 86791B63CF996DC38342AEF40AC2515D /* heshi.png */; };
+		85AE4A777332BFD8688EACC10275031D /* zhoumei.png in Resources */ = {isa = PBXBuildFile; fileRef = 92172B86DCB1197EA6C828523AF0857B /* zhoumei.png */; };
+		89018090C1CAAE319EA1EE16150A15C3 /* fa.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F7AE74D16483C2042F3D764B0D9A70 /* fa.png */; };
+		8B281EA4FC9FB69C9508FEFA3C4E0FC1 /* MNSwiftKit-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3308DE1AC36E022B9FE7A9DA3D3946D7 /* MNSwiftKit-dummy.m */; };
+		8CE5B6BE4CB7CD6F505D52496D5F90E2 /* hei.png in Resources */ = {isa = PBXBuildFile; fileRef = 87190F3C383929913DE42021613DE3F1 /* hei.png */; };
 		8D0A7ECDE8277E1FBC5A557E321B01F4 /* MNSwiftKit-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 143B76ED093791E364707AD3E2C55AA6 /* MNSwiftKit-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		8F8915FFADCC14870D392C6DC6635AEC /* nanguo.png in Resources */ = {isa = PBXBuildFile; fileRef = C40D17ADB988DF85739C4ED9EC3BE2B3 /* nanguo.png */; };
-		9060547D57787D7E295132E787EF4B14 /* yongbao.png in Resources */ = {isa = PBXBuildFile; fileRef = F286B2ABF704A83DDBA10D49A2E4BCD5 /* yongbao.png */; };
-		90A22A03387EA19E914590B61D9DED5A /* MNEmoticonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 283331805A71BDF0F51696A3988F4EE7 /* MNEmoticonView.swift */; };
-		9480519191223F1EEFC8A321371D07FD /* haixiu.png in Resources */ = {isa = PBXBuildFile; fileRef = F0FB49D44C5D4C101F5F7D7039888370 /* haixiu.png */; };
-		948F7BAEFD17758263E8412B645E7C3F /* MNEmoticonKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7B168970A8B41C4CCE6E86CB9B2C1D /* MNEmoticonKeyboard.swift */; };
-		966770A2D0BEA5CCCB9B71FE91126237 /* tiana.png in Resources */ = {isa = PBXBuildFile; fileRef = C13DC50FA892F5EDE3DCC3830372DC2A /* tiana.png */; };
-		968F3C60D1CD4E8EBD39E9B4C9C3443A /* dangao.png in Resources */ = {isa = PBXBuildFile; fileRef = 54713F8E9E2C15AC0F1E50701D7556AD /* dangao.png */; };
-		96FB2861364457B5EFE1DEB8C7FC8A0D /* MNEmoticonPacketCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EFD8F7AF76311EFA1CE1BECEA4B2120 /* MNEmoticonPacketCell.swift */; };
-		977F02131AD9DBE1B810FC5A037DD65D /* youxian.png in Resources */ = {isa = PBXBuildFile; fileRef = B632CDA69E1BAC33D539BD287B171050 /* youxian.png */; };
-		9A079153B53E535FC77136257ED80916 /* guihun.png in Resources */ = {isa = PBXBuildFile; fileRef = FC9AB0C052B469AFB38A6C2CB44EFAA5 /* guihun.png */; };
-		9A2845342483731330DF2B34236A24B5 /* yukuai.png in Resources */ = {isa = PBXBuildFile; fileRef = 9CCE1FFF1444DCA42A14DD33D811176E /* yukuai.png */; };
-		9A41D4BBBAD5AA2E734210508A4F2920 /* favorites.png in Resources */ = {isa = PBXBuildFile; fileRef = 1DB1A9D8ACA6FB7B9AD65CF4E1F7245D /* favorites.png */; };
+		8F8915FFADCC14870D392C6DC6635AEC /* nanguo.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CAB02187C6266FD51A14B91829FF73F /* nanguo.png */; };
+		9060547D57787D7E295132E787EF4B14 /* yongbao.png in Resources */ = {isa = PBXBuildFile; fileRef = D7CD8F6DBF3EB39666F474045DA542A2 /* yongbao.png */; };
+		9480519191223F1EEFC8A321371D07FD /* haixiu.png in Resources */ = {isa = PBXBuildFile; fileRef = 654248B6D0717F127D26C63000060EDD /* haixiu.png */; };
+		966770A2D0BEA5CCCB9B71FE91126237 /* tiana.png in Resources */ = {isa = PBXBuildFile; fileRef = AB28587475F5E343FC6345A5906A2004 /* tiana.png */; };
+		968F3C60D1CD4E8EBD39E9B4C9C3443A /* dangao.png in Resources */ = {isa = PBXBuildFile; fileRef = 45B1CFBA41EADCD441A1CD13577DB98E /* dangao.png */; };
+		977F02131AD9DBE1B810FC5A037DD65D /* youxian.png in Resources */ = {isa = PBXBuildFile; fileRef = 7186140AE3ADA1DF4C3D0E869EE22AFD /* youxian.png */; };
+		9A079153B53E535FC77136257ED80916 /* guihun.png in Resources */ = {isa = PBXBuildFile; fileRef = EE1DE136C2E03345EA6AEFB81FADC1DE /* guihun.png */; };
+		9A2845342483731330DF2B34236A24B5 /* yukuai.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B11A5589720E19352E4CA81CE365AF2 /* yukuai.png */; };
+		9A41D4BBBAD5AA2E734210508A4F2920 /* favorites.png in Resources */ = {isa = PBXBuildFile; fileRef = 77B2376FFD28C984A593847AE6E94166 /* favorites.png */; };
 		9B78F6E09801CFEDCA6059AF26E1ECF3 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 244E0312F1E84CF3324E3C14FE80B221 /* UIKit.framework */; };
-		9BB56E8DEF4AA80EE0D7713405EB677F /* UIResponder+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE0893F67AE670B84244D0150C748847 /* UIResponder+MNHelper.swift */; };
-		9BE0ACBC0B574B0F19B5093FE5B75C64 /* deyi.png in Resources */ = {isa = PBXBuildFile; fileRef = 426281C2B2CB59C87D046397C9A7E366 /* deyi.png */; };
-		9DEB4F8CC5C2E2B658CF2F6FCA2F12F3 /* MNEmoticonAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343838F3F9F3C435994461997DA8B3D8 /* MNEmoticonAttachment.swift */; };
-		9ED6BB526F3CD67C8FF5C673212462E8 /* se.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C3CB4422EDE011A16A62CBAAB979FF2 /* se.png */; };
-		9F20AC35E96FB9FCC216566AF1C02E4E /* jiong.png in Resources */ = {isa = PBXBuildFile; fileRef = 90565578EC7CC3D64C1B79DA1773BA04 /* jiong.png */; };
-		A0B25F66B464B5C1EDC76E3BF94C85D1 /* guzhang.png in Resources */ = {isa = PBXBuildFile; fileRef = B01CCA4378F4FDED75386226159E67FB /* guzhang.png */; };
-		A12677ABDDF86395F2846506D0145EA4 /* OK.png in Resources */ = {isa = PBXBuildFile; fileRef = 782D84F5AE85BBE224E9555E669F9C38 /* OK.png */; };
+		9BE0ACBC0B574B0F19B5093FE5B75C64 /* deyi.png in Resources */ = {isa = PBXBuildFile; fileRef = 903E0760B13FDAADA4BF54D0B7CF64C4 /* deyi.png */; };
+		9ED6BB526F3CD67C8FF5C673212462E8 /* se.png in Resources */ = {isa = PBXBuildFile; fileRef = 14033AD7FB12AF785964E77006F1247D /* se.png */; };
+		9F20AC35E96FB9FCC216566AF1C02E4E /* jiong.png in Resources */ = {isa = PBXBuildFile; fileRef = 5D64AC55AD4C41E3F6D6471807896B4C /* jiong.png */; };
+		A0B25F66B464B5C1EDC76E3BF94C85D1 /* guzhang.png in Resources */ = {isa = PBXBuildFile; fileRef = BE5B7B2182FFD74FB204ADAA83D77DC0 /* guzhang.png */; };
+		A12677ABDDF86395F2846506D0145EA4 /* OK.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D0E4B73C7ADB8E86903D03B43F874EB /* OK.png */; };
+		A768B4C18C62AD4E4A465FA502A8A360 /* MNEmoticonManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53F2B1BF0AAE3F3590A6CEDD9AD5874 /* MNEmoticonManager.swift */; };
+		A8151FBD627E3825FC0874789C146A99 /* MNEmoticon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F1ECDE8734D2CFDC4A8F1EE2CAFDFFB /* MNEmoticon.swift */; };
 		AA3F1B5F108AA080CA8C7E19272AF8E7 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25C6B9276628F1F799A4B0B18C486D56 /* CoreGraphics.framework */; };
-		AAB104CD7A4207F99EFB6574FD18EFCC /* liulei.png in Resources */ = {isa = PBXBuildFile; fileRef = 86A1903B5214CCC279B98CF170CC9D57 /* liulei.png */; };
-		AE2A6BF494F8D796619CD545D55E0B0E /* koubi.png in Resources */ = {isa = PBXBuildFile; fileRef = F5283296EEF1C560D84B6728AF800DCA /* koubi.png */; };
-		AFC5D12ACC8DD5863050C2D94A8BF26E /* wuyu.png in Resources */ = {isa = PBXBuildFile; fileRef = 105CAE8F2FBA8954553B271AC01CC3F2 /* wuyu.png */; };
-		B0498146200AA27F41E94F511A174229 /* aixin.png in Resources */ = {isa = PBXBuildFile; fileRef = E0B31D48E01F565697E469B10529F493 /* aixin.png */; };
-		B06F722D67D27C9E60826AC795441148 /* UserDefaultsWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E2BA995BBA2A67A7BB7108C6D73E68D /* UserDefaultsWrapper.swift */; };
-		B2FBB2B1E2589CD2AB9D95E2B65086D7 /* liwu.png in Resources */ = {isa = PBXBuildFile; fileRef = EA86CC74589620F49DB850155A69E6EE /* liwu.png */; };
-		B493A2A5FF59428DA08368F67DEA6A66 /* 666.png in Resources */ = {isa = PBXBuildFile; fileRef = E2C42DD6BECA2477248ECA56C7967A83 /* 666.png */; };
-		B4E1D70B7EE9C473B5FF967DDB8AE387 /* yun.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E1BC1C2B91BBA78EB58C0E76F6A8CAB /* yun.png */; };
-		B69ED2537F91D2D7CB1C673A80BD551C /* touxiao.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DEEAFBFFC6C50602041082A1248DCF4 /* touxiao.png */; };
+		AA50D55DD5E0262503FFF19E5023EDA8 /* MNEmoticonPacketView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6AAE9C1BD2CF8B26E3BA03EDF07BEC2 /* MNEmoticonPacketView.swift */; };
+		AAB104CD7A4207F99EFB6574FD18EFCC /* liulei.png in Resources */ = {isa = PBXBuildFile; fileRef = E0E5D7C9394825BD5071C3986C1CFD00 /* liulei.png */; };
+		AD224CAD3EE443A20F0A25F84A522D1E /* MNEmoticonPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C0841C6627E49F21161AE93C6B0E5F6 /* MNEmoticonPacket.swift */; };
+		AD32D6DF9C49F1447467447C87E15DD3 /* UIApplication+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A4005B32BDDD7E4A1B69E8CC00E1C8E /* UIApplication+MNHelper.swift */; };
+		AE2A6BF494F8D796619CD545D55E0B0E /* koubi.png in Resources */ = {isa = PBXBuildFile; fileRef = F770C2C5355019B5755C7506A80A64C5 /* koubi.png */; };
+		AFC5D12ACC8DD5863050C2D94A8BF26E /* wuyu.png in Resources */ = {isa = PBXBuildFile; fileRef = 9CDD24C9A1FCB5A982932E5C5CDED941 /* wuyu.png */; };
+		B0498146200AA27F41E94F511A174229 /* aixin.png in Resources */ = {isa = PBXBuildFile; fileRef = A6F485C962285EA4C0B2BC6B3D352B40 /* aixin.png */; };
+		B1DBEDF300BEFE4BFAE5A83AD1C703B8 /* MNEmoticonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3244F5017116D157AF7A7B28179E1BE /* MNEmoticonCell.swift */; };
+		B2FBB2B1E2589CD2AB9D95E2B65086D7 /* liwu.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B6AEB757ACBBB6D5F7435015077B52A /* liwu.png */; };
+		B493A2A5FF59428DA08368F67DEA6A66 /* 666.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F155FD9FC112A5E9CA0DCD152795CC4 /* 666.png */; };
+		B4E1D70B7EE9C473B5FF967DDB8AE387 /* yun.png in Resources */ = {isa = PBXBuildFile; fileRef = 3151D09E2061C60FD3E3FB498B46E802 /* yun.png */; };
+		B69ED2537F91D2D7CB1C673A80BD551C /* touxiao.png in Resources */ = {isa = PBXBuildFile; fileRef = 80513FB7398D47469C48B5D425C672F9 /* touxiao.png */; };
+		B82C26067A7C3E9CFED86BF0392BF4AB /* MNEmoticonPacketCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEE75EF982551AEDAA9F866F009FAB34 /* MNEmoticonPacketCell.swift */; };
 		B9675B764A7844CE2EF8C157EDBFCE5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0F55A22E0BB91F7B3E93776035CF512 /* Foundation.framework */; };
-		BCC185EB66EA97FF609C95097A892CF3 /* MNEmoticonInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 624269C5BD0F0BBC2B0FF24367F3C62B /* MNEmoticonInputView.swift */; };
-		BECAFD78BBEF1CD0AFD2622684CA3670 /* default.json in Resources */ = {isa = PBXBuildFile; fileRef = D4BA545793EAEF3BB9777CBC9D5FFD83 /* default.json */; };
-		C6FD8F4ABD57366D03E7DB1EDA23F425 /* haode.png in Resources */ = {isa = PBXBuildFile; fileRef = 52C2F30AEBD1F29C66D435BF2AA8CDA4 /* haode.png */; };
-		C73C04C9B2CA2EF7E4682CB11033BF25 /* add.png in Resources */ = {isa = PBXBuildFile; fileRef = 2EE8008ED79C56956BF657FB9FCC2952 /* add.png */; };
-		C82844B1CF58FF3D1BF36B9DDCEF898E /* zhadan.png in Resources */ = {isa = PBXBuildFile; fileRef = 00ADEE7495D93C6E01D968C69E1498A7 /* zhadan.png */; };
-		C9238C56EA0BB0252A5942D95FD7BE91 /* ganga.png in Resources */ = {isa = PBXBuildFile; fileRef = 0144401E7411A705914D0A650A9E3AD7 /* ganga.png */; };
-		C9E08AAE6AAA0254DB64466CE3FC9A27 /* zhuanquan.png in Resources */ = {isa = PBXBuildFile; fileRef = C7126A7C6AE99289163B30F0682C3847 /* zhuanquan.png */; };
-		D1F515E101B5ADCA55BB7E516ABEAE43 /* qiaoda.png in Resources */ = {isa = PBXBuildFile; fileRef = DE0989A316FAFB3016B65ECD57647979 /* qiaoda.png */; };
-		D4FA39712AD637BF758558D63D3CA048 /* MNPageControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3D2DE854E9174348AC15B65A9C88BD /* MNPageControl.swift */; };
-		D5BD0BB087D01D26B7D76EA13A4DC0F4 /* potiweixiao.png in Resources */ = {isa = PBXBuildFile; fileRef = DBD6326C56A12043A07BABEBAF8F2893 /* potiweixiao.png */; };
-		D79FF79626EEAE4514E5CBF01192D474 /* jianxiao.png in Resources */ = {isa = PBXBuildFile; fileRef = 685B72280568D2CD73F507F7760ECFA4 /* jianxiao.png */; };
-		D8431E802179F52CB7F771566CEA6F73 /* zaijian.png in Resources */ = {isa = PBXBuildFile; fileRef = 630300D85A8B8D97CACD0FE8F55BD917 /* zaijian.png */; };
-		D8DF3F378D39331A7B813A5D98E8542D /* bizui.png in Resources */ = {isa = PBXBuildFile; fileRef = 247BD024F3ED1C0B46A8311EA920632D /* bizui.png */; };
-		D977517EB2B47807871077C38BBB3B6D /* shui.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C6828CB09F84D075924D2A2D63C936D /* shui.png */; };
-		DE0A5A58683526128B017E2AB61281B9 /* piezui.png in Resources */ = {isa = PBXBuildFile; fileRef = BEAD80E168446B69C8FBF156F1A52E47 /* piezui.png */; };
-		DE1F992F315DD0F9F93E701A6EB5068B /* fanu.png in Resources */ = {isa = PBXBuildFile; fileRef = 9ABC2FD45AF7967BE7DF07B0608EC7BA /* fanu.png */; };
-		DEC9D73C5F5EF11565C50AA759628848 /* gouyin.png in Resources */ = {isa = PBXBuildFile; fileRef = 59DDD46A5F35F067E602F48B83DC3DB4 /* gouyin.png */; };
-		E0F80E4777DAEFF0B0383B4CE06B8741 /* MNEmoticonButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 007DD485E4CE89652EBBDE5707F31F58 /* MNEmoticonButton.swift */; };
-		E37230EA4C056942F9F4CCDAE42CE803 /* yiwen.png in Resources */ = {isa = PBXBuildFile; fileRef = 57DCE87E5A597AA254B7A6A35F85E4B0 /* yiwen.png */; };
-		E50581ED173A4F36DC832582A1BEC65E /* heiha.png in Resources */ = {isa = PBXBuildFile; fileRef = C44E90D87E0A3BC980897997B315424B /* heiha.png */; };
-		E5096B6043F4550C686879CF507AC269 /* MNFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4C23E8ED80824521B16CC14AD50C95 /* MNFileManager.swift */; };
-		E88A8DF5C816B1D6BCE15628D7FD7CCB /* zuohengheng.png in Resources */ = {isa = PBXBuildFile; fileRef = D88D332D5C3B598D6532F3CC8FA1BF86 /* zuohengheng.png */; };
-		E8AB4262CC4F99A0E00DC533A2EBE1D4 /* shadow.png in Resources */ = {isa = PBXBuildFile; fileRef = D8F2584FD84C544A7E7B55FA31CAE7E8 /* shadow.png */; };
-		E8E058FA7E4D597F466C5332B5EE194E /* ye.png in Resources */ = {isa = PBXBuildFile; fileRef = DF9AF89F464ABC013BB8FFD60D76C703 /* ye.png */; };
-		EB7402D31E2802530C4278346E8BA752 /* liekai.png in Resources */ = {isa = PBXBuildFile; fileRef = C8BFA18CD6BBD048CD48CF6EC1A6409A /* liekai.png */; };
-		EED9304D50F3BAF384EEC6C7BD76FEA7 /* shiwang.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B867C5B3D8962532B66FADED116334E /* shiwang.png */; };
-		F03C77CB392DBE45481E328B99254DA7 /* fadou.png in Resources */ = {isa = PBXBuildFile; fileRef = B3538592C509C349520EC89CA1D84720 /* fadou.png */; };
-		F05B729917D183FF509D070FD3C4FD7B /* shengbing.png in Resources */ = {isa = PBXBuildFile; fileRef = 79ED566F19BFBDCA2055D14E99D726A9 /* shengbing.png */; };
-		F137CC7FB732BF82D4A7523C2B6186B3 /* kelian.png in Resources */ = {isa = PBXBuildFile; fileRef = 63821B791255E687A5DBDDF5AA98F566 /* kelian.png */; };
+		BE282805A74F6B99C911E9ED354B5E89 /* MNEmoticonButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3954F599572937470DB676BA4CA9B0BC /* MNEmoticonButton.swift */; };
+		BE6191FABCB406A3EF59E632FB4BABFD /* MNEmoticonHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51214156AB937A98BCC3EBC56E7703C5 /* MNEmoticonHelper.swift */; };
+		BECAFD78BBEF1CD0AFD2622684CA3670 /* default.json in Resources */ = {isa = PBXBuildFile; fileRef = 6904E8353083994C9A9F57B10E65CD45 /* default.json */; };
+		C6FD8F4ABD57366D03E7DB1EDA23F425 /* haode.png in Resources */ = {isa = PBXBuildFile; fileRef = 57D87104ABC5EFA689F66DF0ED06924C /* haode.png */; };
+		C73C04C9B2CA2EF7E4682CB11033BF25 /* add.png in Resources */ = {isa = PBXBuildFile; fileRef = 80B5794E4477BB6FD27E64D481AC6D23 /* add.png */; };
+		C82844B1CF58FF3D1BF36B9DDCEF898E /* zhadan.png in Resources */ = {isa = PBXBuildFile; fileRef = B7414CEF86B19F0B33BEE15389EC9B76 /* zhadan.png */; };
+		C9238C56EA0BB0252A5942D95FD7BE91 /* ganga.png in Resources */ = {isa = PBXBuildFile; fileRef = E6702216E221B4A15937F19C2D083547 /* ganga.png */; };
+		C9E08AAE6AAA0254DB64466CE3FC9A27 /* zhuanquan.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C5F2B6CDDF215CAB1B3364AC747FB83 /* zhuanquan.png */; };
+		C9E3FD25F0230FC1E4091DE89EE07670 /* MNEmoticonElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91AA41AF34D44761D4D24F88091CAC7E /* MNEmoticonElementView.swift */; };
+		D01B050008878067942948A871FD37D4 /* MNEmoticonKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6F6F1FE70F8D1A18A2B907ECC8F3677 /* MNEmoticonKeyboard.swift */; };
+		D1F515E101B5ADCA55BB7E516ABEAE43 /* qiaoda.png in Resources */ = {isa = PBXBuildFile; fileRef = E31770A98EDBA91D4989D612D9C551FA /* qiaoda.png */; };
+		D5901BCEE3E6E82261C9E5CD96A23ECB /* MNEmoticonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B06EF52AED5382E4565E771F819080 /* MNEmoticonView.swift */; };
+		D5BD0BB087D01D26B7D76EA13A4DC0F4 /* potiweixiao.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EB5BBFFA25ED91047F4CC6FCBAAC552 /* potiweixiao.png */; };
+		D5BF5D48A68ED7D87FE0D68402A9B7EC /* MNNibSupported.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C4A9356A9F5CBCB70EB8971AC5E7F0 /* MNNibSupported.swift */; };
+		D79FF79626EEAE4514E5CBF01192D474 /* jianxiao.png in Resources */ = {isa = PBXBuildFile; fileRef = A4F013886EC20F33B8089ECAA3CE99FA /* jianxiao.png */; };
+		D8431E802179F52CB7F771566CEA6F73 /* zaijian.png in Resources */ = {isa = PBXBuildFile; fileRef = 1A6DB249DAE6A72C10064513C4A703E9 /* zaijian.png */; };
+		D86A6DAF8813D842DE06EB42E778D45C /* UIScreen+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE60799F022DCA687EA343D8260F4B6 /* UIScreen+MNHelper.swift */; };
+		D8DF3F378D39331A7B813A5D98E8542D /* bizui.png in Resources */ = {isa = PBXBuildFile; fileRef = 38D42542403221912DC7F5EDA31EBC96 /* bizui.png */; };
+		D977517EB2B47807871077C38BBB3B6D /* shui.png in Resources */ = {isa = PBXBuildFile; fileRef = 10B207420ADB82F0748C3CFEF44D40A9 /* shui.png */; };
+		DAA9144AF0E6356E2B89A0EB11FD8E1E /* MNEmoticonKeyboardOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAD965B0897077A7F8FA35029E92E3B4 /* MNEmoticonKeyboardOptions.swift */; };
+		DC6A2B7D8C08172F140785E215DCD2A0 /* PathUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BFE0ED6CC565C715B0EEFFB7F41C66A /* PathUtilities.swift */; };
+		DE0A5A58683526128B017E2AB61281B9 /* piezui.png in Resources */ = {isa = PBXBuildFile; fileRef = E6B4619ACD44F905638B8D7FB53C26F1 /* piezui.png */; };
+		DE1F992F315DD0F9F93E701A6EB5068B /* fanu.png in Resources */ = {isa = PBXBuildFile; fileRef = 99420F200B9A9A21745E73774830BE31 /* fanu.png */; };
+		DEC9D73C5F5EF11565C50AA759628848 /* gouyin.png in Resources */ = {isa = PBXBuildFile; fileRef = E87AE32B2390CBBC7AB07BDDF87662DC /* gouyin.png */; };
+		E37230EA4C056942F9F4CCDAE42CE803 /* yiwen.png in Resources */ = {isa = PBXBuildFile; fileRef = 768A3F291278CEFB082DB16BABFB19EB /* yiwen.png */; };
+		E50581ED173A4F36DC832582A1BEC65E /* heiha.png in Resources */ = {isa = PBXBuildFile; fileRef = A593AFD271212137BC954353F2A03B8F /* heiha.png */; };
+		E88A8DF5C816B1D6BCE15628D7FD7CCB /* zuohengheng.png in Resources */ = {isa = PBXBuildFile; fileRef = A42DDDA66A036CA80BE65EDF74F52B5D /* zuohengheng.png */; };
+		E8AB4262CC4F99A0E00DC533A2EBE1D4 /* shadow.png in Resources */ = {isa = PBXBuildFile; fileRef = ED1F13C884ECBD728F54F0B7BCD3FE44 /* shadow.png */; };
+		E8E058FA7E4D597F466C5332B5EE194E /* ye.png in Resources */ = {isa = PBXBuildFile; fileRef = DE0639922F6D3EB8B5761DC1C16FE9C6 /* ye.png */; };
+		EB7402D31E2802530C4278346E8BA752 /* liekai.png in Resources */ = {isa = PBXBuildFile; fileRef = D3CFA876D1C58997C75E3FE0D48DC917 /* liekai.png */; };
+		EED9304D50F3BAF384EEC6C7BD76FEA7 /* shiwang.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A254177ABD51330ACAD4AE85E07D495 /* shiwang.png */; };
+		F03C77CB392DBE45481E328B99254DA7 /* fadou.png in Resources */ = {isa = PBXBuildFile; fileRef = 5EEF4D7067A7E752ACAEC2B103D9AA54 /* fadou.png */; };
+		F05B729917D183FF509D070FD3C4FD7B /* shengbing.png in Resources */ = {isa = PBXBuildFile; fileRef = 3E56357ABB3B0AF13DED04D6A5B9712B /* shengbing.png */; };
+		F137CC7FB732BF82D4A7523C2B6186B3 /* kelian.png in Resources */ = {isa = PBXBuildFile; fileRef = 51B21438BCBC0028E092556EC98D2240 /* kelian.png */; };
 		F26C9B663AB5DB93D5CC9C4756780D27 /* MNSwiftKit-MNSwiftKit_EmoticonKeyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6850F0CE6A6A27D1104753F9CF8CC6F /* MNSwiftKit-MNSwiftKit_EmoticonKeyboard */; };
-		F47AA021D511E96E84ED3A4BA426A14D /* ruo.png in Resources */ = {isa = PBXBuildFile; fileRef = 6E5F93C557264EA17127A57DB1C7262C /* ruo.png */; };
-		F4B3A9E94ED6086ECDD82B7B7E851536 /* MNEmoticonKeyboardOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8A06DC92EED5E62E81FF80DF6EFB29C /* MNEmoticonKeyboardOptions.swift */; };
-		F61FEDDFAFA9681D4BEDCD73116B19B7 /* shengli.png in Resources */ = {isa = PBXBuildFile; fileRef = B4C1C2B339DEEF5A14A8ECC9AC254097 /* shengli.png */; };
-		FA07CBA002E6DCEAC9533473CB998121 /* jizhi.png in Resources */ = {isa = PBXBuildFile; fileRef = F541339E156080DCB084973E482A9DFC /* jizhi.png */; };
-		FABA7691EEEA9186B62E4396645CB84F /* kulou.png in Resources */ = {isa = PBXBuildFile; fileRef = 87610232B263C852C88FC4D6A5EE392F /* kulou.png */; };
-		FCF3C0A2056CC476E0FC1093B31C36FB /* tiaotiao.png in Resources */ = {isa = PBXBuildFile; fileRef = 8139F51490990034D87033689E90B530 /* tiaotiao.png */; };
-		FFF1303E456DBA3791C11789DA775FE0 /* weiqu.png in Resources */ = {isa = PBXBuildFile; fileRef = A0CEB25668D51DC3312BB7846A41136D /* weiqu.png */; };
+		F47AA021D511E96E84ED3A4BA426A14D /* ruo.png in Resources */ = {isa = PBXBuildFile; fileRef = 52D577C8A1B6A9DB26A9D26B38C6C0C6 /* ruo.png */; };
+		F4ADE6B00DA94B0698EB5B368483C24D /* UIWindow+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FBCEF10F5841453D7295EEC832BEA98 /* UIWindow+MNHelper.swift */; };
+		F569DBA8ED706466769FBF015B84835D /* UserDefaultsWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E2BA995BBA2A67A7BB7108C6D73E68D /* UserDefaultsWrapper.swift */; };
+		F61FEDDFAFA9681D4BEDCD73116B19B7 /* shengli.png in Resources */ = {isa = PBXBuildFile; fileRef = 7CFC1C0BFDE2781D96B229F26B0196C5 /* shengli.png */; };
+		FA07CBA002E6DCEAC9533473CB998121 /* jizhi.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A948B5B24CC23E65BDB29234B352FE1 /* jizhi.png */; };
+		FABA7691EEEA9186B62E4396645CB84F /* kulou.png in Resources */ = {isa = PBXBuildFile; fileRef = 3436C7AE6362CF5E68D4A5CC636B9EB4 /* kulou.png */; };
+		FCF3C0A2056CC476E0FC1093B31C36FB /* tiaotiao.png in Resources */ = {isa = PBXBuildFile; fileRef = A7C9B6E7C358804568CDAA0812F52F5F /* tiaotiao.png */; };
+		FCFDDF06D7941B41665A89FEFF2F170D /* EmoticonResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D318F00B59D70C5959CA8554DB8508 /* EmoticonResource.swift */; };
+		FFF1303E456DBA3791C11789DA775FE0 /* weiqu.png in Resources */ = {isa = PBXBuildFile; fileRef = EE708A2E99E0EF9A13AE696E4B6A7858 /* weiqu.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -213,209 +213,209 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		007DD485E4CE89652EBBDE5707F31F58 /* MNEmoticonButton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonButton.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonButton.swift; sourceTree = "<group>"; };
-		00ADEE7495D93C6E01D968C69E1498A7 /* zhadan.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = zhadan.png; sourceTree = "<group>"; };
-		01085BAA3B06BE91170F38CEF4FA6037 /* kuaikule.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = kuaikule.png; sourceTree = "<group>"; };
-		0144401E7411A705914D0A650A9E3AD7 /* ganga.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = ganga.png; sourceTree = "<group>"; };
+		00AE0A45AF9E731A18BB75E145BD24D6 /* pijiu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = pijiu.png; sourceTree = "<group>"; };
+		01874401E09E12A62EDB852B09C835A8 /* delete-hor.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "delete-hor.png"; path = "MNSwiftKit/EmoticonKeyboard/Resources/delete-hor.png"; sourceTree = "<group>"; };
 		01C450F4E2BEB5272F8CC3F96EBD2A75 /* md5.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = md5.swift; path = MNSwiftKit/Core/Sources/md5.swift; sourceTree = "<group>"; };
-		0694F36125572A15FCDF417B5960F90C /* jiayou.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = jiayou.png; sourceTree = "<group>"; };
-		0826FC7756DCD0E1CD5654254474559E /* MNEmoticonInput.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonInput.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonInput.swift; sourceTree = "<group>"; };
-		0C7B168970A8B41C4CCE6E86CB9B2C1D /* MNEmoticonKeyboard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonKeyboard.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonKeyboard.swift; sourceTree = "<group>"; };
-		0D49E71A856DA1EFBA4D0B089DC137BA /* yinxian.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = yinxian.png; sourceTree = "<group>"; };
-		0D4F8D84A68EE1070D5FC534EC55529C /* dalian.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = dalian.png; sourceTree = "<group>"; };
+		02B173C602C330B2E33F0650560FDC00 /* dalian.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = dalian.png; sourceTree = "<group>"; };
+		05740DB0EDBA52232EC00AD6CC0659C8 /* hongbao.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = hongbao.png; sourceTree = "<group>"; };
+		0A254177ABD51330ACAD4AE85E07D495 /* shiwang.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = shiwang.png; sourceTree = "<group>"; };
+		0B6AEB757ACBBB6D5F7435015077B52A /* liwu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = liwu.png; sourceTree = "<group>"; };
 		0D6DF36F3E19F8C7FD97B8FA7307000E /* Pods-MNSwiftKit_Tests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MNSwiftKit_Tests-acknowledgements.plist"; sourceTree = "<group>"; };
-		0DAF5655406C73C3CB2DF34439D5A2DF /* fadai.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = fadai.png; sourceTree = "<group>"; };
-		0E1BC1C2B91BBA78EB58C0E76F6A8CAB /* yun.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = yun.png; sourceTree = "<group>"; };
-		0EB44FC96090395B46949300AAC085CC /* hei.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = hei.png; sourceTree = "<group>"; };
-		0EFBF2EAECFFD05E59529F041AB32BFC /* caidao.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = caidao.png; sourceTree = "<group>"; };
-		100473ED0CBFADD456717283F23C4BA9 /* zhouma.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = zhouma.png; sourceTree = "<group>"; };
-		105CAE8F2FBA8954553B271AC01CC3F2 /* wuyu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = wuyu.png; sourceTree = "<group>"; };
-		11DDBA71FEEFBBD8D566FB79EEBC62AA /* pijiu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = pijiu.png; sourceTree = "<group>"; };
+		0E5D3AB8626010DB8948B5CCCCE04BFD /* cover.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = cover.png; sourceTree = "<group>"; };
+		0F1ECDE8734D2CFDC4A8F1EE2CAFDFFB /* MNEmoticon.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticon.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticon.swift; sourceTree = "<group>"; };
+		10B207420ADB82F0748C3CFEF44D40A9 /* shui.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = shui.png; sourceTree = "<group>"; };
+		12597D51915A5E53B4031BCBAFE3F9FC /* zuichun.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = zuichun.png; sourceTree = "<group>"; };
+		14033AD7FB12AF785964E77006F1247D /* se.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = se.png; sourceTree = "<group>"; };
 		143B76ED093791E364707AD3E2C55AA6 /* MNSwiftKit-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MNSwiftKit-umbrella.h"; sourceTree = "<group>"; };
-		16AFC977A9F0FF984CE6D820AE09D5EF /* xiaolian.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = xiaolian.png; sourceTree = "<group>"; };
-		1726FCE5096D94ECFA3BECED12D480F1 /* shehui.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = shehui.png; sourceTree = "<group>"; };
+		1679B015BCF2343A5C24C8CA174F36B0 /* yanhua.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = yanhua.png; sourceTree = "<group>"; };
+		184F43B3D90ABF31A85317D6551C53CE /* MNEmoticonInputSupported.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonInputSupported.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonInputSupported.swift; sourceTree = "<group>"; };
 		185C901814D5AC8E96A52C19D94B898C /* Pods-MNSwiftKit_Tests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MNSwiftKit_Tests-dummy.m"; sourceTree = "<group>"; };
-		1942312FE50A5169B4B0F32C4BDDE40A /* MNEmoticonCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonCell.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonCell.swift; sourceTree = "<group>"; };
-		19C269BEE709A01DF2E01C38B5EE183A /* qingzhu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = qingzhu.png; sourceTree = "<group>"; };
-		1A6BF34449D5527937293AC75E9C2F5B /* xu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = xu.png; sourceTree = "<group>"; };
-		1AF31793C4350B4F180509CA959BFB02 /* MNEmoticonCollection.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonCollection.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonCollection.swift; sourceTree = "<group>"; };
+		18C5C32AE729E1335DAA2E3ACCD301CC /* huaixiao.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = huaixiao.png; sourceTree = "<group>"; };
+		1A6DB249DAE6A72C10064513C4A703E9 /* zaijian.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = zaijian.png; sourceTree = "<group>"; };
 		1C7E08BD13C2F1672FACCEEFA2D7E6B4 /* FileHandle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FileHandle.swift; path = MNSwiftKit/Core/Sources/FileHandle.swift; sourceTree = "<group>"; };
-		1DB1A9D8ACA6FB7B9AD65CF4E1F7245D /* favorites.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = favorites.png; path = MNSwiftKit/EmoticonKeyboard/Resources/favorites.png; sourceTree = "<group>"; };
-		1F80933797F41C6753CE9B4F419121B2 /* hongbao.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = hongbao.png; sourceTree = "<group>"; };
-		20E5639D43CCBCA457A542B13E535FD2 /* zhoumei.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = zhoumei.png; sourceTree = "<group>"; };
-		23C20143126F180E8F8A3CFF99A7F99D /* MNEmoticonPageView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPageView.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPageView.swift; sourceTree = "<group>"; };
+		1EB5BBFFA25ED91047F4CC6FCBAAC552 /* potiweixiao.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = potiweixiao.png; sourceTree = "<group>"; };
+		22514CE0ADA14C3DBCFD440524C0C399 /* ciya.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = ciya.png; sourceTree = "<group>"; };
 		244E0312F1E84CF3324E3C14FE80B221 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
-		247BD024F3ED1C0B46A8311EA920632D /* bizui.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = bizui.png; sourceTree = "<group>"; };
-		24D7CE2E1381D80E1668A7F32A3F6BC4 /* meigui.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = meigui.png; sourceTree = "<group>"; };
 		25C6B9276628F1F799A4B0B18C486D56 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/CoreGraphics.framework; sourceTree = DEVELOPER_DIR; };
-		269085294950319DAEA890858C4CDD92 /* tiaopi.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = tiaopi.png; sourceTree = "<group>"; };
-		27F2D2207FABAB14386C621B228941F1 /* woshou.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = woshou.png; sourceTree = "<group>"; };
-		283331805A71BDF0F51696A3988F4EE7 /* MNEmoticonView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonView.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonView.swift; sourceTree = "<group>"; };
-		2950E00A0F26EFFEF86A1126A08B7987 /* daku.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = daku.png; sourceTree = "<group>"; };
-		2C6828CB09F84D075924D2A2D63C936D /* shui.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = shui.png; sourceTree = "<group>"; };
-		2EE8008ED79C56956BF657FB9FCC2952 /* add.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = add.png; path = MNSwiftKit/EmoticonKeyboard/Resources/add.png; sourceTree = "<group>"; };
+		289B28DA6BE858DE809C47598828C5AF /* kun.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = kun.png; sourceTree = "<group>"; };
+		2CAB02187C6266FD51A14B91829FF73F /* nanguo.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = nanguo.png; sourceTree = "<group>"; };
+		2D503811784DB0A58083E56A9FDE84FE /* meigui.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = meigui.png; sourceTree = "<group>"; };
+		2E7281F1C1DF90BB0AB3B5AAAA3A413C /* rangwokankan.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = rangwokankan.png; sourceTree = "<group>"; };
+		2FAEB868792A48091054FD6CB1D6ED60 /* baiyan.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = baiyan.png; sourceTree = "<group>"; };
 		30E22666EC4C30861F685B7E19DE532F /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		3151D09E2061C60FD3E3FB498B46E802 /* yun.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = yun.png; sourceTree = "<group>"; };
 		327551972199975B59833EBA078DA270 /* MNSwiftKit.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = MNSwiftKit.modulemap; sourceTree = "<group>"; };
 		3308DE1AC36E022B9FE7A9DA3D3946D7 /* MNSwiftKit-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "MNSwiftKit-dummy.m"; sourceTree = "<group>"; };
-		33A0D3C1DF73247A2ABCC2306D6784B3 /* taiyang.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = taiyang.png; sourceTree = "<group>"; };
-		343838F3F9F3C435994461997DA8B3D8 /* MNEmoticonAttachment.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonAttachment.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonAttachment.swift; sourceTree = "<group>"; };
+		3436C7AE6362CF5E68D4A5CC636B9EB4 /* kulou.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = kulou.png; sourceTree = "<group>"; };
+		3636429C2D53808CB0CB65763CCA943B /* kuaikule.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = kuaikule.png; sourceTree = "<group>"; };
 		36AB55A3A2F895B6C56234857260D1D6 /* Pods-MNSwiftKit_Tests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MNSwiftKit_Tests-acknowledgements.markdown"; sourceTree = "<group>"; };
-		3819F5596E340A7675ADF9074FC6A63C /* kuse.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = kuse.png; sourceTree = "<group>"; };
-		382F5B61A38A08C83AB7C6EF9B452B5D /* tushe.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = tushe.png; sourceTree = "<group>"; };
-		38D84FCAC39E4C9F4FE8B6BC56B1DA54 /* bianbian.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = bianbian.png; sourceTree = "<group>"; };
+		3796AF655BCC96AAC6B0066AB8ADF695 /* cahan.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = cahan.png; sourceTree = "<group>"; };
+		37D318F00B59D70C5959CA8554DB8508 /* EmoticonResource.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EmoticonResource.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/EmoticonResource.swift; sourceTree = "<group>"; };
+		38D42542403221912DC7F5EDA31EBC96 /* bizui.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = bizui.png; sourceTree = "<group>"; };
+		3954F599572937470DB676BA4CA9B0BC /* MNEmoticonButton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonButton.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonButton.swift; sourceTree = "<group>"; };
 		39E957E7DEB4C053A6E530A9F40D01AC /* MNSwizzleWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNSwizzleWrapper.swift; path = MNSwiftKit/Core/Sources/MNSwizzleWrapper.swift; sourceTree = "<group>"; };
 		3B6F3BE32BFFCF8CD6197F9C93F38D87 /* Pods-MNSwiftKit_Example-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MNSwiftKit_Example-acknowledgements.plist"; sourceTree = "<group>"; };
+		3C04941A76A61CD926121EA6ACCF2134 /* fadai.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = fadai.png; sourceTree = "<group>"; };
 		3D41B9F809022EFD3820DFAE7181546C /* Pods-MNSwiftKit_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MNSwiftKit_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
-		3E0A75A1968051E0070AA5A4B864F9A7 /* han.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = han.png; sourceTree = "<group>"; };
-		4058333B7F1006B4C91754CECFAD97C0 /* huaixiao.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = huaixiao.png; sourceTree = "<group>"; };
-		426281C2B2CB59C87D046397C9A7E366 /* deyi.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = deyi.png; sourceTree = "<group>"; };
+		3E56357ABB3B0AF13DED04D6A5B9712B /* shengbing.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = shengbing.png; sourceTree = "<group>"; };
+		40539D7C7F4E8DA61F63D6FDFEC7B816 /* weixiao.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = weixiao.png; sourceTree = "<group>"; };
+		422E28438B9DE574FC618CC01178A453 /* MNEmoticonLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonLayout.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonLayout.swift; sourceTree = "<group>"; };
 		44AC86F546FAB6A89C462D9864B0DAC1 /* Pods-MNSwiftKit_Example-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MNSwiftKit_Example-Info.plist"; sourceTree = "<group>"; };
-		44CE4C3B99C8AF5603452806FC5E6AE6 /* delete-hor.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "delete-hor.png"; path = "MNSwiftKit/EmoticonKeyboard/Resources/delete-hor.png"; sourceTree = "<group>"; };
-		44DA30A5F2BD9EC46FD5134C8A524458 /* baiyan.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = baiyan.png; sourceTree = "<group>"; };
+		45B1CFBA41EADCD441A1CD13577DB98E /* dangao.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = dangao.png; sourceTree = "<group>"; };
+		47C2F533391160AA5D1DD1FC697235F3 /* qiang.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = qiang.png; sourceTree = "<group>"; };
+		4A64D82934DF18378D79A549B45CA670 /* xiaolian.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = xiaolian.png; sourceTree = "<group>"; };
 		4AC875870626C082485D42ABE081A5ED /* Pods-MNSwiftKit_Tests */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-MNSwiftKit_Tests"; path = Pods_MNSwiftKit_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4B601D7B1E64F5972DC552A2D15BFE31 /* wangcai.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = wangcai.png; sourceTree = "<group>"; };
-		4B867C5B3D8962532B66FADED116334E /* shiwang.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = shiwang.png; sourceTree = "<group>"; };
-		4C0815FB57BC3218D11DC30C3E53C44E /* xiangai.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = xiangai.png; sourceTree = "<group>"; };
+		4B850F071FA60EBDFEDFE69ECA5A09B4 /* xu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = xu.png; sourceTree = "<group>"; };
+		4C5F2B6CDDF215CAB1B3364AC747FB83 /* zhuanquan.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = zhuanquan.png; sourceTree = "<group>"; };
+		4D8054AFC59D3A26C042AFE312546BA7 /* MNEmoticonCollection.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonCollection.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonCollection.swift; sourceTree = "<group>"; };
 		4DDF19435C720EAC57B5B06B19212CA6 /* MNSwiftKit-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MNSwiftKit-prefix.pch"; sourceTree = "<group>"; };
-		4E1BE4DE9CC5FF7D48DDD3179C79280D /* quantou.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = quantou.png; sourceTree = "<group>"; };
-		501BC8D89DB0F9AC4ABFAA4D18392559 /* qie.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = qie.png; sourceTree = "<group>"; };
-		50B1FEBECA9641C4736EEBD3D18D6F0D /* yueliang.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = yueliang.png; sourceTree = "<group>"; };
-		52C2F30AEBD1F29C66D435BF2AA8CDA4 /* haode.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = haode.png; sourceTree = "<group>"; };
-		54713F8E9E2C15AC0F1E50701D7556AD /* dangao.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = dangao.png; sourceTree = "<group>"; };
-		551177854AFA200C0058F316491719A8 /* MNEmoticonCollectionLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonCollectionLayout.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonCollectionLayout.swift; sourceTree = "<group>"; };
-		55851C8663BA36C6EF4015A0A66AD053 /* delete-ver.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "delete-ver.png"; path = "MNSwiftKit/EmoticonKeyboard/Resources/delete-ver.png"; sourceTree = "<group>"; };
+		5116CEF16019BDB4D4F2C63319275E80 /* zhuakuang.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = zhuakuang.png; sourceTree = "<group>"; };
+		51214156AB937A98BCC3EBC56E7703C5 /* MNEmoticonHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonHelper.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonHelper.swift; sourceTree = "<group>"; };
+		51B21438BCBC0028E092556EC98D2240 /* kelian.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = kelian.png; sourceTree = "<group>"; };
+		52D577C8A1B6A9DB26A9D26B38C6C0C6 /* ruo.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = ruo.png; sourceTree = "<group>"; };
+		55AAB77358EA5230D9E7AEB7CDCCD7A9 /* xiangai.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = xiangai.png; sourceTree = "<group>"; };
+		56AA5D7F3F9B1DB903B07A9561720091 /* Emm.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = Emm.png; sourceTree = "<group>"; };
 		57023E58571C42C5523641C407D0BD38 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/ImageIO.framework; sourceTree = DEVELOPER_DIR; };
+		57A8F19A73EE3F9A6805F1D4D465CE85 /* MNEmoticonInputView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonInputView.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonInputView.swift; sourceTree = "<group>"; };
 		57ACA6DEFE12DF7AC74704F7DFB8F01F /* MNSwiftKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = MNSwiftKit.release.xcconfig; sourceTree = "<group>"; };
-		57DCE87E5A597AA254B7A6A35F85E4B0 /* yiwen.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = yiwen.png; sourceTree = "<group>"; };
-		58151DCB295924159E7177E7A06EBFB6 /* MNEmoticonManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonManager.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonManager.swift; sourceTree = "<group>"; };
-		59DDD46A5F35F067E602F48B83DC3DB4 /* gouyin.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = gouyin.png; sourceTree = "<group>"; };
+		57D87104ABC5EFA689F66DF0ED06924C /* haode.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = haode.png; sourceTree = "<group>"; };
+		599B059E352D70CE4D89AF4392700F30 /* zhutou.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = zhutou.png; sourceTree = "<group>"; };
 		5BFE0ED6CC565C715B0EEFFB7F41C66A /* PathUtilities.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PathUtilities.swift; path = MNSwiftKit/Core/Sources/PathUtilities.swift; sourceTree = "<group>"; };
+		5C0841C6627E49F21161AE93C6B0E5F6 /* MNEmoticonPacket.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPacket.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPacket.swift; sourceTree = "<group>"; };
 		5CE60799F022DCA687EA343D8260F4B6 /* UIScreen+MNHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIScreen+MNHelper.swift"; path = "MNSwiftKit/Definition/Sources/UIScreen+MNHelper.swift"; sourceTree = "<group>"; };
+		5D64AC55AD4C41E3F6D6471807896B4C /* jiong.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = jiong.png; sourceTree = "<group>"; };
 		5DCDAA321AC7A329F6EFFD06B6620764 /* Pods-MNSwiftKit_Example-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-MNSwiftKit_Example-frameworks.sh"; sourceTree = "<group>"; };
 		5DF5CC1E1D063C9D756DAC7C3A67526E /* Pods-MNSwiftKit_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MNSwiftKit_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		5E9E541EEFC18CAB84359A8E2C9D69CA /* CFNotificationCenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CFNotificationCenter.swift; path = MNSwiftKit/Core/Sources/CFNotificationCenter.swift; sourceTree = "<group>"; };
+		5EEF4D7067A7E752ACAEC2B103D9AA54 /* fadou.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = fadou.png; sourceTree = "<group>"; };
 		5FBCEF10F5841453D7295EEC832BEA98 /* UIWindow+MNHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIWindow+MNHelper.swift"; path = "MNSwiftKit/Definition/Sources/UIWindow+MNHelper.swift"; sourceTree = "<group>"; };
-		60353614C9421D1A02C4B4C1D79D48AB /* yanhua.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = yanhua.png; sourceTree = "<group>"; };
-		608220ADD03BA25C26E779A3900C4FE9 /* jingya.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = jingya.png; sourceTree = "<group>"; };
-		624269C5BD0F0BBC2B0FF24367F3C62B /* MNEmoticonInputView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonInputView.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonInputView.swift; sourceTree = "<group>"; };
-		62FAA45B09749D8207E62A9430803137 /* chigua.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = chigua.png; sourceTree = "<group>"; };
-		630300D85A8B8D97CACD0FE8F55BD917 /* zaijian.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = zaijian.png; sourceTree = "<group>"; };
-		63821B791255E687A5DBDDF5AA98F566 /* kelian.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = kelian.png; sourceTree = "<group>"; };
-		639B71C56EE6783B441A756598273D2A /* bishi.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = bishi.png; sourceTree = "<group>"; };
+		61B94942BF39524FDAE3C355D72E0FC5 /* chigua.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = chigua.png; sourceTree = "<group>"; };
 		6415EABDF9EA47CD325BCE7993B97BAB /* NameSpaceWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NameSpaceWrapper.swift; path = MNSwiftKit/NameSpace/Sources/NameSpaceWrapper.swift; sourceTree = "<group>"; };
-		642DF66002C7AB0B7EA7A6DF98931E1B /* baoquan.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = baoquan.png; sourceTree = "<group>"; };
-		64E91AB9B4F6F2F942E4F0BF772B2DA7 /* qiangzhuang.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = qiangzhuang.png; sourceTree = "<group>"; };
-		66DDEC3074D809FE8A2F7DB41FF13AFF /* youhengheng.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = youhengheng.png; sourceTree = "<group>"; };
-		685B72280568D2CD73F507F7760ECFA4 /* jianxiao.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = jianxiao.png; sourceTree = "<group>"; };
+		654248B6D0717F127D26C63000060EDD /* haixiu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = haixiu.png; sourceTree = "<group>"; };
+		68FF7E83A2E9B347041F657FF802DE34 /* taiyang.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = taiyang.png; sourceTree = "<group>"; };
+		6904E8353083994C9A9F57B10E65CD45 /* default.json */ = {isa = PBXFileReference; includeInIndex = 1; name = default.json; path = MNSwiftKit/EmoticonKeyboard/Resources/default.json; sourceTree = "<group>"; };
 		6A19BC0D11A6510F247DA868FB51B06B /* Pods-MNSwiftKit_Example */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-MNSwiftKit_Example"; path = Pods_MNSwiftKit_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		6BF28E82C168F2BB70332AACA63814AE /* shuai.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = shuai.png; sourceTree = "<group>"; };
-		6D1B930A72FA9A2F1A0004816609B414 /* aoman.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = aoman.png; sourceTree = "<group>"; };
-		6D6E62F7BAF462FEC52FB91ADA967CAD /* heshi.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = heshi.png; sourceTree = "<group>"; };
-		6DEEAFBFFC6C50602041082A1248DCF4 /* touxiao.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = touxiao.png; sourceTree = "<group>"; };
-		6E5F93C557264EA17127A57DB1C7262C /* ruo.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = ruo.png; sourceTree = "<group>"; };
-		6F90187730FAD710531A8E9CC31EAA45 /* cahan.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = cahan.png; sourceTree = "<group>"; };
+		6B4D9F04A5E17945E456D3C8EB35C6B9 /* aoman.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = aoman.png; sourceTree = "<group>"; };
+		6D8C7BB4D54A89BFCD75EF09FED6088E /* qie.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = qie.png; sourceTree = "<group>"; };
+		6DB76F3E67B154FBF448F107BF7BEFBD /* delete-ver.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "delete-ver.png"; path = "MNSwiftKit/EmoticonKeyboard/Resources/delete-ver.png"; sourceTree = "<group>"; };
+		6F74DF9B1E250DE9B8D5E0C121A358B9 /* youhengheng.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = youhengheng.png; sourceTree = "<group>"; };
+		7186140AE3ADA1DF4C3D0E869EE22AFD /* youxian.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = youxian.png; sourceTree = "<group>"; };
+		71F00FC4D15107DC931D8DA395E49184 /* tanqi.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = tanqi.png; sourceTree = "<group>"; };
+		71FF9F190E93E53405047E89622835B6 /* quantou.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = quantou.png; sourceTree = "<group>"; };
 		71FFE15F4103052304ABCB5717BEF6A4 /* Pods-MNSwiftKit_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MNSwiftKit_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		72329E722013CF4F93BA21477C0FDACB /* Pods-MNSwiftKit_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MNSwiftKit_Example.release.xcconfig"; sourceTree = "<group>"; };
-		734F179F180B89A55AC6489D2A62AE80 /* fu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = fu.png; sourceTree = "<group>"; };
-		73F5A0F7823B23731C3B9EC2D6FC6330 /* kongju.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = kongju.png; sourceTree = "<group>"; };
-		76F3C6AB4F08F7B9A1F75DB30DDC1F96 /* NSAttributedString+MNEmoticonSupported.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "NSAttributedString+MNEmoticonSupported.swift"; path = "MNSwiftKit/EmoticonKeyboard/Sources/NSAttributedString+MNEmoticonSupported.swift"; sourceTree = "<group>"; };
-		782D84F5AE85BBE224E9555E669F9C38 /* OK.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = OK.png; sourceTree = "<group>"; };
+		768A3F291278CEFB082DB16BABFB19EB /* yiwen.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = yiwen.png; sourceTree = "<group>"; };
+		77B2376FFD28C984A593847AE6E94166 /* favorites.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = favorites.png; path = MNSwiftKit/EmoticonKeyboard/Resources/favorites.png; sourceTree = "<group>"; };
+		7962F875058AF9D137DBB0134F1A5450 /* yinxian.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = yinxian.png; sourceTree = "<group>"; };
 		79C78C8E03A5F89235AC5585B24C2A3A /* UIImage+MNAnimated.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIImage+MNAnimated.swift"; path = "MNSwiftKit/AnimatedImage/Sources/UIImage+MNAnimated.swift"; sourceTree = "<group>"; };
-		79ED566F19BFBDCA2055D14E99D726A9 /* shengbing.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = shengbing.png; sourceTree = "<group>"; };
+		79CE741C792880EF96AFA1B13D435439 /* zhouma.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = zhouma.png; sourceTree = "<group>"; };
 		7A4005B32BDDD7E4A1B69E8CC00E1C8E /* UIApplication+MNHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIApplication+MNHelper.swift"; path = "MNSwiftKit/Definition/Sources/UIApplication+MNHelper.swift"; sourceTree = "<group>"; };
+		7A948B5B24CC23E65BDB29234B352FE1 /* jizhi.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = jizhi.png; sourceTree = "<group>"; };
 		7AA0EBBEEAFB3A0C51613DD7D308A3B9 /* ResourceBundle-MNSwiftKit_EmoticonKeyboard-MNSwiftKit-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-MNSwiftKit_EmoticonKeyboard-MNSwiftKit-Info.plist"; sourceTree = "<group>"; };
-		7AF0D8FFBEB99EB90707F58C842E8BD0 /* ciya.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = ciya.png; sourceTree = "<group>"; };
 		7B4C23E8ED80824521B16CC14AD50C95 /* MNFileManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNFileManager.swift; path = MNSwiftKit/Core/Sources/MNFileManager.swift; sourceTree = "<group>"; };
-		7D219E9010D28990AC06CD18680391F0 /* MNEmoticonPacket.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPacket.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPacket.swift; sourceTree = "<group>"; };
+		7CFC1C0BFDE2781D96B229F26B0196C5 /* shengli.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = shengli.png; sourceTree = "<group>"; };
+		7D0E4B73C7ADB8E86903D03B43F874EB /* OK.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = OK.png; sourceTree = "<group>"; };
+		7D460A91AF340A393E1C1BBF0F4854AB /* MNEmoticonPreview.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPreview.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPreview.swift; sourceTree = "<group>"; };
 		7E733F680CB486124AC444BC8BE17FAC /* UITabBar+MNHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UITabBar+MNHelper.swift"; path = "MNSwiftKit/Definition/Sources/UITabBar+MNHelper.swift"; sourceTree = "<group>"; };
 		7EADCB6756F36B6C8D4E54CF14F278AF /* Pods-MNSwiftKit_Example-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-MNSwiftKit_Example-umbrella.h"; sourceTree = "<group>"; };
-		8139F51490990034D87033689E90B530 /* tiaotiao.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = tiaotiao.png; sourceTree = "<group>"; };
-		81F2BC8154677AF9A6A9C18C17D0E729 /* kafei.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = kafei.png; sourceTree = "<group>"; };
-		823C5CCB21572D2022FED7DE13618265 /* zuichun.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = zuichun.png; sourceTree = "<group>"; };
-		85A68B391860598A8AFFF6B05ACC96D1 /* hanxiao.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = hanxiao.png; sourceTree = "<group>"; };
+		80513FB7398D47469C48B5D425C672F9 /* touxiao.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = touxiao.png; sourceTree = "<group>"; };
+		80B5794E4477BB6FD27E64D481AC6D23 /* add.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = add.png; path = MNSwiftKit/EmoticonKeyboard/Resources/add.png; sourceTree = "<group>"; };
+		82B5BC3630BB4CC27D4B5B088E9ACD7F /* kuse.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = kuse.png; sourceTree = "<group>"; };
 		863BF0F83EBF6FC2E7AA8CD485C9A00B /* Pods-MNSwiftKit_Tests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-MNSwiftKit_Tests.modulemap"; sourceTree = "<group>"; };
-		86A1903B5214CCC279B98CF170CC9D57 /* liulei.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = liulei.png; sourceTree = "<group>"; };
-		87610232B263C852C88FC4D6A5EE392F /* kulou.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = kulou.png; sourceTree = "<group>"; };
+		86791B63CF996DC38342AEF40AC2515D /* heshi.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = heshi.png; sourceTree = "<group>"; };
+		87190F3C383929913DE42021613DE3F1 /* hei.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = hei.png; sourceTree = "<group>"; };
 		8769FD410913B07858E1C03C3FD15FFC /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
-		8C8BF93972C19E5AE9218FE35EF3B9A6 /* MNEmoticonHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonHelper.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonHelper.swift; sourceTree = "<group>"; };
-		8C8DA65A321B9FB6FB1609836075358C /* qinqin.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = qinqin.png; sourceTree = "<group>"; };
-		8DC463DFC380B4B1F4C00B6AF34AD368 /* fanbaiyan.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = fanbaiyan.png; sourceTree = "<group>"; };
-		8E6D6F7A9F8190ED600A406CC88BDDC4 /* tu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = tu.png; sourceTree = "<group>"; };
-		8EFD8F7AF76311EFA1CE1BECEA4B2120 /* MNEmoticonPacketCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPacketCell.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPacketCell.swift; sourceTree = "<group>"; };
-		90565578EC7CC3D64C1B79DA1773BA04 /* jiong.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = jiong.png; sourceTree = "<group>"; };
-		911CD4C6C51A5BBAE32EE1AE85AA8CB8 /* MNEmoticonPacketView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPacketView.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPacketView.swift; sourceTree = "<group>"; };
+		8B2149FB0829F9C039875355DF099F1D /* xigua.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = xigua.png; sourceTree = "<group>"; };
+		8D5870F08FA80AB2BCD409412A42540B /* yueliang.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = yueliang.png; sourceTree = "<group>"; };
+		903E0760B13FDAADA4BF54D0B7CF64C4 /* deyi.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = deyi.png; sourceTree = "<group>"; };
+		91AA41AF34D44761D4D24F88091CAC7E /* MNEmoticonElementView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonElementView.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonElementView.swift; sourceTree = "<group>"; };
+		92172B86DCB1197EA6C828523AF0857B /* zhoumei.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = zhoumei.png; sourceTree = "<group>"; };
 		98495D086E6E52B6183C7012970EFA3C /* MNSwiftKit.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = MNSwiftKit.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		9ABC2FD45AF7967BE7DF07B0608EC7BA /* fanu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = fanu.png; sourceTree = "<group>"; };
-		9C3CB4422EDE011A16A62CBAAB979FF2 /* se.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = se.png; sourceTree = "<group>"; };
-		9CCE1FFF1444DCA42A14DD33D811176E /* yukuai.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = yukuai.png; sourceTree = "<group>"; };
+		992B0F237F18447A0C758CA7E44E0971 /* tushe.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = tushe.png; sourceTree = "<group>"; };
+		99420F200B9A9A21745E73774830BE31 /* fanu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = fanu.png; sourceTree = "<group>"; };
+		9B11A5589720E19352E4CA81CE365AF2 /* yukuai.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = yukuai.png; sourceTree = "<group>"; };
+		9CDD24C9A1FCB5A982932E5C5CDED941 /* wuyu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = wuyu.png; sourceTree = "<group>"; };
+		9D08EE7C80C0BA97D09585DF6C4731D5 /* jingya.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = jingya.png; sourceTree = "<group>"; };
 		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		9E2BA995BBA2A67A7BB7108C6D73E68D /* UserDefaultsWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = UserDefaultsWrapper.swift; path = MNSwiftKit/Core/Sources/UserDefaultsWrapper.swift; sourceTree = "<group>"; };
-		A0CEB25668D51DC3312BB7846A41136D /* weiqu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = weiqu.png; sourceTree = "<group>"; };
-		A1950F82338E55D0342FD28DB5C5117C /* MNEmoticonPreview.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPreview.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPreview.swift; sourceTree = "<group>"; };
+		9ED57A0FABD96919B45E3331C0309AA4 /* shehui.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = shehui.png; sourceTree = "<group>"; };
+		9F155FD9FC112A5E9CA0DCD152795CC4 /* 666.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = 666.png; sourceTree = "<group>"; };
+		A42DDDA66A036CA80BE65EDF74F52B5D /* zuohengheng.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = zuohengheng.png; sourceTree = "<group>"; };
+		A4F013886EC20F33B8089ECAA3CE99FA /* jianxiao.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = jianxiao.png; sourceTree = "<group>"; };
+		A593AFD271212137BC954353F2A03B8F /* heiha.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = heiha.png; sourceTree = "<group>"; };
+		A5DADD3852905F123205239C38E6F14E /* bianbian.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = bianbian.png; sourceTree = "<group>"; };
 		A6850F0CE6A6A27D1104753F9CF8CC6F /* MNSwiftKit-MNSwiftKit_EmoticonKeyboard */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "MNSwiftKit-MNSwiftKit_EmoticonKeyboard"; path = MNSwiftKit_EmoticonKeyboard.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
-		A78708DF1C66300E26A538C76CF46DCE /* lianhong.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = lianhong.png; sourceTree = "<group>"; };
+		A6F485C962285EA4C0B2BC6B3D352B40 /* aixin.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = aixin.png; sourceTree = "<group>"; };
+		A7C9B6E7C358804568CDAA0812F52F5F /* tiaotiao.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = tiaotiao.png; sourceTree = "<group>"; };
+		A8D8CBA7B0BC4381C950CB76D44F80F8 /* diaoxie.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = diaoxie.png; sourceTree = "<group>"; };
+		A9A093D766A80CD3E8B89A4E1614AA56 /* hanxiao.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = hanxiao.png; sourceTree = "<group>"; };
+		AA1C6897758B6E4324E971ED870F22AB /* xinsui.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = xinsui.png; sourceTree = "<group>"; };
+		AA805319114B82E32382AF8494F8D1C3 /* NSAttributedString+MNEmoticonSupported.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "NSAttributedString+MNEmoticonSupported.swift"; path = "MNSwiftKit/EmoticonKeyboard/Sources/NSAttributedString+MNEmoticonSupported.swift"; sourceTree = "<group>"; };
+		AB28587475F5E343FC6345A5906A2004 /* tiana.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = tiana.png; sourceTree = "<group>"; };
 		AB3D2DE854E9174348AC15B65A9C88BD /* MNPageControl.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNPageControl.swift; path = MNSwiftKit/PageControl/Sources/MNPageControl.swift; sourceTree = "<group>"; };
-		AC305C6D371F8B2CA27B1048420492C5 /* jingkong.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = jingkong.png; sourceTree = "<group>"; };
-		B01CCA4378F4FDED75386226159E67FB /* guzhang.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = guzhang.png; sourceTree = "<group>"; };
+		ACD39F51C35C7B12BA69B84408D78A12 /* kongju.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = kongju.png; sourceTree = "<group>"; };
+		AE4F49F4A5AD960C0A6226B95BD5E52C /* kafei.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = kafei.png; sourceTree = "<group>"; };
+		AF653080115A642AF5EC864184AC5ADA /* wa.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = wa.png; sourceTree = "<group>"; };
 		B0263D3209BDE181DC416E26B555E41B /* Pods-MNSwiftKit_Tests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-MNSwiftKit_Tests-umbrella.h"; sourceTree = "<group>"; };
+		B031DCAC66506FBC3EC5433214976A78 /* qiangzhuang.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = qiangzhuang.png; sourceTree = "<group>"; };
 		B0F55A22E0BB91F7B3E93776035CF512 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
-		B3538592C509C349520EC89CA1D84720 /* fadou.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = fadou.png; sourceTree = "<group>"; };
-		B4C1C2B339DEEF5A14A8ECC9AC254097 /* shengli.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = shengli.png; sourceTree = "<group>"; };
-		B632CDA69E1BAC33D539BD287B171050 /* youxian.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = youxian.png; sourceTree = "<group>"; };
-		B6C0961C2531C5F9B463B74FE3BE0F0C /* diaoxie.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = diaoxie.png; sourceTree = "<group>"; };
-		B74CE4E364E83AAF7009807F2265E8F3 /* wa.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = wa.png; sourceTree = "<group>"; };
+		B7414CEF86B19F0B33BEE15389EC9B76 /* zhadan.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = zhadan.png; sourceTree = "<group>"; };
 		B76EC269EAAAB24351D1D259EFEFA309 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/CoreServices.framework; sourceTree = DEVELOPER_DIR; };
 		B97AACEA7FD47AFC0EC968467E562C7A /* NibInspectable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NibInspectable.swift; path = MNSwiftKit/Core/Sources/NibInspectable.swift; sourceTree = "<group>"; };
-		BD24501BFA57815C8BA9779ED75F9B02 /* xinsui.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = xinsui.png; sourceTree = "<group>"; };
+		BA263BB00F68EF683148A8252FE0E001 /* lianhong.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = lianhong.png; sourceTree = "<group>"; };
+		BB98E2431E873AEB93EC7C145BF84AA5 /* caidao.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = caidao.png; sourceTree = "<group>"; };
+		BC281A4AC0A6039FA0BA8C42472BEC0C /* tu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = tu.png; sourceTree = "<group>"; };
+		BD8240CA2092F9647E4C9F55E69CAA5C /* wulian.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = wulian.png; sourceTree = "<group>"; };
+		BD9E2B238BFFBA588C4005CE0F15164E /* fanbaiyan.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = fanbaiyan.png; sourceTree = "<group>"; };
 		BDC49EA736A9AA2AA833070597C40E80 /* Pods-MNSwiftKit_Tests-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MNSwiftKit_Tests-Info.plist"; sourceTree = "<group>"; };
-		BDCDA4176648A0B6C27C50581850E051 /* MNEmoticon.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticon.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticon.swift; sourceTree = "<group>"; };
-		BEAD80E168446B69C8FBF156F1A52E47 /* piezui.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = piezui.png; sourceTree = "<group>"; };
-		C13DC50FA892F5EDE3DCC3830372DC2A /* tiana.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = tiana.png; sourceTree = "<group>"; };
-		C40D17ADB988DF85739C4ED9EC3BE2B3 /* nanguo.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = nanguo.png; sourceTree = "<group>"; };
-		C44E90D87E0A3BC980897997B315424B /* heiha.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = heiha.png; sourceTree = "<group>"; };
-		C7126A7C6AE99289163B30F0682C3847 /* zhuanquan.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = zhuanquan.png; sourceTree = "<group>"; };
+		BE5B7B2182FFD74FB204ADAA83D77DC0 /* guzhang.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = guzhang.png; sourceTree = "<group>"; };
+		C4B06EF52AED5382E4565E771F819080 /* MNEmoticonView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonView.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonView.swift; sourceTree = "<group>"; };
+		C53F2B1BF0AAE3F3590A6CEDD9AD5874 /* MNEmoticonManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonManager.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonManager.swift; sourceTree = "<group>"; };
 		C793834859493C7E7C747B1422D7E1A5 /* Pods-MNSwiftKit_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MNSwiftKit_Tests.release.xcconfig"; sourceTree = "<group>"; };
-		C8A06DC92EED5E62E81FF80DF6EFB29C /* MNEmoticonKeyboardOptions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonKeyboardOptions.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonKeyboardOptions.swift; sourceTree = "<group>"; };
-		C8BFA18CD6BBD048CD48CF6EC1A6409A /* liekai.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = liekai.png; sourceTree = "<group>"; };
+		C8A2FB4D0DE9EFBDA546AB4738896C3E /* shuai.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = shuai.png; sourceTree = "<group>"; };
+		C8F7AE74D16483C2042F3D764B0D9A70 /* fa.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = fa.png; sourceTree = "<group>"; };
 		C956DD25A3D88E4B0EA609B162F3ED56 /* MNDefinition.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNDefinition.swift; path = MNSwiftKit/Definition/Sources/MNDefinition.swift; sourceTree = "<group>"; };
+		CD5F8D6B92B7AB89F00566D59FBFCF94 /* jiayou.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = jiayou.png; sourceTree = "<group>"; };
+		CE17108241CBCECA82343B99B7D5A785 /* han.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = han.png; sourceTree = "<group>"; };
 		D04C49177AB57E445BFD9E922B32AE2B /* MNSwiftKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = MNSwiftKit.debug.xcconfig; sourceTree = "<group>"; };
-		D0FFC85F5CC17CAA385263B1B5F36F52 /* xigua.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = xigua.png; sourceTree = "<group>"; };
-		D4BA545793EAEF3BB9777CBC9D5FFD83 /* default.json */ = {isa = PBXFileReference; includeInIndex = 1; name = default.json; path = MNSwiftKit/EmoticonKeyboard/Resources/default.json; sourceTree = "<group>"; };
-		D4F7936AC2D0D739D15B275F5F0CAC70 /* fa.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = fa.png; sourceTree = "<group>"; };
+		D0FEEA00D2B47D7E990AB77FB9BF51E9 /* daku.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = daku.png; sourceTree = "<group>"; };
+		D24E3FED391B9A5A5A41A5DE43ADE9EA /* tiaopi.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = tiaopi.png; sourceTree = "<group>"; };
+		D376F1DD5FFE1C56F263FAD2D5ED9C1A /* qingzhu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = qingzhu.png; sourceTree = "<group>"; };
+		D3CFA876D1C58997C75E3FE0D48DC917 /* liekai.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = liekai.png; sourceTree = "<group>"; };
 		D552D6313EAD2BDDF63A73E892F790F7 /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UniformTypeIdentifiers.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/UniformTypeIdentifiers.framework; sourceTree = DEVELOPER_DIR; };
 		D5C4A9356A9F5CBCB70EB8971AC5E7F0 /* MNNibSupported.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNNibSupported.swift; path = MNSwiftKit/Core/Sources/MNNibSupported.swift; sourceTree = "<group>"; };
-		D88D332D5C3B598D6532F3CC8FA1BF86 /* zuohengheng.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = zuohengheng.png; sourceTree = "<group>"; };
-		D8F2584FD84C544A7E7B55FA31CAE7E8 /* shadow.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = shadow.png; path = MNSwiftKit/EmoticonKeyboard/Resources/shadow.png; sourceTree = "<group>"; };
-		DBD6326C56A12043A07BABEBAF8F2893 /* potiweixiao.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = potiweixiao.png; sourceTree = "<group>"; };
-		DE0989A316FAFB3016B65ECD57647979 /* qiaoda.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = qiaoda.png; sourceTree = "<group>"; };
-		DE3753E1FBD5977419856EC5ADCCA08C /* tanqi.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = tanqi.png; sourceTree = "<group>"; };
-		DF9AF89F464ABC013BB8FFD60D76C703 /* ye.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = ye.png; sourceTree = "<group>"; };
-		E0B31D48E01F565697E469B10529F493 /* aixin.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = aixin.png; sourceTree = "<group>"; };
-		E2C42DD6BECA2477248ECA56C7967A83 /* 666.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = 666.png; sourceTree = "<group>"; };
-		E3826CEFEAC95ECAC9E078D477ABDAD1 /* zhuakuang.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = zhuakuang.png; sourceTree = "<group>"; };
+		D6F6F1FE70F8D1A18A2B907ECC8F3677 /* MNEmoticonKeyboard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonKeyboard.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonKeyboard.swift; sourceTree = "<group>"; };
+		D7CD8F6DBF3EB39666F474045DA542A2 /* yongbao.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = yongbao.png; sourceTree = "<group>"; };
+		DC36A69A6FDDB7383AA939CC1C75A2AE /* MNEmoticonBackedString.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonBackedString.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonBackedString.swift; sourceTree = "<group>"; };
+		DC9888A93801A98EA0A9432CBCC05F2F /* jingkong.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = jingkong.png; sourceTree = "<group>"; };
+		DE0639922F6D3EB8B5761DC1C16FE9C6 /* ye.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = ye.png; sourceTree = "<group>"; };
+		E06721894BDE2EBB9B6D59CCE808F213 /* MNEmoticonPageView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPageView.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPageView.swift; sourceTree = "<group>"; };
+		E0AB50489BC3F54C0FA9FF162773ECA9 /* wangcai.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = wangcai.png; sourceTree = "<group>"; };
+		E0E5D7C9394825BD5071C3986C1CFD00 /* liulei.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = liulei.png; sourceTree = "<group>"; };
+		E31770A98EDBA91D4989D612D9C551FA /* qiaoda.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = qiaoda.png; sourceTree = "<group>"; };
+		E3244F5017116D157AF7A7B28179E1BE /* MNEmoticonCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonCell.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonCell.swift; sourceTree = "<group>"; };
 		E3C30CFE157F4544BF076BF5D88B1DC3 /* MNSwiftKit-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "MNSwiftKit-Info.plist"; sourceTree = "<group>"; };
-		E851C752D16C6AB23D42A79042C430A5 /* MNEmoticonElementView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonElementView.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonElementView.swift; sourceTree = "<group>"; };
-		EA86CC74589620F49DB850155A69E6EE /* liwu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = liwu.png; sourceTree = "<group>"; };
-		EABA83B4F5E04C79507077F22C4B75D6 /* zhutou.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = zhutou.png; sourceTree = "<group>"; };
+		E438BC86DA593D15F580799F4DE48A4D /* MNEmoticonAttachment.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonAttachment.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonAttachment.swift; sourceTree = "<group>"; };
+		E585C90218348592E293ABD9A064E9FB /* woshou.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = woshou.png; sourceTree = "<group>"; };
+		E6139B52FA5839030B0E43DEB2997FEC /* qinqin.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = qinqin.png; sourceTree = "<group>"; };
+		E6702216E221B4A15937F19C2D083547 /* ganga.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = ganga.png; sourceTree = "<group>"; };
+		E6AAE9C1BD2CF8B26E3BA03EDF07BEC2 /* MNEmoticonPacketView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPacketView.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPacketView.swift; sourceTree = "<group>"; };
+		E6B4619ACD44F905638B8D7FB53C26F1 /* piezui.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = piezui.png; sourceTree = "<group>"; };
+		E87AE32B2390CBBC7AB07BDDF87662DC /* gouyin.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = gouyin.png; sourceTree = "<group>"; };
+		E8E8AF30A1B7EB544BB9EE8902B12B75 /* fu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = fu.png; sourceTree = "<group>"; };
 		EAC5FACCFBF0219414D6A85C98E20651 /* Pods-MNSwiftKit_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-MNSwiftKit_Example.modulemap"; sourceTree = "<group>"; };
-		EBD6FB58F149E9B57C00C54A1878A52A /* weixiao.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = weixiao.png; sourceTree = "<group>"; };
+		EAD965B0897077A7F8FA35029E92E3B4 /* MNEmoticonKeyboardOptions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonKeyboardOptions.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonKeyboardOptions.swift; sourceTree = "<group>"; };
+		ED1F13C884ECBD728F54F0B7BCD3FE44 /* shadow.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = shadow.png; path = MNSwiftKit/EmoticonKeyboard/Resources/shadow.png; sourceTree = "<group>"; };
 		EE0893F67AE670B84244D0150C748847 /* UIResponder+MNHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIResponder+MNHelper.swift"; path = "MNSwiftKit/Definition/Sources/UIResponder+MNHelper.swift"; sourceTree = "<group>"; };
-		F073E5529AB112D05A706F33B63570FD /* cover.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = cover.png; sourceTree = "<group>"; };
-		F0FB49D44C5D4C101F5F7D7039888370 /* haixiu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = haixiu.png; sourceTree = "<group>"; };
-		F1B0F7882AE7F6F68167FF9D917363A9 /* rangwokankan.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = rangwokankan.png; sourceTree = "<group>"; };
+		EE1DE136C2E03345EA6AEFB81FADC1DE /* guihun.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = guihun.png; sourceTree = "<group>"; };
+		EE708A2E99E0EF9A13AE696E4B6A7858 /* weiqu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = weiqu.png; sourceTree = "<group>"; };
+		EEE75EF982551AEDAA9F866F009FAB34 /* MNEmoticonPacketCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPacketCell.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPacketCell.swift; sourceTree = "<group>"; };
 		F1DF06A3ABBD3DF7D4AD5DE02C312882 /* Pods-MNSwiftKit_Example-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MNSwiftKit_Example-dummy.m"; sourceTree = "<group>"; };
-		F217866F14C4ED66C124AA7A8D0BFF4E /* wulian.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = wulian.png; sourceTree = "<group>"; };
-		F246EE4A85EACE3D91B53ACF3D474021 /* EmoticonResource.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EmoticonResource.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/EmoticonResource.swift; sourceTree = "<group>"; };
-		F286B2ABF704A83DDBA10D49A2E4BCD5 /* yongbao.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = yongbao.png; sourceTree = "<group>"; };
-		F5283296EEF1C560D84B6728AF800DCA /* koubi.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = koubi.png; sourceTree = "<group>"; };
-		F541339E156080DCB084973E482A9DFC /* jizhi.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = jizhi.png; sourceTree = "<group>"; };
-		F5E7EDB3B19BC96071B9AEA2B658F45B /* Emm.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = Emm.png; sourceTree = "<group>"; };
-		F8151BEEA2D8E271E0042E60FFC744BF /* kun.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = kun.png; sourceTree = "<group>"; };
+		F770C2C5355019B5755C7506A80A64C5 /* koubi.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = koubi.png; sourceTree = "<group>"; };
 		F8244DB2C7F6C2C4FD17AD6D6A21861D /* UINavigationBar+MNHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UINavigationBar+MNHelper.swift"; path = "MNSwiftKit/Definition/Sources/UINavigationBar+MNHelper.swift"; sourceTree = "<group>"; };
-		F8310CE0CA179F0BA2AB8AAC5D9D90F7 /* MNEmoticonBackedString.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonBackedString.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonBackedString.swift; sourceTree = "<group>"; };
-		FC679FF3AE98A677D524F9FDC82153BD /* qiang.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = qiang.png; sourceTree = "<group>"; };
+		FB40BCCBA75217CCF1449477979B7482 /* bishi.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = bishi.png; sourceTree = "<group>"; };
 		FC7D69C66074802BED7887E9A074B200 /* MNSwiftKit */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = MNSwiftKit; path = MNSwiftKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		FC9AB0C052B469AFB38A6C2CB44EFAA5 /* guihun.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = guihun.png; sourceTree = "<group>"; };
+		FD11A36173B1842AB2A5C7DBEC84F9FC /* baoquan.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = baoquan.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -529,131 +529,6 @@
 			path = "Target Support Files/Pods-MNSwiftKit_Tests";
 			sourceTree = "<group>";
 		};
-		442D8AD54760CF80FDA94ACCEED87DCE /* default */ = {
-			isa = PBXGroup;
-			children = (
-				E2C42DD6BECA2477248ECA56C7967A83 /* 666.png */,
-				E0B31D48E01F565697E469B10529F493 /* aixin.png */,
-				6D1B930A72FA9A2F1A0004816609B414 /* aoman.png */,
-				44DA30A5F2BD9EC46FD5134C8A524458 /* baiyan.png */,
-				642DF66002C7AB0B7EA7A6DF98931E1B /* baoquan.png */,
-				38D84FCAC39E4C9F4FE8B6BC56B1DA54 /* bianbian.png */,
-				639B71C56EE6783B441A756598273D2A /* bishi.png */,
-				247BD024F3ED1C0B46A8311EA920632D /* bizui.png */,
-				6F90187730FAD710531A8E9CC31EAA45 /* cahan.png */,
-				0EFBF2EAECFFD05E59529F041AB32BFC /* caidao.png */,
-				62FAA45B09749D8207E62A9430803137 /* chigua.png */,
-				7AF0D8FFBEB99EB90707F58C842E8BD0 /* ciya.png */,
-				F073E5529AB112D05A706F33B63570FD /* cover.png */,
-				2950E00A0F26EFFEF86A1126A08B7987 /* daku.png */,
-				0D4F8D84A68EE1070D5FC534EC55529C /* dalian.png */,
-				54713F8E9E2C15AC0F1E50701D7556AD /* dangao.png */,
-				426281C2B2CB59C87D046397C9A7E366 /* deyi.png */,
-				B6C0961C2531C5F9B463B74FE3BE0F0C /* diaoxie.png */,
-				F5E7EDB3B19BC96071B9AEA2B658F45B /* Emm.png */,
-				D4F7936AC2D0D739D15B275F5F0CAC70 /* fa.png */,
-				0DAF5655406C73C3CB2DF34439D5A2DF /* fadai.png */,
-				B3538592C509C349520EC89CA1D84720 /* fadou.png */,
-				8DC463DFC380B4B1F4C00B6AF34AD368 /* fanbaiyan.png */,
-				9ABC2FD45AF7967BE7DF07B0608EC7BA /* fanu.png */,
-				734F179F180B89A55AC6489D2A62AE80 /* fu.png */,
-				0144401E7411A705914D0A650A9E3AD7 /* ganga.png */,
-				59DDD46A5F35F067E602F48B83DC3DB4 /* gouyin.png */,
-				FC9AB0C052B469AFB38A6C2CB44EFAA5 /* guihun.png */,
-				B01CCA4378F4FDED75386226159E67FB /* guzhang.png */,
-				F0FB49D44C5D4C101F5F7D7039888370 /* haixiu.png */,
-				3E0A75A1968051E0070AA5A4B864F9A7 /* han.png */,
-				85A68B391860598A8AFFF6B05ACC96D1 /* hanxiao.png */,
-				52C2F30AEBD1F29C66D435BF2AA8CDA4 /* haode.png */,
-				0EB44FC96090395B46949300AAC085CC /* hei.png */,
-				C44E90D87E0A3BC980897997B315424B /* heiha.png */,
-				6D6E62F7BAF462FEC52FB91ADA967CAD /* heshi.png */,
-				1F80933797F41C6753CE9B4F419121B2 /* hongbao.png */,
-				4058333B7F1006B4C91754CECFAD97C0 /* huaixiao.png */,
-				685B72280568D2CD73F507F7760ECFA4 /* jianxiao.png */,
-				0694F36125572A15FCDF417B5960F90C /* jiayou.png */,
-				AC305C6D371F8B2CA27B1048420492C5 /* jingkong.png */,
-				608220ADD03BA25C26E779A3900C4FE9 /* jingya.png */,
-				90565578EC7CC3D64C1B79DA1773BA04 /* jiong.png */,
-				F541339E156080DCB084973E482A9DFC /* jizhi.png */,
-				81F2BC8154677AF9A6A9C18C17D0E729 /* kafei.png */,
-				63821B791255E687A5DBDDF5AA98F566 /* kelian.png */,
-				73F5A0F7823B23731C3B9EC2D6FC6330 /* kongju.png */,
-				F5283296EEF1C560D84B6728AF800DCA /* koubi.png */,
-				01085BAA3B06BE91170F38CEF4FA6037 /* kuaikule.png */,
-				87610232B263C852C88FC4D6A5EE392F /* kulou.png */,
-				F8151BEEA2D8E271E0042E60FFC744BF /* kun.png */,
-				3819F5596E340A7675ADF9074FC6A63C /* kuse.png */,
-				A78708DF1C66300E26A538C76CF46DCE /* lianhong.png */,
-				C8BFA18CD6BBD048CD48CF6EC1A6409A /* liekai.png */,
-				86A1903B5214CCC279B98CF170CC9D57 /* liulei.png */,
-				EA86CC74589620F49DB850155A69E6EE /* liwu.png */,
-				24D7CE2E1381D80E1668A7F32A3F6BC4 /* meigui.png */,
-				C40D17ADB988DF85739C4ED9EC3BE2B3 /* nanguo.png */,
-				782D84F5AE85BBE224E9555E669F9C38 /* OK.png */,
-				BEAD80E168446B69C8FBF156F1A52E47 /* piezui.png */,
-				11DDBA71FEEFBBD8D566FB79EEBC62AA /* pijiu.png */,
-				DBD6326C56A12043A07BABEBAF8F2893 /* potiweixiao.png */,
-				FC679FF3AE98A677D524F9FDC82153BD /* qiang.png */,
-				64E91AB9B4F6F2F942E4F0BF772B2DA7 /* qiangzhuang.png */,
-				DE0989A316FAFB3016B65ECD57647979 /* qiaoda.png */,
-				501BC8D89DB0F9AC4ABFAA4D18392559 /* qie.png */,
-				19C269BEE709A01DF2E01C38B5EE183A /* qingzhu.png */,
-				8C8DA65A321B9FB6FB1609836075358C /* qinqin.png */,
-				4E1BE4DE9CC5FF7D48DDD3179C79280D /* quantou.png */,
-				F1B0F7882AE7F6F68167FF9D917363A9 /* rangwokankan.png */,
-				6E5F93C557264EA17127A57DB1C7262C /* ruo.png */,
-				9C3CB4422EDE011A16A62CBAAB979FF2 /* se.png */,
-				1726FCE5096D94ECFA3BECED12D480F1 /* shehui.png */,
-				79ED566F19BFBDCA2055D14E99D726A9 /* shengbing.png */,
-				B4C1C2B339DEEF5A14A8ECC9AC254097 /* shengli.png */,
-				4B867C5B3D8962532B66FADED116334E /* shiwang.png */,
-				6BF28E82C168F2BB70332AACA63814AE /* shuai.png */,
-				2C6828CB09F84D075924D2A2D63C936D /* shui.png */,
-				33A0D3C1DF73247A2ABCC2306D6784B3 /* taiyang.png */,
-				DE3753E1FBD5977419856EC5ADCCA08C /* tanqi.png */,
-				C13DC50FA892F5EDE3DCC3830372DC2A /* tiana.png */,
-				269085294950319DAEA890858C4CDD92 /* tiaopi.png */,
-				8139F51490990034D87033689E90B530 /* tiaotiao.png */,
-				6DEEAFBFFC6C50602041082A1248DCF4 /* touxiao.png */,
-				8E6D6F7A9F8190ED600A406CC88BDDC4 /* tu.png */,
-				382F5B61A38A08C83AB7C6EF9B452B5D /* tushe.png */,
-				B74CE4E364E83AAF7009807F2265E8F3 /* wa.png */,
-				4B601D7B1E64F5972DC552A2D15BFE31 /* wangcai.png */,
-				A0CEB25668D51DC3312BB7846A41136D /* weiqu.png */,
-				EBD6FB58F149E9B57C00C54A1878A52A /* weixiao.png */,
-				27F2D2207FABAB14386C621B228941F1 /* woshou.png */,
-				F217866F14C4ED66C124AA7A8D0BFF4E /* wulian.png */,
-				105CAE8F2FBA8954553B271AC01CC3F2 /* wuyu.png */,
-				4C0815FB57BC3218D11DC30C3E53C44E /* xiangai.png */,
-				16AFC977A9F0FF984CE6D820AE09D5EF /* xiaolian.png */,
-				D0FFC85F5CC17CAA385263B1B5F36F52 /* xigua.png */,
-				BD24501BFA57815C8BA9779ED75F9B02 /* xinsui.png */,
-				1A6BF34449D5527937293AC75E9C2F5B /* xu.png */,
-				60353614C9421D1A02C4B4C1D79D48AB /* yanhua.png */,
-				DF9AF89F464ABC013BB8FFD60D76C703 /* ye.png */,
-				0D49E71A856DA1EFBA4D0B089DC137BA /* yinxian.png */,
-				57DCE87E5A597AA254B7A6A35F85E4B0 /* yiwen.png */,
-				F286B2ABF704A83DDBA10D49A2E4BCD5 /* yongbao.png */,
-				66DDEC3074D809FE8A2F7DB41FF13AFF /* youhengheng.png */,
-				B632CDA69E1BAC33D539BD287B171050 /* youxian.png */,
-				50B1FEBECA9641C4736EEBD3D18D6F0D /* yueliang.png */,
-				9CCE1FFF1444DCA42A14DD33D811176E /* yukuai.png */,
-				0E1BC1C2B91BBA78EB58C0E76F6A8CAB /* yun.png */,
-				630300D85A8B8D97CACD0FE8F55BD917 /* zaijian.png */,
-				00ADEE7495D93C6E01D968C69E1498A7 /* zhadan.png */,
-				100473ED0CBFADD456717283F23C4BA9 /* zhouma.png */,
-				20E5639D43CCBCA457A542B13E535FD2 /* zhoumei.png */,
-				E3826CEFEAC95ECAC9E078D477ABDAD1 /* zhuakuang.png */,
-				C7126A7C6AE99289163B30F0682C3847 /* zhuanquan.png */,
-				EABA83B4F5E04C79507077F22C4B75D6 /* zhutou.png */,
-				823C5CCB21572D2022FED7DE13618265 /* zuichun.png */,
-				D88D332D5C3B598D6532F3CC8FA1BF86 /* zuohengheng.png */,
-			);
-			name = default;
-			path = MNSwiftKit/EmoticonKeyboard/Resources/default;
-			sourceTree = "<group>";
-		};
 		4DE97A6CE62D9FE1885B513017ED2715 /* PageControl */ = {
 			isa = PBXGroup;
 			children = (
@@ -668,7 +543,7 @@
 				D8653F08CA58276E91C725FD8EBB3B9F /* AnimatedImage */,
 				C95FEFEDB26C57D2F14CB1DC64559DEE /* Core */,
 				15C26D9478CEB2DFF1FBAF48CBA4888D /* Definition */,
-				B1499E603DBC59115DE1485A55A5490A /* EmoticonKeyboard */,
+				75CD8CE87C5139DEE6AFB15F4C1B2FDD /* EmoticonKeyboard */,
 				AE26C88BD54561801A359EA2ED55BBF6 /* NameSpace */,
 				4DE97A6CE62D9FE1885B513017ED2715 /* PageControl */,
 				DE96FB35D7A874D92239615E13898329 /* Pod */,
@@ -694,6 +569,167 @@
 			path = "Example/Pods/Target Support Files/MNSwiftKit";
 			sourceTree = "<group>";
 		};
+		6303E85FF9BDF608B9B5A0D450EA5A7A /* default */ = {
+			isa = PBXGroup;
+			children = (
+				9F155FD9FC112A5E9CA0DCD152795CC4 /* 666.png */,
+				A6F485C962285EA4C0B2BC6B3D352B40 /* aixin.png */,
+				6B4D9F04A5E17945E456D3C8EB35C6B9 /* aoman.png */,
+				2FAEB868792A48091054FD6CB1D6ED60 /* baiyan.png */,
+				FD11A36173B1842AB2A5C7DBEC84F9FC /* baoquan.png */,
+				A5DADD3852905F123205239C38E6F14E /* bianbian.png */,
+				FB40BCCBA75217CCF1449477979B7482 /* bishi.png */,
+				38D42542403221912DC7F5EDA31EBC96 /* bizui.png */,
+				3796AF655BCC96AAC6B0066AB8ADF695 /* cahan.png */,
+				BB98E2431E873AEB93EC7C145BF84AA5 /* caidao.png */,
+				61B94942BF39524FDAE3C355D72E0FC5 /* chigua.png */,
+				22514CE0ADA14C3DBCFD440524C0C399 /* ciya.png */,
+				0E5D3AB8626010DB8948B5CCCCE04BFD /* cover.png */,
+				D0FEEA00D2B47D7E990AB77FB9BF51E9 /* daku.png */,
+				02B173C602C330B2E33F0650560FDC00 /* dalian.png */,
+				45B1CFBA41EADCD441A1CD13577DB98E /* dangao.png */,
+				903E0760B13FDAADA4BF54D0B7CF64C4 /* deyi.png */,
+				A8D8CBA7B0BC4381C950CB76D44F80F8 /* diaoxie.png */,
+				56AA5D7F3F9B1DB903B07A9561720091 /* Emm.png */,
+				C8F7AE74D16483C2042F3D764B0D9A70 /* fa.png */,
+				3C04941A76A61CD926121EA6ACCF2134 /* fadai.png */,
+				5EEF4D7067A7E752ACAEC2B103D9AA54 /* fadou.png */,
+				BD9E2B238BFFBA588C4005CE0F15164E /* fanbaiyan.png */,
+				99420F200B9A9A21745E73774830BE31 /* fanu.png */,
+				E8E8AF30A1B7EB544BB9EE8902B12B75 /* fu.png */,
+				E6702216E221B4A15937F19C2D083547 /* ganga.png */,
+				E87AE32B2390CBBC7AB07BDDF87662DC /* gouyin.png */,
+				EE1DE136C2E03345EA6AEFB81FADC1DE /* guihun.png */,
+				BE5B7B2182FFD74FB204ADAA83D77DC0 /* guzhang.png */,
+				654248B6D0717F127D26C63000060EDD /* haixiu.png */,
+				CE17108241CBCECA82343B99B7D5A785 /* han.png */,
+				A9A093D766A80CD3E8B89A4E1614AA56 /* hanxiao.png */,
+				57D87104ABC5EFA689F66DF0ED06924C /* haode.png */,
+				87190F3C383929913DE42021613DE3F1 /* hei.png */,
+				A593AFD271212137BC954353F2A03B8F /* heiha.png */,
+				86791B63CF996DC38342AEF40AC2515D /* heshi.png */,
+				05740DB0EDBA52232EC00AD6CC0659C8 /* hongbao.png */,
+				18C5C32AE729E1335DAA2E3ACCD301CC /* huaixiao.png */,
+				A4F013886EC20F33B8089ECAA3CE99FA /* jianxiao.png */,
+				CD5F8D6B92B7AB89F00566D59FBFCF94 /* jiayou.png */,
+				DC9888A93801A98EA0A9432CBCC05F2F /* jingkong.png */,
+				9D08EE7C80C0BA97D09585DF6C4731D5 /* jingya.png */,
+				5D64AC55AD4C41E3F6D6471807896B4C /* jiong.png */,
+				7A948B5B24CC23E65BDB29234B352FE1 /* jizhi.png */,
+				AE4F49F4A5AD960C0A6226B95BD5E52C /* kafei.png */,
+				51B21438BCBC0028E092556EC98D2240 /* kelian.png */,
+				ACD39F51C35C7B12BA69B84408D78A12 /* kongju.png */,
+				F770C2C5355019B5755C7506A80A64C5 /* koubi.png */,
+				3636429C2D53808CB0CB65763CCA943B /* kuaikule.png */,
+				3436C7AE6362CF5E68D4A5CC636B9EB4 /* kulou.png */,
+				289B28DA6BE858DE809C47598828C5AF /* kun.png */,
+				82B5BC3630BB4CC27D4B5B088E9ACD7F /* kuse.png */,
+				BA263BB00F68EF683148A8252FE0E001 /* lianhong.png */,
+				D3CFA876D1C58997C75E3FE0D48DC917 /* liekai.png */,
+				E0E5D7C9394825BD5071C3986C1CFD00 /* liulei.png */,
+				0B6AEB757ACBBB6D5F7435015077B52A /* liwu.png */,
+				2D503811784DB0A58083E56A9FDE84FE /* meigui.png */,
+				2CAB02187C6266FD51A14B91829FF73F /* nanguo.png */,
+				7D0E4B73C7ADB8E86903D03B43F874EB /* OK.png */,
+				E6B4619ACD44F905638B8D7FB53C26F1 /* piezui.png */,
+				00AE0A45AF9E731A18BB75E145BD24D6 /* pijiu.png */,
+				1EB5BBFFA25ED91047F4CC6FCBAAC552 /* potiweixiao.png */,
+				47C2F533391160AA5D1DD1FC697235F3 /* qiang.png */,
+				B031DCAC66506FBC3EC5433214976A78 /* qiangzhuang.png */,
+				E31770A98EDBA91D4989D612D9C551FA /* qiaoda.png */,
+				6D8C7BB4D54A89BFCD75EF09FED6088E /* qie.png */,
+				D376F1DD5FFE1C56F263FAD2D5ED9C1A /* qingzhu.png */,
+				E6139B52FA5839030B0E43DEB2997FEC /* qinqin.png */,
+				71FF9F190E93E53405047E89622835B6 /* quantou.png */,
+				2E7281F1C1DF90BB0AB3B5AAAA3A413C /* rangwokankan.png */,
+				52D577C8A1B6A9DB26A9D26B38C6C0C6 /* ruo.png */,
+				14033AD7FB12AF785964E77006F1247D /* se.png */,
+				9ED57A0FABD96919B45E3331C0309AA4 /* shehui.png */,
+				3E56357ABB3B0AF13DED04D6A5B9712B /* shengbing.png */,
+				7CFC1C0BFDE2781D96B229F26B0196C5 /* shengli.png */,
+				0A254177ABD51330ACAD4AE85E07D495 /* shiwang.png */,
+				C8A2FB4D0DE9EFBDA546AB4738896C3E /* shuai.png */,
+				10B207420ADB82F0748C3CFEF44D40A9 /* shui.png */,
+				68FF7E83A2E9B347041F657FF802DE34 /* taiyang.png */,
+				71F00FC4D15107DC931D8DA395E49184 /* tanqi.png */,
+				AB28587475F5E343FC6345A5906A2004 /* tiana.png */,
+				D24E3FED391B9A5A5A41A5DE43ADE9EA /* tiaopi.png */,
+				A7C9B6E7C358804568CDAA0812F52F5F /* tiaotiao.png */,
+				80513FB7398D47469C48B5D425C672F9 /* touxiao.png */,
+				BC281A4AC0A6039FA0BA8C42472BEC0C /* tu.png */,
+				992B0F237F18447A0C758CA7E44E0971 /* tushe.png */,
+				AF653080115A642AF5EC864184AC5ADA /* wa.png */,
+				E0AB50489BC3F54C0FA9FF162773ECA9 /* wangcai.png */,
+				EE708A2E99E0EF9A13AE696E4B6A7858 /* weiqu.png */,
+				40539D7C7F4E8DA61F63D6FDFEC7B816 /* weixiao.png */,
+				E585C90218348592E293ABD9A064E9FB /* woshou.png */,
+				BD8240CA2092F9647E4C9F55E69CAA5C /* wulian.png */,
+				9CDD24C9A1FCB5A982932E5C5CDED941 /* wuyu.png */,
+				55AAB77358EA5230D9E7AEB7CDCCD7A9 /* xiangai.png */,
+				4A64D82934DF18378D79A549B45CA670 /* xiaolian.png */,
+				8B2149FB0829F9C039875355DF099F1D /* xigua.png */,
+				AA1C6897758B6E4324E971ED870F22AB /* xinsui.png */,
+				4B850F071FA60EBDFEDFE69ECA5A09B4 /* xu.png */,
+				1679B015BCF2343A5C24C8CA174F36B0 /* yanhua.png */,
+				DE0639922F6D3EB8B5761DC1C16FE9C6 /* ye.png */,
+				7962F875058AF9D137DBB0134F1A5450 /* yinxian.png */,
+				768A3F291278CEFB082DB16BABFB19EB /* yiwen.png */,
+				D7CD8F6DBF3EB39666F474045DA542A2 /* yongbao.png */,
+				6F74DF9B1E250DE9B8D5E0C121A358B9 /* youhengheng.png */,
+				7186140AE3ADA1DF4C3D0E869EE22AFD /* youxian.png */,
+				8D5870F08FA80AB2BCD409412A42540B /* yueliang.png */,
+				9B11A5589720E19352E4CA81CE365AF2 /* yukuai.png */,
+				3151D09E2061C60FD3E3FB498B46E802 /* yun.png */,
+				1A6DB249DAE6A72C10064513C4A703E9 /* zaijian.png */,
+				B7414CEF86B19F0B33BEE15389EC9B76 /* zhadan.png */,
+				79CE741C792880EF96AFA1B13D435439 /* zhouma.png */,
+				92172B86DCB1197EA6C828523AF0857B /* zhoumei.png */,
+				5116CEF16019BDB4D4F2C63319275E80 /* zhuakuang.png */,
+				4C5F2B6CDDF215CAB1B3364AC747FB83 /* zhuanquan.png */,
+				599B059E352D70CE4D89AF4392700F30 /* zhutou.png */,
+				12597D51915A5E53B4031BCBAFE3F9FC /* zuichun.png */,
+				A42DDDA66A036CA80BE65EDF74F52B5D /* zuohengheng.png */,
+			);
+			name = default;
+			path = MNSwiftKit/EmoticonKeyboard/Resources/default;
+			sourceTree = "<group>";
+		};
+		75CD8CE87C5139DEE6AFB15F4C1B2FDD /* EmoticonKeyboard */ = {
+			isa = PBXGroup;
+			children = (
+				80B5794E4477BB6FD27E64D481AC6D23 /* add.png */,
+				6904E8353083994C9A9F57B10E65CD45 /* default.json */,
+				01874401E09E12A62EDB852B09C835A8 /* delete-hor.png */,
+				6DB76F3E67B154FBF448F107BF7BEFBD /* delete-ver.png */,
+				37D318F00B59D70C5959CA8554DB8508 /* EmoticonResource.swift */,
+				77B2376FFD28C984A593847AE6E94166 /* favorites.png */,
+				0F1ECDE8734D2CFDC4A8F1EE2CAFDFFB /* MNEmoticon.swift */,
+				E438BC86DA593D15F580799F4DE48A4D /* MNEmoticonAttachment.swift */,
+				DC36A69A6FDDB7383AA939CC1C75A2AE /* MNEmoticonBackedString.swift */,
+				3954F599572937470DB676BA4CA9B0BC /* MNEmoticonButton.swift */,
+				E3244F5017116D157AF7A7B28179E1BE /* MNEmoticonCell.swift */,
+				4D8054AFC59D3A26C042AFE312546BA7 /* MNEmoticonCollection.swift */,
+				91AA41AF34D44761D4D24F88091CAC7E /* MNEmoticonElementView.swift */,
+				51214156AB937A98BCC3EBC56E7703C5 /* MNEmoticonHelper.swift */,
+				184F43B3D90ABF31A85317D6551C53CE /* MNEmoticonInputSupported.swift */,
+				57A8F19A73EE3F9A6805F1D4D465CE85 /* MNEmoticonInputView.swift */,
+				D6F6F1FE70F8D1A18A2B907ECC8F3677 /* MNEmoticonKeyboard.swift */,
+				EAD965B0897077A7F8FA35029E92E3B4 /* MNEmoticonKeyboardOptions.swift */,
+				422E28438B9DE574FC618CC01178A453 /* MNEmoticonLayout.swift */,
+				C53F2B1BF0AAE3F3590A6CEDD9AD5874 /* MNEmoticonManager.swift */,
+				5C0841C6627E49F21161AE93C6B0E5F6 /* MNEmoticonPacket.swift */,
+				EEE75EF982551AEDAA9F866F009FAB34 /* MNEmoticonPacketCell.swift */,
+				E6AAE9C1BD2CF8B26E3BA03EDF07BEC2 /* MNEmoticonPacketView.swift */,
+				E06721894BDE2EBB9B6D59CCE808F213 /* MNEmoticonPageView.swift */,
+				7D460A91AF340A393E1C1BBF0F4854AB /* MNEmoticonPreview.swift */,
+				C4B06EF52AED5382E4565E771F819080 /* MNEmoticonView.swift */,
+				AA805319114B82E32382AF8494F8D1C3 /* NSAttributedString+MNEmoticonSupported.swift */,
+				ED1F13C884ECBD728F54F0B7BCD3FE44 /* shadow.png */,
+				6303E85FF9BDF608B9B5A0D450EA5A7A /* default */,
+			);
+			name = EmoticonKeyboard;
+			sourceTree = "<group>";
+		};
 		A56338E28453F6AA84B7A00262F86469 /* Pods-MNSwiftKit_Example */ = {
 			isa = PBXGroup;
 			children = (
@@ -717,42 +753,6 @@
 				6415EABDF9EA47CD325BCE7993B97BAB /* NameSpaceWrapper.swift */,
 			);
 			name = NameSpace;
-			sourceTree = "<group>";
-		};
-		B1499E603DBC59115DE1485A55A5490A /* EmoticonKeyboard */ = {
-			isa = PBXGroup;
-			children = (
-				2EE8008ED79C56956BF657FB9FCC2952 /* add.png */,
-				D4BA545793EAEF3BB9777CBC9D5FFD83 /* default.json */,
-				44CE4C3B99C8AF5603452806FC5E6AE6 /* delete-hor.png */,
-				55851C8663BA36C6EF4015A0A66AD053 /* delete-ver.png */,
-				F246EE4A85EACE3D91B53ACF3D474021 /* EmoticonResource.swift */,
-				1DB1A9D8ACA6FB7B9AD65CF4E1F7245D /* favorites.png */,
-				BDCDA4176648A0B6C27C50581850E051 /* MNEmoticon.swift */,
-				343838F3F9F3C435994461997DA8B3D8 /* MNEmoticonAttachment.swift */,
-				F8310CE0CA179F0BA2AB8AAC5D9D90F7 /* MNEmoticonBackedString.swift */,
-				007DD485E4CE89652EBBDE5707F31F58 /* MNEmoticonButton.swift */,
-				1942312FE50A5169B4B0F32C4BDDE40A /* MNEmoticonCell.swift */,
-				1AF31793C4350B4F180509CA959BFB02 /* MNEmoticonCollection.swift */,
-				551177854AFA200C0058F316491719A8 /* MNEmoticonCollectionLayout.swift */,
-				E851C752D16C6AB23D42A79042C430A5 /* MNEmoticonElementView.swift */,
-				8C8BF93972C19E5AE9218FE35EF3B9A6 /* MNEmoticonHelper.swift */,
-				0826FC7756DCD0E1CD5654254474559E /* MNEmoticonInput.swift */,
-				624269C5BD0F0BBC2B0FF24367F3C62B /* MNEmoticonInputView.swift */,
-				0C7B168970A8B41C4CCE6E86CB9B2C1D /* MNEmoticonKeyboard.swift */,
-				C8A06DC92EED5E62E81FF80DF6EFB29C /* MNEmoticonKeyboardOptions.swift */,
-				58151DCB295924159E7177E7A06EBFB6 /* MNEmoticonManager.swift */,
-				7D219E9010D28990AC06CD18680391F0 /* MNEmoticonPacket.swift */,
-				8EFD8F7AF76311EFA1CE1BECEA4B2120 /* MNEmoticonPacketCell.swift */,
-				911CD4C6C51A5BBAE32EE1AE85AA8CB8 /* MNEmoticonPacketView.swift */,
-				23C20143126F180E8F8A3CFF99A7F99D /* MNEmoticonPageView.swift */,
-				A1950F82338E55D0342FD28DB5C5117C /* MNEmoticonPreview.swift */,
-				283331805A71BDF0F51696A3988F4EE7 /* MNEmoticonView.swift */,
-				76F3C6AB4F08F7B9A1F75DB30DDC1F96 /* NSAttributedString+MNEmoticonSupported.swift */,
-				D8F2584FD84C544A7E7B55FA31CAE7E8 /* shadow.png */,
-				442D8AD54760CF80FDA94ACCEED87DCE /* default */,
-			);
-			name = EmoticonKeyboard;
 			sourceTree = "<group>";
 		};
 		C95FEFEDB26C57D2F14CB1DC64559DEE /* Core */ = {
@@ -881,7 +881,7 @@
 			buildConfigurationList = 83787592991E067B22F2CBC58CD94EB9 /* Build configuration list for PBXNativeTarget "MNSwiftKit" */;
 			buildPhases = (
 				C047AA2447AD034BACD3B88A3A464E27 /* Headers */,
-				1338CC70DBC9A11A962025B9D1A53E2E /* Sources */,
+				3DC99440A222F81CCB2EE9853389DDFD /* Sources */,
 				D7463B9C174AA2A65E07A7B8F8B1C80B /* Frameworks */,
 				B42EB806A22B6BE889DB1E973DD44B51 /* Resources */,
 			);
@@ -1100,52 +1100,52 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		1338CC70DBC9A11A962025B9D1A53E2E /* Sources */ = {
+		3DC99440A222F81CCB2EE9853389DDFD /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4E896C2E69E3690EED9320D169654962 /* CFNotificationCenter.swift in Sources */,
-				0F9FE0507A841DEA60C703B0FCA16041 /* EmoticonResource.swift in Sources */,
-				091D6ADB3078303F965835A5C2DE688A /* FileHandle.swift in Sources */,
-				41A315880B349A6560C108622FE06852 /* md5.swift in Sources */,
-				76B0DF424E938168E74912CEE0D6C97C /* MNDefinition.swift in Sources */,
-				4C999039C258283F8AF4847FC2D3970F /* MNEmoticon.swift in Sources */,
-				9DEB4F8CC5C2E2B658CF2F6FCA2F12F3 /* MNEmoticonAttachment.swift in Sources */,
-				77B6813763B57AFBC8AADCAB56EA1B85 /* MNEmoticonBackedString.swift in Sources */,
-				E0F80E4777DAEFF0B0383B4CE06B8741 /* MNEmoticonButton.swift in Sources */,
-				83D84179D8397D4274E942C5706FA408 /* MNEmoticonCell.swift in Sources */,
-				86AC6E1031325E9F993BDB96874FD7A5 /* MNEmoticonCollection.swift in Sources */,
-				4535F241555EA0DDDCC467905AD23B13 /* MNEmoticonCollectionLayout.swift in Sources */,
-				064FDF72A27BFE7BA927666E32C31371 /* MNEmoticonElementView.swift in Sources */,
-				16637DDF6D50EB05B2ACA57203E95F9A /* MNEmoticonHelper.swift in Sources */,
-				72A25886F98B8586093C373E4FE929BD /* MNEmoticonInput.swift in Sources */,
-				BCC185EB66EA97FF609C95097A892CF3 /* MNEmoticonInputView.swift in Sources */,
-				948F7BAEFD17758263E8412B645E7C3F /* MNEmoticonKeyboard.swift in Sources */,
-				F4B3A9E94ED6086ECDD82B7B7E851536 /* MNEmoticonKeyboardOptions.swift in Sources */,
-				25078A946906B5FF022029106AE9957B /* MNEmoticonManager.swift in Sources */,
-				69A3775EED7FCF8EB48882DB946AC45F /* MNEmoticonPacket.swift in Sources */,
-				96FB2861364457B5EFE1DEB8C7FC8A0D /* MNEmoticonPacketCell.swift in Sources */,
-				05C60CB474A7DA9CFFC1DE7E85FB550B /* MNEmoticonPacketView.swift in Sources */,
-				6EB42DD3470847931911744767DAC6D7 /* MNEmoticonPageView.swift in Sources */,
-				2476BB2D1B8CCA23BBAA2F8FBEAC2002 /* MNEmoticonPreview.swift in Sources */,
-				90A22A03387EA19E914590B61D9DED5A /* MNEmoticonView.swift in Sources */,
-				E5096B6043F4550C686879CF507AC269 /* MNFileManager.swift in Sources */,
-				74F23399840C174525D5F3A50DD8A7F8 /* MNNibSupported.swift in Sources */,
-				D4FA39712AD637BF758558D63D3CA048 /* MNPageControl.swift in Sources */,
-				105339791101B9A8CEAD7C838B9FC532 /* MNSwiftKit-dummy.m in Sources */,
-				7C5FC5674526AAC75207AE41F1CAA969 /* MNSwizzleWrapper.swift in Sources */,
-				0522023E1DDEC4AA9D8BF2F0964F77E0 /* NameSpaceWrapper.swift in Sources */,
-				050727E2EC23B3BCA5DA0CF1AA5EBB74 /* NibInspectable.swift in Sources */,
-				171D270A6C4F1F339689B670E43D1254 /* NSAttributedString+MNEmoticonSupported.swift in Sources */,
-				08A21701BA1C33666A1F0880B91C99B7 /* PathUtilities.swift in Sources */,
-				0D8CB524F9AFEFA6C2BFC729BD58170E /* UIApplication+MNHelper.swift in Sources */,
-				4AC456B0D4B4A7EEFB629120029F9C20 /* UIImage+MNAnimated.swift in Sources */,
-				3EC0B1BBC4FBB044950010875D241CC5 /* UINavigationBar+MNHelper.swift in Sources */,
-				9BB56E8DEF4AA80EE0D7713405EB677F /* UIResponder+MNHelper.swift in Sources */,
-				14031EAE6E965E87239DCCD54AFF2DEB /* UIScreen+MNHelper.swift in Sources */,
-				8A2D8C15C6793AA95B0887B482F970B7 /* UITabBar+MNHelper.swift in Sources */,
-				0B47D526927E42B108B275A19E063318 /* UIWindow+MNHelper.swift in Sources */,
-				B06F722D67D27C9E60826AC795441148 /* UserDefaultsWrapper.swift in Sources */,
+				0996692991485B404EF4CDB584154F8C /* CFNotificationCenter.swift in Sources */,
+				FCFDDF06D7941B41665A89FEFF2F170D /* EmoticonResource.swift in Sources */,
+				5BCF5276F6B73D0986979152948258DC /* FileHandle.swift in Sources */,
+				0F49C5411418E09C3CBC225B3D7D26D5 /* md5.swift in Sources */,
+				464E850E3A6137D0ED46025CF9460487 /* MNDefinition.swift in Sources */,
+				A8151FBD627E3825FC0874789C146A99 /* MNEmoticon.swift in Sources */,
+				2AD62830C4123530173C3A305405A977 /* MNEmoticonAttachment.swift in Sources */,
+				09620AC78142C65E753B714E6AAA50CB /* MNEmoticonBackedString.swift in Sources */,
+				BE282805A74F6B99C911E9ED354B5E89 /* MNEmoticonButton.swift in Sources */,
+				B1DBEDF300BEFE4BFAE5A83AD1C703B8 /* MNEmoticonCell.swift in Sources */,
+				15366EFD24419B43BA8A4EE2C0ADE586 /* MNEmoticonCollection.swift in Sources */,
+				C9E3FD25F0230FC1E4091DE89EE07670 /* MNEmoticonElementView.swift in Sources */,
+				BE6191FABCB406A3EF59E632FB4BABFD /* MNEmoticonHelper.swift in Sources */,
+				20409951DB9B90F8B6A4CF51DD8437BF /* MNEmoticonInputSupported.swift in Sources */,
+				32D13A4E976B997C971C918BABFD25B3 /* MNEmoticonInputView.swift in Sources */,
+				D01B050008878067942948A871FD37D4 /* MNEmoticonKeyboard.swift in Sources */,
+				DAA9144AF0E6356E2B89A0EB11FD8E1E /* MNEmoticonKeyboardOptions.swift in Sources */,
+				68D1CB2625A15B41A179C3D94CC870E4 /* MNEmoticonLayout.swift in Sources */,
+				A768B4C18C62AD4E4A465FA502A8A360 /* MNEmoticonManager.swift in Sources */,
+				AD224CAD3EE443A20F0A25F84A522D1E /* MNEmoticonPacket.swift in Sources */,
+				B82C26067A7C3E9CFED86BF0392BF4AB /* MNEmoticonPacketCell.swift in Sources */,
+				AA50D55DD5E0262503FFF19E5023EDA8 /* MNEmoticonPacketView.swift in Sources */,
+				64B95F3E80AE38DD5B5B1EEBB41E36A7 /* MNEmoticonPageView.swift in Sources */,
+				416C0E952615AD6A1991F6D32AFC0CBF /* MNEmoticonPreview.swift in Sources */,
+				D5901BCEE3E6E82261C9E5CD96A23ECB /* MNEmoticonView.swift in Sources */,
+				73283E041D9AF83D06B161DA6BCC673E /* MNFileManager.swift in Sources */,
+				D5BF5D48A68ED7D87FE0D68402A9B7EC /* MNNibSupported.swift in Sources */,
+				3898FD4506AC624268C9A215D3A84154 /* MNPageControl.swift in Sources */,
+				8B281EA4FC9FB69C9508FEFA3C4E0FC1 /* MNSwiftKit-dummy.m in Sources */,
+				0166D054AA13A58C59EDEABABA0C6B15 /* MNSwizzleWrapper.swift in Sources */,
+				144A1BBC6BE63D0795927AA47B74F38B /* NameSpaceWrapper.swift in Sources */,
+				19D7A26EFD2DFF15A7CF856A3149C876 /* NibInspectable.swift in Sources */,
+				143FC807BED27BAA7D826206A6533444 /* NSAttributedString+MNEmoticonSupported.swift in Sources */,
+				DC6A2B7D8C08172F140785E215DCD2A0 /* PathUtilities.swift in Sources */,
+				AD32D6DF9C49F1447467447C87E15DD3 /* UIApplication+MNHelper.swift in Sources */,
+				7E946314437857C128F9C28E7926AC89 /* UIImage+MNAnimated.swift in Sources */,
+				2169DA02F6D1739EA0BAF6627CC81FB6 /* UINavigationBar+MNHelper.swift in Sources */,
+				41ADF7A4405ABDF7D168AD739EF5C0CC /* UIResponder+MNHelper.swift in Sources */,
+				D86A6DAF8813D842DE06EB42E778D45C /* UIScreen+MNHelper.swift in Sources */,
+				293E4220D18EFD34BEC3E0AECD4EA0D6 /* UITabBar+MNHelper.swift in Sources */,
+				F4ADE6B00DA94B0698EB5B368483C24D /* UIWindow+MNHelper.swift in Sources */,
+				F569DBA8ED706466769FBF015B84835D /* UserDefaultsWrapper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

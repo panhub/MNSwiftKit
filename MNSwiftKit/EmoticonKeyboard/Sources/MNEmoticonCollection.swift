@@ -30,7 +30,9 @@ class MNEmoticonCollection {
             guard let name = json[MNEmoticon.Packet.Key.name.rawValue] as? String, name.isEmpty == false else { return nil }
             guard let emoticons = json[MNEmoticon.Packet.Key.emoticons.rawValue] as? [[String:String]] else { return nil }
             self.emoticons = emoticons.reduce(into: [String:String](), { partialResult, dic in
-                partialResult.merge(dic) { $1 }
+                guard let img = dic[MNEmoticon.Key.img.rawValue] else { return }
+                guard let desc = dic[MNEmoticon.Key.desc.rawValue] else { return }
+                partialResult[desc] = img
             })
             self.name = name
             var directoryURL = url.deletingPathExtension()

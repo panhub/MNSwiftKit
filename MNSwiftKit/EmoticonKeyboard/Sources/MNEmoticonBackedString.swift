@@ -33,5 +33,5 @@ extension MNEmoticonBackedString: NSMutableCopying {
 
 extension NSAttributedString.Key {
     
-    static let emojiBacked: NSAttributedString.Key = NSAttributedString.Key(rawValue: "com.mn.emoji.backed.attributed")
+    static let emoticonBacked: NSAttributedString.Key = NSAttributedString.Key(rawValue: "com.mn.emoticon.backed.attributed")
 }

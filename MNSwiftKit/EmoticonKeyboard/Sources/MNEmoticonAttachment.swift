@@ -14,6 +14,10 @@ public class MNEmoticonAttachment: NSTextAttachment {
     /// 匹配范围
     public var range: NSRange = NSRange(location: 0, length: 0)
     
+    /// 构建表情附件
+    /// - Parameters:
+    ///   - image: 表情图片
+    ///   - desc: 表情描述
     public convenience init(image: UIImage, desc: String) {
         self.init()
         self.desc = desc

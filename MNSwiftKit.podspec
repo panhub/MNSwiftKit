@@ -55,6 +55,7 @@ Pod::Spec.new do |s|
     b.dependency 'MNSwiftKit/Definition'
     b.dependency 'MNSwiftKit/EmptyView'
     b.dependency 'MNSwiftKit/Transitioning'
+    b.dependency 'MNSwiftKit/CollectionLayout'
   end
   
   # Toast <加载指示图>

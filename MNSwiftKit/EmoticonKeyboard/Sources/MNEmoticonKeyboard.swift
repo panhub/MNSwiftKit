@@ -3,7 +3,7 @@
 //  MNSwiftKit
 //
 //  Created by panhub on 2023/1/28.
-//  表情键盘
+//  本地表情键盘
 
 import UIKit
 
@@ -208,16 +208,16 @@ extension MNEmoticonKeyboard: MNEmoticonPacketViewDelegate {
 extension MNEmoticonKeyboard: MNPageControlDelegate {
     
     public func pageControl(_ pageControl: MNPageControl, didSelectPageAt index: Int) {
-        emoticonView.scrollEmoticon(to: index, animated: false)
+        emoticonView.setCurrentEmoticon(at: index, animated: false)
     }
 }
 
 // MARK: - MNEmoticonInputViewDelegate
 extension MNEmoticonKeyboard: MNEmoticonInputViewDelegate {
     
-    func inputViewDidSelectPage(at index: Int) {
+    func inputViewDidScrollPage(at index: Int) {
         guard let packetView = packetView else { return }
-        packetView.selectedIndex = index
+        packetView.setSelected(at: index)
     }
     
     func inputViewDidUpdateEmoticon(with count: Int) {

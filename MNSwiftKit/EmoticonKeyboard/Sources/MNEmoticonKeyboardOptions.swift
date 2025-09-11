@@ -24,15 +24,15 @@ extension MNEmoticonKeyboard {
         @objc public var packets: [String] = [MNEmoticon.Packet.Name.default.rawValue, MNEmoticon.Packet.Name.favorites.rawValue]
         /// returnKey类型
         @objc public var returnKeyType: UIReturnKeyType = .default
-        /// 纵向: 只有一个表情包时 是否隐藏表情包栏
-        /// 分页: 只有一页时是否隐藏页码指示图
+        /// compact: 只有一个表情包时 是否隐藏表情包栏
+        /// paging: 只有一页表情时是否隐藏页码指示图
         @objc public var hidesForSingle: Bool = false
         /// 表情包栏高度, 内部会自行根据需要加上底部安全区域高度
         @objc public var packetBarHeight: CGFloat = 50.0
         /// 表情包相邻间隔
         @objc public var packetInteritemSpacing: CGFloat = 12.0
         /// 表情包视图四周约束
-        @objc public var packetSectionInset: UIEdgeInsets = UIEdgeInsets(top: 6.0, left: 12.0, bottom: 6.0, right: 12.0)
+        @objc public var packetSectionInset: UIEdgeInsets = UIEdgeInsets(top: 6.0, left: 15.0, bottom: 6.0, right: 15.0)
         /// 表情包图片四周约束
         @objc public var packetItemInset: UIEdgeInsets = UIEdgeInsets(top: 8.0, left: 8.0, bottom: 8.0, right: 8.0)
         /// 表情包选择背景颜色

@@ -54,7 +54,8 @@
         "MNSwiftKit/Request": [],
         "MNSwiftKit/Definition": [],
         "MNSwiftKit/EmptyView": [],
-        "MNSwiftKit/Transitioning": []
+        "MNSwiftKit/Transitioning": [],
+        "MNSwiftKit/CollectionLayout": []
       }
     },
     {

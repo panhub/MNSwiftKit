@@ -11,7 +11,7 @@ import UIKit
 protocol MNEmoticonInputViewDelegate: NSObjectProtocol {
     /// 表情包切换时告知
     /// - Parameter index: 表情包索引
-    func inputViewDidSelectPage(at index: Int)
+    func inputViewDidScrollPage(at index: Int)
     /// 告知当前表情包页数
     /// - Parameter count: 页数
     func inputViewDidUpdateEmoticon(with count: Int)
@@ -34,28 +34,29 @@ protocol MNEmoticonInputViewDelegate: NSObjectProtocol {
 
 /// 表情输入视图
 class MNEmoticonInputView: UIView {
+    /// 选择的页面索引
+    private var selectedIndex: Int = 0
+    /// 猜想滑动到的界面索引
+    private var guessPageIndex: Int = 0
+    /// 开始滑动时的偏移
+    private var startOffsetX: CGFloat = 0.0
+    /// 分割线
+    private let separatorView = UIView()
     /// 样式
     private let style: MNEmoticonKeyboard.Style
     /// 配置选项
     private let options: MNEmoticonKeyboard.Options
     /// 事件代理
     weak var delegate: MNEmoticonInputViewDelegate?
+    /// 分页控制视图
+    private let pageView = MNEmoticonPageView()
     /// 表情包
     private(set) var packets: [MNEmoticon.Packet] = []
     /// 缓存
     private var emoticonViews: [Int:MNEmoticonView] = [:]
     /// 预览视图
     private let preview: MNEmoticonPreview = MNEmoticonPreview()
-    /// 分割线
-    private let separatorView = UIView()
-    /// 分页控制视图
-    private let pageView = MNEmoticonPageView()
-    /// 猜想滑动到的界面索引
-    private var guessPageIndex: Int = 0
-    /// 开始滑动时的偏移
-    private var startOffsetX: CGFloat = 0.0
-    /// 选择的页面索引
-    private var selectedIndex: Int = 0
+    
     
     /// 构建表情输入视图
     /// - Parameters:
@@ -140,8 +141,8 @@ class MNEmoticonInputView: UIView {
     /// - Parameters:
     ///   - pageIndex: 页码
     ///   - animated: 是否动态
-    func scrollEmoticon(to pageIndex: Int, animated: Bool) {
-        guard let emoticonView = emoticonView(at: pageView.currentPageIndex, create: false) else { return }
+    func setCurrentEmoticon(at pageIndex: Int, animated: Bool) {
+        guard let emoticonView = emoticonView(at: selectedIndex, create: false) else { return }
         emoticonView.setCurrentPage(at: pageIndex, animated: animated)
     }
     
@@ -230,7 +231,7 @@ extension MNEmoticonInputView: UIScrollViewDelegate {
         selectedIndex = currentPageIndex
         guard let delegate = delegate else { return }
         guard let emoticonView = emoticonView(at: currentPageIndex) else { return }
-        delegate.inputViewDidSelectPage(at: currentPageIndex)
+        delegate.inputViewDidScrollPage(at: currentPageIndex)
         guard style == .paging else { return }
         delegate.inputViewDidUpdateEmoticon(with: emoticonView.numberOfPages)
         delegate.inputViewDidScrollEmoticon(to: emoticonView.currentPageIndex)
