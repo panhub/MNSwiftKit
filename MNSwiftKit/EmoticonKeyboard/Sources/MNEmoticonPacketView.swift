@@ -73,7 +73,7 @@ class MNEmoticonPacketView: UIView {
             collectionView.topAnchor.constraint(equalTo: topAnchor),
             collectionView.leftAnchor.constraint(equalTo: leftAnchor),
             collectionView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: style == .compact ? 0.0 : -MN_BOTTOM_SAFE_HEIGHT),
-            collectionView.rightAnchor.constraint(equalTo: rightAnchor, constant: style == .compact ? 0.0 : -78.0)
+            collectionView.rightAnchor.constraint(equalTo: rightAnchor, constant: style == .compact ? 0.0 : -options.returnKeyWidth)
         ])
         
         if style == .paging {

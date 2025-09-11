@@ -30,7 +30,7 @@ class ViewController: UIViewController {
         view.addSubview(textView)
         
         label.textColor = .black
-        label.font = .systemFont(ofSize: 17.0, weight: .regular)
+        label.font = .systemFont(ofSize: 25.0, weight: .regular)
         label.frame = .init(x: textView.frame.minX, y: textView.frame.maxY + 20.0, width: textView.frame.width, height: 50.0)
         view.addSubview(label)
         
@@ -60,6 +60,12 @@ class ViewController: UIViewController {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
         textView.resignFirstResponder()
+        let attributedText = NSAttributedString(string: "🐼", attributes: [.font:label.font!])
+        label.attributedText =  attributedText
+        let x = attributedText.string
+        let z = x.count
+        let o = attributedText.length
+        print(x)
     }
     
     override func didReceiveMemoryWarning() {

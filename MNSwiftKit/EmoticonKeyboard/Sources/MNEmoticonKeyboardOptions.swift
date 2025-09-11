@@ -39,11 +39,13 @@ extension MNEmoticonKeyboard {
         @objc public var packetHighlightedColor: UIColor! = .white
         /// 表情包栏背景颜色
         @objc public var packetBarColor: UIColor! = UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0)
-        /// returnKey颜色
+        /// return键宽度 (仅'MNEmoticonKeyboard.Style.paging'有效)
+        @objc public var returnKeyWidth: CGFloat = 78.0
+        /// return键颜色
         @objc public var returnKeyColor: UIColor! = .white
-        /// returnKey标题颜色
+        /// return键标题颜色
         @objc public var returnKeyTitleColor: UIColor! = .black
-        /// returnKey标题字体
+        /// return键标题字体
         @objc public var returnKeyTitleFont: UIFont = .systemFont(ofSize: 17.0, weight: .medium)
         /// 分割线颜色
         @objc public var separatorColor: UIColor! = .darkGray.withAlphaComponent(0.15)
