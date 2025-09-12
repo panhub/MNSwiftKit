@@ -8,7 +8,8 @@
 import UIKit
 
 class MNEmoticonCell: UICollectionViewCell {
-    
+    /// Unicode表情
+    let emotionLabel = UILabel()
     /// 表情控件
     let imageView = UIImageView()
     
@@ -27,6 +28,20 @@ class MNEmoticonCell: UICollectionViewCell {
             imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             imageView.rightAnchor.constraint(equalTo: contentView.rightAnchor)
         ])
+        
+        emotionLabel.numberOfLines = 1
+        emotionLabel.textAlignment = .center
+        emotionLabel.minimumScaleFactor = 0.1
+        emotionLabel.adjustsFontSizeToFitWidth = true
+        emotionLabel.font = .systemFont(ofSize: contentView.frame.width)
+        emotionLabel.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(emotionLabel)
+        NSLayoutConstraint.activate([
+            emotionLabel.topAnchor.constraint(equalTo: contentView.topAnchor),
+            emotionLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor),
+            emotionLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            emotionLabel.rightAnchor.constraint(equalTo: contentView.rightAnchor)
+        ])
     }
     
     required init?(coder: NSCoder) {
@@ -36,6 +51,9 @@ class MNEmoticonCell: UICollectionViewCell {
     /// 更新表情
     /// - Parameter emoticon: 表情模型
     func updateEmoticon(_ emoticon: MNEmoticon) {
-        imageView.image = emoticon.image
+        emotionLabel.text = emoticon.style == .unicode ? emoticon.img : nil
+        imageView.image = emoticon.style == .unicode ? nil : emoticon.image
+        imageView.isHidden = emoticon.style == .unicode
+        emotionLabel.isHidden = imageView.isHidden == false
     }
 }

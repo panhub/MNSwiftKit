@@ -7,210 +7,212 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		008829BEE60AA34D194DF81D58706B70 /* personage.json in Resources */ = {isa = PBXBuildFile; fileRef = 7A739916A7808635EEDA2355D0F3CA53 /* personage.json */; };
-		0166D054AA13A58C59EDEABABA0C6B15 /* MNSwizzleWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 318ACDB6D7A1402B348DB2E4634B8B6F /* MNSwizzleWrapper.swift */; };
+		0166D054AA13A58C59EDEABABA0C6B15 /* MNSwizzleWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F45A1BC439E01839F12D676753E4AF3 /* MNSwizzleWrapper.swift */; };
 		0928CD2F79F6D0C4B53F6E138C74FDE8 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B76EC269EAAAB24351D1D259EFEFA309 /* CoreServices.framework */; };
-		09620AC78142C65E753B714E6AAA50CB /* MNEmoticonBackedString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1CE7E7E56F51E07CF5B4B1BD72BABD /* MNEmoticonBackedString.swift */; };
-		0996692991485B404EF4CDB584154F8C /* CFNotificationCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE1A5D3D6D05901C406A39886295952 /* CFNotificationCenter.swift */; };
-		0ABB1636484EC10FD54F9C52B08B2B04 /* shadow.png in Resources */ = {isa = PBXBuildFile; fileRef = C8CF960A36FDF878083AC783F5E6214C /* shadow.png */; };
-		0F49C5411418E09C3CBC225B3D7D26D5 /* md5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F7FCDE68BDE6F571D112A10DB64A438 /* md5.swift */; };
+		09620AC78142C65E753B714E6AAA50CB /* MNEmoticonBackedString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 546728F3F2AEFD6A3F2446A4F0F100B9 /* MNEmoticonBackedString.swift */; };
+		0996692991485B404EF4CDB584154F8C /* CFNotificationCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAD79DDA4781F101C2A9EA2E4EFF7CAA /* CFNotificationCenter.swift */; };
+		0F49C5411418E09C3CBC225B3D7D26D5 /* md5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9679E419BD18AD456DAD77DB2DDC301F /* md5.swift */; };
 		0FD8D0CA2B21E495F22DDF5296CFD00F /* Pods-MNSwiftKit_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F1DF06A3ABBD3DF7D4AD5DE02C312882 /* Pods-MNSwiftKit_Example-dummy.m */; };
-		112F111044E76556376BF20E35F80CEF /* add.png in Resources */ = {isa = PBXBuildFile; fileRef = A153731B4E21916CEE4289F45C2861F8 /* add.png */; };
 		13BBAB17DCE56DE08C4F9AEB66C74001 /* Pods-MNSwiftKit_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = B0263D3209BDE181DC416E26B555E41B /* Pods-MNSwiftKit_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		143FC807BED27BAA7D826206A6533444 /* NSAttributedString+MNEmoticonSupported.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10238C476D8DE4DA056E13413E83C334 /* NSAttributedString+MNEmoticonSupported.swift */; };
-		144A1BBC6BE63D0795927AA47B74F38B /* NameSpaceWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E563D862AEECB372C400A3A437B3B0C /* NameSpaceWrapper.swift */; };
-		15366EFD24419B43BA8A4EE2C0ADE586 /* MNEmoticonCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436CFC4AD6F66E50DBF787C2134F802E /* MNEmoticonCollection.swift */; };
+		143FC807BED27BAA7D826206A6533444 /* NSAttributedString+MNEmoticonSupported.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E2D2D0991A841EB16559BE68EC09A67 /* NSAttributedString+MNEmoticonSupported.swift */; };
+		144A1BBC6BE63D0795927AA47B74F38B /* NameSpaceWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D46DEB0EEB1CD62DDF248F6E8A8DB8C /* NameSpaceWrapper.swift */; };
+		15366EFD24419B43BA8A4EE2C0ADE586 /* MNEmoticonCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F450C3281133F912248DD53FB72745D7 /* MNEmoticonCollection.swift */; };
 		19D4660912237482F2EC98D14CCDED73 /* Pods-MNSwiftKit_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 185C901814D5AC8E96A52C19D94B898C /* Pods-MNSwiftKit_Tests-dummy.m */; };
-		19D7A26EFD2DFF15A7CF856A3149C876 /* NibInspectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFE4F5043C76452FB727C3207F72DAFC /* NibInspectable.swift */; };
+		19D7A26EFD2DFF15A7CF856A3149C876 /* NibInspectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D52142C10EDA59693989EC715E90105 /* NibInspectable.swift */; };
 		1CC2C47EEC7BA042DAC9FE7197F6187B /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57023E58571C42C5523641C407D0BD38 /* ImageIO.framework */; };
-		20409951DB9B90F8B6A4CF51DD8437BF /* MNEmoticonInputSupported.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842C2D55EC2C6F89097CE1051ED616E3 /* MNEmoticonInputSupported.swift */; };
-		2169DA02F6D1739EA0BAF6627CC81FB6 /* UINavigationBar+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6999DE8E51EDB486BFA7D148A3E034B0 /* UINavigationBar+MNHelper.swift */; };
-		293E4220D18EFD34BEC3E0AECD4EA0D6 /* UITabBar+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270A0937E89A3D3CEEA74EF8EBD6B6D0 /* UITabBar+MNHelper.swift */; };
-		2AD62830C4123530173C3A305405A977 /* MNEmoticonAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74BF8211B9309DCB8AA0DF1DAEA14E6E /* MNEmoticonAttachment.swift */; };
+		20409951DB9B90F8B6A4CF51DD8437BF /* MNEmoticonInputSupported.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE76D26BB217F781F192BAE35A5B6B5F /* MNEmoticonInputSupported.swift */; };
+		2169DA02F6D1739EA0BAF6627CC81FB6 /* UINavigationBar+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95FAE2A768BBC9BE2AF44A8E861DE486 /* UINavigationBar+MNHelper.swift */; };
+		293E4220D18EFD34BEC3E0AECD4EA0D6 /* UITabBar+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3231E51A4CCB814BAF84E159D023FE /* UITabBar+MNHelper.swift */; };
+		2AD62830C4123530173C3A305405A977 /* MNEmoticonAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 011161086BE8C2CDF36B0DC7630A4D16 /* MNEmoticonAttachment.swift */; };
+		314A1F7D8B75A3C6FB5227E621D3A4FF /* favorites.png in Resources */ = {isa = PBXBuildFile; fileRef = DB74343EFF562F75E28F1971A1AD04AB /* favorites.png */; };
 		318107C4CD6C307CBC3B838A53795321 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0F55A22E0BB91F7B3E93776035CF512 /* Foundation.framework */; };
 		32B0F7E356F21C928CD4535CC24BD967 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0F55A22E0BB91F7B3E93776035CF512 /* Foundation.framework */; };
-		32D13A4E976B997C971C918BABFD25B3 /* MNEmoticonInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD94788856FCA4DCD55764199D4541D /* MNEmoticonInputView.swift */; };
-		3898FD4506AC624268C9A215D3A84154 /* MNPageControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C7A88B386F992AC9EA29BB6D65919D6 /* MNPageControl.swift */; };
-		416C0E952615AD6A1991F6D32AFC0CBF /* MNEmoticonPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F23A5322D2C7AEC74D1BE27CEB9D73B /* MNEmoticonPreview.swift */; };
-		41ADF7A4405ABDF7D168AD739EF5C0CC /* UIResponder+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D40358E3B71A1CCE05D8D23CDDFF6FA /* UIResponder+MNHelper.swift */; };
-		464E850E3A6137D0ED46025CF9460487 /* MNDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AEA2CCA45872A7127554108085C14C9 /* MNDefinition.swift */; };
-		4C32B7DAA6FDAB2B469B7EF2BB307DF0 /* delete-ver.png in Resources */ = {isa = PBXBuildFile; fileRef = CE78DE5635C830FEED842BDA629159C7 /* delete-ver.png */; };
+		32D13A4E976B997C971C918BABFD25B3 /* MNEmoticonInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FFC7B7A75D8B80007E90B325EF52918 /* MNEmoticonInputView.swift */; };
+		3894FBD5CF75CC163A711E08AE000F06 /* vehicle.json in Resources */ = {isa = PBXBuildFile; fileRef = 657A0A70322AD21D8523E9F5CA417412 /* vehicle.json */; };
+		3898FD4506AC624268C9A215D3A84154 /* MNPageControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6CBCE1B64DA4A3768CF449F5EEF716E /* MNPageControl.swift */; };
+		3ED4F407889638316A9EB86394100226 /* delete-ver.png in Resources */ = {isa = PBXBuildFile; fileRef = C85218F850A4B72F393789068E2918AF /* delete-ver.png */; };
+		416C0E952615AD6A1991F6D32AFC0CBF /* MNEmoticonPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A15AD27C7AB085A82A187EDCF4785DF /* MNEmoticonPreview.swift */; };
+		41ADF7A4405ABDF7D168AD739EF5C0CC /* UIResponder+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A184CF4838FF913A61336535B0F9CDA4 /* UIResponder+MNHelper.swift */; };
+		464E850E3A6137D0ED46025CF9460487 /* MNDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = C824369B08F4B734EC7AC3BA04FD480D /* MNDefinition.swift */; };
 		5BACB6E9CBFF5948DB37D2B2D91BEBED /* Pods-MNSwiftKit_Example-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 7EADCB6756F36B6C8D4E54CF14F278AF /* Pods-MNSwiftKit_Example-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		5BCF5276F6B73D0986979152948258DC /* FileHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5690E93E2C82D10B765117DF62BAE25F /* FileHandle.swift */; };
-		64B95F3E80AE38DD5B5B1EEBB41E36A7 /* MNEmoticonPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8034ED91BA97FC1B8051A49A4AB2A4FD /* MNEmoticonPageView.swift */; };
-		68D1CB2625A15B41A179C3D94CC870E4 /* MNEmoticonLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B4511BF6CC9FF0117347A7E1AEF47B1 /* MNEmoticonLayout.swift */; };
-		73283E041D9AF83D06B161DA6BCC673E /* MNFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64043B4BA211C4D6ABCB51C956B57614 /* MNFileManager.swift */; };
-		7B4B28D45520A3A8783CBE5103578808 /* vehicle.json in Resources */ = {isa = PBXBuildFile; fileRef = A5F97064534ACF7EA160715F5054F95A /* vehicle.json */; };
-		7E946314437857C128F9C28E7926AC89 /* UIImage+MNAnimated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E898FCC64E99279021C59AD936AD1A0 /* UIImage+MNAnimated.swift */; };
-		820776B8B682654572C9E655DCA33368 /* animal.json in Resources */ = {isa = PBXBuildFile; fileRef = D7EE59FD0AE5647BF8E9BDDF52C8062A /* animal.json */; };
+		5BCF5276F6B73D0986979152948258DC /* FileHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FA0166376F00AC6BF40C33FE084A68C /* FileHandle.swift */; };
+		603ACC54C3AB7C4F0BEB1E6D670554DF /* animal.json in Resources */ = {isa = PBXBuildFile; fileRef = 95E165C0A23F84C8603144C481826522 /* animal.json */; };
+		64B95F3E80AE38DD5B5B1EEBB41E36A7 /* MNEmoticonPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21A759B4B3DB224AE8202C2650CF225D /* MNEmoticonPageView.swift */; };
+		68D1CB2625A15B41A179C3D94CC870E4 /* MNEmoticonLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC807709421A7D080D05C487B1A3C1C6 /* MNEmoticonLayout.swift */; };
+		73283E041D9AF83D06B161DA6BCC673E /* MNFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1204DF85E8BFA020EB9B5AC0CC8C48 /* MNFileManager.swift */; };
+		7AC78FEA82B304A11F229459A14FD3D9 /* wechat.json in Resources */ = {isa = PBXBuildFile; fileRef = 916C0AC9AD5C033CAB03342D8EEF1458 /* wechat.json */; };
+		7E946314437857C128F9C28E7926AC89 /* UIImage+MNAnimated.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAEF941C7FD234796A2962E0E2E754B0 /* UIImage+MNAnimated.swift */; };
+		81B0C7FE6A877AFFD85C22AF3A61C6BF /* personage.json in Resources */ = {isa = PBXBuildFile; fileRef = CCB4B8188F966F85CE606E79CDFD0EBB /* personage.json */; };
 		823E4773C65A1738148041490B671D05 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D552D6313EAD2BDDF63A73E892F790F7 /* UniformTypeIdentifiers.framework */; };
-		8B281EA4FC9FB69C9508FEFA3C4E0FC1 /* MNSwiftKit-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D04729AB36E2564F799EDBD043B2489 /* MNSwiftKit-dummy.m */; };
-		8D0A7ECDE8277E1FBC5A557E321B01F4 /* MNSwiftKit-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = D4F98226C94D5EBA9C90BCAEAE259BC9 /* MNSwiftKit-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		90FE39C4E0D31BCD7BF31FBE02FA09DE /* wechat.json in Resources */ = {isa = PBXBuildFile; fileRef = EE9A782D5CEC5B8C3EDCD590236376BF /* wechat.json */; };
-		94FBFF39E935E46458D5D70D3D2C6202 /* ensign.json in Resources */ = {isa = PBXBuildFile; fileRef = 72F9D4BCC4347253922055F0D71BD894 /* ensign.json */; };
+		88EF6CEC2808F5DB3F0FF603B66CF0FC /* emotion.json in Resources */ = {isa = PBXBuildFile; fileRef = 6DF41326241FF47E0CF790F99C4EFDFB /* emotion.json */; };
+		8B281EA4FC9FB69C9508FEFA3C4E0FC1 /* MNSwiftKit-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F46D297CF31A8F1E702F452A05DA9807 /* MNSwiftKit-dummy.m */; };
+		8D0A7ECDE8277E1FBC5A557E321B01F4 /* MNSwiftKit-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = BD569265F0A9C0D324FD83A4C9525C7E /* MNSwiftKit-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9B78F6E09801CFEDCA6059AF26E1ECF3 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 244E0312F1E84CF3324E3C14FE80B221 /* UIKit.framework */; };
-		A768B4C18C62AD4E4A465FA502A8A360 /* MNEmoticonManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF777F8B0869608B47840FB898FDB72 /* MNEmoticonManager.swift */; };
-		A8151FBD627E3825FC0874789C146A99 /* MNEmoticon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693C3965B0A32456CC66DE3D99CE69C4 /* MNEmoticon.swift */; };
+		9D8ABB91AD56ECD674F0DFB763351FAC /* food.json in Resources */ = {isa = PBXBuildFile; fileRef = 3F43B5553845A8DFAFD831CD78E90884 /* food.json */; };
+		A768B4C18C62AD4E4A465FA502A8A360 /* MNEmoticonManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A582EEDE52BD0DFF46DA2E14D4B72AE8 /* MNEmoticonManager.swift */; };
+		A8151FBD627E3825FC0874789C146A99 /* MNEmoticon.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7E13224C2BD14BA78CEA419D4534276 /* MNEmoticon.swift */; };
 		AA3F1B5F108AA080CA8C7E19272AF8E7 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25C6B9276628F1F799A4B0B18C486D56 /* CoreGraphics.framework */; };
-		AA50D55DD5E0262503FFF19E5023EDA8 /* MNEmoticonPacketView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C51B6E2BD477A2E13A8391F427B4C5B /* MNEmoticonPacketView.swift */; };
-		AC0A594EB74076FBC5129F7158058FCB /* favorites.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D71B55C06A3F454E21BF5472B261BF7 /* favorites.png */; };
-		AD224CAD3EE443A20F0A25F84A522D1E /* MNEmoticonPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73491F737202E3F6099F016FCF8D0820 /* MNEmoticonPacket.swift */; };
-		AD32D6DF9C49F1447467447C87E15DD3 /* UIApplication+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF0965AE64019318DABAF3C72AF06C9F /* UIApplication+MNHelper.swift */; };
-		B1DBEDF300BEFE4BFAE5A83AD1C703B8 /* MNEmoticonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEB2C1F63E176D8861E0670DA205292C /* MNEmoticonCell.swift */; };
-		B82C26067A7C3E9CFED86BF0392BF4AB /* MNEmoticonPacketCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7277C3996FA37448F77965CDAA56C9FA /* MNEmoticonPacketCell.swift */; };
+		AA50D55DD5E0262503FFF19E5023EDA8 /* MNEmoticonPacketView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D012CCD6F8FB3CBB34262173F341510 /* MNEmoticonPacketView.swift */; };
+		AD224CAD3EE443A20F0A25F84A522D1E /* MNEmoticonPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765E5A8086D7D1E788DA55BC1432CAC2 /* MNEmoticonPacket.swift */; };
+		AD32D6DF9C49F1447467447C87E15DD3 /* UIApplication+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D0C21356CCD0D410F085BEBD58E9462 /* UIApplication+MNHelper.swift */; };
+		B1DBEDF300BEFE4BFAE5A83AD1C703B8 /* MNEmoticonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6B272625501104D28BDE4ECC82C4446 /* MNEmoticonCell.swift */; };
+		B82C26067A7C3E9CFED86BF0392BF4AB /* MNEmoticonPacketCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F844D84E2C5B5C0C2AB26B123D50D280 /* MNEmoticonPacketCell.swift */; };
+		B8E98E3C8C57B94B3E4867694E1C62F3 /* ensign.json in Resources */ = {isa = PBXBuildFile; fileRef = FF50D5C25E98E1C4C29C9956EFA5138D /* ensign.json */; };
 		B9675B764A7844CE2EF8C157EDBFCE5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0F55A22E0BB91F7B3E93776035CF512 /* Foundation.framework */; };
-		BE282805A74F6B99C911E9ED354B5E89 /* MNEmoticonButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61F845C2E9E0C6EEFCCA8C4B6CBEAC9F /* MNEmoticonButton.swift */; };
-		BE6191FABCB406A3EF59E632FB4BABFD /* MNEmoticonHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0D76A398D15B35C567E1D029382F654 /* MNEmoticonHelper.swift */; };
-		C5525C483A0A2BC261E101C6A3F48003 /* delete-hor.png in Resources */ = {isa = PBXBuildFile; fileRef = ACA80EC94DB692079F863C73A4119E0F /* delete-hor.png */; };
-		C9E3FD25F0230FC1E4091DE89EE07670 /* MNEmoticonElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26BC95058EF4F7A0A1F0A527E97007A2 /* MNEmoticonElementView.swift */; };
-		D01B050008878067942948A871FD37D4 /* MNEmoticonKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B292C6D4378E9A9CB5939FDD67895F /* MNEmoticonKeyboard.swift */; };
-		D5901BCEE3E6E82261C9E5CD96A23ECB /* MNEmoticonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFEF48901B2FE9C1322FADD41AAF5E85 /* MNEmoticonView.swift */; };
-		D5BF5D48A68ED7D87FE0D68402A9B7EC /* MNNibSupported.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C07DD67F80D05800A7B9F8AB48E8EF9 /* MNNibSupported.swift */; };
-		D86A6DAF8813D842DE06EB42E778D45C /* UIScreen+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36815A574BC1E215B1CF09D5E5CDC1B4 /* UIScreen+MNHelper.swift */; };
-		DAA9144AF0E6356E2B89A0EB11FD8E1E /* MNEmoticonKeyboardOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DE20AA5AE6404658A9B72A41A8CC9C1 /* MNEmoticonKeyboardOptions.swift */; };
-		DC6A2B7D8C08172F140785E215DCD2A0 /* PathUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = A35CB5F61ABCBCB8F881DCD030B44159 /* PathUtilities.swift */; };
-		E3BB98EB1EF59E36DA7B5CB8F942B031 /* food.json in Resources */ = {isa = PBXBuildFile; fileRef = 0406E74C93456E24F2E742F5D079325A /* food.json */; };
-		EB54A8B50CB1FCB6352F95075A7A44E0 /* emotion.json in Resources */ = {isa = PBXBuildFile; fileRef = 262103648BA84FE5EAA78350AB0C2535 /* emotion.json */; };
-		F1B66F1CFA9CA01E8E8F23C798D1848B /* symbol.json in Resources */ = {isa = PBXBuildFile; fileRef = 4AAAB36F9636B3FCA32BE44FF2ABD26A /* symbol.json */; };
+		BE282805A74F6B99C911E9ED354B5E89 /* MNEmoticonButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A2CB88D203CB613658AA9DDD759A99E /* MNEmoticonButton.swift */; };
+		BE6191FABCB406A3EF59E632FB4BABFD /* MNEmoticonHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14F50260FB441C79CA50ACA424BD48EB /* MNEmoticonHelper.swift */; };
+		BFE8E0BF0793704A55E6D47CC559D6FF /* delete-hor.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C015342B1D383E14AAE8FEF404A5824 /* delete-hor.png */; };
+		C0825D0CFF2D94CCF8B82D5E0D0ACAD5 /* shadow.png in Resources */ = {isa = PBXBuildFile; fileRef = 887DEA8645A838F7890C647ACDE77EC2 /* shadow.png */; };
+		C9E3FD25F0230FC1E4091DE89EE07670 /* MNEmoticonElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBE99E6F15BDE23AFFF4314931CAC6C /* MNEmoticonElementView.swift */; };
+		D01B050008878067942948A871FD37D4 /* MNEmoticonKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233802D6FFEDE86252C6C004CC0C2FC7 /* MNEmoticonKeyboard.swift */; };
+		D5901BCEE3E6E82261C9E5CD96A23ECB /* MNEmoticonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB9798C7A9AF37905287DEB45A89006 /* MNEmoticonView.swift */; };
+		D5BF5D48A68ED7D87FE0D68402A9B7EC /* MNNibSupported.swift in Sources */ = {isa = PBXBuildFile; fileRef = 798A36825D4F08AFBC7C439726B12E14 /* MNNibSupported.swift */; };
+		D86A6DAF8813D842DE06EB42E778D45C /* UIScreen+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71D4C8FA6E1178665C1B134D3DDE02F2 /* UIScreen+MNHelper.swift */; };
+		DAA9144AF0E6356E2B89A0EB11FD8E1E /* MNEmoticonKeyboardOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A25DC8A588F00056429DCD29964435 /* MNEmoticonKeyboardOptions.swift */; };
+		DC6A2B7D8C08172F140785E215DCD2A0 /* PathUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE016927F2FBDAD74E9A515C8064E6B /* PathUtilities.swift */; };
+		E5F0582D763B11E6803436AE3E351BD9 /* symbol.json in Resources */ = {isa = PBXBuildFile; fileRef = 9A2DB3A356FB526F40A7B9ED184091FE /* symbol.json */; };
 		F26C9B663AB5DB93D5CC9C4756780D27 /* MNSwiftKit-MNSwiftKit_EmoticonKeyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6850F0CE6A6A27D1104753F9CF8CC6F /* MNSwiftKit-MNSwiftKit_EmoticonKeyboard */; };
-		F4ADE6B00DA94B0698EB5B368483C24D /* UIWindow+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94D6DEC9093C39303AFA4809C3C4235 /* UIWindow+MNHelper.swift */; };
-		F569DBA8ED706466769FBF015B84835D /* UserDefaultsWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56BF56EF5E9DDC13EB04AFE051D3505 /* UserDefaultsWrapper.swift */; };
-		FCFDDF06D7941B41665A89FEFF2F170D /* EmoticonResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8163401EC0A04788ED52179D04D3A096 /* EmoticonResource.swift */; };
+		F4ADE6B00DA94B0698EB5B368483C24D /* UIWindow+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8C49C0FB36451DC67FEAC310F89CFD9 /* UIWindow+MNHelper.swift */; };
+		F569DBA8ED706466769FBF015B84835D /* UserDefaultsWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 748ADDC119A6126349878B3C6416C3C3 /* UserDefaultsWrapper.swift */; };
+		F94828E31107584E4B1370C497D97725 /* wechat in Resources */ = {isa = PBXBuildFile; fileRef = 0B79423A15F95F61E1504737AFA1C77C /* wechat */; };
+		FC16C649D097CE3628E9873AE4CEB2F2 /* add.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BCDA0E1C3186F1ED78F34FA4CF26386 /* add.png */; };
+		FCFDDF06D7941B41665A89FEFF2F170D /* EmoticonResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C7DC2F7E885963DA7696241D48814E3 /* EmoticonResource.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		721029CF3278A6641E1D5C3E2721861A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 52E39E8CBB2893119C3A574F658ED5A3;
-			remoteInfo = "MNSwiftKit-MNSwiftKit_EmoticonKeyboard";
-		};
-		B93B70864718D5C5C1EBA4B875590E92 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 21CE195DAB5760AE3081E84CA608C23C;
-			remoteInfo = "Pods-MNSwiftKit_Example";
-		};
-		FBF5EEE054D3D91154D75F140FE0A782 /* PBXContainerItemProxy */ = {
+		158E9906F8F34BE642F84A7E58E52842 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 44175BA3038286B71BDF4ED00AD7D682;
 			remoteInfo = MNSwiftKit;
 		};
+		7A33401CD8C93639A895BAA6989A658B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 52E39E8CBB2893119C3A574F658ED5A3;
+			remoteInfo = "MNSwiftKit-MNSwiftKit_EmoticonKeyboard";
+		};
+		E4C220A6B39320AFCEEE660FC7948D70 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 21CE195DAB5760AE3081E84CA608C23C;
+			remoteInfo = "Pods-MNSwiftKit_Example";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0406E74C93456E24F2E742F5D079325A /* food.json */ = {isa = PBXFileReference; includeInIndex = 1; name = food.json; path = MNSwiftKit/EmoticonKeyboard/Resources/food.json; sourceTree = "<group>"; };
+		011161086BE8C2CDF36B0DC7630A4D16 /* MNEmoticonAttachment.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonAttachment.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonAttachment.swift; sourceTree = "<group>"; };
+		0A1204DF85E8BFA020EB9B5AC0CC8C48 /* MNFileManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNFileManager.swift; path = MNSwiftKit/Core/Sources/MNFileManager.swift; sourceTree = "<group>"; };
+		0B79423A15F95F61E1504737AFA1C77C /* wechat */ = {isa = PBXFileReference; includeInIndex = 1; name = wechat; path = MNSwiftKit/EmoticonKeyboard/Resources/wechat; sourceTree = "<group>"; };
+		0C015342B1D383E14AAE8FEF404A5824 /* delete-hor.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "delete-hor.png"; path = "MNSwiftKit/EmoticonKeyboard/Resources/delete-hor.png"; sourceTree = "<group>"; };
 		0D6DF36F3E19F8C7FD97B8FA7307000E /* Pods-MNSwiftKit_Tests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MNSwiftKit_Tests-acknowledgements.plist"; sourceTree = "<group>"; };
-		10238C476D8DE4DA056E13413E83C334 /* NSAttributedString+MNEmoticonSupported.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "NSAttributedString+MNEmoticonSupported.swift"; path = "MNSwiftKit/EmoticonKeyboard/Sources/NSAttributedString+MNEmoticonSupported.swift"; sourceTree = "<group>"; };
+		0FA0166376F00AC6BF40C33FE084A68C /* FileHandle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FileHandle.swift; path = MNSwiftKit/Core/Sources/FileHandle.swift; sourceTree = "<group>"; };
+		0FFC7B7A75D8B80007E90B325EF52918 /* MNEmoticonInputView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonInputView.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonInputView.swift; sourceTree = "<group>"; };
+		14F50260FB441C79CA50ACA424BD48EB /* MNEmoticonHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonHelper.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonHelper.swift; sourceTree = "<group>"; };
 		185C901814D5AC8E96A52C19D94B898C /* Pods-MNSwiftKit_Tests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MNSwiftKit_Tests-dummy.m"; sourceTree = "<group>"; };
-		1AEA2CCA45872A7127554108085C14C9 /* MNDefinition.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNDefinition.swift; path = MNSwiftKit/Definition/Sources/MNDefinition.swift; sourceTree = "<group>"; };
-		1C8913FDA57AC0DD2D884AFC99D23593 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
-		1D1CE7E7E56F51E07CF5B4B1BD72BABD /* MNEmoticonBackedString.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonBackedString.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonBackedString.swift; sourceTree = "<group>"; };
+		1A15AD27C7AB085A82A187EDCF4785DF /* MNEmoticonPreview.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPreview.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPreview.swift; sourceTree = "<group>"; };
+		1D012CCD6F8FB3CBB34262173F341510 /* MNEmoticonPacketView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPacketView.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPacketView.swift; sourceTree = "<group>"; };
+		1D52142C10EDA59693989EC715E90105 /* NibInspectable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NibInspectable.swift; path = MNSwiftKit/Core/Sources/NibInspectable.swift; sourceTree = "<group>"; };
+		21A759B4B3DB224AE8202C2650CF225D /* MNEmoticonPageView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPageView.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPageView.swift; sourceTree = "<group>"; };
+		233802D6FFEDE86252C6C004CC0C2FC7 /* MNEmoticonKeyboard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonKeyboard.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonKeyboard.swift; sourceTree = "<group>"; };
 		244E0312F1E84CF3324E3C14FE80B221 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		25C6B9276628F1F799A4B0B18C486D56 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/CoreGraphics.framework; sourceTree = DEVELOPER_DIR; };
-		262103648BA84FE5EAA78350AB0C2535 /* emotion.json */ = {isa = PBXFileReference; includeInIndex = 1; name = emotion.json; path = MNSwiftKit/EmoticonKeyboard/Resources/emotion.json; sourceTree = "<group>"; };
-		26BC95058EF4F7A0A1F0A527E97007A2 /* MNEmoticonElementView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonElementView.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonElementView.swift; sourceTree = "<group>"; };
-		270A0937E89A3D3CEEA74EF8EBD6B6D0 /* UITabBar+MNHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UITabBar+MNHelper.swift"; path = "MNSwiftKit/Definition/Sources/UITabBar+MNHelper.swift"; sourceTree = "<group>"; };
-		2C51B6E2BD477A2E13A8391F427B4C5B /* MNEmoticonPacketView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPacketView.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPacketView.swift; sourceTree = "<group>"; };
-		2D71B55C06A3F454E21BF5472B261BF7 /* favorites.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = favorites.png; path = MNSwiftKit/EmoticonKeyboard/Resources/favorites.png; sourceTree = "<group>"; };
-		2E563D862AEECB372C400A3A437B3B0C /* NameSpaceWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NameSpaceWrapper.swift; path = MNSwiftKit/NameSpace/Sources/NameSpaceWrapper.swift; sourceTree = "<group>"; };
-		318ACDB6D7A1402B348DB2E4634B8B6F /* MNSwizzleWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNSwizzleWrapper.swift; path = MNSwiftKit/Core/Sources/MNSwizzleWrapper.swift; sourceTree = "<group>"; };
-		35B292C6D4378E9A9CB5939FDD67895F /* MNEmoticonKeyboard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonKeyboard.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonKeyboard.swift; sourceTree = "<group>"; };
-		36815A574BC1E215B1CF09D5E5CDC1B4 /* UIScreen+MNHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIScreen+MNHelper.swift"; path = "MNSwiftKit/Definition/Sources/UIScreen+MNHelper.swift"; sourceTree = "<group>"; };
+		2B783D5EAB78B2FB1230F1040FDF567D /* MNSwiftKit.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = MNSwiftKit.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		2BCDA0E1C3186F1ED78F34FA4CF26386 /* add.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = add.png; path = MNSwiftKit/EmoticonKeyboard/Resources/add.png; sourceTree = "<group>"; };
+		2D46DEB0EEB1CD62DDF248F6E8A8DB8C /* NameSpaceWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NameSpaceWrapper.swift; path = MNSwiftKit/NameSpace/Sources/NameSpaceWrapper.swift; sourceTree = "<group>"; };
+		2F45A1BC439E01839F12D676753E4AF3 /* MNSwizzleWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNSwizzleWrapper.swift; path = MNSwiftKit/Core/Sources/MNSwizzleWrapper.swift; sourceTree = "<group>"; };
 		36AB55A3A2F895B6C56234857260D1D6 /* Pods-MNSwiftKit_Tests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MNSwiftKit_Tests-acknowledgements.markdown"; sourceTree = "<group>"; };
-		3AF777F8B0869608B47840FB898FDB72 /* MNEmoticonManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonManager.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonManager.swift; sourceTree = "<group>"; };
+		376C5DA69FC69874B390E16764840BCF /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
 		3B6F3BE32BFFCF8CD6197F9C93F38D87 /* Pods-MNSwiftKit_Example-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MNSwiftKit_Example-acknowledgements.plist"; sourceTree = "<group>"; };
 		3D41B9F809022EFD3820DFAE7181546C /* Pods-MNSwiftKit_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MNSwiftKit_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
-		3DE20AA5AE6404658A9B72A41A8CC9C1 /* MNEmoticonKeyboardOptions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonKeyboardOptions.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonKeyboardOptions.swift; sourceTree = "<group>"; };
-		436CFC4AD6F66E50DBF787C2134F802E /* MNEmoticonCollection.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonCollection.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonCollection.swift; sourceTree = "<group>"; };
+		3F43B5553845A8DFAFD831CD78E90884 /* food.json */ = {isa = PBXFileReference; includeInIndex = 1; name = food.json; path = MNSwiftKit/EmoticonKeyboard/Resources/food.json; sourceTree = "<group>"; };
 		44AC86F546FAB6A89C462D9864B0DAC1 /* Pods-MNSwiftKit_Example-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MNSwiftKit_Example-Info.plist"; sourceTree = "<group>"; };
-		4AAAB36F9636B3FCA32BE44FF2ABD26A /* symbol.json */ = {isa = PBXFileReference; includeInIndex = 1; name = symbol.json; path = MNSwiftKit/EmoticonKeyboard/Resources/symbol.json; sourceTree = "<group>"; };
+		455C514B13BBDD2C813040F7DA617553 /* MNSwiftKit.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = MNSwiftKit.modulemap; sourceTree = "<group>"; };
 		4AC875870626C082485D42ABE081A5ED /* Pods-MNSwiftKit_Tests */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-MNSwiftKit_Tests"; path = Pods_MNSwiftKit_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4F23A5322D2C7AEC74D1BE27CEB9D73B /* MNEmoticonPreview.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPreview.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPreview.swift; sourceTree = "<group>"; };
-		5690E93E2C82D10B765117DF62BAE25F /* FileHandle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FileHandle.swift; path = MNSwiftKit/Core/Sources/FileHandle.swift; sourceTree = "<group>"; };
+		546728F3F2AEFD6A3F2446A4F0F100B9 /* MNEmoticonBackedString.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonBackedString.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonBackedString.swift; sourceTree = "<group>"; };
 		57023E58571C42C5523641C407D0BD38 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/ImageIO.framework; sourceTree = DEVELOPER_DIR; };
-		5B4511BF6CC9FF0117347A7E1AEF47B1 /* MNEmoticonLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonLayout.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonLayout.swift; sourceTree = "<group>"; };
-		5C07DD67F80D05800A7B9F8AB48E8EF9 /* MNNibSupported.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNNibSupported.swift; path = MNSwiftKit/Core/Sources/MNNibSupported.swift; sourceTree = "<group>"; };
-		5C7A88B386F992AC9EA29BB6D65919D6 /* MNPageControl.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNPageControl.swift; path = MNSwiftKit/PageControl/Sources/MNPageControl.swift; sourceTree = "<group>"; };
+		57A25DC8A588F00056429DCD29964435 /* MNEmoticonKeyboardOptions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonKeyboardOptions.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonKeyboardOptions.swift; sourceTree = "<group>"; };
+		5C7DC2F7E885963DA7696241D48814E3 /* EmoticonResource.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EmoticonResource.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/EmoticonResource.swift; sourceTree = "<group>"; };
 		5DCDAA321AC7A329F6EFFD06B6620764 /* Pods-MNSwiftKit_Example-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-MNSwiftKit_Example-frameworks.sh"; sourceTree = "<group>"; };
 		5DF5CC1E1D063C9D756DAC7C3A67526E /* Pods-MNSwiftKit_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MNSwiftKit_Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		5E898FCC64E99279021C59AD936AD1A0 /* UIImage+MNAnimated.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIImage+MNAnimated.swift"; path = "MNSwiftKit/AnimatedImage/Sources/UIImage+MNAnimated.swift"; sourceTree = "<group>"; };
-		61F845C2E9E0C6EEFCCA8C4B6CBEAC9F /* MNEmoticonButton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonButton.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonButton.swift; sourceTree = "<group>"; };
-		64043B4BA211C4D6ABCB51C956B57614 /* MNFileManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNFileManager.swift; path = MNSwiftKit/Core/Sources/MNFileManager.swift; sourceTree = "<group>"; };
-		693C3965B0A32456CC66DE3D99CE69C4 /* MNEmoticon.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticon.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticon.swift; sourceTree = "<group>"; };
-		6999DE8E51EDB486BFA7D148A3E034B0 /* UINavigationBar+MNHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UINavigationBar+MNHelper.swift"; path = "MNSwiftKit/Definition/Sources/UINavigationBar+MNHelper.swift"; sourceTree = "<group>"; };
+		657A0A70322AD21D8523E9F5CA417412 /* vehicle.json */ = {isa = PBXFileReference; includeInIndex = 1; name = vehicle.json; path = MNSwiftKit/EmoticonKeyboard/Resources/vehicle.json; sourceTree = "<group>"; };
 		6A19BC0D11A6510F247DA868FB51B06B /* Pods-MNSwiftKit_Example */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-MNSwiftKit_Example"; path = Pods_MNSwiftKit_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6D81CF10144525DB7CEB3E83ADC03ADF /* MNSwiftKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = MNSwiftKit.release.xcconfig; sourceTree = "<group>"; };
+		6DF41326241FF47E0CF790F99C4EFDFB /* emotion.json */ = {isa = PBXFileReference; includeInIndex = 1; name = emotion.json; path = MNSwiftKit/EmoticonKeyboard/Resources/emotion.json; sourceTree = "<group>"; };
+		71D4C8FA6E1178665C1B134D3DDE02F2 /* UIScreen+MNHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIScreen+MNHelper.swift"; path = "MNSwiftKit/Definition/Sources/UIScreen+MNHelper.swift"; sourceTree = "<group>"; };
 		71FFE15F4103052304ABCB5717BEF6A4 /* Pods-MNSwiftKit_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MNSwiftKit_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		72329E722013CF4F93BA21477C0FDACB /* Pods-MNSwiftKit_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MNSwiftKit_Example.release.xcconfig"; sourceTree = "<group>"; };
-		7277C3996FA37448F77965CDAA56C9FA /* MNEmoticonPacketCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPacketCell.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPacketCell.swift; sourceTree = "<group>"; };
-		72F9D4BCC4347253922055F0D71BD894 /* ensign.json */ = {isa = PBXFileReference; includeInIndex = 1; name = ensign.json; path = MNSwiftKit/EmoticonKeyboard/Resources/ensign.json; sourceTree = "<group>"; };
-		73491F737202E3F6099F016FCF8D0820 /* MNEmoticonPacket.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPacket.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPacket.swift; sourceTree = "<group>"; };
-		74BF8211B9309DCB8AA0DF1DAEA14E6E /* MNEmoticonAttachment.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonAttachment.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonAttachment.swift; sourceTree = "<group>"; };
-		7A739916A7808635EEDA2355D0F3CA53 /* personage.json */ = {isa = PBXFileReference; includeInIndex = 1; name = personage.json; path = MNSwiftKit/EmoticonKeyboard/Resources/personage.json; sourceTree = "<group>"; };
-		7D40358E3B71A1CCE05D8D23CDDFF6FA /* UIResponder+MNHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIResponder+MNHelper.swift"; path = "MNSwiftKit/Definition/Sources/UIResponder+MNHelper.swift"; sourceTree = "<group>"; };
+		748ADDC119A6126349878B3C6416C3C3 /* UserDefaultsWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = UserDefaultsWrapper.swift; path = MNSwiftKit/Core/Sources/UserDefaultsWrapper.swift; sourceTree = "<group>"; };
+		765E5A8086D7D1E788DA55BC1432CAC2 /* MNEmoticonPacket.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPacket.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPacket.swift; sourceTree = "<group>"; };
+		798A36825D4F08AFBC7C439726B12E14 /* MNNibSupported.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNNibSupported.swift; path = MNSwiftKit/Core/Sources/MNNibSupported.swift; sourceTree = "<group>"; };
+		7A2CB88D203CB613658AA9DDD759A99E /* MNEmoticonButton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonButton.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonButton.swift; sourceTree = "<group>"; };
+		7D0C21356CCD0D410F085BEBD58E9462 /* UIApplication+MNHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIApplication+MNHelper.swift"; path = "MNSwiftKit/Definition/Sources/UIApplication+MNHelper.swift"; sourceTree = "<group>"; };
+		7E2D2D0991A841EB16559BE68EC09A67 /* NSAttributedString+MNEmoticonSupported.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "NSAttributedString+MNEmoticonSupported.swift"; path = "MNSwiftKit/EmoticonKeyboard/Sources/NSAttributedString+MNEmoticonSupported.swift"; sourceTree = "<group>"; };
 		7EADCB6756F36B6C8D4E54CF14F278AF /* Pods-MNSwiftKit_Example-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-MNSwiftKit_Example-umbrella.h"; sourceTree = "<group>"; };
-		7F7FCDE68BDE6F571D112A10DB64A438 /* md5.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = md5.swift; path = MNSwiftKit/Core/Sources/md5.swift; sourceTree = "<group>"; };
-		8034ED91BA97FC1B8051A49A4AB2A4FD /* MNEmoticonPageView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPageView.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPageView.swift; sourceTree = "<group>"; };
-		8163401EC0A04788ED52179D04D3A096 /* EmoticonResource.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EmoticonResource.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/EmoticonResource.swift; sourceTree = "<group>"; };
-		842C2D55EC2C6F89097CE1051ED616E3 /* MNEmoticonInputSupported.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonInputSupported.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonInputSupported.swift; sourceTree = "<group>"; };
 		863BF0F83EBF6FC2E7AA8CD485C9A00B /* Pods-MNSwiftKit_Tests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-MNSwiftKit_Tests.modulemap"; sourceTree = "<group>"; };
-		8D04729AB36E2564F799EDBD043B2489 /* MNSwiftKit-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "MNSwiftKit-dummy.m"; sourceTree = "<group>"; };
-		8EAD8ED4B3E3D14A9AA87B6F3A9D95F0 /* MNSwiftKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = MNSwiftKit.debug.xcconfig; sourceTree = "<group>"; };
-		95B4C7B53289FB236AA85286B128F2B6 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		887DEA8645A838F7890C647ACDE77EC2 /* shadow.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = shadow.png; path = MNSwiftKit/EmoticonKeyboard/Resources/shadow.png; sourceTree = "<group>"; };
+		8E3231E51A4CCB814BAF84E159D023FE /* UITabBar+MNHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UITabBar+MNHelper.swift"; path = "MNSwiftKit/Definition/Sources/UITabBar+MNHelper.swift"; sourceTree = "<group>"; };
+		916C0AC9AD5C033CAB03342D8EEF1458 /* wechat.json */ = {isa = PBXFileReference; includeInIndex = 1; name = wechat.json; path = MNSwiftKit/EmoticonKeyboard/Resources/wechat.json; sourceTree = "<group>"; };
+		95E165C0A23F84C8603144C481826522 /* animal.json */ = {isa = PBXFileReference; includeInIndex = 1; name = animal.json; path = MNSwiftKit/EmoticonKeyboard/Resources/animal.json; sourceTree = "<group>"; };
+		95FAE2A768BBC9BE2AF44A8E861DE486 /* UINavigationBar+MNHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UINavigationBar+MNHelper.swift"; path = "MNSwiftKit/Definition/Sources/UINavigationBar+MNHelper.swift"; sourceTree = "<group>"; };
+		9679E419BD18AD456DAD77DB2DDC301F /* md5.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = md5.swift; path = MNSwiftKit/Core/Sources/md5.swift; sourceTree = "<group>"; };
+		9A2DB3A356FB526F40A7B9ED184091FE /* symbol.json */ = {isa = PBXFileReference; includeInIndex = 1; name = symbol.json; path = MNSwiftKit/EmoticonKeyboard/Resources/symbol.json; sourceTree = "<group>"; };
 		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		A153731B4E21916CEE4289F45C2861F8 /* add.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = add.png; path = MNSwiftKit/EmoticonKeyboard/Resources/add.png; sourceTree = "<group>"; };
-		A35CB5F61ABCBCB8F881DCD030B44159 /* PathUtilities.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PathUtilities.swift; path = MNSwiftKit/Core/Sources/PathUtilities.swift; sourceTree = "<group>"; };
-		A43127D3269A36AB1E6E83050203718B /* ResourceBundle-MNSwiftKit_EmoticonKeyboard-MNSwiftKit-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-MNSwiftKit_EmoticonKeyboard-MNSwiftKit-Info.plist"; sourceTree = "<group>"; };
-		A5F97064534ACF7EA160715F5054F95A /* vehicle.json */ = {isa = PBXFileReference; includeInIndex = 1; name = vehicle.json; path = MNSwiftKit/EmoticonKeyboard/Resources/vehicle.json; sourceTree = "<group>"; };
+		9FB9798C7A9AF37905287DEB45A89006 /* MNEmoticonView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonView.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonView.swift; sourceTree = "<group>"; };
+		A184CF4838FF913A61336535B0F9CDA4 /* UIResponder+MNHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIResponder+MNHelper.swift"; path = "MNSwiftKit/Definition/Sources/UIResponder+MNHelper.swift"; sourceTree = "<group>"; };
+		A562204FA8637C98E154F30C413D568C /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		A582EEDE52BD0DFF46DA2E14D4B72AE8 /* MNEmoticonManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonManager.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonManager.swift; sourceTree = "<group>"; };
 		A6850F0CE6A6A27D1104753F9CF8CC6F /* MNSwiftKit-MNSwiftKit_EmoticonKeyboard */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "MNSwiftKit-MNSwiftKit_EmoticonKeyboard"; path = MNSwiftKit_EmoticonKeyboard.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
-		A951721E31850ADC075BEC238D06CC1D /* MNSwiftKit.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = MNSwiftKit.modulemap; sourceTree = "<group>"; };
-		ACA80EC94DB692079F863C73A4119E0F /* delete-hor.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "delete-hor.png"; path = "MNSwiftKit/EmoticonKeyboard/Resources/delete-hor.png"; sourceTree = "<group>"; };
 		B0263D3209BDE181DC416E26B555E41B /* Pods-MNSwiftKit_Tests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-MNSwiftKit_Tests-umbrella.h"; sourceTree = "<group>"; };
 		B0F55A22E0BB91F7B3E93776035CF512 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		B76EC269EAAAB24351D1D259EFEFA309 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/CoreServices.framework; sourceTree = DEVELOPER_DIR; };
-		BD6C0A1A4711C58FC7091FE08353FD31 /* MNSwiftKit-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MNSwiftKit-prefix.pch"; sourceTree = "<group>"; };
+		B7E13224C2BD14BA78CEA419D4534276 /* MNEmoticon.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticon.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticon.swift; sourceTree = "<group>"; };
+		BCE016927F2FBDAD74E9A515C8064E6B /* PathUtilities.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PathUtilities.swift; path = MNSwiftKit/Core/Sources/PathUtilities.swift; sourceTree = "<group>"; };
+		BD569265F0A9C0D324FD83A4C9525C7E /* MNSwiftKit-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MNSwiftKit-umbrella.h"; sourceTree = "<group>"; };
 		BDC49EA736A9AA2AA833070597C40E80 /* Pods-MNSwiftKit_Tests-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MNSwiftKit_Tests-Info.plist"; sourceTree = "<group>"; };
-		C56BF56EF5E9DDC13EB04AFE051D3505 /* UserDefaultsWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = UserDefaultsWrapper.swift; path = MNSwiftKit/Core/Sources/UserDefaultsWrapper.swift; sourceTree = "<group>"; };
+		BE76D26BB217F781F192BAE35A5B6B5F /* MNEmoticonInputSupported.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonInputSupported.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonInputSupported.swift; sourceTree = "<group>"; };
+		BEBE99E6F15BDE23AFFF4314931CAC6C /* MNEmoticonElementView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonElementView.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonElementView.swift; sourceTree = "<group>"; };
 		C793834859493C7E7C747B1422D7E1A5 /* Pods-MNSwiftKit_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MNSwiftKit_Tests.release.xcconfig"; sourceTree = "<group>"; };
-		C8CF960A36FDF878083AC783F5E6214C /* shadow.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = shadow.png; path = MNSwiftKit/EmoticonKeyboard/Resources/shadow.png; sourceTree = "<group>"; };
-		CDE1A5D3D6D05901C406A39886295952 /* CFNotificationCenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CFNotificationCenter.swift; path = MNSwiftKit/Core/Sources/CFNotificationCenter.swift; sourceTree = "<group>"; };
-		CE78DE5635C830FEED842BDA629159C7 /* delete-ver.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "delete-ver.png"; path = "MNSwiftKit/EmoticonKeyboard/Resources/delete-ver.png"; sourceTree = "<group>"; };
-		CFE4F5043C76452FB727C3207F72DAFC /* NibInspectable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NibInspectable.swift; path = MNSwiftKit/Core/Sources/NibInspectable.swift; sourceTree = "<group>"; };
-		CFEF48901B2FE9C1322FADD41AAF5E85 /* MNEmoticonView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonView.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonView.swift; sourceTree = "<group>"; };
-		D4F98226C94D5EBA9C90BCAEAE259BC9 /* MNSwiftKit-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MNSwiftKit-umbrella.h"; sourceTree = "<group>"; };
+		C824369B08F4B734EC7AC3BA04FD480D /* MNDefinition.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNDefinition.swift; path = MNSwiftKit/Definition/Sources/MNDefinition.swift; sourceTree = "<group>"; };
+		C85218F850A4B72F393789068E2918AF /* delete-ver.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "delete-ver.png"; path = "MNSwiftKit/EmoticonKeyboard/Resources/delete-ver.png"; sourceTree = "<group>"; };
+		C8C49C0FB36451DC67FEAC310F89CFD9 /* UIWindow+MNHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIWindow+MNHelper.swift"; path = "MNSwiftKit/Definition/Sources/UIWindow+MNHelper.swift"; sourceTree = "<group>"; };
+		CCB4B8188F966F85CE606E79CDFD0EBB /* personage.json */ = {isa = PBXFileReference; includeInIndex = 1; name = personage.json; path = MNSwiftKit/EmoticonKeyboard/Resources/personage.json; sourceTree = "<group>"; };
+		D2EDBB3BC22E47EAD1CF984D7082CA20 /* MNSwiftKit-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MNSwiftKit-prefix.pch"; sourceTree = "<group>"; };
 		D552D6313EAD2BDDF63A73E892F790F7 /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UniformTypeIdentifiers.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/UniformTypeIdentifiers.framework; sourceTree = DEVELOPER_DIR; };
-		D7EE59FD0AE5647BF8E9BDDF52C8062A /* animal.json */ = {isa = PBXFileReference; includeInIndex = 1; name = animal.json; path = MNSwiftKit/EmoticonKeyboard/Resources/animal.json; sourceTree = "<group>"; };
-		D8421F484D8CC2FC39D6DBD89DE2286B /* MNSwiftKit.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = MNSwiftKit.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		D94D6DEC9093C39303AFA4809C3C4235 /* UIWindow+MNHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIWindow+MNHelper.swift"; path = "MNSwiftKit/Definition/Sources/UIWindow+MNHelper.swift"; sourceTree = "<group>"; };
-		DDD94788856FCA4DCD55764199D4541D /* MNEmoticonInputView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonInputView.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonInputView.swift; sourceTree = "<group>"; };
-		DEB2C1F63E176D8861E0670DA205292C /* MNEmoticonCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonCell.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonCell.swift; sourceTree = "<group>"; };
-		DF0965AE64019318DABAF3C72AF06C9F /* UIApplication+MNHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIApplication+MNHelper.swift"; path = "MNSwiftKit/Definition/Sources/UIApplication+MNHelper.swift"; sourceTree = "<group>"; };
-		E0D76A398D15B35C567E1D029382F654 /* MNEmoticonHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonHelper.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonHelper.swift; sourceTree = "<group>"; };
-		E5EA4111B5C11981B11DF576ACD5316B /* MNSwiftKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = MNSwiftKit.release.xcconfig; sourceTree = "<group>"; };
+		D6CBCE1B64DA4A3768CF449F5EEF716E /* MNPageControl.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNPageControl.swift; path = MNSwiftKit/PageControl/Sources/MNPageControl.swift; sourceTree = "<group>"; };
+		DB74343EFF562F75E28F1971A1AD04AB /* favorites.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = favorites.png; path = MNSwiftKit/EmoticonKeyboard/Resources/favorites.png; sourceTree = "<group>"; };
+		DC807709421A7D080D05C487B1A3C1C6 /* MNEmoticonLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonLayout.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonLayout.swift; sourceTree = "<group>"; };
+		DC939EF83C15EE4F36AB7BEFDE33B445 /* MNSwiftKit-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "MNSwiftKit-Info.plist"; sourceTree = "<group>"; };
 		EAC5FACCFBF0219414D6A85C98E20651 /* Pods-MNSwiftKit_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-MNSwiftKit_Example.modulemap"; sourceTree = "<group>"; };
-		EE9A782D5CEC5B8C3EDCD590236376BF /* wechat.json */ = {isa = PBXFileReference; includeInIndex = 1; name = wechat.json; path = MNSwiftKit/EmoticonKeyboard/Resources/wechat.json; sourceTree = "<group>"; };
+		EAD79DDA4781F101C2A9EA2E4EFF7CAA /* CFNotificationCenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CFNotificationCenter.swift; path = MNSwiftKit/Core/Sources/CFNotificationCenter.swift; sourceTree = "<group>"; };
+		ED5CA521FBA9141DB6050675205AA0B3 /* ResourceBundle-MNSwiftKit_EmoticonKeyboard-MNSwiftKit-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-MNSwiftKit_EmoticonKeyboard-MNSwiftKit-Info.plist"; sourceTree = "<group>"; };
+		F043853C9A560748284811A209B1D9A1 /* MNSwiftKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = MNSwiftKit.debug.xcconfig; sourceTree = "<group>"; };
 		F1DF06A3ABBD3DF7D4AD5DE02C312882 /* Pods-MNSwiftKit_Example-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MNSwiftKit_Example-dummy.m"; sourceTree = "<group>"; };
-		FB17212EDBC9917D9DFF248EFA2D8DB6 /* MNSwiftKit-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "MNSwiftKit-Info.plist"; sourceTree = "<group>"; };
+		F450C3281133F912248DD53FB72745D7 /* MNEmoticonCollection.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonCollection.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonCollection.swift; sourceTree = "<group>"; };
+		F46D297CF31A8F1E702F452A05DA9807 /* MNSwiftKit-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "MNSwiftKit-dummy.m"; sourceTree = "<group>"; };
+		F6B272625501104D28BDE4ECC82C4446 /* MNEmoticonCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonCell.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonCell.swift; sourceTree = "<group>"; };
+		F844D84E2C5B5C0C2AB26B123D50D280 /* MNEmoticonPacketCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPacketCell.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPacketCell.swift; sourceTree = "<group>"; };
+		FAEF941C7FD234796A2962E0E2E754B0 /* UIImage+MNAnimated.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIImage+MNAnimated.swift"; path = "MNSwiftKit/AnimatedImage/Sources/UIImage+MNAnimated.swift"; sourceTree = "<group>"; };
 		FC7D69C66074802BED7887E9A074B200 /* MNSwiftKit */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = MNSwiftKit; path = MNSwiftKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF50D5C25E98E1C4C29C9956EFA5138D /* ensign.json */ = {isa = PBXFileReference; includeInIndex = 1; name = ensign.json; path = MNSwiftKit/EmoticonKeyboard/Resources/ensign.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		22FA5E7F24642529BE4494507CEE392C /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		518B7D5714782B98E4EEF0AAE8C167A7 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				B9675B764A7844CE2EF8C157EDBFCE5E /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5C24CF3893816DFA2B9120E849ED6DD8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -249,18 +251,20 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		1A0F06CFD8DB339CAD1CB92D40EFA1B0 /* Definition */ = {
+		149E91F86E586AFB4A475E23FB3729B0 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				1AEA2CCA45872A7127554108085C14C9 /* MNDefinition.swift */,
-				DF0965AE64019318DABAF3C72AF06C9F /* UIApplication+MNHelper.swift */,
-				6999DE8E51EDB486BFA7D148A3E034B0 /* UINavigationBar+MNHelper.swift */,
-				7D40358E3B71A1CCE05D8D23CDDFF6FA /* UIResponder+MNHelper.swift */,
-				36815A574BC1E215B1CF09D5E5CDC1B4 /* UIScreen+MNHelper.swift */,
-				270A0937E89A3D3CEEA74EF8EBD6B6D0 /* UITabBar+MNHelper.swift */,
-				D94D6DEC9093C39303AFA4809C3C4235 /* UIWindow+MNHelper.swift */,
+				455C514B13BBDD2C813040F7DA617553 /* MNSwiftKit.modulemap */,
+				F46D297CF31A8F1E702F452A05DA9807 /* MNSwiftKit-dummy.m */,
+				DC939EF83C15EE4F36AB7BEFDE33B445 /* MNSwiftKit-Info.plist */,
+				D2EDBB3BC22E47EAD1CF984D7082CA20 /* MNSwiftKit-prefix.pch */,
+				BD569265F0A9C0D324FD83A4C9525C7E /* MNSwiftKit-umbrella.h */,
+				F043853C9A560748284811A209B1D9A1 /* MNSwiftKit.debug.xcconfig */,
+				6D81CF10144525DB7CEB3E83ADC03ADF /* MNSwiftKit.release.xcconfig */,
+				ED5CA521FBA9141DB6050675205AA0B3 /* ResourceBundle-MNSwiftKit_EmoticonKeyboard-MNSwiftKit-Info.plist */,
 			);
-			name = Definition;
+			name = "Support Files";
+			path = "Example/Pods/Target Support Files/MNSwiftKit";
 			sourceTree = "<group>";
 		};
 		1CBFEA88527370A702454897670E8402 /* iOS */ = {
@@ -276,14 +280,6 @@
 			name = iOS;
 			sourceTree = "<group>";
 		};
-		1F0FAF1761EDB3A9D3B6EA302CF0530F /* NameSpace */ = {
-			isa = PBXGroup;
-			children = (
-				2E563D862AEECB372C400A3A437B3B0C /* NameSpaceWrapper.swift */,
-			);
-			name = NameSpace;
-			sourceTree = "<group>";
-		};
 		1F18377B3A375EAD07E36E22C2251C2B /* Targets Support Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -296,9 +292,25 @@
 		2264CFAD8E9158E858B652E2F15B4DA3 /* Development Pods */ = {
 			isa = PBXGroup;
 			children = (
-				93749EED1614871EC59F896F27EBBF02 /* MNSwiftKit */,
+				33DE74EEE003510307E4F39D69AFA729 /* MNSwiftKit */,
 			);
 			name = "Development Pods";
+			sourceTree = "<group>";
+		};
+		33DE74EEE003510307E4F39D69AFA729 /* MNSwiftKit */ = {
+			isa = PBXGroup;
+			children = (
+				A275706EE105ECA6BA728EA057FC04E4 /* AnimatedImage */,
+				80BB6CC61BDB15F13AC8A99DFDAC9FD4 /* Core */,
+				DD00D66E9FC14F8A8DBCA1FA82BA674B /* Definition */,
+				D9C7CE91F4F15A15F18B3273008F5FA4 /* EmoticonKeyboard */,
+				42DBD6EC12237E37E9403ED25DF22657 /* NameSpace */,
+				F071DB1AF003C40600369D3698B742CB /* PageControl */,
+				AD67C090518DB331D53A21F540E2FDCF /* Pod */,
+				149E91F86E586AFB4A475E23FB3729B0 /* Support Files */,
+			);
+			name = MNSwiftKit;
+			path = ../..;
 			sourceTree = "<group>";
 		};
 		3432D7A9DC891F951231A71060F47822 /* Pods-MNSwiftKit_Tests */ = {
@@ -317,68 +329,34 @@
 			path = "Target Support Files/Pods-MNSwiftKit_Tests";
 			sourceTree = "<group>";
 		};
-		622F71039269F91A3A8A6DBE63F77569 /* Support Files */ = {
+		42DBD6EC12237E37E9403ED25DF22657 /* NameSpace */ = {
 			isa = PBXGroup;
 			children = (
-				A951721E31850ADC075BEC238D06CC1D /* MNSwiftKit.modulemap */,
-				8D04729AB36E2564F799EDBD043B2489 /* MNSwiftKit-dummy.m */,
-				FB17212EDBC9917D9DFF248EFA2D8DB6 /* MNSwiftKit-Info.plist */,
-				BD6C0A1A4711C58FC7091FE08353FD31 /* MNSwiftKit-prefix.pch */,
-				D4F98226C94D5EBA9C90BCAEAE259BC9 /* MNSwiftKit-umbrella.h */,
-				8EAD8ED4B3E3D14A9AA87B6F3A9D95F0 /* MNSwiftKit.debug.xcconfig */,
-				E5EA4111B5C11981B11DF576ACD5316B /* MNSwiftKit.release.xcconfig */,
-				A43127D3269A36AB1E6E83050203718B /* ResourceBundle-MNSwiftKit_EmoticonKeyboard-MNSwiftKit-Info.plist */,
+				2D46DEB0EEB1CD62DDF248F6E8A8DB8C /* NameSpaceWrapper.swift */,
 			);
-			name = "Support Files";
-			path = "Example/Pods/Target Support Files/MNSwiftKit";
+			name = NameSpace;
 			sourceTree = "<group>";
 		};
-		65D2B51C3E111DCBF715CCF79E4DF472 /* Pod */ = {
+		80BB6CC61BDB15F13AC8A99DFDAC9FD4 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				95B4C7B53289FB236AA85286B128F2B6 /* LICENSE */,
-				D8421F484D8CC2FC39D6DBD89DE2286B /* MNSwiftKit.podspec */,
-				1C8913FDA57AC0DD2D884AFC99D23593 /* README.md */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
-		8ADD3326CBA1C3685ABC9591594E313E /* Core */ = {
-			isa = PBXGroup;
-			children = (
-				CDE1A5D3D6D05901C406A39886295952 /* CFNotificationCenter.swift */,
-				5690E93E2C82D10B765117DF62BAE25F /* FileHandle.swift */,
-				7F7FCDE68BDE6F571D112A10DB64A438 /* md5.swift */,
-				64043B4BA211C4D6ABCB51C956B57614 /* MNFileManager.swift */,
-				5C07DD67F80D05800A7B9F8AB48E8EF9 /* MNNibSupported.swift */,
-				318ACDB6D7A1402B348DB2E4634B8B6F /* MNSwizzleWrapper.swift */,
-				CFE4F5043C76452FB727C3207F72DAFC /* NibInspectable.swift */,
-				A35CB5F61ABCBCB8F881DCD030B44159 /* PathUtilities.swift */,
-				C56BF56EF5E9DDC13EB04AFE051D3505 /* UserDefaultsWrapper.swift */,
+				EAD79DDA4781F101C2A9EA2E4EFF7CAA /* CFNotificationCenter.swift */,
+				0FA0166376F00AC6BF40C33FE084A68C /* FileHandle.swift */,
+				9679E419BD18AD456DAD77DB2DDC301F /* md5.swift */,
+				0A1204DF85E8BFA020EB9B5AC0CC8C48 /* MNFileManager.swift */,
+				798A36825D4F08AFBC7C439726B12E14 /* MNNibSupported.swift */,
+				2F45A1BC439E01839F12D676753E4AF3 /* MNSwizzleWrapper.swift */,
+				1D52142C10EDA59693989EC715E90105 /* NibInspectable.swift */,
+				BCE016927F2FBDAD74E9A515C8064E6B /* PathUtilities.swift */,
+				748ADDC119A6126349878B3C6416C3C3 /* UserDefaultsWrapper.swift */,
 			);
 			name = Core;
 			sourceTree = "<group>";
 		};
-		93749EED1614871EC59F896F27EBBF02 /* MNSwiftKit */ = {
+		A275706EE105ECA6BA728EA057FC04E4 /* AnimatedImage */ = {
 			isa = PBXGroup;
 			children = (
-				A167AFDCF0AA81D76F6F8D93A39F3A77 /* AnimatedImage */,
-				8ADD3326CBA1C3685ABC9591594E313E /* Core */,
-				1A0F06CFD8DB339CAD1CB92D40EFA1B0 /* Definition */,
-				E072F6476FC9C05A2D7A89DEE8845A3D /* EmoticonKeyboard */,
-				1F0FAF1761EDB3A9D3B6EA302CF0530F /* NameSpace */,
-				C69E74FA3CF23A0A893F8D6349EC7908 /* PageControl */,
-				65D2B51C3E111DCBF715CCF79E4DF472 /* Pod */,
-				622F71039269F91A3A8A6DBE63F77569 /* Support Files */,
-			);
-			name = MNSwiftKit;
-			path = ../..;
-			sourceTree = "<group>";
-		};
-		A167AFDCF0AA81D76F6F8D93A39F3A77 /* AnimatedImage */ = {
-			isa = PBXGroup;
-			children = (
-				5E898FCC64E99279021C59AD936AD1A0 /* UIImage+MNAnimated.swift */,
+				FAEF941C7FD234796A2962E0E2E754B0 /* UIImage+MNAnimated.swift */,
 			);
 			name = AnimatedImage;
 			sourceTree = "<group>";
@@ -400,12 +378,14 @@
 			path = "Target Support Files/Pods-MNSwiftKit_Example";
 			sourceTree = "<group>";
 		};
-		C69E74FA3CF23A0A893F8D6349EC7908 /* PageControl */ = {
+		AD67C090518DB331D53A21F540E2FDCF /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				5C7A88B386F992AC9EA29BB6D65919D6 /* MNPageControl.swift */,
+				376C5DA69FC69874B390E16764840BCF /* LICENSE */,
+				2B783D5EAB78B2FB1230F1040FDF567D /* MNSwiftKit.podspec */,
+				A562204FA8637C98E154F30C413D568C /* README.md */,
 			);
-			name = PageControl;
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		CF1408CF629C7361332E53B88F7BD30C = {
@@ -427,46 +407,69 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		E072F6476FC9C05A2D7A89DEE8845A3D /* EmoticonKeyboard */ = {
+		D9C7CE91F4F15A15F18B3273008F5FA4 /* EmoticonKeyboard */ = {
 			isa = PBXGroup;
 			children = (
-				A153731B4E21916CEE4289F45C2861F8 /* add.png */,
-				D7EE59FD0AE5647BF8E9BDDF52C8062A /* animal.json */,
-				ACA80EC94DB692079F863C73A4119E0F /* delete-hor.png */,
-				CE78DE5635C830FEED842BDA629159C7 /* delete-ver.png */,
-				8163401EC0A04788ED52179D04D3A096 /* EmoticonResource.swift */,
-				262103648BA84FE5EAA78350AB0C2535 /* emotion.json */,
-				72F9D4BCC4347253922055F0D71BD894 /* ensign.json */,
-				2D71B55C06A3F454E21BF5472B261BF7 /* favorites.png */,
-				0406E74C93456E24F2E742F5D079325A /* food.json */,
-				693C3965B0A32456CC66DE3D99CE69C4 /* MNEmoticon.swift */,
-				74BF8211B9309DCB8AA0DF1DAEA14E6E /* MNEmoticonAttachment.swift */,
-				1D1CE7E7E56F51E07CF5B4B1BD72BABD /* MNEmoticonBackedString.swift */,
-				61F845C2E9E0C6EEFCCA8C4B6CBEAC9F /* MNEmoticonButton.swift */,
-				DEB2C1F63E176D8861E0670DA205292C /* MNEmoticonCell.swift */,
-				436CFC4AD6F66E50DBF787C2134F802E /* MNEmoticonCollection.swift */,
-				26BC95058EF4F7A0A1F0A527E97007A2 /* MNEmoticonElementView.swift */,
-				E0D76A398D15B35C567E1D029382F654 /* MNEmoticonHelper.swift */,
-				842C2D55EC2C6F89097CE1051ED616E3 /* MNEmoticonInputSupported.swift */,
-				DDD94788856FCA4DCD55764199D4541D /* MNEmoticonInputView.swift */,
-				35B292C6D4378E9A9CB5939FDD67895F /* MNEmoticonKeyboard.swift */,
-				3DE20AA5AE6404658A9B72A41A8CC9C1 /* MNEmoticonKeyboardOptions.swift */,
-				5B4511BF6CC9FF0117347A7E1AEF47B1 /* MNEmoticonLayout.swift */,
-				3AF777F8B0869608B47840FB898FDB72 /* MNEmoticonManager.swift */,
-				73491F737202E3F6099F016FCF8D0820 /* MNEmoticonPacket.swift */,
-				7277C3996FA37448F77965CDAA56C9FA /* MNEmoticonPacketCell.swift */,
-				2C51B6E2BD477A2E13A8391F427B4C5B /* MNEmoticonPacketView.swift */,
-				8034ED91BA97FC1B8051A49A4AB2A4FD /* MNEmoticonPageView.swift */,
-				4F23A5322D2C7AEC74D1BE27CEB9D73B /* MNEmoticonPreview.swift */,
-				CFEF48901B2FE9C1322FADD41AAF5E85 /* MNEmoticonView.swift */,
-				10238C476D8DE4DA056E13413E83C334 /* NSAttributedString+MNEmoticonSupported.swift */,
-				7A739916A7808635EEDA2355D0F3CA53 /* personage.json */,
-				C8CF960A36FDF878083AC783F5E6214C /* shadow.png */,
-				4AAAB36F9636B3FCA32BE44FF2ABD26A /* symbol.json */,
-				A5F97064534ACF7EA160715F5054F95A /* vehicle.json */,
-				EE9A782D5CEC5B8C3EDCD590236376BF /* wechat.json */,
+				2BCDA0E1C3186F1ED78F34FA4CF26386 /* add.png */,
+				95E165C0A23F84C8603144C481826522 /* animal.json */,
+				0C015342B1D383E14AAE8FEF404A5824 /* delete-hor.png */,
+				C85218F850A4B72F393789068E2918AF /* delete-ver.png */,
+				5C7DC2F7E885963DA7696241D48814E3 /* EmoticonResource.swift */,
+				6DF41326241FF47E0CF790F99C4EFDFB /* emotion.json */,
+				FF50D5C25E98E1C4C29C9956EFA5138D /* ensign.json */,
+				DB74343EFF562F75E28F1971A1AD04AB /* favorites.png */,
+				3F43B5553845A8DFAFD831CD78E90884 /* food.json */,
+				B7E13224C2BD14BA78CEA419D4534276 /* MNEmoticon.swift */,
+				011161086BE8C2CDF36B0DC7630A4D16 /* MNEmoticonAttachment.swift */,
+				546728F3F2AEFD6A3F2446A4F0F100B9 /* MNEmoticonBackedString.swift */,
+				7A2CB88D203CB613658AA9DDD759A99E /* MNEmoticonButton.swift */,
+				F6B272625501104D28BDE4ECC82C4446 /* MNEmoticonCell.swift */,
+				F450C3281133F912248DD53FB72745D7 /* MNEmoticonCollection.swift */,
+				BEBE99E6F15BDE23AFFF4314931CAC6C /* MNEmoticonElementView.swift */,
+				14F50260FB441C79CA50ACA424BD48EB /* MNEmoticonHelper.swift */,
+				BE76D26BB217F781F192BAE35A5B6B5F /* MNEmoticonInputSupported.swift */,
+				0FFC7B7A75D8B80007E90B325EF52918 /* MNEmoticonInputView.swift */,
+				233802D6FFEDE86252C6C004CC0C2FC7 /* MNEmoticonKeyboard.swift */,
+				57A25DC8A588F00056429DCD29964435 /* MNEmoticonKeyboardOptions.swift */,
+				DC807709421A7D080D05C487B1A3C1C6 /* MNEmoticonLayout.swift */,
+				A582EEDE52BD0DFF46DA2E14D4B72AE8 /* MNEmoticonManager.swift */,
+				765E5A8086D7D1E788DA55BC1432CAC2 /* MNEmoticonPacket.swift */,
+				F844D84E2C5B5C0C2AB26B123D50D280 /* MNEmoticonPacketCell.swift */,
+				1D012CCD6F8FB3CBB34262173F341510 /* MNEmoticonPacketView.swift */,
+				21A759B4B3DB224AE8202C2650CF225D /* MNEmoticonPageView.swift */,
+				1A15AD27C7AB085A82A187EDCF4785DF /* MNEmoticonPreview.swift */,
+				9FB9798C7A9AF37905287DEB45A89006 /* MNEmoticonView.swift */,
+				7E2D2D0991A841EB16559BE68EC09A67 /* NSAttributedString+MNEmoticonSupported.swift */,
+				CCB4B8188F966F85CE606E79CDFD0EBB /* personage.json */,
+				887DEA8645A838F7890C647ACDE77EC2 /* shadow.png */,
+				9A2DB3A356FB526F40A7B9ED184091FE /* symbol.json */,
+				657A0A70322AD21D8523E9F5CA417412 /* vehicle.json */,
+				0B79423A15F95F61E1504737AFA1C77C /* wechat */,
+				916C0AC9AD5C033CAB03342D8EEF1458 /* wechat.json */,
 			);
 			name = EmoticonKeyboard;
+			sourceTree = "<group>";
+		};
+		DD00D66E9FC14F8A8DBCA1FA82BA674B /* Definition */ = {
+			isa = PBXGroup;
+			children = (
+				C824369B08F4B734EC7AC3BA04FD480D /* MNDefinition.swift */,
+				7D0C21356CCD0D410F085BEBD58E9462 /* UIApplication+MNHelper.swift */,
+				95FAE2A768BBC9BE2AF44A8E861DE486 /* UINavigationBar+MNHelper.swift */,
+				A184CF4838FF913A61336535B0F9CDA4 /* UIResponder+MNHelper.swift */,
+				71D4C8FA6E1178665C1B134D3DDE02F2 /* UIScreen+MNHelper.swift */,
+				8E3231E51A4CCB814BAF84E159D023FE /* UITabBar+MNHelper.swift */,
+				C8C49C0FB36451DC67FEAC310F89CFD9 /* UIWindow+MNHelper.swift */,
+			);
+			name = Definition;
+			sourceTree = "<group>";
+		};
+		F071DB1AF003C40600369D3698B742CB /* PageControl */ = {
+			isa = PBXGroup;
+			children = (
+				D6CBCE1B64DA4A3768CF449F5EEF716E /* MNPageControl.swift */,
+			);
+			name = PageControl;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -511,7 +514,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				168B982C0A422C3C61E140C691730BE6 /* PBXTargetDependency */,
+				01778499D9D2635FAED35D9CE91241E9 /* PBXTargetDependency */,
 			);
 			name = "Pods-MNSwiftKit_Example";
 			productName = Pods_MNSwiftKit_Example;
@@ -530,7 +533,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				843D5AC62A2B68A582401D44F7DDABD0 /* PBXTargetDependency */,
+				84E6AEE1994B5C0B0617CFE12B583343 /* PBXTargetDependency */,
 			);
 			name = "Pods-MNSwiftKit_Tests";
 			productName = Pods_MNSwiftKit_Tests;
@@ -549,7 +552,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				A1EB608425F473C5553402BB07BAB99C /* PBXTargetDependency */,
+				F3721016A098D9E256965A50735BFB2D /* PBXTargetDependency */,
 			);
 			name = MNSwiftKit;
 			productName = MNSwiftKit;
@@ -558,11 +561,11 @@
 		};
 		52E39E8CBB2893119C3A574F658ED5A3 /* MNSwiftKit-MNSwiftKit_EmoticonKeyboard */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A36C4D06C159D3ABB0246C44A8AE6EC0 /* Build configuration list for PBXNativeTarget "MNSwiftKit-MNSwiftKit_EmoticonKeyboard" */;
+			buildConfigurationList = FCF415BDF4DC74A4916B38071C049ACA /* Build configuration list for PBXNativeTarget "MNSwiftKit-MNSwiftKit_EmoticonKeyboard" */;
 			buildPhases = (
-				018A33B8216C87255356D82A320DB97F /* Sources */,
-				22FA5E7F24642529BE4494507CEE392C /* Frameworks */,
-				F7A97C744CD48A93E8B54B821C11E203 /* Resources */,
+				CD4FF4CFEE31A03E7EBE2EF7D6A38E80 /* Sources */,
+				5C24CF3893816DFA2B9120E849ED6DD8 /* Frameworks */,
+				6C59758DD99D3B30DD9077A226D877B3 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -613,6 +616,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6C59758DD99D3B30DD9077A226D877B3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FC16C649D097CE3628E9873AE4CEB2F2 /* add.png in Resources */,
+				603ACC54C3AB7C4F0BEB1E6D670554DF /* animal.json in Resources */,
+				BFE8E0BF0793704A55E6D47CC559D6FF /* delete-hor.png in Resources */,
+				3ED4F407889638316A9EB86394100226 /* delete-ver.png in Resources */,
+				88EF6CEC2808F5DB3F0FF603B66CF0FC /* emotion.json in Resources */,
+				B8E98E3C8C57B94B3E4867694E1C62F3 /* ensign.json in Resources */,
+				314A1F7D8B75A3C6FB5227E621D3A4FF /* favorites.png in Resources */,
+				9D8ABB91AD56ECD674F0DFB763351FAC /* food.json in Resources */,
+				81B0C7FE6A877AFFD85C22AF3A61C6BF /* personage.json in Resources */,
+				C0825D0CFF2D94CCF8B82D5E0D0ACAD5 /* shadow.png in Resources */,
+				E5F0582D763B11E6803436AE3E351BD9 /* symbol.json in Resources */,
+				3894FBD5CF75CC163A711E08AE000F06 /* vehicle.json in Resources */,
+				F94828E31107584E4B1370C497D97725 /* wechat in Resources */,
+				7AC78FEA82B304A11F229459A14FD3D9 /* wechat.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B42EB806A22B6BE889DB1E973DD44B51 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -628,36 +652,9 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F7A97C744CD48A93E8B54B821C11E203 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				112F111044E76556376BF20E35F80CEF /* add.png in Resources */,
-				820776B8B682654572C9E655DCA33368 /* animal.json in Resources */,
-				C5525C483A0A2BC261E101C6A3F48003 /* delete-hor.png in Resources */,
-				4C32B7DAA6FDAB2B469B7EF2BB307DF0 /* delete-ver.png in Resources */,
-				EB54A8B50CB1FCB6352F95075A7A44E0 /* emotion.json in Resources */,
-				94FBFF39E935E46458D5D70D3D2C6202 /* ensign.json in Resources */,
-				AC0A594EB74076FBC5129F7158058FCB /* favorites.png in Resources */,
-				E3BB98EB1EF59E36DA7B5CB8F942B031 /* food.json in Resources */,
-				008829BEE60AA34D194DF81D58706B70 /* personage.json in Resources */,
-				0ABB1636484EC10FD54F9C52B08B2B04 /* shadow.png in Resources */,
-				F1B66F1CFA9CA01E8E8F23C798D1848B /* symbol.json in Resources */,
-				7B4B28D45520A3A8783CBE5103578808 /* vehicle.json in Resources */,
-				90FE39C4E0D31BCD7BF31FBE02FA09DE /* wechat.json in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		018A33B8216C87255356D82A320DB97F /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		3DC99440A222F81CCB2EE9853389DDFD /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -707,6 +704,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CD4FF4CFEE31A03E7EBE2EF7D6A38E80 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EFE8A5B0376C3A1C04FBFA6283C6FD8D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -726,23 +730,23 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		168B982C0A422C3C61E140C691730BE6 /* PBXTargetDependency */ = {
+		01778499D9D2635FAED35D9CE91241E9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = MNSwiftKit;
 			target = 44175BA3038286B71BDF4ED00AD7D682 /* MNSwiftKit */;
-			targetProxy = FBF5EEE054D3D91154D75F140FE0A782 /* PBXContainerItemProxy */;
+			targetProxy = 158E9906F8F34BE642F84A7E58E52842 /* PBXContainerItemProxy */;
 		};
-		843D5AC62A2B68A582401D44F7DDABD0 /* PBXTargetDependency */ = {
+		84E6AEE1994B5C0B0617CFE12B583343 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "Pods-MNSwiftKit_Example";
 			target = 21CE195DAB5760AE3081E84CA608C23C /* Pods-MNSwiftKit_Example */;
-			targetProxy = B93B70864718D5C5C1EBA4B875590E92 /* PBXContainerItemProxy */;
+			targetProxy = E4C220A6B39320AFCEEE660FC7948D70 /* PBXContainerItemProxy */;
 		};
-		A1EB608425F473C5553402BB07BAB99C /* PBXTargetDependency */ = {
+		F3721016A098D9E256965A50735BFB2D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "MNSwiftKit-MNSwiftKit_EmoticonKeyboard";
 			target = 52E39E8CBB2893119C3A574F658ED5A3 /* MNSwiftKit-MNSwiftKit_EmoticonKeyboard */;
-			targetProxy = 721029CF3278A6641E1D5C3E2721861A /* PBXContainerItemProxy */;
+			targetProxy = 7A33401CD8C93639A895BAA6989A658B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -882,40 +886,6 @@
 			};
 			name = Debug;
 		};
-		2D102A99D8AE809C273139691DA7A349 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E5EA4111B5C11981B11DF576ACD5316B /* MNSwiftKit.release.xcconfig */;
-			buildSettings = {
-				CODE_SIGNING_ALLOWED = NO;
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/MNSwiftKit";
-				IBSC_MODULE = MNSwiftKit;
-				INFOPLIST_FILE = "Target Support Files/MNSwiftKit/ResourceBundle-MNSwiftKit_EmoticonKeyboard-MNSwiftKit-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				PRODUCT_NAME = MNSwiftKit_EmoticonKeyboard;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				WRAPPER_EXTENSION = bundle;
-			};
-			name = Release;
-		};
-		476E047A34B00670EFCE6410AB5752C1 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8EAD8ED4B3E3D14A9AA87B6F3A9D95F0 /* MNSwiftKit.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGNING_ALLOWED = NO;
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/MNSwiftKit";
-				IBSC_MODULE = MNSwiftKit;
-				INFOPLIST_FILE = "Target Support Files/MNSwiftKit/ResourceBundle-MNSwiftKit_EmoticonKeyboard-MNSwiftKit-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				PRODUCT_NAME = MNSwiftKit_EmoticonKeyboard;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				WRAPPER_EXTENSION = bundle;
-			};
-			name = Debug;
-		};
 		98F2AF6EA5607292616BA6D0F1712B58 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 71FFE15F4103052304ABCB5717BEF6A4 /* Pods-MNSwiftKit_Example.debug.xcconfig */;
@@ -952,7 +922,7 @@
 		};
 		A3B2E6FA0AAC4DD451709D02D7B7D88F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E5EA4111B5C11981B11DF576ACD5316B /* MNSwiftKit.release.xcconfig */;
+			baseConfigurationReference = 6D81CF10144525DB7CEB3E83ADC03ADF /* MNSwiftKit.release.xcconfig */;
 			buildSettings = {
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -985,9 +955,26 @@
 			};
 			name = Release;
 		};
+		C0B0371CA2A49BA06E076C5D445C8AA8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6D81CF10144525DB7CEB3E83ADC03ADF /* MNSwiftKit.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/MNSwiftKit";
+				IBSC_MODULE = MNSwiftKit;
+				INFOPLIST_FILE = "Target Support Files/MNSwiftKit/ResourceBundle-MNSwiftKit_EmoticonKeyboard-MNSwiftKit-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				PRODUCT_NAME = MNSwiftKit_EmoticonKeyboard;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
 		C69CF7C52C245A4156997C8BAABEE760 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8EAD8ED4B3E3D14A9AA87B6F3A9D95F0 /* MNSwiftKit.debug.xcconfig */;
+			baseConfigurationReference = F043853C9A560748284811A209B1D9A1 /* MNSwiftKit.debug.xcconfig */;
 			buildSettings = {
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -1081,6 +1068,23 @@
 			};
 			name = Release;
 		};
+		D173A36E1169374BC5C3F3D8FC4CAFDD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F043853C9A560748284811A209B1D9A1 /* MNSwiftKit.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/MNSwiftKit";
+				IBSC_MODULE = MNSwiftKit;
+				INFOPLIST_FILE = "Target Support Files/MNSwiftKit/ResourceBundle-MNSwiftKit_EmoticonKeyboard-MNSwiftKit-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				PRODUCT_NAME = MNSwiftKit_EmoticonKeyboard;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
 		EE41A54D002D0F7D10FFE43F14E46385 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 72329E722013CF4F93BA21477C0FDACB /* Pods-MNSwiftKit_Example.release.xcconfig */;
@@ -1137,15 +1141,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A36C4D06C159D3ABB0246C44A8AE6EC0 /* Build configuration list for PBXNativeTarget "MNSwiftKit-MNSwiftKit_EmoticonKeyboard" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				476E047A34B00670EFCE6410AB5752C1 /* Debug */,
-				2D102A99D8AE809C273139691DA7A349 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		B18E3945671967D67BAE8015169D1B43 /* Build configuration list for PBXNativeTarget "Pods-MNSwiftKit_Example" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1160,6 +1155,15 @@
 			buildConfigurations = (
 				132C509B4AFEC0D3E37F7B0FB1930C02 /* Debug */,
 				23694364B48762DBF0DC8B94B06865B1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FCF415BDF4DC74A4916B38071C049ACA /* Build configuration list for PBXNativeTarget "MNSwiftKit-MNSwiftKit_EmoticonKeyboard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D173A36E1169374BC5C3F3D8FC4CAFDD /* Debug */,
+				C0B0371CA2A49BA06E076C5D445C8AA8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

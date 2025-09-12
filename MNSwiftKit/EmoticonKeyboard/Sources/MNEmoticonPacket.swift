@@ -65,13 +65,7 @@ extension MNEmoticon {
                 self.name = name
                 self.cover = cover
                 self.allowsEditing = name == MNEmoticon.Packet.Name.favorites.rawValue
-                var directoryURL = url.deletingPathExtension()
-#if canImport(MNSwiftKit)
-                if name == MNEmoticon.Packet.Name.wechat.rawValue {
-                    // 在bundle中
-                    directoryURL = url.deletingLastPathComponent()
-                }
-#endif
+                let directoryURL = url.deletingPathExtension()
                 if #available(iOS 16.0, *) {
                     self.directory = directoryURL.path(percentEncoded: false)
                 } else {
@@ -81,7 +75,7 @@ extension MNEmoticon {
                 self.emoticons.append(contentsOf: emoticons)
             } catch {
 #if DEBUG
-                print("解析表情包失败: \(url)")
+                print("解析表情包失败: \(url)\n\(error)")
 #endif
                 return nil
             }
@@ -109,6 +103,20 @@ extension MNEmoticon.Packet.Name {
     public static let wechat: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "wechat")
     /// 收藏夹
     public static let favorites: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "收藏夹")
+    /// Unicode - 动物和自然
+    public static let animal: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "animal")
+    /// Unicode - 笑脸和情感
+    public static let emotion: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "emotion")
+    /// Unicode - 国旗
+    public static let ensign: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "ensign")
+    /// Unicode - 食物和饮料
+    public static let food: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "food")
+    /// Unicode - 手势和人物
+    public static let personage: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "personage")
+    /// Unicode - 符号和对象
+    public static let symbol: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "symbol")
+    /// Unicode - 交通工具
+    public static let vehicle: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "vehicle")
 }
 
 extension MNEmoticon.Packet.Key {

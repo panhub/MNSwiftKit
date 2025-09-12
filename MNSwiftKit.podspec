@@ -210,7 +210,7 @@ Pod::Spec.new do |s|
     e.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
     e.source_files = 'MNSwiftKit/EmoticonKeyboard/Sources/**/*.swift'
     e.resource_bundles = {
-        'MNSwiftKit_EmoticonKeyboard' => ['MNSwiftKit/EmoticonKeyboard/Resources/*.{png,json}','MNSwiftKit/EmoticonKeyboard/Resources/default/*.{png,jpg,jpeg}']
+        'MNSwiftKit_EmoticonKeyboard' => ['MNSwiftKit/EmoticonKeyboard/Resources/*']
     }
     e.dependency 'MNSwiftKit/Core'
     e.dependency 'MNSwiftKit/Definition'

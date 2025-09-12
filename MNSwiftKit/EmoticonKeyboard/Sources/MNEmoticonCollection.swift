@@ -35,12 +35,7 @@ class MNEmoticonCollection {
                 partialResult[desc] = img
             })
             self.name = name
-            var directoryURL = url.deletingPathExtension()
-#if canImport(MNSwiftKit)
-            if name == MNEmoticon.Packet.Name.wechat.rawValue {
-                directoryURL = url.deletingLastPathComponent()
-            }
-#endif
+            let directoryURL = url.deletingPathExtension()
             if #available(iOS 16.0, *) {
                 self.directory = directoryURL.path(percentEncoded: false)
             } else {

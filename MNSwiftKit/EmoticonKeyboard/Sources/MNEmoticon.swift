@@ -31,29 +31,29 @@ public class MNEmoticon {
     }
     
     /// 图片名
-    public var img: String!
+    public private(set) var img: String!
     /// 表情描述
-    public var desc: String!
-    /// 资源所在文件目录
-    public var directory: String!
+    public private(set) var desc: String!
     /// 图像实例
-    public var image: UIImage!
+    public private(set) var image: UIImage!
     /// 类型
-    public var style: MNEmoticon.Style = .emoticon
+    public private(set) var style: MNEmoticon.Style = .emoticon
     
     fileprivate init() {}
     
     /// 构造表情实例
     /// - Parameter json: 表情描述
     public init?(json: [String:String], style: MNEmoticon.Style = .emoticon, in directory: String) {
-        guard let img = json[MNEmoticon.Key.img.rawValue], img.isEmpty == false else { return nil }
+        guard var img = json[MNEmoticon.Key.img.rawValue], img.isEmpty == false else { return nil }
         guard let desc = json[MNEmoticon.Key.desc.rawValue], desc.isEmpty == false else { return nil }
-        let imagePath = directory.appendingPathComponent(img)
-        guard FileManager.default.fileExists(atPath: imagePath) else { return nil }
-        self.img = img
+        if style != .unicode {
+            let imagePath = directory.appendingPathComponent(img)
+            guard FileManager.default.fileExists(atPath: imagePath) else { return nil }
+            self.image = UIImage.image(contentsAtFile: imagePath)
+        }
+        self.img = style == .unicode ? String(img.removeFirst()) : img
         self.desc = desc
-        self.directory = directory
-        self.image = UIImage.image(contentsAtFile: imagePath)
+        self.style = style
     }
 }
 
@@ -66,7 +66,6 @@ extension MNEmoticon {
             img = "add.png"
             desc = "[添加]"
             style = .image
-            directory = EmoticonResource.path(forResource: "add", ofType: "png")
             image = EmoticonResource.image(named: "add")
         }
     }

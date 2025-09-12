@@ -310,8 +310,7 @@
       "source_files": "MNSwiftKit/EmoticonKeyboard/Sources/**/*.swift",
       "resource_bundles": {
         "MNSwiftKit_EmoticonKeyboard": [
-          "MNSwiftKit/EmoticonKeyboard/Resources/*.{png,json}",
-          "MNSwiftKit/EmoticonKeyboard/Resources/default/*.{png,jpg,jpeg}"
+          "MNSwiftKit/EmoticonKeyboard/Resources/*"
         ]
       },
       "dependencies": {
