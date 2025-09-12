@@ -1,0 +1,55 @@
+{
+  "style" : 1,
+  "name": "国旗",
+  "cover" : "favorites.png",
+  "emoticons": [
+    {
+      "desc": "[中国]",
+      "img": "\u{1F1E8}\u{1F1F3}"
+    },
+    {
+      "desc": "[美国]",
+      "img": "\u{1F1FA}\u{1F1F8}"
+    },
+    {
+      "desc": "[日本]",
+      "img": "\u{1F1EF}\u{1F1F5}"
+    },
+    {
+      "desc": "[韩国]",
+      "img": "\u{1F1F0}\u{1F1F7}"
+    },
+    {
+      "desc": "[英国]",
+      "img": "\u{1F1EC}\u{1F1E7}"
+    },
+    {
+      "desc": "[法国]",
+      "img": "\u{1F1EB}\u{1F1F7}"
+    },
+    {
+      "desc": "[德国]",
+      "img": "\u{1F1E9}\u{1F1EA}"
+    },
+    {
+      "desc": "[加拿大]",
+      "img": "\u{1F1E8}\u{1F1E6}"
+    },
+    {
+      "desc": "[澳大利亚]",
+      "img": "\u{1F1E6}\u{1F1FA}"
+    },
+    {
+      "desc": "[巴西]",
+      "img": "\u{1F1E7}\u{1F1F7}"
+    },
+    {
+      "desc": "[俄罗斯]",
+      "img": "\u{1F1F7}\u{1F1FA}"
+    },
+    {
+      "desc": "[印度]",
+      "img": "\u{1F1EE}\u{1F1F3}"
+    }
+  ]
+}

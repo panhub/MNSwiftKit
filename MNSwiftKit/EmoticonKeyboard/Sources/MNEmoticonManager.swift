@@ -25,14 +25,14 @@ public class MNEmoticonManager {
     /// 内部加载的表情集合
     private(set) var collections: [MNEmoticonCollection] = []
     /// 用户缓存目录
-    public let userEmoticonDirectory = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first! + "/MNEmoticon"
+    public let userEmoticonDirectory = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first! + "/MNSwiftKit/emoticons"
     /// 收藏夹路径
     public private(set) lazy var favoritesDirectory = userEmoticonDirectory.appendingPathComponent(MNEmoticon.Packet.Name.favorites.rawValue.mn.md5)
     
     /// 构造表情管理者
     private init() {
         var urls: [URL] = []
-        if let url = EmoticonResource.url(forResource: MNEmoticon.Packet.Name.default.rawValue, withExtension: "json") {
+        if let url = EmoticonResource.url(forResource: MNEmoticon.Packet.Name.wechat.rawValue, withExtension: "json") {
             urls.append(url)
         }
         if let subpaths = FileManager.default.subpaths(atPath: userEmoticonDirectory) {
@@ -138,7 +138,7 @@ extension MNEmoticonManager {
 #endif
             return false
         }
-        if name == MNEmoticon.Packet.Name.default.rawValue {
+        if name == MNEmoticon.Packet.Name.wechat.rawValue {
 #if DEBUG
             print("'default'表情包不可编辑")
 #endif
@@ -216,7 +216,7 @@ extension MNEmoticonManager {
 #endif
             return false
         }
-        if name == MNEmoticon.Packet.Name.default.rawValue {
+        if name == MNEmoticon.Packet.Name.wechat.rawValue {
 #if DEBUG
             print("'default'表情包不可编辑")
 #endif
@@ -549,7 +549,7 @@ extension MNEmoticonManager {
 #endif
             return false
         }
-        if name == MNEmoticon.Packet.Name.default.rawValue {
+        if name == MNEmoticon.Packet.Name.wechat.rawValue {
 #if DEBUG
             print("'default'表情包不可编辑")
 #endif
@@ -679,7 +679,7 @@ extension MNEmoticonManager {
 #endif
             return false
         }
-        if name == MNEmoticon.Packet.Name.default.rawValue {
+        if name == MNEmoticon.Packet.Name.wechat.rawValue {
 #if DEBUG
             print("'default'表情包不可编辑")
 #endif
@@ -799,7 +799,7 @@ extension MNEmoticonManager {
 #endif
             return false
         }
-        if name == MNEmoticon.Packet.Name.default.rawValue {
+        if name == MNEmoticon.Packet.Name.wechat.rawValue {
 #if DEBUG
             print("'default'表情包不可编辑")
 #endif

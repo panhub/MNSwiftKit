@@ -67,7 +67,7 @@ extension MNEmoticon {
                 self.allowsEditing = name == MNEmoticon.Packet.Name.favorites.rawValue
                 var directoryURL = url.deletingPathExtension()
 #if canImport(MNSwiftKit)
-                if name == MNEmoticon.Packet.Name.default.rawValue {
+                if name == MNEmoticon.Packet.Name.wechat.rawValue {
                     // 在bundle中
                     directoryURL = url.deletingLastPathComponent()
                 }
@@ -105,8 +105,8 @@ extension MNEmoticon.Packet.Name: Equatable {
 }
 
 extension MNEmoticon.Packet.Name {
-    /// 默认表情包
-    public static let `default`: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "default")
+    /// 微信表情
+    public static let wechat: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "wechat")
     /// 收藏夹
     public static let favorites: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "收藏夹")
 }

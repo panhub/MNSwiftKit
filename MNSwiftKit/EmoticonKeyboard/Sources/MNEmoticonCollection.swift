@@ -37,7 +37,7 @@ class MNEmoticonCollection {
             self.name = name
             var directoryURL = url.deletingPathExtension()
 #if canImport(MNSwiftKit)
-            if name == MNEmoticon.Packet.Name.default.rawValue {
+            if name == MNEmoticon.Packet.Name.wechat.rawValue {
                 directoryURL = url.deletingLastPathComponent()
             }
 #endif

@@ -13,7 +13,12 @@ public class MNEmoticon {
     
     @objc(MNEmoticonStyle)
     public enum Style: Int {
-        case emoticon, image
+        /// 类似于微信表情
+        case emoticon
+        /// Unicode形式
+        case unicode
+        /// 图片
+        case image
     }
     
     public struct Key: RawRepresentable {

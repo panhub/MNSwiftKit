@@ -21,7 +21,7 @@ extension MNEmoticonKeyboard {
     @objc(MNEmoticonKeyboardOptions)
     public class Options: NSObject {
         /// 表情包
-        @objc public var packets: [String] = [MNEmoticon.Packet.Name.default.rawValue, MNEmoticon.Packet.Name.favorites.rawValue]
+        @objc public var packets: [String] = [MNEmoticon.Packet.Name.wechat.rawValue, MNEmoticon.Packet.Name.favorites.rawValue]
         /// returnKey类型
         @objc public var returnKeyType: UIReturnKeyType = .default
         /// compact: 只有一个表情包时 是否隐藏表情包栏

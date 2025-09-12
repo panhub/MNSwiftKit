@@ -37,7 +37,7 @@ class ViewController: UIViewController {
         let options = MNEmoticonKeyboard.Options()
         options.returnKeyType = .done
         options.hidesForSingle = true
-        options.packets = [MNEmoticon.Packet.Name.default.rawValue]
+        options.packets = [MNEmoticon.Packet.Name.wechat.rawValue]
         let emoticonKeyboard = MNEmoticonKeyboard(frame: .init(origin: .zero, size: .init(width: MN_SCREEN_WIDTH, height: 300.0 + MN_BOTTOM_SAFE_HEIGHT)), style: .paging, options: options)
         emoticonKeyboard.delegate = self
         textView.inputView = emoticonKeyboard
@@ -60,7 +60,7 @@ class ViewController: UIViewController {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
         textView.resignFirstResponder()
-        let attributedText = NSAttributedString(string: "🐼", attributes: [.font:label.font!])
+        let attributedText = NSAttributedString(string: "\u{1F600}", attributes: [.font:label.font!])
         label.attributedText =  attributedText
         let x = attributedText.string
         let z = x.count
