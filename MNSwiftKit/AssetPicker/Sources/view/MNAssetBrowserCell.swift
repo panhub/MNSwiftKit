@@ -96,7 +96,7 @@ class MNAssetBrowserCell: UICollectionViewCell {
     /// 播放器控制栏
     private lazy var toolBar: UIImageView = {
         let toolBar = UIImageView(frame: CGRect(x: 0.0, y: 0.0, width: contentView.bounds.width, height: MNAssetBrowserCell.ToolBarHeight))
-        toolBar.mn_layout.maxY = contentView.bounds.height
+        toolBar.mn.maxY = contentView.bounds.height
         toolBar.image = AssetPickerResource.image(named: "bottom")
         toolBar.isUserInteractionEnabled = true
         toolBar.contentMode = .scaleToFill
@@ -126,8 +126,8 @@ class MNAssetBrowserCell: UICollectionViewCell {
             playButton.setBackgroundImage(AssetPickerResource.image(named: "browser_pause"), for: .selected)
         }
         playButton.frame = CGRect(x: 0.0, y: 0.0, width: 25.0, height: 25.0)
-        playButton.mn_layout.minX = 10.0
-        playButton.mn_layout.midY = (toolBar.bounds.height - MN_BOTTOM_SAFE_HEIGHT)/2.0
+        playButton.mn.minX = 10.0
+        playButton.mn.midY = (toolBar.bounds.height - MN_BOTTOM_SAFE_HEIGHT)/2.0
         playButton.addTarget(self, action: #selector(playButtonTouchUpInside), for: .touchUpInside)
         return playButton
     }()
@@ -139,9 +139,9 @@ class MNAssetBrowserCell: UICollectionViewCell {
         timeLabel.textAlignment = .center
         timeLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .medium)
         timeLabel.sizeToFit()
-        timeLabel.mn_layout.width = ceil(timeLabel.frame.width) + 25.0
-        timeLabel.mn_layout.midY = playButton.frame.midY
-        timeLabel.mn_layout.minX = playButton.frame.maxX
+        timeLabel.mn.width = ceil(timeLabel.frame.width) + 25.0
+        timeLabel.mn.midY = playButton.frame.midY
+        timeLabel.mn.minX = playButton.frame.maxX
         return timeLabel
     }()
     /// 时长
@@ -152,15 +152,15 @@ class MNAssetBrowserCell: UICollectionViewCell {
         durationLabel.textColor = timeLabel.textColor
         durationLabel.textAlignment = .right
         durationLabel.sizeToFit()
-        durationLabel.mn_layout.width = ceil(durationLabel.frame.width) + 12.5
-        durationLabel.mn_layout.maxX = toolBar.frame.width - 15.0
-        durationLabel.mn_layout.midY = playButton.frame.midY
+        durationLabel.mn.width = ceil(durationLabel.frame.width) + 12.5
+        durationLabel.mn.maxX = toolBar.frame.width - 15.0
+        durationLabel.mn.midY = playButton.frame.midY
         return durationLabel
     }()
     /// 进度控制
     private lazy var slider: MNSlider = {
         let slider = MNSlider(frame: CGRect(x: timeLabel.frame.maxX, y: 0.0, width: durationLabel.frame.minX - timeLabel.frame.maxX, height: 15.0))
-        slider.mn_layout.midY = playButton.frame.midY
+        slider.mn.midY = playButton.frame.midY
         slider.delegate = self
         slider.trackHeight = 3.0
         slider.progressColor = .white
@@ -292,7 +292,7 @@ extension MNAssetBrowserCell {
             slider.setValue(0.0, animated: false)
             timeLabel.text = "00:00"
             durationLabel.text = "00:00"
-            toolBar.mn_layout.maxY = toolBar.superview!.bounds.height
+            toolBar.mn.maxY = toolBar.superview!.bounds.height
         }
         // 获取缩略图
         state = .loading
@@ -378,11 +378,11 @@ extension MNAssetBrowserCell {
     private func updateImage(_ image: UIImage) {
         scrollView.zoomScale = 1.0
         scrollView.contentOffset = .zero
-        scrollView.contentView.mn_layout.size = image.size.mn_picker.scaleFit(toSize: CGSize(width: scrollView.frame.width, height: scrollView.frame.height - 1.0))
+        scrollView.contentView.mn.size = image.size.mn_picker.scaleFit(toSize: CGSize(width: scrollView.frame.width, height: scrollView.frame.height - 1.0))
         scrollView.contentSize = CGSize(width: scrollView.bounds.width, height: max(scrollView.contentView.bounds.height, scrollView.bounds.height))
         scrollView.contentView.center = CGPoint(x: scrollView.bounds.maxX/2.0, y: scrollView.bounds.maxY/2.0)
         if (scrollView.contentView.bounds.height > scrollView.bounds.height) {
-            scrollView.contentView.mn_layout.minY = 0.0
+            scrollView.contentView.mn.minY = 0.0
             scrollView.contentOffset = CGPoint(x: 0.0, y: (scrollView.contentView.bounds.height - scrollView.bounds.height)/2.0)
         }
     }
@@ -395,7 +395,7 @@ extension MNAssetBrowserCell {
         guard toolBar.isHidden == false else { return }
         UIView.animate(withDuration: isAnimated ? 0.3 : 0.0, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
             guard let self = self else { return }
-            self.toolBar.mn_layout.minY = self.contentView.bounds.height - (isVisible ? self.toolBar.bounds.height : 0.0)
+            self.toolBar.mn.minY = self.contentView.bounds.height - (isVisible ? self.toolBar.bounds.height : 0.0)
         }, completion: nil)
     }
 }
@@ -410,7 +410,7 @@ extension MNAssetBrowserCell {
     func makePlayToolBarVisible(_ isVisible: Bool, animated: Bool) {
         UIView.animate(withDuration: animated ? 0.25 : 0.0, delay: 0.0, options: [.curveEaseInOut], animations: { [weak self] in
             guard let self = self else { return }
-            self.toolBar.mn_layout.minY = self.contentView.frame.height - (isVisible ? self.toolBar.frame.height : 0.0)
+            self.toolBar.mn.minY = self.contentView.frame.height - (isVisible ? self.toolBar.frame.height : 0.0)
         }, completion: nil)
     }
     

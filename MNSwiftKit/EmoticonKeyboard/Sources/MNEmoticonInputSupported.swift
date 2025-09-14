@@ -35,6 +35,18 @@ extension NameSpaceWrapper where Base: UITextView {
     }
     
     /// 输入表情
+    /// - Parameter emoticon: 表情模型
+    public func input(emoticon: MNEmoticon) {
+        switch emoticon.style {
+        case .emoticon:
+            input(emoticon.image, desc: emoticon.desc)
+        case .unicode:
+            input(emoticon.img)
+        default: break
+        }
+    }
+    
+    /// 输入表情
     /// - Parameters:
     ///   - emoticon: 表情图片
     ///   - desc: 表情描述
@@ -58,6 +70,26 @@ extension NameSpaceWrapper where Base: UITextView {
         let content = base.attributedText ?? NSAttributedString(string: "")
         let font = content.mn.font ?? (base.font ?? .systemFont(ofSize: 17.0, weight: .regular))
         attributedString.addAttribute(.font, value: font, range: NSMakeRange(0, attributedString.length))
+        // 拼接富文本
+        let attributedText = NSMutableAttributedString(attributedString: content)
+        let selectedRange = base.selectedRange
+        if selectedRange.location == NSNotFound {
+            attributedText.append(attributedString)
+        } else {
+            attributedText.replaceCharacters(in: selectedRange, with: attributedString)
+        }
+        base.attributedText = attributedText
+        if selectedRange.location != NSNotFound {
+            base.selectedRange = NSRange(location: selectedRange.location + attributedString.length, length: 0)
+        }
+    }
+    
+    /// 输入内容
+    /// - Parameter text: 文本内容
+    public func input(_ text: String) {
+        let content = base.attributedText ?? NSAttributedString(string: "")
+        let font = content.mn.font ?? (base.font ?? .systemFont(ofSize: 17.0, weight: .regular))
+        let attributedString = NSAttributedString(string: text, attributes: [.font:font])
         // 拼接富文本
         let attributedText = NSMutableAttributedString(attributedString: content)
         let selectedRange = base.selectedRange

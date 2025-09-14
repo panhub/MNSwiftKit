@@ -38,6 +38,9 @@ extension NameSpaceConvertible {
     public static var mn: NameSpaceWrapper<Self>.Type { NameSpaceWrapper<Self>.self }
 }
 
+/// 为Array添加`MNSwiftKit`命名空间
+extension Array: NameSpaceConvertible {}
+
 /// 为String添加`MNSwiftKit`命名空间
 extension String: NameSpaceConvertible {}
 

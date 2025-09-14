@@ -142,7 +142,7 @@ class MNAssetPickerController: UIViewController {
         if options.sortAscending {
             // 升序则上拉加载更多
             let footer = MNAssetPickerFooter(target: self, action: #selector(loadMore))
-            footer.mn_layout.height = MN_TAB_BAR_HEIGHT
+            footer.mn.height = MN_TAB_BAR_HEIGHT
             footer.color = options.mode == .light ? .black : .gray
             footer.offset = UIOffset(horizontal: 0.0, vertical: -options.contentInset.bottom)
             collectionView.mn_refresh.footer = footer

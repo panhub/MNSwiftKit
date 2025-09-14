@@ -10,11 +10,8 @@ import UIKit
 /// 表情键盘事件代理
 @objc public protocol MNEmoticonKeyboardDelegate: NSObjectProtocol {
     /// 表情点击事件
-    /// - Parameters:
-    ///   - emoticon: 表情图片
-    ///   - desc: 表情描述
-    ///   - style: 样式
-    func emoticonKeyboardShouldInput(emoticon: UIImage!, desc: String, style: MNEmoticon.Style)
+    /// - Parameter emoticon: 表情
+    func emoticonKeyboardShouldInput(emoticon: MNEmoticon)
     /// Return键点击事件
     /// - Parameter keyboard: 表情键盘
     func emoticonKeyboardReturnButtonTouchUpInside(_ keyboard: MNEmoticonKeyboard)
@@ -230,7 +227,7 @@ extension MNEmoticonKeyboard: MNEmoticonInputViewDelegate {
     
     func inputViewDidSelectEmoticon(_ emoticon: MNEmoticon) {
         guard let delegate = delegate else { return }
-        delegate.emoticonKeyboardShouldInput(emoticon: emoticon.image, desc: emoticon.desc, style: emoticon.style)
+        delegate.emoticonKeyboardShouldInput(emoticon: emoticon)
     }
     
     func inputViewShouldAddToFavorites(_ inputView: MNEmoticonInputView) {

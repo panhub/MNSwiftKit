@@ -189,21 +189,21 @@ public class MNAssetBrowser: UIView {
                 button.setBackgroundImage(backgroundImage, for: .normal)
             }
             if event == .back {
-                button.mn_layout.minX = 17.0
-                button.mn_layout.midY = (navigationView.frame.height - MN_STATUS_BAR_HEIGHT)/2.0 + MN_STATUS_BAR_HEIGHT
+                button.mn.minX = 17.0
+                button.mn.midY = (navigationView.frame.height - MN_STATUS_BAR_HEIGHT)/2.0 + MN_STATUS_BAR_HEIGHT
                 button.addTarget(self, action: #selector(back), for: .touchUpInside)
                 navigationView.addSubview(button)
             } else {
-                button.mn_layout.minX = x
-                button.mn_layout.midY = navigationItemView.frame.height/2.0
+                button.mn.minX = x
+                button.mn.midY = navigationItemView.frame.height/2.0
                 button.addTarget(self, action: #selector(buttonTouchUpInside(_:)), for: .touchUpInside)
                 navigationItemView.addSubview(button)
                 x = button.frame.maxX + 17.0
             }
         }
-        navigationItemView.mn_layout.width = x
-        navigationItemView.mn_layout.maxX = navigationView.frame.width
-        navigationItemView.mn_layout.maxY = navigationView.frame.height
+        navigationItemView.mn.width = x
+        navigationItemView.mn.maxX = navigationView.frame.width
+        navigationItemView.mn.maxY = navigationView.frame.height
         navigationView.insertSubview(navigationItemView, at: 0)
         if events.isEmpty == false || navigationItemView.subviews.isEmpty == false {
             navigationView.contentMode = .scaleToFill
@@ -305,14 +305,14 @@ extension MNAssetBrowser {
             if let control = view as? UIControl, control.allTargets.isEmpty {
                 control.addTarget(self, action: #selector(buttonTouchUpInside(_:)), for: .touchUpInside)
             }
-            view.mn_layout.minX = navigationItemView.frame.width
-            view.mn_layout.midY = navigationItemView.frame.height/2.0
-            navigationItemView.mn_layout.width = view.frame.maxX + 17.0
+            view.mn.minX = navigationItemView.frame.width
+            view.mn.midY = navigationItemView.frame.height/2.0
+            navigationItemView.mn.width = view.frame.maxX + 17.0
             navigationItemView.addSubview(view)
         }
         if let _ = navigationItemView.superview {
             // 已经放置导航右视图 更新位置
-            navigationItemView.mn_layout.maxX = navigationView.frame.width
+            navigationItemView.mn.maxX = navigationView.frame.width
             if navigationView.isUserInteractionEnabled == false {
                 // 未开启交互
                 navigationView.contentMode = .scaleToFill

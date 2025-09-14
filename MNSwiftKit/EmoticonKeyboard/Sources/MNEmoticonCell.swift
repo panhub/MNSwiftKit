@@ -9,9 +9,9 @@ import UIKit
 
 class MNEmoticonCell: UICollectionViewCell {
     /// Unicode表情
-    let emotionLabel = UILabel()
+    private let emotionLabel = UILabel()
     /// 表情控件
-    let imageView = UIImageView()
+    private let imageView = UIImageView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)

@@ -9,7 +9,7 @@ import UIKit
 import Foundation
 
 /// 表情
-public class MNEmoticon {
+public class MNEmoticon: NSObject {
     
     @objc(MNEmoticonStyle)
     public enum Style: Int {
@@ -39,21 +39,28 @@ public class MNEmoticon {
     /// 类型
     public private(set) var style: MNEmoticon.Style = .emoticon
     
-    fileprivate init() {}
+    fileprivate override init() {
+        super.init()
+    }
     
     /// 构造表情实例
     /// - Parameter json: 表情描述
     public init?(json: [String:String], style: MNEmoticon.Style = .emoticon, in directory: String) {
         guard var img = json[MNEmoticon.Key.img.rawValue], img.isEmpty == false else { return nil }
         guard let desc = json[MNEmoticon.Key.desc.rawValue], desc.isEmpty == false else { return nil }
-        if style != .unicode {
+        if style == .unicode {
+            if let codePoint = UInt32(img, radix: 16), let scalar = UnicodeScalar(codePoint) {
+                let character = Character(scalar)
+                img = String(character)
+            }
+        } else {
             let imagePath = directory.appendingPathComponent(img)
-            guard FileManager.default.fileExists(atPath: imagePath) else { return nil }
-            self.image = UIImage.image(contentsAtFile: imagePath)
+            guard let image = UIImage.image(contentsAtFile: imagePath) else { return nil }
+            self.image = image
         }
-        self.img = style == .unicode ? String(img.removeFirst()) : img
-        self.desc = desc
+        self.img = img
         self.style = style
+        self.desc = desc
     }
 }
 

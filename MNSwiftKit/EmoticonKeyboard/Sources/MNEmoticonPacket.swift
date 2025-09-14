@@ -107,12 +107,8 @@ extension MNEmoticon.Packet.Name {
     public static let animal: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "animal")
     /// Unicode - 笑脸和情感
     public static let emotion: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "emotion")
-    /// Unicode - 国旗
-    public static let ensign: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "ensign")
     /// Unicode - 食物和饮料
     public static let food: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "food")
-    /// Unicode - 手势和人物
-    public static let personage: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "personage")
     /// Unicode - 符号和对象
     public static let symbol: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "symbol")
     /// Unicode - 交通工具

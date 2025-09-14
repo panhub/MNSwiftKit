@@ -144,8 +144,8 @@ class MNTailorView: UIView {
         
         pointer.frame = CGRect(x: 0.0, y: 0.0, width: 4.0, height: scrollView.frame.height)
         pointer.alpha = 0.0
-        pointer.mn_layout.minX = scrollView.frame.minX
-        pointer.mn_layout.midY = scrollView.frame.midY
+        pointer.mn.minX = scrollView.frame.minX
+        pointer.mn.midY = scrollView.frame.midY
         pointer.clipsToBounds = true
         pointer.layer.cornerRadius = pointer.frame.width/2.0
         pointer.layer.borderColor = UIColor.black.cgColor
@@ -195,7 +195,7 @@ class MNTailorView: UIView {
         contentSize.width = CGFloat(result.floatValue)
         scrollView.contentSize = contentSize
         scrollView.setContentOffset(.zero, animated: false)
-        thumbnailView.mn_layout.width = contentSize.width
+        thumbnailView.mn.width = contentSize.width
         thumbnailView.contentSize = contentSize
         leftMaskView.contentSize = contentSize
         rightMaskView.contentSize = contentSize
@@ -303,29 +303,29 @@ class MNTailorView: UIView {
     
     private func adaptLeftMask() {
         let contentOffset = scrollView.contentOffset
-        leftMaskView.mn_layout.width = max(0.0, max(tailorHandler.leftHandler.frame.maxX - scrollView.frame.minX, 0.0) + contentOffset.x)
+        leftMaskView.mn.width = max(0.0, max(tailorHandler.leftHandler.frame.maxX - scrollView.frame.minX, 0.0) + contentOffset.x)
     }
     
     private func adaptRightMask() {
         let contentSize = scrollView.contentSize
         let contentOffset = scrollView.contentOffset
         let width: CGFloat = contentSize.width - (contentOffset.x + scrollView.frame.width)
-        rightMaskView.mn_layout.width = max(0.0, max(0.0, scrollView.frame.maxX - tailorHandler.rightHandler.frame.minX) + width)
-        rightMaskView.mn_layout.maxX = contentSize.width
+        rightMaskView.mn.width = max(0.0, max(0.0, scrollView.frame.maxX - tailorHandler.rightHandler.frame.minX) + width)
+        rightMaskView.mn.maxX = contentSize.width
     }
     
     private func adaptPointer(location: CGPoint) {
-        pointer.mn_layout.midX = location.x
-        pointer.mn_layout.minX = max(pointer.frame.minX, tailorHandler.leftHandler.frame.maxX)
-        pointer.mn_layout.maxX = min(pointer.frame.maxX, tailorHandler.rightHandler.frame.minX)
+        pointer.mn.midX = location.x
+        pointer.mn.minX = max(pointer.frame.minX, tailorHandler.leftHandler.frame.maxX)
+        pointer.mn.maxX = min(pointer.frame.maxX, tailorHandler.rightHandler.frame.minX)
     }
     
     func movePointerToBegin() {
-        pointer.mn_layout.minX = tailorHandler.leftHandler.frame.maxX
+        pointer.mn.minX = tailorHandler.leftHandler.frame.maxX
     }
     
     func movePointerToEnd() {
-        pointer.mn_layout.maxX = tailorHandler.rightHandler.frame.minX
+        pointer.mn.maxX = tailorHandler.rightHandler.frame.minX
     }
 }
 
@@ -338,8 +338,8 @@ extension MNTailorView {
             let contentOffset = scrollView.contentOffset
             let x: CGFloat = contentSize.width*CGFloat(newValue) - max(0.0, contentOffset.x) + scrollView.frame.minX
             guard x > pointer.frame.minX else { return }
-            pointer.mn_layout.minX = x
-            pointer.mn_layout.maxX = min(pointer.frame.maxX, tailorHandler.rightHandler.frame.minX)
+            pointer.mn.minX = x
+            pointer.mn.maxX = min(pointer.frame.maxX, tailorHandler.rightHandler.frame.minX)
             if x >= tailorHandler.rightHandler.frame.minX {
                 delegate?.tailorViewShouldEndPlaying(self)
             }
@@ -394,7 +394,7 @@ extension MNTailorView: UIScrollViewDelegate {
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         guard scrollView.isDragging == false else { return }
         status = .none
-        pointer.mn_layout.minX = tailorHandler.leftHandler.frame.maxX
+        pointer.mn.minX = tailorHandler.leftHandler.frame.maxX
         UIView.animate(withDuration: AnimationDuration, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
             guard let self = self else { return }
             self.pointer.alpha = 1.0
@@ -423,7 +423,7 @@ extension MNTailorView: MNTailorHandlerDelegate {
     func tailorLeftHandlerDidEndDragging(_ tailorHandler: MNTailorHandler) {
         adaptLeftMask()
         tailorHandler.adaptHighlighted(animated: true)
-        pointer.mn_layout.minX = tailorHandler.leftHandler.frame.maxX
+        pointer.mn.minX = tailorHandler.leftHandler.frame.maxX
         UIView.animate(withDuration: AnimationDuration, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
             guard let self = self else { return }
             self.pointer.alpha = 1.0
@@ -449,9 +449,9 @@ extension MNTailorView: MNTailorHandlerDelegate {
         adaptRightMask()
         tailorHandler.adaptHighlighted(animated: true)
         if pointer.frame.minX < tailorHandler.leftHandler.frame.maxX {
-            pointer.mn_layout.minX = tailorHandler.leftHandler.frame.maxX
+            pointer.mn.minX = tailorHandler.leftHandler.frame.maxX
         } else if pointer.frame.maxX > tailorHandler.rightHandler.frame.minX {
-            pointer.mn_layout.maxX = tailorHandler.rightHandler.frame.minX
+            pointer.mn.maxX = tailorHandler.rightHandler.frame.minX
         }
         UIView.animate(withDuration: AnimationDuration, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
             guard let self = self else { return }

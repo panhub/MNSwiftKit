@@ -190,7 +190,7 @@ extension UIImage.MNPickingWrapper {
         return UIImage(cgImage: newImage)
     }
     
-    /**调整方向*/
+    /// 调整方向
     var resized: UIImage {
         
         guard image.imageOrientation != .up, let cgImage = image.cgImage, let colorSpace = cgImage.colorSpace else { return image }

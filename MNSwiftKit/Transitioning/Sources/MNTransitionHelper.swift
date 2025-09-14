@@ -19,13 +19,13 @@ public extension UIView {
         var image: UIImage?
         if #available(iOS 10.0, *) {
             let renderer = UIGraphicsImageRenderer(bounds: bounds)
-            image = renderer.image { [weak self] context in
-                self?.layer.render(in: context.cgContext)
+            image = renderer.image { context in
+                self.layer.render(in: context.cgContext)
             }
         } else {
             UIGraphicsBeginImageContextWithOptions(bounds.size, false, layer.contentsScale)
             if let context = UIGraphicsGetCurrentContext() {
-                layer.render(in: context)
+                self.layer.render(in: context)
             }
             image = UIGraphicsGetImageFromCurrentImageContext()
             UIGraphicsEndImageContext()

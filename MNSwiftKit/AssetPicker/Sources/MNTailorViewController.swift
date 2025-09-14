@@ -151,16 +151,16 @@ class MNTailorViewController: UIViewController {
             automaticallyAdjustsScrollViewInsets = false
         }
         
-        closeButton.mn_layout.size = CGSize(width: 30.0, height: 30.0)
-        closeButton.mn_layout.minX = 15.0
-        closeButton.mn_layout.maxY = view.frame.height - max(15.0, MN_BOTTOM_SAFE_HEIGHT)
+        closeButton.mn.size = CGSize(width: 30.0, height: 30.0)
+        closeButton.mn.minX = 15.0
+        closeButton.mn.maxY = view.frame.height - max(15.0, MN_BOTTOM_SAFE_HEIGHT)
         closeButton.setBackgroundImage(AssetPickerResource.image(named: "player_close"), for: .normal)
         closeButton.addTarget(self, action: #selector(closeButtonTouchUpInside(_:)), for: .touchUpInside)
         view.addSubview(closeButton)
         
-        doneButton.mn_layout.size = CGSize(width: 28.0, height: 28.0)
-        doneButton.mn_layout.midY = closeButton.frame.midY
-        doneButton.mn_layout.maxX = view.frame.width - closeButton.frame.minX
+        doneButton.mn.size = CGSize(width: 28.0, height: 28.0)
+        doneButton.mn.midY = closeButton.frame.midY
+        doneButton.mn.maxX = view.frame.width - closeButton.frame.minX
         doneButton.isUserInteractionEnabled = false
         doneButton.setBackgroundImage(AssetPickerResource.image(named: "player_done"), for: .normal)
         doneButton.addTarget(self, action: #selector(doneButtonTouchUpInside(_:)), for: .touchUpInside)
@@ -173,15 +173,15 @@ class MNTailorViewController: UIViewController {
         timeLabel.textColor = WhiteColor
         view.addSubview(timeLabel)
         
-        playControl.mn_layout.minX = closeButton.frame.minX
-        playControl.mn_layout.maxY = closeButton.frame.minY - 20.0
+        playControl.mn.minX = closeButton.frame.minX
+        playControl.mn.maxY = closeButton.frame.minY - 20.0
         playControl.isUserInteractionEnabled = false
         playControl.backgroundColor = BlackColor
         playControl.layer.mn_picker.setRadius(5.0, by: [.topLeft, .bottomLeft])
         playControl.addTarget(self, action: #selector(playControlTouchUpInside(_:)), for: .touchUpInside)
         view.addSubview(playControl)
         
-        badgeView.mn_layout.width = 25.0
+        badgeView.mn.width = 25.0
         badgeView.mn_picker.sizeFitToWidth()
         badgeView.isUserInteractionEnabled = false
         badgeView.highlightedImage = AssetPickerResource.image(named: "player_pause")
@@ -213,7 +213,7 @@ class MNTailorViewController: UIViewController {
         naturalSize.width = ceil(naturalSize.width)
         naturalSize.height = ceil(naturalSize.height)
         playView.frame = CGRect(x: (view.frame.width - naturalSize.width)/2.0, y: (height - naturalSize.height)/2.0 + top, width: naturalSize.width, height: naturalSize.height)
-        playView.mn_layout.minX = (view.frame.width - naturalSize.width)/2.0
+        playView.mn.minX = (view.frame.width - naturalSize.width)/2.0
         playView.isTouchEnabled = false
         playView.backgroundColor = BlackColor
         view.addSubview(playView)
@@ -223,8 +223,8 @@ class MNTailorViewController: UIViewController {
         view.addSubview(indicatorView)
         
         timeView.isHidden = true
-        timeView.mn_layout.minX = tailorView.frame.minX
-        timeView.mn_layout.maxY = playControl.frame.minY
+        timeView.mn.minX = tailorView.frame.minX
+        timeView.mn.maxY = playControl.frame.minY
         timeView.textColor = WhiteColor
         timeView.backgroundColor = BlackColor.withAlphaComponent(0.83)
         view.addSubview(timeView)
@@ -405,14 +405,14 @@ extension MNTailorViewController: MNTailorViewDelegate {
         player.pause()
         timeView.isHidden = false
         timeView.update(duration: duration*tailorView.begin)
-        timeView.mn_layout.midX = tailorView.tailorHandler.leftHandler.frame.maxX + tailorView.frame.minX
+        timeView.mn.midX = tailorView.tailorHandler.leftHandler.frame.maxX + tailorView.frame.minX
     }
     
     func tailorViewLeftHandlerDidDragging(_ tailorView: MNTailorView) {
         let begin = tailorView.begin
         player.seek(progress: begin, completion: nil)
         timeView.update(duration: duration*begin)
-        timeView.mn_layout.midX = tailorView.tailorHandler.leftHandler.frame.maxX + tailorView.frame.minX
+        timeView.mn.midX = tailorView.tailorHandler.leftHandler.frame.maxX + tailorView.frame.minX
     }
     
     func tailorViewLeftHandlerEndDragging(_ tailorView: MNTailorView) {
@@ -428,14 +428,14 @@ extension MNTailorViewController: MNTailorViewDelegate {
         player.pause()
         timeView.isHidden = false
         timeView.update(duration: duration*tailorView.end)
-        timeView.mn_layout.midX = tailorView.tailorHandler.rightHandler.frame.minX + tailorView.frame.minX
+        timeView.mn.midX = tailorView.tailorHandler.rightHandler.frame.minX + tailorView.frame.minX
     }
     
     func tailorViewRightHandlerDidDragging(_ tailorView: MNTailorView) {
         let end = tailorView.end
         player.seek(progress: end, completion: nil)
         timeView.update(duration: duration*end)
-        timeView.mn_layout.midX = tailorView.tailorHandler.rightHandler.frame.minX + tailorView.frame.minX
+        timeView.mn.midX = tailorView.tailorHandler.rightHandler.frame.minX + tailorView.frame.minX
     }
     
     func tailorViewRightHandlerEndDragging(_ tailorView: MNTailorView) {
@@ -451,14 +451,14 @@ extension MNTailorViewController: MNTailorViewDelegate {
         player.pause()
         timeView.isHidden = false
         timeView.update(duration: tailorView.progress*duration)
-        timeView.mn_layout.midX = tailorView.pointer.frame.midX + tailorView.frame.minX
+        timeView.mn.midX = tailorView.pointer.frame.midX + tailorView.frame.minX
     }
     
     func tailorViewPointerDidDragging(_ tailorView: MNTailorView) {
         let progress = tailorView.progress
         player.seek(progress: progress, completion: nil)
         timeView.update(duration: progress*duration)
-        timeView.mn_layout.midX = tailorView.pointer.frame.midX + tailorView.frame.minX
+        timeView.mn.midX = tailorView.pointer.frame.midX + tailorView.frame.minX
     }
     
     func tailorViewPointerDidEndDragging(_ tailorView: MNTailorView) {
@@ -474,7 +474,7 @@ extension MNTailorViewController: MNTailorViewDelegate {
         player.pause()
         timeView.isHidden = false
         timeView.update(duration: duration*tailorView.begin)
-        timeView.mn_layout.midX = tailorView.tailorHandler.leftHandler.frame.maxX + tailorView.frame.minX
+        timeView.mn.midX = tailorView.tailorHandler.leftHandler.frame.maxX + tailorView.frame.minX
     }
     
     func tailorViewDidDragging(_ tailorView: MNTailorView) {

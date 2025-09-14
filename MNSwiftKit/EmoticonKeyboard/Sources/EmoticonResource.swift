@@ -98,7 +98,7 @@ public class EmoticonResource {
             return jsonObject
         } catch {
 #if DEBUG
-            print("解析json失败: \(jsonURL)")
+            print("解析json失败: \(jsonURL)\n\(error)")
 #endif
             return nil
         }

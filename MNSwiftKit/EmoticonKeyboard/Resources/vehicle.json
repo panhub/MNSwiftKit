@@ -1,79 +1,79 @@
 {
   "style" : 1,
   "name": "交通工具",
-  "cover" : "favorites.png",
+  "cover" : "vehicle.png",
   "emoticons": [
     {
       "desc": "[汽车]",
-      "img": "\u{1F697}"
+      "img": "1F697"
     },
     {
       "desc": "[出租车]",
-      "img": "\u{1F695}"
+      "img": "1F695"
     },
     {
       "desc": "[SUV]",
-      "img": "\u{1F699}"
+      "img": "1F699"
     },
     {
       "desc": "[巴士]",
-      "img": "\u{1F68C}"
+      "img": "1F68C"
     },
     {
       "desc": "[电车]",
-      "img": "\u{1F68E}"
+      "img": "1F68E"
     },
     {
       "desc": "[警车]",
-      "img": "\u{1F693}"
+      "img": "1F693"
     },
     {
       "desc": "[救护车]",
-      "img": "\u{1F691}"
+      "img": "1F691"
     },
     {
       "desc": "[消防车]",
-      "img": "\u{1F692}"
+      "img": "1F692"
     },
     {
       "desc": "[卡车]",
-      "img": "\u{1F69A}"
+      "img": "1F69A"
     },
     {
       "desc": "[铰接式货车]",
-      "img": "\u{1F69B}"
+      "img": "1F69B"
     },
     {
       "desc": "[自行车]",
-      "img": "\u{1F6B2}"
+      "img": "1F6B2"
     },
     {
       "desc": "[摩托车]",
-      "img": "\u{1F6F5}"
+      "img": "1F6F5"
     },
     {
       "desc": "[飞机]",
-      "img": "\u{2708}\u{FE0F}"
+      "img": "2708"
     },
     {
       "desc": "[航班起飞]",
-      "img": "\u{1F6EB}"
+      "img": "1F6EB"
     },
     {
       "desc": "[航班降落]",
-      "img": "\u{1F6EC}"
+      "img": "1F6EC"
     },
     {
       "desc": "[火箭]",
-      "img": "\u{1F680}"
+      "img": "1F680"
     },
     {
       "desc": "[飞碟]",
-      "img": "\u{1F6F8}"
+      "img": "1F6F8"
     },
     {
       "desc": "[直升机]",
-      "img": "\u{1F681}"
+      "img": "1F681"
     }
   ]
 }

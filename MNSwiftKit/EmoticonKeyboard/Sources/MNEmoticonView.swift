@@ -125,7 +125,8 @@ class MNEmoticonView: UIView {
         var sectionInset: UIEdgeInsets = .zero
         var preferredContentSize: CGSize = .zero
         var elements = packet.emoticons
-        if packet.style == .emoticon {
+        switch packet.style {
+        case .emoticon, .unicode:
             // 文字表情
             numberOfColumns = collectionView.frame.width >= 414.0 ? 8 : 7
             itemSize.width = collectionView.frame.width >= 390.0 ? 32.0 : 30.0
@@ -134,7 +135,7 @@ class MNEmoticonView: UIView {
             sectionInset.left = minimumInteritemSpacing*0.75
             sectionInset.right = sectionInset.left
             minimumLineSpacing = sectionInset.left
-        } else {
+        case .image:
             // 图片
             numberOfColumns = 4
             minimumLineSpacing = 10.0
@@ -150,7 +151,8 @@ class MNEmoticonView: UIView {
         if style == .compact {
             numberOfPages = 1
             sectionInset.top = minimumLineSpacing
-            if packet.style == .emoticon {
+            switch packet.style {
+            case .emoticon, .unicode:
                 // 文字表情
                 elementView.isHidden = false
                 let height = ceil(itemSize.height + minimumLineSpacing*0.7)
@@ -179,7 +181,8 @@ class MNEmoticonView: UIView {
                 } else {
                     sectionInset.bottom = ceil(bottom + height + minimumLineSpacing/2.0)
                 }
-            } else {
+            case .image:
+                // 图片
                 elementView.isHidden = true
                 sectionInset.bottom = max(MN_BOTTOM_SAFE_HEIGHT, minimumLineSpacing) + 5.0
             }
@@ -213,7 +216,7 @@ class MNEmoticonView: UIView {
             self.collectionView.reloadData()
         }
         if let gestureRecognizers = gestureRecognizers, let gestureRecognizer = gestureRecognizers.first(where: { $0 is UILongPressGestureRecognizer }) {
-            gestureRecognizer.isEnabled = packet.style == .emoticon
+            gestureRecognizer.isEnabled = packet.style != .image
         }
     }
     
@@ -268,9 +271,9 @@ extension MNEmoticonView: UICollectionViewDataSource, UICollectionViewDelegate {
         cell.updateEmoticon(emoticons[indexPath.section][indexPath.item])
         guard style == .compact else { return }
         if elementView.isHidden {
-            cell.imageView.alpha = 1.0
+            cell.contentView.alpha = 1.0
         } else {
-            cell.imageView.alpha = alpha(for: cell, intersects: (collectionView.isDragging || collectionView.isDecelerating))
+            cell.contentView.alpha = alpha(for: cell, intersects: (collectionView.isDragging || collectionView.isDecelerating))
         }
     }
     
@@ -292,7 +295,7 @@ extension MNEmoticonView: UIScrollViewDelegate {
         guard style == .compact, elementView.isHidden == false else { return }
         for cell in collectionView.visibleCells {
             guard let cell = cell as? MNEmoticonCell else { continue }
-            cell.imageView.alpha = alpha(for: cell, intersects: collectionView.isDragging)
+            cell.contentView.alpha = alpha(for: cell, intersects: collectionView.isDragging)
         }
     }
     
@@ -343,7 +346,7 @@ private extension MNEmoticonView {
     private func preview(at location: CGPoint) {
         guard let delegate = delegate else { return }
         let point = CGPoint(x: location.x + collectionView.contentOffset.x, y: location.y)
-        if let indexPath = collectionView.indexPathForItem(at: point), let cell = collectionView.cellForItem(at: indexPath) as? MNEmoticonCell, cell.imageView.alpha == 1.0 {
+        if let indexPath = collectionView.indexPathForItem(at: point), let cell = collectionView.cellForItem(at: indexPath) as? MNEmoticonCell, cell.contentView.alpha == 1.0 {
             let rect = collectionView.convert(cell.frame, to: self)
             let emoticon = emoticons[indexPath.section][indexPath.item]
             delegate.emoticonViewShouldPreviewEmoticon(emoticon, at: rect)

@@ -1,27 +1,20 @@
 PODS:
   - MNSwiftKit/AnimatedImage (0.1.1)
-  - MNSwiftKit/Core (0.1.1):
-    - MNSwiftKit/NameSpace
-  - MNSwiftKit/Definition (0.1.1)
-  - MNSwiftKit/EmoticonKeyboard (0.1.1):
+  - MNSwiftKit/Extension (0.1.1):
     - MNSwiftKit/AnimatedImage
-    - MNSwiftKit/Core
-    - MNSwiftKit/Definition
     - MNSwiftKit/NameSpace
-    - MNSwiftKit/PageControl
   - MNSwiftKit/NameSpace (0.1.1)
-  - MNSwiftKit/PageControl (0.1.1)
 
 DEPENDENCIES:
-  - MNSwiftKit/EmoticonKeyboard (from `../`)
+  - MNSwiftKit/Extension (from `../`)
 
 EXTERNAL SOURCES:
   MNSwiftKit:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: 93390f1f3cc4b505c65d5e7e32cd3d81440b3368
+  MNSwiftKit: c4d6af7c10235c8db21f28d838259940306cc1bd
 
-PODFILE CHECKSUM: b1a16a8a4a6f3c6a98b2855a541cd43f34fd22cb
+PODFILE CHECKSUM: 4ae0fc34afb54302260754d88c190e5cce780965
 
 COCOAPODS: 1.16.2

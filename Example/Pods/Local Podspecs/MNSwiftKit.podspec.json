@@ -127,7 +127,10 @@
         "Foundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/Layout/Sources/**/*.swift"
+      "source_files": "MNSwiftKit/Layout/Sources/**/*.swift",
+      "dependencies": {
+        "MNSwiftKit/NameSpace": []
+      }
     },
     {
       "name": "Refresh",
@@ -196,6 +199,7 @@
       ],
       "source_files": "MNSwiftKit/Extension/Sources/**/*.swift",
       "dependencies": {
+        "MNSwiftKit/NameSpace": [],
         "MNSwiftKit/AnimatedImage": []
       }
     },

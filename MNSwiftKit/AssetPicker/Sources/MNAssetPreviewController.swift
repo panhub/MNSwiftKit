@@ -63,7 +63,7 @@ class MNAssetPreviewController: UIViewController {
     /// 底部选择栏
     private lazy var selectView: MNAssetSelectView = {
         let selectView = MNAssetSelectView(frame: CGRect(x: 0.0, y: 0.0, width: view.bounds.width, height: 100.0), assets: assets, options: options)
-        selectView.mn_layout.maxY = view.bounds.height - MNAssetBrowserCell.ToolBarHeight
+        selectView.mn.maxY = view.bounds.height - MNAssetBrowserCell.ToolBarHeight
         selectView.delegate = self
         return selectView
     }()
@@ -76,7 +76,7 @@ class MNAssetPreviewController: UIViewController {
         navView.image = AssetPickerResource.image(named: "top")
         let back = UIButton(type: .custom)
         back.frame = CGRect(x: 15.0, y: 0.0, width: 25.0, height: 25.0)
-        back.mn_layout.midY = (navView.frame.height - MN_STATUS_BAR_HEIGHT)/2.0 + MN_STATUS_BAR_HEIGHT
+        back.mn.midY = (navView.frame.height - MN_STATUS_BAR_HEIGHT)/2.0 + MN_STATUS_BAR_HEIGHT
         back.setBackgroundImage(AssetPickerResource.image(named: "back"), for: .normal)
         back.addTarget(self, action: #selector(back(_:)), for: .touchUpInside)
         navView.addSubview(back)
@@ -84,7 +84,7 @@ class MNAssetPreviewController: UIViewController {
         if events.contains(.done) {
             let done = UIButton(type: .custom)
             done.frame = back.frame
-            done.mn_layout.maxX = maxX
+            done.mn.maxX = maxX
             done.tag = Event.done.rawValue
             done.setBackgroundImage(AssetPickerResource.image(named: "done"), for: .normal)
             done.addTarget(self, action: #selector(buttonTouchUpInside(_:)), for: .touchUpInside)
@@ -94,7 +94,7 @@ class MNAssetPreviewController: UIViewController {
         if events.contains(.select) {
             let select = UIButton(type: .custom)
             select.frame = back.frame
-            select.mn_layout.maxX = maxX
+            select.mn.maxX = maxX
             select.isSelected = true
             select.tag = Event.select.rawValue
             select.clipsToBounds = true
@@ -343,7 +343,7 @@ extension MNAssetPreviewController {
         let isHidden = navView.frame.maxY <= 0.0
         UIView.animate(withDuration: 0.25, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
             guard let self = self else { return }
-            self.navView.mn_layout.minY = isHidden ? 0.0 : -self.navView.bounds.height
+            self.navView.mn.minY = isHidden ? 0.0 : -self.navView.bounds.height
             self.selectView.alpha = isHidden ? 1.0 : 0.0
         }, completion: nil)
         cell.updateToolBar(isHidden, animated: true)

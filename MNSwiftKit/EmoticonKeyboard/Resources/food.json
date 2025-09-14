@@ -1,79 +1,79 @@
 {
   "style" : 1,
   "name": "食物和饮料",
-  "cover" : "favorites.png",
+  "cover" : "food.png",
   "emoticons": [
     {
       "desc": "[红苹果]",
-      "img": "\u{1F34E}"
+      "img": "1F34E"
     },
     {
       "desc": "[青苹果]",
-      "img": "\u{1F34F}"
+      "img": "1F34F"
     },
     {
       "desc": "[梨]",
-      "img": "\u{1F350}"
+      "img": "1F350"
     },
     {
       "desc": "[橘子]",
-      "img": "\u{1F34A}"
+      "img": "1F34A"
     },
     {
       "desc": "[柠檬]",
-      "img": "\u{1F34B}"
+      "img": "1F34B"
     },
     {
       "desc": "[香蕉]",
-      "img": "\u{1F34C}"
+      "img": "1F34C"
     },
     {
       "desc": "[西瓜]",
-      "img": "\u{1F349}"
+      "img": "1F349"
     },
     {
       "desc": "[葡萄]",
-      "img": "\u{1F347}"
+      "img": "1F347"
     },
     {
       "desc": "[草莓]",
-      "img": "\u{1F353}"
+      "img": "1F353"
     },
     {
       "desc": "[蓝莓]",
-      "img": "\u{1FAD0}"
+      "img": "1FAD0"
     },
     {
       "desc": "[甜瓜]",
-      "img": "\u{1F348}"
+      "img": "1F348"
     },
     {
       "desc": "[樱桃]",
-      "img": "\u{1F352}"
+      "img": "1F352"
     },
     {
       "desc": "[披萨]",
-      "img": "\u{1F355}"
+      "img": "1F355"
     },
     {
       "desc": "[汉堡]",
-      "img": "\u{1F354}"
+      "img": "1F354"
     },
     {
       "desc": "[薯条]",
-      "img": "\u{1F35F}"
+      "img": "1F35F"
     },
     {
       "desc": "[热狗]",
-      "img": "\u{1F32D}"
+      "img": "1F32D"
     },
     {
       "desc": "[爆米花]",
-      "img": "\u{1F37F}"
+      "img": "1F37F"
     },
     {
       "desc": "[寿司]",
-      "img": "\u{1F363}"
+      "img": "1F363"
     }
   ]
 }

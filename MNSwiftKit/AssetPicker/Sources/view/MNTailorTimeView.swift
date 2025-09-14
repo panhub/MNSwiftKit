@@ -41,21 +41,21 @@ class MNTailorTimeView: UIView {
         timeLabel.textColor = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
         timeLabel.backgroundColor = UIColor(red: 51.0/255.0, green: 51.0/255.0, blue: 51.0/255.0, alpha: 1.0)
         timeLabel.sizeToFit()
-        timeLabel.mn_layout.width = ceil(timeLabel.frame.width)
-        timeLabel.mn_layout.height = ceil(timeLabel.frame.height)
-        timeLabel.mn_layout.size = timeLabel.bounds.inset(by: UIEdgeInsets(top: -4.0, left: -8.0, bottom: -3.0, right: -8.0)).size
+        timeLabel.mn.width = ceil(timeLabel.frame.width)
+        timeLabel.mn.height = ceil(timeLabel.frame.height)
+        timeLabel.mn.size = timeLabel.bounds.inset(by: UIEdgeInsets(top: -4.0, left: -8.0, bottom: -3.0, right: -8.0)).size
         timeLabel.layer.cornerRadius = 3.0
         timeLabel.clipsToBounds = true
         addSubview(timeLabel)
         
-        mn_layout.width = timeLabel.frame.width
+        mn.width = timeLabel.frame.width
         
-        separator.mn_layout.minY = timeLabel.frame.maxY + 5.0
-        separator.mn_layout.midX = timeLabel.frame.midX
+        separator.mn.minY = timeLabel.frame.maxY + 5.0
+        separator.mn.midX = timeLabel.frame.midX
         separator.backgroundColor = timeLabel.textColor
         addSubview(separator)
         
-        mn_layout.height = separator.frame.maxY + 5.0
+        mn.height = separator.frame.maxY + 5.0
     }
     
     required init?(coder: NSCoder) {

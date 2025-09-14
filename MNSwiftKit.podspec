@@ -96,6 +96,7 @@ Pod::Spec.new do |s|
   s.subspec 'Layout' do |l|
     l.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
     l.source_files = 'MNSwiftKit/Layout/Sources/**/*.swift'
+    l.dependency 'MNSwiftKit/NameSpace'
   end
   
   # Refresh <刷新控件>
@@ -140,6 +141,7 @@ Pod::Spec.new do |s|
   s.subspec 'Extension' do |e|
     e.frameworks = 'Foundation', 'CoreFoundation', 'CoreGraphics'
     e.source_files = 'MNSwiftKit/Extension/Sources/**/*.swift'
+    e.dependency 'MNSwiftKit/NameSpace'
     e.dependency 'MNSwiftKit/AnimatedImage'
   end
   

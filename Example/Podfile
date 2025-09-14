@@ -20,7 +20,7 @@ target 'MNSwiftKit_Example' do
   #pod 'MNSwiftKit/Purchase', :path => '../'
   #pod 'MNSwiftKit/Database', :path => '../'
   #pod 'MNSwiftKit/Definition', :path => '../'
-  #pod 'MNSwiftKit/Extension', :path => '../'
+  pod 'MNSwiftKit/Extension', :path => '../'
   #pod 'MNSwiftKit/EmptyView', :path => '../'
   #pod 'MNSwiftKit/Networking', :path => '../'
   #pod 'MNSwiftKit/AssetPicker', :path => '../'
@@ -30,7 +30,7 @@ target 'MNSwiftKit_Example' do
   #pod 'MNSwiftKit/Transitioning', :path => '../'
   #pod 'MNSwiftKit/AnimatedImage', :path => '../'
   #pod 'MNSwiftKit/CollectionLayout', :path => '../'
-  pod 'MNSwiftKit/EmoticonKeyboard', :path => '../'
+  #pod 'MNSwiftKit/EmoticonKeyboard', :path => '../'
   
   target 'MNSwiftKit_Tests' do
     inherit! :search_paths
