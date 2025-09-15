@@ -16,18 +16,6 @@ extension Optional {
         default: return false
         }
     }
-    
-    public func or(_ defaultValue: Wrapped) -> Wrapped {
-        return self ?? defaultValue
-    }
-    
-    public func or(closure expression: @autoclosure () -> Wrapped) -> Wrapped {
-        return self ?? expression()
-    }
-    
-    public func or(else creater: ()->Wrapped) -> Wrapped {
-        return self ?? creater()
-    }
 }
 
 extension Optional where Wrapped == String {

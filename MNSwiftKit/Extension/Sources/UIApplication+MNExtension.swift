@@ -10,36 +10,33 @@ import StoreKit
 import Foundation
 import CoreGraphics
 
+
 extension UIApplication {
     
     /// 加载方式
-    public enum OpenMode {
+    public enum MNOpenMode {
         /// 内部加载
         case `internal`
         /// 跳转应用
         case external
     }
+}
+
+extension NameSpaceWrapper where Base: UIApplication {
     
     /// 判断是否可打开链接
     /// - Parameter string: 资源定位
     /// - Returns: 是否可打开
-    @objc public class func canOpen(_ string: String) -> Bool {
+    public func canOpen(_ string: String) -> Bool {
         guard let url = URL(string: string) else { return false }
-        return canOpen(url)
-    }
-    
-    /// 判断是否可打开链接
-    /// - Parameter url: 资源定位器
-    /// - Returns: 是否可打开
-    public class func canOpen(_ url: URL) -> Bool {
-        UIApplication.shared.canOpenURL(url)
+        return base.canOpenURL(url)
     }
     
     /// 打开链接
     /// - Parameters:
     ///   - string: 指定链接
     ///   - completion: 结果回调是否成功打开
-    @objc public class func open(_ string: String, completion: ((_ isSuccess: Bool) -> Void)? = nil) {
+    public class func open(_ string: String, completion: ((_ isSuccess: Bool) -> Void)? = nil) {
         guard let url = URL(string: string) else {
             completion?(false)
             return
@@ -53,10 +50,10 @@ extension UIApplication {
     ///   - completion: 结果回调是否成功打开
     public class func open(_ url: URL, completion: ((_ isSuccess: Bool) -> Void)? = nil) {
         if #available(iOS 10.0, *) {
-            UIApplication.shared.open(url, options: [:], completionHandler: completion)
+            Base.shared.open(url, options: [:], completionHandler: completion)
         } else {
-            if UIApplication.shared.canOpenURL(url) {
-                let result = UIApplication.shared.openURL(url)
+            if Base.shared.canOpenURL(url) {
+                let result = Base.shared.openURL(url)
                 completion?(result)
             } else {
                 completion?(false)
@@ -68,7 +65,7 @@ extension UIApplication {
     /// - Parameters:
     ///   - number: QQ号
     ///   - completion: 结果回调是否成功打开
-    @objc public class func openQQ(_ number: String, completion: ((_ isSuccess: Bool) -> Void)? = nil) {
+    public class func openQQ(_ number: String, completion: ((_ isSuccess: Bool) -> Void)? = nil) {
         let string = "mqq://im/chat?chat_type=wpa&uin=\(number)&version=1&src_type=web"
         open(string, completion: completion)
     }
@@ -78,7 +75,7 @@ extension UIApplication {
     ///   - number: QQ群号
     ///   - key: 群标记
     ///   - completion: 结果回调是否成功打开
-    @objc public class func openQQGroup(_ number: String, key: String, completion: ((_ isSuccess: Bool) -> Void)? = nil) {
+    public class func openQQGroup(_ number: String, key: String, completion: ((_ isSuccess: Bool) -> Void)? = nil) {
         let string = "mqqapi://card/show_pslcard?src_type=internal&version=1&uin=\(number)&key=\(key)&card_type=group&source=external"
         open(string, completion: completion)
     }
@@ -88,11 +85,10 @@ extension UIApplication {
     ///   - mode: 以何种方式打开
     ///   - appId: 应用id
     ///   - completion: 结果回调
-    public class func openScore(mode: OpenMode = .external, appId: String? = nil, completion: ((_ isSuccess: Bool) -> Void)? = nil) {
-        UIWindow.current?.endEditing(true)
+    public class func openScore(mode: UIApplication.MNOpenMode = .external, appId: String! = nil, completion: ((_ isSuccess: Bool) -> Void)? = nil) {
         switch mode {
         case .internal:
-            if #available(iOS 14.0, *), let windowScene = UIApplication.shared.delegate?.window??.windowScene {
+            if #available(iOS 14.0, *), let windowScene = Base.shared.delegate?.window??.windowScene {
                 SKStoreReviewController.requestReview(in: windowScene)
             } else if #available(iOS 10.3, *) {
                 SKStoreReviewController.requestReview()
@@ -108,60 +104,56 @@ extension UIApplication {
     }
 }
 
-extension UIApplication {
+extension NameSpaceWrapper where Base: UIApplication {
     
     /// 获取状态栏的方向
-    /// - Returns: 状态栏的方向
-    @objc public class func statusBarOrientation() -> UIInterfaceOrientation {
+    public var statusBarOrientation: UIInterfaceOrientation {
         var orientation: UIInterfaceOrientation = .unknown
         if #available(iOS 13.0, *) {
-            if let scene = UIApplication.shared.delegate?.window??.windowScene {
+            if let scene = base.delegate?.window??.windowScene {
                 orientation = scene.interfaceOrientation
             }
         } else {
-            orientation = UIApplication.shared.statusBarOrientation
+            orientation = base.statusBarOrientation
         }
         return orientation
     }
     
     /// 获取状态栏的样式
-    /// - Returns: 状态栏样式
-    @objc public class func statusBarStyle() -> UIStatusBarStyle {
+    public var statusBarStyle: UIStatusBarStyle {
         var style: UIStatusBarStyle = .default
         if #available(iOS 13.0, *) {
-            if let statusBarManager = UIApplication.shared.delegate?.window??.windowScene?.statusBarManager {
+            if let statusBarManager = base.delegate?.window??.windowScene?.statusBarManager {
                 style = statusBarManager.statusBarStyle
             }
         } else {
-            style = UIApplication.shared.statusBarStyle
+            style = base.statusBarStyle
         }
         return style
     }
     
     /// 获取状态栏是否隐藏
-    /// - Returns: 状态栏是否隐藏
-    @objc public class func isStatusBarHidden() -> Bool {
+    public var isStatusBarHidden: Bool {
         var isHidden: Bool = false
         if #available(iOS 13.0, *) {
-            if let statusBarManager = UIApplication.shared.delegate?.window??.windowScene?.statusBarManager {
+            if let statusBarManager = base.delegate?.window??.windowScene?.statusBarManager {
                 isHidden = statusBarManager.isStatusBarHidden
             }
         } else {
-            isHidden = UIApplication.shared.isStatusBarHidden
+            isHidden = base.isStatusBarHidden
         }
         return isHidden
     }
     
     /// 获取状态栏位置
-    /// - Returns: 状态栏位置
-    @objc public class func statusBarFrame() -> CGRect {
+    public var statusBarFrame: CGRect {
         var rect: CGRect = .zero
         if #available(iOS 13.0, *) {
-            if let statusBarManager = UIApplication.shared.delegate?.window??.windowScene?.statusBarManager {
+            if let statusBarManager = base.delegate?.window??.windowScene?.statusBarManager {
                 rect = statusBarManager.statusBarFrame
             }
         } else {
-            rect = UIApplication.shared.statusBarFrame
+            rect = base.statusBarFrame
         }
         return rect
     }

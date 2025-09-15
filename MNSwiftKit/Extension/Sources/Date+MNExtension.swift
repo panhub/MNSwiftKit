@@ -3,72 +3,50 @@
 //  MNSwiftKit
 //
 //  Created by panhub on 2021/10/27.
-//
+//  日期格式化
 
 import Foundation
 
-extension Date {
+extension DateFormatter {
     
-    /**时间戳 - 秒*/
-    public static var timestamps: String { "\(Int(Date().timeIntervalSince1970))" }
+    /// 播放时间格式化
+    fileprivate static let mn_playTimeFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.dateFormat = "mm:ss"
+        return formatter
+    }()
+}
+
+extension NameSpaceWrapper where Base == Date {
     
-    /**时间戳 - 毫秒*/
-    public static var shortTimestamps: String { "\(Int(Date().timeIntervalSince1970*1000.0))" }
+    /// 时间戳 - 秒
+    public var second: Int { Int(base.timeIntervalSince1970) }
     
-    /**格式化*/
-    public var stringValue: String { stringValue(format: "yyyy-MM-dd HH:mm:ss") }
+    /// 时间戳 - 毫秒
+    public var millisecond: Int { Int(base.timeIntervalSince1970*1000.0) }
     
-    /**播放时间格式*/
-    public var timeValue: String {
-        let formatter = DateFormatter.timeFormatter
-        if timeIntervalSince1970 >= 3600.0 {
+    /// 格式化字符串 'yyyy-MM-dd HH:mm:ss'
+    public var dateString: String { string(using: "yyyy-MM-dd HH:mm:ss") }
+    
+    /// 播放时间格式化
+    public var playTime: String {
+        let formatter = DateFormatter.mn_playTimeFormatter
+        if base.timeIntervalSince1970 >= 3600.0 {
             formatter.dateFormat = "H:mm:ss"
         } else {
             formatter.dateFormat = "mm:ss"
         }
-        return formatter.string(from: self)
+        return formatter.string(from: base)
     }
     
-    public func stringValue(format: String) -> String {
+    /// 日期格式化
+    /// - Parameter format: 格式
+    /// - Returns: 格式化后的日期字符串
+    public func string(using format: String) -> String {
         let formatter = DateFormatter()
-        formatter.timeZone = TimeZone(secondsFromGMT: 3600*8)
+        formatter.timeZone = .current
         formatter.dateFormat = format
-        return formatter.string(from: self)
-    }
-    
-    /// 前进一周
-    public func forwardWeek() -> (from: Date, to: Date) {
-        
-        let calendar: Calendar = .current
-        
-        let tomorrow = calendar.date(byAdding: .day, value: 1, to: self)!
-        let startDate = calendar.startOfDay(for: tomorrow)
-        
-        let date = calendar.date(byAdding: .day, value: 7, to: self)!
-        let endDate = calendar.endOfDay(for: date)
-        
-        return (startDate, endDate)
-    }
-    
-    // 后退一周
-    public func backwardWeek() -> (from: Date, to: Date)? {
-        
-        let calendar: Calendar = .current
-        
-        let date = calendar.date(byAdding: .day, value: -7, to: self)!
-        let startDate = calendar.startOfDay(for: date)
-        
-        let yesterday = calendar.date(byAdding: .day, value: -1, to: self)!
-        let endDate = calendar.endOfDay(for: yesterday)
-        
-        return (startDate, endDate)
-    }
-}
-
-extension NSDate {
-    
-    /// 播放时间格式
-    @objc public var timeValue: String {
-        return (self as Date).timeValue
+        return formatter.string(from: base)
     }
 }

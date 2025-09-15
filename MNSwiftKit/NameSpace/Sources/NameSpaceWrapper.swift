@@ -38,11 +38,23 @@ extension NameSpaceConvertible {
     public static var mn: NameSpaceWrapper<Self>.Type { NameSpaceWrapper<Self>.self }
 }
 
+/// 为Data添加`MNSwiftKit`命名空间
+extension Data: NameSpaceConvertible {}
+
+/// 为Date添加`MNSwiftKit`命名空间
+extension Date: NameSpaceConvertible {}
+
 /// 为Array添加`MNSwiftKit`命名空间
 extension Array: NameSpaceConvertible {}
 
 /// 为String添加`MNSwiftKit`命名空间
 extension String: NameSpaceConvertible {}
+
+/// 为CGRect添加`MNSwiftKit`命名空间
+extension CGRect: NameSpaceConvertible {}
+
+/// 为Calendar添加`MNSwiftKit`命名空间
+extension Calendar: NameSpaceConvertible {}
 
 /// 为Objective-C对象添加`MNSwiftKit`命名空间
 extension NSObject: NameSpaceConvertible {}

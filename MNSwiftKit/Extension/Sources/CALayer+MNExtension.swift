@@ -9,59 +9,54 @@ import UIKit
 import Foundation
 import QuartzCore
 
-extension CALayer {
+extension NameSpaceWrapper where Base: CALayer {
     
     /// 背景图片
-    @objc public var background: UIImage? {
-        set { contents = newValue?.cgImage }
+    public var contents: UIImage? {
+        set { base.contents = newValue?.cgImage }
         get {
-            guard let contents = contents else { return nil }
+            guard let contents = base.contents else { return nil }
             return UIImage(cgImage: contents as! CGImage)
         }
     }
     
     /// 暂停动画
-    @objc public func pauseAnimation() {
-        guard speed == 1.0 else { return }
-        let pauseTime = convertTime(CACurrentMediaTime(), from: nil)
-        speed = 0.0
-        timeOffset = pauseTime
+    public func pauseAnimation() {
+        guard base.speed == 1.0 else { return }
+        let timeOffset = base.convertTime(CACurrentMediaTime(), from: nil)
+        base.speed = 0.0
+        base.timeOffset = timeOffset
     }
     
     /// 继续动画
-    @objc public func resumeAnimation() {
-        guard speed == 0.0 else { return }
-        let pauseTime = timeOffset
-        speed = 1.0
-        timeOffset = 0.0
-        beginTime = 0.0
-        let timeSincePause = convertTime(CACurrentMediaTime(), from: nil) - pauseTime
-        beginTime = timeSincePause
+    public func resumeAnimation() {
+        guard base.speed == 0.0 else { return }
+        let timeOffset = base.timeOffset
+        base.speed = 1.0
+        base.timeOffset = 0.0
+        base.beginTime = 0.0
+        let timeSincePause = base.convertTime(CACurrentMediaTime(), from: nil) - timeOffset
+        base.beginTime = timeSincePause
     }
     
     /// 重置动画
-    @objc public func resetAnimation() {
-        speed = 1.0
-        timeOffset = 0.0
-        beginTime = 0.0
+    public func resetAnimation() {
+        base.speed = 1.0
+        base.timeOffset = 0.0
+        base.beginTime = 0.0
     }
     
-    /// 摇晃方向
-    @objc public enum ShakeOrientation: Int {
-        case horizontal, vertical
-    }
-    
-    /// 获取截图
-    @objc public var snapshot: UIImage? {
+    /// 截图
+    public var snapshotImage: UIImage? {
         if #available(iOS 10.0, *) {
-            let renderer = UIGraphicsImageRenderer(bounds: bounds)
+            let renderer = UIGraphicsImageRenderer(bounds: base.bounds)
             return renderer.image { context in
-                render(in: context.cgContext)
+                base.render(in: context.cgContext)
             }
         } else {
-            UIGraphicsBeginImageContextWithOptions(bounds.size, false, contentsScale)
+            UIGraphicsBeginImageContextWithOptions(base.bounds.size, false, base.contentsScale)
             if let context = UIGraphicsGetCurrentContext() {
-                render(in: context)
+                base.render(in: context)
             }
             let image = UIGraphicsGetImageFromCurrentImageContext()
             UIGraphicsEndImageContext()
@@ -73,12 +68,25 @@ extension CALayer {
     /// - Parameters:
     ///   - radius: 圆角大小
     ///   - corners: 圆角位置
-    @objc public func setRadius(_ radius: CGFloat, by corners: UIRectCorner) {
-        let path = UIBezierPath(roundedRect: bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+    public func setRadius(_ radius: CGFloat, by corners: UIRectCorner) {
+        let path = UIBezierPath(roundedRect: base.bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
         let layer = CAShapeLayer()
         layer.path = path.cgPath
-        mask = layer
+        base.mask = layer
     }
+}
+
+extension CALayer {
+    
+    /// 摇晃方向
+    @objc(CALayerShakeOrientation)
+    public enum ShakeOrientation: Int {
+        case horizontal
+        case vertical
+    }
+}
+
+extension NameSpaceWrapper where Base: CALayer {
     
     /// 摆动
     /// - Parameters:
@@ -86,7 +94,7 @@ extension CALayer {
     ///   - duration: 时长
     ///   - extent: 摇摆的幅度
     ///   - completion: 结束回调
-    @objc public func swing(orientation: ShakeOrientation = .horizontal, duration: TimeInterval = 0.8, extent: CGFloat = 6.0, completion: (()->Void)? = nil) {
+    public func swing(orientation: CALayer.ShakeOrientation = .horizontal, duration: TimeInterval = 0.8, extent: CGFloat = 6.0, completion: (()->Void)? = nil) {
         let spring: CGFloat = abs(extent)
         let animation = CAKeyframeAnimation(keyPath: orientation == .horizontal ? "transform.translation.x" : "transform.translation.y")
         animation.duration = duration
@@ -95,8 +103,8 @@ extension CALayer {
         //animation.repeatCount = Float.greatestFiniteMagnitude
         animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
         animation.values = [-spring/2.0, 0.0, spring/2.0, 0.0, -spring/2.0, -spring, -spring/2.0, 0.0, spring/2.0, spring, spring/3.0*2.0, spring/3.0, 0.0, -spring/3.0, -spring/3.0*2.0, -spring/3.0, 0.0, spring/3.0, spring/3.0*2.0, spring/3.0, 0.0, -spring/3.0, 0.0, spring/3.0, 0.0]
-        removeAnimation(forKey: "com.mn.swing.animation")
-        add(animation, forKey: "com.mn.swing.animation")
+        base.removeAnimation(forKey: "com.mn.swing.animation")
+        base.add(animation, forKey: "com.mn.swing.animation")
         guard let completion = completion else { return }
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + duration + 0.1, execute: completion)
     }
@@ -106,7 +114,7 @@ extension CALayer {
     ///   - radian: 摇动弧度
     ///   - duration: 时长
     ///   - completion: 结束回调
-    @objc public func shake(radian: Double = 5.0/180.0*Double.pi, duration: TimeInterval = 0.35, completion: (()->Void)? = nil) {
+    public func shake(radian: Double = 5.0/180.0*Double.pi, duration: TimeInterval = 0.35, completion: (()->Void)? = nil) {
         let animation = CAKeyframeAnimation(keyPath: "transform.rotation")
         animation.duration = duration
         animation.repeatCount = Float.greatestFiniteMagnitude
@@ -115,8 +123,8 @@ extension CALayer {
         animation.timingFunction = CAMediaTimingFunction(name: .linear)
         animation.isRemovedOnCompletion = false
         animation.fillMode = .forwards
-        removeAnimation(forKey: "com.mn.shake.animation")
-        add(animation, forKey: "com.mn.shake.animation")
+        base.removeAnimation(forKey: "com.mn.shake.animation")
+        base.add(animation, forKey: "com.mn.shake.animation")
         guard let completion = completion else { return }
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + duration + 0.1, execute: completion)
     }
@@ -125,7 +133,7 @@ extension CALayer {
 extension CALayerContentsGravity {
     
     /// CALayerContentsGravity => UIView.ContentMode
-    public var mode: UIView.ContentMode {
+    public var asContentMode: UIView.ContentMode {
         switch self {
         case .center: return .center
         case .top: return .top

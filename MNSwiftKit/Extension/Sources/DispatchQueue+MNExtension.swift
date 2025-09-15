@@ -3,24 +3,38 @@
 //  MNSwiftKit
 //
 //  Created by panhub on 2022/11/7.
-//  针对一次执行的解决方案
+//  针对一次执行的简单解决方案
 
 import Foundation
 
 extension DispatchQueue {
     
-    nonisolated(unsafe) private static var onceTracker: [String] = [String]()
+    nonisolated(unsafe) fileprivate static var mn_onceTracker: [String] = [String]()
+}
+
+extension NameSpaceWrapper where Base == DispatchQueue {
     
+    /// 执行一次
+    /// - Parameters:
+    ///   - token: 判断是否执行的key
+    ///   - block: 执行回调
     public class func once(token: String, block: ()->Void) {
         objc_sync_enter(self)
         defer { objc_sync_exit(self) }
-        if onceTracker.contains(token) { return }
-        onceTracker.append(token)
+        if Base.mn_onceTracker.contains(token) { return }
+        Base.mn_onceTracker.append(token)
         block()
     }
     
+    /// 执行一次
+    /// - Parameters:
+    ///   - file: 当前文件
+    ///   - function: 当前方法
+    ///   - line: 当前行数
+    ///   - block: 执行回调
     public class func once(file: String = #file, function: String = #function, line: Int = #line, block: ()->Void) {
         let token: String = [file, function, String(line)].joined(separator: "-")
         once(token: token, block: block)
     }
 }
+

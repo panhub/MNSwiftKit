@@ -20,7 +20,6 @@
 		276F542BE639BA5AB2486640DAAEA57D /* URL+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB78A17E073E0F2F470FD1760341FF6E /* URL+MNExtension.swift */; };
 		2D3E79B49D1F5DBE0369C30D22542A87 /* UINavigationController+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA4DB2AF0F0AE006499FDDDC3011B012 /* UINavigationController+MNExtension.swift */; };
 		318107C4CD6C307CBC3B838A53795321 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50B18B16679B181B168FDC2DD89CC634 /* Foundation.framework */; };
-		36DF7DF0710C50522B782269D655B763 /* String+MNSubscript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40774CE4D2CB82D746F31C64135B1476 /* String+MNSubscript.swift */; };
 		3CC6B9DBA995D17D6E1F49DE8635B7B7 /* Calendar+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EA6DC2AF44228529352A71CD5DA6DAE /* Calendar+MNExtension.swift */; };
 		3FBB6D48A0A655E6B41ED5911DFFDD5E /* UIApplication+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3856FC9298F7E00F274D018F464C09C /* UIApplication+MNExtension.swift */; };
 		56C95F05D8C24218B91136F73E694398 /* Date+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5784DB79D1C435CA70FA727033390896 /* Date+MNExtension.swift */; };
@@ -29,7 +28,6 @@
 		5BACB6E9CBFF5948DB37D2B2D91BEBED /* Pods-MNSwiftKit_Example-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 7EADCB6756F36B6C8D4E54CF14F278AF /* Pods-MNSwiftKit_Example-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5E55540DB7A4BDEF8B17C592C141125A /* UIView+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8D84D19AD2E4EDA1C6486E0D1908E5 /* UIView+MNExtension.swift */; };
 		695C55087D65F5E888C932E640AD9987 /* UIScrollView+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5938CC1392DFD7932BBB429CF56F8EEB /* UIScrollView+MNExtension.swift */; };
-		712B5C9193FCDF11220E7F938E34405A /* DateFormatter+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9723ED60A985F5D07221B5A89A063B5 /* DateFormatter+MNExtension.swift */; };
 		790A644B3F65CA72D4E68B353E6A4254 /* UIColor+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8D8FA28D72EBC71DD0EF87706456FB1 /* UIColor+MNExtension.swift */; };
 		83420DA75F084C9F4A7D6D141B84DC92 /* MNSwiftKit-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 0DB4B3F6F84F18CB84C9A5E26FAE642C /* MNSwiftKit-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		84698D17C560ED3BF10E3C23EABE53A5 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 624FBF92737EE6BFFD71214E6E4BD075 /* CoreFoundation.framework */; };
@@ -48,7 +46,6 @@
 		D3A5C3AB812B5085E197762A1AF80D24 /* Optional+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 535EB92BA191CA48C9690D4E8923F591 /* Optional+MNExtension.swift */; };
 		D594FB627A88B3DF92C19991308B910D /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76121B6F7B227690E70E53785505B929 /* CoreServices.framework */; };
 		D6A74221C1EED3CD3AD0AE0EF2B25B2B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B12084B78A2B73205E58C11F421B188 /* UIKit.framework */; };
-		DF4CFE79ACDBC043651365B70015BC9B /* Progress+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72E2F22F0E423C4CB8B347FBD432EC2A /* Progress+MNExtension.swift */; };
 		DFE7416BC18EC7AADD0BD4237975D9CC /* UIButton+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A151A0EFC7E47891D28967D1343CDF3E /* UIButton+MNExtension.swift */; };
 		E92B274DDEDE61411B588E6DCA7329B1 /* NameSpaceWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374327A2ACEF0BF110B80E2564C84669 /* NameSpaceWrapper.swift */; };
 		F777DA8BC618C435DA8B54855EE80DC3 /* UIImage+MNAnimated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 188C348C71A1476B729306023ACA78FE /* UIImage+MNAnimated.swift */; };
@@ -99,7 +96,6 @@
 		3B6F3BE32BFFCF8CD6197F9C93F38D87 /* Pods-MNSwiftKit_Example-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MNSwiftKit_Example-acknowledgements.plist"; sourceTree = "<group>"; };
 		3D41B9F809022EFD3820DFAE7181546C /* Pods-MNSwiftKit_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MNSwiftKit_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
 		3EA6DC2AF44228529352A71CD5DA6DAE /* Calendar+MNExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Calendar+MNExtension.swift"; path = "MNSwiftKit/Extension/Sources/Calendar+MNExtension.swift"; sourceTree = "<group>"; };
-		40774CE4D2CB82D746F31C64135B1476 /* String+MNSubscript.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "String+MNSubscript.swift"; path = "MNSwiftKit/Extension/Sources/String+MNSubscript.swift"; sourceTree = "<group>"; };
 		44AC86F546FAB6A89C462D9864B0DAC1 /* Pods-MNSwiftKit_Example-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MNSwiftKit_Example-Info.plist"; sourceTree = "<group>"; };
 		4AC875870626C082485D42ABE081A5ED /* Pods_MNSwiftKit_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MNSwiftKit_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B6AB5F70C3AEB9F1AD3B3434F1D837A /* UIView+MNSwizzled.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIView+MNSwizzled.swift"; path = "MNSwiftKit/Extension/Sources/UIView+MNSwizzled.swift"; sourceTree = "<group>"; };
@@ -117,7 +113,6 @@
 		70AC4361DC62439556339906197287BC /* MNSwiftKit-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MNSwiftKit-prefix.pch"; sourceTree = "<group>"; };
 		71FFE15F4103052304ABCB5717BEF6A4 /* Pods-MNSwiftKit_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MNSwiftKit_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		72329E722013CF4F93BA21477C0FDACB /* Pods-MNSwiftKit_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MNSwiftKit_Example.release.xcconfig"; sourceTree = "<group>"; };
-		72E2F22F0E423C4CB8B347FBD432EC2A /* Progress+MNExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Progress+MNExtension.swift"; path = "MNSwiftKit/Extension/Sources/Progress+MNExtension.swift"; sourceTree = "<group>"; };
 		76121B6F7B227690E70E53785505B929 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/CoreServices.framework; sourceTree = DEVELOPER_DIR; };
 		7D0BEC990D7069EF35026F0B69DF61DB /* UIViewController+MNExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIViewController+MNExtension.swift"; path = "MNSwiftKit/Extension/Sources/UIViewController+MNExtension.swift"; sourceTree = "<group>"; };
 		7EADCB6756F36B6C8D4E54CF14F278AF /* Pods-MNSwiftKit_Example-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-MNSwiftKit_Example-umbrella.h"; sourceTree = "<group>"; };
@@ -138,7 +133,6 @@
 		C793834859493C7E7C747B1422D7E1A5 /* Pods-MNSwiftKit_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MNSwiftKit_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		C8D8FA28D72EBC71DD0EF87706456FB1 /* UIColor+MNExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIColor+MNExtension.swift"; path = "MNSwiftKit/Extension/Sources/UIColor+MNExtension.swift"; sourceTree = "<group>"; };
 		D8A0F4FF533D789A4E80E83120A873C7 /* CALayer+MNExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "CALayer+MNExtension.swift"; path = "MNSwiftKit/Extension/Sources/CALayer+MNExtension.swift"; sourceTree = "<group>"; };
-		D9723ED60A985F5D07221B5A89A063B5 /* DateFormatter+MNExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "DateFormatter+MNExtension.swift"; path = "MNSwiftKit/Extension/Sources/DateFormatter+MNExtension.swift"; sourceTree = "<group>"; };
 		DC8659FC63F71F82269AF700BC457674 /* UIWindow+MNExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIWindow+MNExtension.swift"; path = "MNSwiftKit/Extension/Sources/UIWindow+MNExtension.swift"; sourceTree = "<group>"; };
 		E76AA0E1E270D973EDF7E9D51F9CFDA2 /* MNSwiftKit-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "MNSwiftKit-Info.plist"; sourceTree = "<group>"; };
 		EAC5FACCFBF0219414D6A85C98E20651 /* Pods-MNSwiftKit_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-MNSwiftKit_Example.modulemap"; sourceTree = "<group>"; };
@@ -297,13 +291,10 @@
 				8F4B75170B93F4EBECB35C0C9A152912 /* CGRect+MNExtension.swift */,
 				18762ED5B21D83065E6F0DAEA75699B7 /* Data+MNImageFormat.swift */,
 				5784DB79D1C435CA70FA727033390896 /* Date+MNExtension.swift */,
-				D9723ED60A985F5D07221B5A89A063B5 /* DateFormatter+MNExtension.swift */,
 				5CEA2550CE05D8E51A0181C02DB2F6B4 /* DispatchQueue+MNExtension.swift */,
 				28542721A9568D1C755F61F971E823E2 /* NSAttributedString+MNExtension.swift */,
 				535EB92BA191CA48C9690D4E8923F591 /* Optional+MNExtension.swift */,
-				72E2F22F0E423C4CB8B347FBD432EC2A /* Progress+MNExtension.swift */,
 				8C03D6442C1A5FBD7C6B39BEED969086 /* String+MNExtension.swift */,
-				40774CE4D2CB82D746F31C64135B1476 /* String+MNSubscript.swift */,
 				B3856FC9298F7E00F274D018F464C09C /* UIApplication+MNExtension.swift */,
 				2D0E3C3A09FF2169B1BE0CE3307814A4 /* UIBezierPath+MNExtension.swift */,
 				A151A0EFC7E47891D28967D1343CDF3E /* UIButton+MNExtension.swift */,
@@ -519,15 +510,12 @@
 				A68A6939417309C5F497C1B1793412F2 /* CGRect+MNExtension.swift in Sources */,
 				18DB4DC1C6B6CE1AA39DC135FB92BD59 /* Data+MNImageFormat.swift in Sources */,
 				56C95F05D8C24218B91136F73E694398 /* Date+MNExtension.swift in Sources */,
-				712B5C9193FCDF11220E7F938E34405A /* DateFormatter+MNExtension.swift in Sources */,
 				CB394EC3587CFD91928FE31A64F34EC4 /* DispatchQueue+MNExtension.swift in Sources */,
 				15347F1A4FCACB7786C493979C48C49F /* MNSwiftKit-dummy.m in Sources */,
 				E92B274DDEDE61411B588E6DCA7329B1 /* NameSpaceWrapper.swift in Sources */,
 				D38D4AB405FA5DA5D9078786C1FE4703 /* NSAttributedString+MNExtension.swift in Sources */,
 				D3A5C3AB812B5085E197762A1AF80D24 /* Optional+MNExtension.swift in Sources */,
-				DF4CFE79ACDBC043651365B70015BC9B /* Progress+MNExtension.swift in Sources */,
 				96541367CF1E559ED79991229219E96F /* String+MNExtension.swift in Sources */,
-				36DF7DF0710C50522B782269D655B763 /* String+MNSubscript.swift in Sources */,
 				3FBB6D48A0A655E6B41ED5911DFFDD5E /* UIApplication+MNExtension.swift in Sources */,
 				06125181D00C021E16E44817CFB59759 /* UIBezierPath+MNExtension.swift in Sources */,
 				DFE7416BC18EC7AADD0BD4237975D9CC /* UIButton+MNExtension.swift in Sources */,

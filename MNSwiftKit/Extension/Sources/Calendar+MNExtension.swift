@@ -7,9 +7,11 @@
 
 import Foundation
 
-extension Calendar {
+extension NameSpaceWrapper where Base == Calendar {
     
+    /// 某个日期的结束时间
     public func endOfDay(for date: Date) -> Date {
-        self.date(bySettingHour: 23, minute: 59, second: 59, of: date)!
+        
+        base.date(bySettingHour: 23, minute: 59, second: 59, of: date)!
     }
 }

@@ -9,8 +9,8 @@ import UIKit
 import Foundation
 import CoreGraphics
 
-
-extension CGRect {
+extension NameSpaceWrapper where Base == CGRect {
+    
     /// 九宫格布局
     /// - Parameters:
     ///   - offset: 横向/纵向偏移
@@ -19,10 +19,10 @@ extension CGRect {
     ///   - block: 回调
     public func grid(offset: UIOffset, count: Int, column: Int, using block: (Int, CGRect,  UnsafeMutablePointer<Bool>)->Void) {
         guard count > 0, column > 0 else { return }
-        let x = minX
-        let y = minY
-        let w = width
-        let h = height
+        let x = base.minX
+        let y = base.minY
+        let w = base.width
+        let h = base.height
         let xm = offset.horizontal
         let ym = offset.vertical
         var stop: Bool = false
