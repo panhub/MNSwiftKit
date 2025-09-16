@@ -10,16 +10,12 @@ import StoreKit
 import Foundation
 import CoreGraphics
 
-
-extension UIApplication {
-    
-    /// 加载方式
-    public enum MNOpenMode {
-        /// 内部加载
-        case `internal`
-        /// 跳转应用
-        case external
-    }
+/// 加载评分方式
+public enum MNOpenScoreMode {
+    /// 当前页面加载
+    case current
+    /// 应用商店打开
+    case store(_ appId: String)
 }
 
 extension NameSpaceWrapper where Base: UIApplication {
@@ -82,19 +78,18 @@ extension NameSpaceWrapper where Base: UIApplication {
     
     /// 打开评分
     /// - Parameters:
-    ///   - mode: 以何种方式打开
-    ///   - appId: 应用id
+    ///   - mode: 打开方式
     ///   - completion: 结果回调
-    public class func openScore(mode: UIApplication.MNOpenMode = .external, appId: String! = nil, completion: ((_ isSuccess: Bool) -> Void)? = nil) {
+    public class func openScore(mode: MNOpenScoreMode = .current, completion: ((_ isSuccess: Bool) -> Void)? = nil) {
         switch mode {
-        case .internal:
+        case .current:
             if #available(iOS 14.0, *), let windowScene = Base.shared.delegate?.window??.windowScene {
                 SKStoreReviewController.requestReview(in: windowScene)
             } else if #available(iOS 10.3, *) {
                 SKStoreReviewController.requestReview()
             }
-        case .external:
-            guard let appId = appId, appId.isEmpty == false else {
+        case .store(let appId):
+            guard appId.isEmpty == false else {
                 completion?(false)
                 break
             }
