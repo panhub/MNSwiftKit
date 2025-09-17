@@ -9,12 +9,6 @@ import Foundation
 
 extension URL {
     
-    /// 获取参数列表, 若链接不合法, 则为空
-    public var queryItems: [String:String]? {
-        guard let components = URLComponents(url: self, resolvingAgainstBaseURL: true), let queryItems = components.queryItems else { return nil }
-        return queryItems.reduce(into: [String:String]()) { $0[$1.name] = ($1.value ?? "") }
-    }
-    
     /// 初始化本地路径引用
     /// - Parameter filePath: 本地绝对路径
     public init(fileAtPath filePath: String) {
@@ -31,5 +25,15 @@ extension URL {
             return path(percentEncoded: false)
         }
         return path
+    }
+}
+
+
+extension NameSpaceWrapper where Base == URL {
+    
+    /// 获取参数列表, 若链接不合法, 则为空
+    public var queryItems: [String:String]? {
+        guard let components = URLComponents(url: base, resolvingAgainstBaseURL: true), let queryItems = components.queryItems else { return nil }
+        return queryItems.reduce(into: [String:String]()) { $0[$1.name] = ($1.value ?? "") }
     }
 }

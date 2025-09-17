@@ -130,11 +130,11 @@ extension NameSpaceWrapper where Base: CALayer {
     }
 }
 
-extension CALayerContentsGravity {
+extension NameSpaceWrapper where Base == CALayerContentsGravity {
     
     /// CALayerContentsGravity => UIView.ContentMode
-    public var asContentMode: UIView.ContentMode {
-        switch self {
+    public var contentMode: UIView.ContentMode {
+        switch base {
         case .center: return .center
         case .top: return .top
         case .bottom: return .bottom

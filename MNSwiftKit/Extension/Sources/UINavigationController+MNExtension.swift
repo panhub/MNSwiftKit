@@ -7,17 +7,17 @@
 
 import UIKit
 
-extension UINavigationController {
+extension NameSpaceWrapper where Base: UINavigationController {
     
-    // 当前导航控制器
-    @objc public static var present: UINavigationController? {
-        guard let vc = UIViewController.current else { return nil }
+    /// 当前导航控制器
+    public class var present: UINavigationController? {
+        guard let vc = UIViewController.mn.current else { return nil }
         return vc.navigationController
     }
     
-    // 寻找控制器
+    /// 寻找子控制器
     public func seek<T>(_ cls: T.Type) -> T? {
-        for vc in viewControllers.reversed() {
+        for vc in base.viewControllers.reversed() {
             if vc is T {
                 return vc as? T
             }

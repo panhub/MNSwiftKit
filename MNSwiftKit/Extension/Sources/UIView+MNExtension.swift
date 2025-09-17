@@ -8,62 +8,67 @@
 import UIKit
 import Foundation
 
-extension UIView {
+extension NameSpaceWrapper where Base: UIView {
     
     /// 设置锚点但不改变相对位置
-    @objc public var anchor: CGPoint {
-        get { layer.anchorPoint }
+    public var anchor: CGPoint {
+        get { base.layer.anchorPoint }
         set {
             let x = min(max(0.0, newValue.x), 1.0)
             let y = min(max(0.0, newValue.y), 1.0)
-            let frame = frame
-            let point = layer.anchorPoint
+            let frame = base.frame
+            let point = base.layer.anchorPoint
             let xMargin = x - point.x
             let yMargin = y - point.y
-            layer.anchorPoint = CGPoint(x: x, y: y)
-            var position = layer.position
+            base.layer.anchorPoint = CGPoint(x: x, y: y)
+            var position = base.layer.position
             position.x += xMargin*frame.size.width
             position.y += yMargin*frame.size.height
-            layer.position = position
+            base.layer.position = position
         }
     }
     
     /// 移除所有子视图
-    @objc public func removeAllSubviews() {
-        for view in subviews.reversed() {
-            willRemoveSubview(view)
+    public func removeAllSubviews() {
+        for view in base.subviews.reversed() {
+            base.willRemoveSubview(view)
             view.removeFromSuperview()
         }
     }
     
-    /// 背景图片
-    @objc public var background: UIImage? {
+    /// 内容图片
+    public var contents: UIImage? {
         set {
-            if let imageView = self as? UIImageView {
+            if base is UIImageView {
+                let imageView = base as! UIImageView
                 imageView.image = newValue
-            } else if let button = self as? UIButton {
+            } else if base is UIButton {
+                let button = base as! UIButton
                 button.setBackgroundImage(newValue, for: .normal)
             } else {
-                layer.background = newValue
+                base.layer.contents = newValue?.cgImage
             }
         }
         get {
-            if let imageView = self as? UIImageView {
+            if base is UIImageView {
+                let imageView = base as! UIImageView
                 return imageView.image ?? imageView.highlightedImage
-            } else if let button = self as? UIButton {
+            } else if base is UIButton {
+                let button = base as! UIButton
                 return button.currentBackgroundImage ?? button.currentImage
-            } else {
-                return layer.background
+            } else if let contents = base.layer.contents {
+                return UIImage(cgImage: contents as! CGImage)
             }
+            return nil
         }
     }
 }
 
-extension UIView.ContentMode {
+extension NameSpaceWrapper where Base == UIView.ContentMode {
     
     /// UIView.ContentMode => CALayerContentsGravity
     public var gravity: CALayerContentsGravity {
-        switch self {
+        switch base {
         case .scaleToFill: return .resize
         case .scaleAspectFit: return .resizeAspect
         case .scaleAspectFill: return .resizeAspectFill

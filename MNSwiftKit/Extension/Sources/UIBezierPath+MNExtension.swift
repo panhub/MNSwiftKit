@@ -13,7 +13,7 @@ extension UIBezierPath {
     /// 边框贝塞尔曲线
     /// - Parameters:
     ///   - rect: 边框
-    ///   - edges: 线条矩阵
+    ///   - edges: 边角描述
     public convenience init(roundedRect rect: CGRect, edges: UIRectEdge) {
         self.init()
         if edges.contains(.top) {

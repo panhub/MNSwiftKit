@@ -11,21 +11,6 @@ import Foundation
 // MARK: - 颜色值
 extension UIColor {
     
-    /// 随机颜色
-    public class var random: UIColor {
-        let red: CGFloat = .random(in: 0.0...255.0)/255.0
-        let green: CGFloat = .random(in: 0.0...255.0)/255.0
-        let blue: CGFloat = .random(in: 0.0...255.0)/255.0
-        return UIColor(red: red, green: green, blue: blue, alpha: 1.0)
-    }
-    
-    /// 反色
-    public var filter: UIColor? {
-        var red: CGFloat = 0.0, green: CGFloat = 0.0, blue: CGFloat = 0.0, alpha: CGFloat = 0.0
-        guard getRed(&red, green: &green, blue: &blue, alpha: &alpha) else { return nil }
-        return UIColor(red: 1.0 - red, green: 1.0 - green, blue: 1.0 - blue, alpha: alpha)
-    }
-    
     /// 实例化颜色
     /// - Parameters:
     ///   - hex: 16进制颜色值
@@ -59,19 +44,47 @@ extension UIColor {
         self.init(red: CGFloat(red)/255.0, green: CGFloat(green)/255.0, blue: CGFloat(blue)/255.0, alpha: alpha)
     }
     
+    /// 实例化颜色
+    /// - Parameters:
+    ///   - r: 红色值 (0.0-255.0)
+    ///   - g: 绿色值 (0.0-255.0)
+    ///   - b: 蓝色值 (0.0-255.0)
+    ///   - a: 透明度 (0.0-1.0)
     @objc public convenience init(r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat = 1.0) {
         self.init(red: r/255.0, green: g/255.0, blue: b/255.0, alpha: a)
     }
     
+    /// 实例化颜色
+    /// - Parameters:
+    ///   - all: 红绿蓝色值 (0.0-255.0)
+    ///   - alpha: 透明度 (0.0-1.0)
     @objc public convenience init(all value: CGFloat, alpha: CGFloat = 1.0) {
         self.init(red: value/255.0, green: value/255.0, blue: value/255.0, alpha: alpha)
     }
+}
+
+extension NameSpaceWrapper where Base: UIColor {
+    
+    /// 随机颜色
+    public class var random: UIColor {
+        let red: CGFloat = .random(in: 0.0...255.0)/255.0
+        let green: CGFloat = .random(in: 0.0...255.0)/255.0
+        let blue: CGFloat = .random(in: 0.0...255.0)/255.0
+        return UIColor(red: red, green: green, blue: blue, alpha: 1.0)
+    }
+    
+    /// 反色
+    public var filter: UIColor? {
+        var red: CGFloat = 0.0, green: CGFloat = 0.0, blue: CGFloat = 0.0, alpha: CGFloat = 0.0
+        guard base.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else { return nil }
+        return UIColor(red: 1.0 - red, green: 1.0 - green, blue: 1.0 - blue, alpha: alpha)
+    }
     
     /// 16进制颜色值
-    @objc public var rawHex: String {
+    public var hex: String {
         let multiplier: CGFloat = 255.999999
         var red: CGFloat = 0.0, green: CGFloat = 0.0, blue: CGFloat = 0.0, alpha: CGFloat = 0.0
-        guard getRed(&red, green: &green, blue: &blue, alpha: &alpha) else { return "#000000" }
+        guard base.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else { return "#000000" }
         if alpha >= 1.0 {
             return String(format: "#%02lX%02lX%02lX", Int(red*multiplier), Int(green*multiplier), Int(blue*multiplier))
         }

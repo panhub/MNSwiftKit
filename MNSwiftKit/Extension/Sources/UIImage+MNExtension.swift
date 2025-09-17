@@ -12,10 +12,28 @@ import CoreGraphics
 
 extension UIImage {
     
-    /// 灰度图片
-    @objc public var grayed: UIImage? {
-        guard let cgImage = cgImage else { return nil }
-        let size: CGSize = CGSize(width: size.width*scale, height: size.height*scale)
+    /// 渲染纯色图片
+    /// - Parameters:
+    ///   - color: 渲染颜色
+    ///   - size: 渲染尺寸
+    public convenience init?(color: UIColor, size: CGSize = CGSize(width: 1.0, height: 1.0)) {
+        UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
+        guard let context = UIGraphicsGetCurrentContext() else { return nil }
+        context.setFillColor(color.cgColor)
+        context.fill(CGRect(x: 0, y: 0, width: size.width, height: size.height))
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        guard let cgImage = image?.cgImage else { return nil }
+        self.init(cgImage: cgImage)
+    }
+}
+
+extension NameSpaceWrapper where Base: UIImage {
+    
+    /// 灰度图
+    public var grayed: UIImage? {
+        guard let cgImage = base.cgImage else { return nil }
+        let size: CGSize = CGSize(width: base.size.width*base.scale, height: base.size.height*base.scale)
         let colorSpace: CGColorSpace = CGColorSpaceCreateDeviceGray()
         guard let context = CGContext(data: nil, width: Int(size.width), height: Int(size.height), bitsPerComponent: 8, bytesPerRow: 0, space: colorSpace, bitmapInfo: CGImageAlphaInfo.none.rawValue) else { return nil }
         context.draw(cgImage, in: CGRect(x: 0.0, y: 0.0, width: size.width, height: size.height))
@@ -23,30 +41,32 @@ extension UIImage {
         return UIImage(cgImage: newImage)
     }
     
-    /**调整方向*/
-    @objc public var resizedOrientation: UIImage {
+    /// 调整方向
+    public var resized: UIImage {
         
-        guard imageOrientation != .up, let cgImage = cgImage, let colorSpace = cgImage.colorSpace else { return self }
+        guard base.imageOrientation != .up, let cgImage = base.cgImage, let colorSpace = cgImage.colorSpace else { return base }
         
-        guard let context = CGContext.init(data: nil, width: Int(size.width), height: Int(size.height), bitsPerComponent: cgImage.bitsPerComponent, bytesPerRow: 0, space: colorSpace, bitmapInfo: cgImage.bitmapInfo.rawValue) else { return self }
+        let size = CGSize(width: base.size.width*base.scale, height: base.size.height*base.scale)
+        
+        guard let context = CGContext.init(data: nil, width: Int(size.width), height: Int(size.height), bitsPerComponent: cgImage.bitsPerComponent, bytesPerRow: 0, space: colorSpace, bitmapInfo: cgImage.bitmapInfo.rawValue) else { return base }
         
         var transform: CGAffineTransform = .identity
         
-        switch imageOrientation {
+        switch base.imageOrientation {
         case .down, .downMirrored:
             transform = transform.translatedBy(x: size.width, y: size.height)
-            transform = transform.rotated(by: CGFloat(Double.pi))
+            transform = transform.rotated(by: .pi)
         case .left, .leftMirrored:
             transform = transform.translatedBy(x: size.width, y: 0.0)
-            transform = transform.rotated(by: CGFloat(Double.pi/2.0))
+            transform = transform.rotated(by: .pi/2.0)
         case .right, .rightMirrored:
             transform = transform.translatedBy(x: 0.0, y: size.height)
-            transform = transform.rotated(by: -CGFloat(Double.pi/2.0))
+            transform = transform.rotated(by: -.pi/2.0)
         default:
             break
         }
         
-        switch imageOrientation {
+        switch base.imageOrientation {
         case .upMirrored, .downMirrored:
             transform = transform.translatedBy(x: size.width, y: 0.0)
             transform = transform.scaledBy(x: -1.0, y: 1.0)
@@ -59,80 +79,29 @@ extension UIImage {
     
         context.concatenate(transform)
         
-        switch imageOrientation {
+        switch base.imageOrientation {
         case .left, .leftMirrored, .right, .rightMirrored:
             context.draw(cgImage, in: CGRect(x: 0.0, y: 0.0, width: size.height, height: size.width))
         default:
             context.draw(cgImage, in: CGRect(x: 0.0, y: 0.0, width: size.width, height: size.height))
         }
         
-        guard let bitcgImage = context.makeImage() else { return self }
+        guard let bitcgImage = context.makeImage() else { return base }
         
         return UIImage(cgImage: bitcgImage)
     }
     
-    // MARK: - 裁剪部分图像
-    @objc public func crop(rect: CGRect) -> UIImage! {
-        if rect == .zero { return self }
-        guard let cgImage = cgImage?.cropping(to: CGRect(x: floor(rect.minX)*scale, y: floor(rect.minY)*scale, width: floor(rect.width)*scale, height: floor(rect.height)*scale)) else { return nil }
-        return UIImage(cgImage: cgImage)
-    }
-    
-    // MARK: - 调整图片尺寸
-    @objc public func resizing(toMax pix: CGFloat) -> UIImage! {
-        var size = CGSize(width: size.width*scale, height: size.height*scale)
-        guard max(size.width, size.height) > pix else { return self }
-        if size.width >= size.height {
-            size.height = pix/size.width*size.height
-            size.width = pix
-        } else {
-            size.width = pix/size.height*size.width
-            size.height = pix
-        }
-        return resizing(toSize: size)
-    }
-    
-    @objc public func resizing(toSize size: CGSize) -> UIImage! {
-        let targetSize = CGSize(width: floor(size.width), height: floor(size.height))
-        UIGraphicsBeginImageContextWithOptions(targetSize, false, 1.0)
-        draw(in: CGRect(x: 0.0, y: 0.0, width: targetSize.width, height: targetSize.height))
-        let image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return image
-    }
-    
-    // 压缩至指定质量(约值) 失败则返回原图
-    @objc public func resizing(toQuality bytes: Int) -> UIImage {
-        let min: CGFloat = 0.1
-        let max: CGFloat = 0.9
-        var data: Data?
-        var last: CGFloat = max
-        var quality: CGFloat = 0.6
-        repeat {
-            guard quality >= min, quality <= max else { break }
-            guard let imageData = jpegData(compressionQuality: quality) else { break }
-            data = imageData
-            let count: Int = imageData.count
-            guard fabs(Double(count - bytes)) > 1000.0 else { break }
-            if count > bytes {
-                last = quality
-                quality = (quality - min)/2.0 + min
-            } else {
-                quality = (last - quality)/2.0 + quality
-            }
-        } while (true)
-        guard let imageData = data else { return self }
-        return UIImage(data: imageData) ?? self
-    }
-    
-    @objc public func renderBy(color: UIColor) -> UIImage? {
-        guard let cgImage = cgImage else { return nil }
-        UIGraphicsBeginImageContextWithOptions(size, false, scale)
+    /// 调整图片颜色
+    /// - Parameter color: 渲染颜色
+    /// - Returns: 渲染后的图片
+    public func rendering(to color: UIColor) -> UIImage! {
+        guard let cgImage = base.cgImage else { return nil }
+        UIGraphicsBeginImageContextWithOptions(base.size, true, base.scale)
         guard let context = UIGraphicsGetCurrentContext() else { return nil }
-        context.translateBy(x: 0.0, y: size.height)
+        context.translateBy(x: 0.0, y: base.size.height)
         context.scaleBy(x: 1.0, y: -1.0)
         context.setBlendMode(.normal)
-        let rect = CGRect(x: 0.0, y: 0.0, width: size.width, height: size.height)
+        let rect: CGRect = .init(origin: .zero, size: base.size)
         context.clip(to: rect, mask: cgImage)
         color.setFill()
         context.fill(rect)
@@ -141,93 +110,80 @@ extension UIImage {
         return image
     }
     
-    /// 渲染纯色图片
-    /// - Parameters:
-    ///   - color: 颜色
-    ///   - size: 尺寸
-    @objc public convenience init?(color: UIColor, size: CGSize = CGSize(width: 1.0, height: 1.0)) {
-        UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
-        guard let context = UIGraphicsGetCurrentContext() else { return nil }
-        context.setFillColor(color.cgColor)
-        context.fill(CGRect(x: 0, y: 0, width: size.width, height: size.height))
+    /// 裁剪部分图像
+    /// - Parameter rect: 裁剪区域
+    /// - Returns: 裁剪后的图片
+    public func cropping(to rect: CGRect) -> UIImage! {
+        if rect == .zero { return base }
+        guard let cgImage = base.cgImage else { return base }
+        guard let result = cgImage.cropping(to: CGRect(x: floor(rect.minX)*base.scale, y: floor(rect.minY)*base.scale, width: floor(rect.width)*base.scale, height: floor(rect.height)*base.scale)) else { return nil }
+        return UIImage(cgImage: result)
+    }
+    
+    /// 调整图片尺寸
+    /// - Parameter dimension: 横纵向最大分辨率
+    /// - Returns: 调整后的图片
+    public func resizing(to dimension: CGFloat) -> UIImage! {
+        var size = CGSize(width: base.size.width*base.scale, height: base.size.height*base.scale)
+        guard max(size.width, size.height) > dimension else { return base }
+        if size.width >= size.height {
+            size.height = dimension/size.width*size.height
+            size.width = dimension
+        } else {
+            size.width = dimension/size.height*size.width
+            size.height = dimension
+        }
+        return resizing(to: size)
+    }
+    
+    /// 调整图片尺寸
+    /// - Parameter size: 指定渲染尺寸
+    /// - Returns: 调整后的图片
+    public func resizing(to size: CGSize) -> UIImage! {
+        let targetSize = CGSize(width: floor(size.width), height: floor(size.height))
+        UIGraphicsBeginImageContextWithOptions(targetSize, true, 1.0)
+        base.draw(in: .init(origin: .zero, size: targetSize))
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        guard let cgImage = image?.cgImage else { return nil }
-        self.init(cgImage: cgImage)
+        return image
+    }
+    
+    /// 调整图片至大约内存大小
+    /// - Parameter:
+    ///   - bytes: 字节数
+    ///   - attempts: 最大尝试次数
+    /// - Returns: 调整后的图片
+    public func compress(to bytes: Int, attempts: Int = 10) -> UIImage! {
+        var compression: CGFloat = 1.0
+        var imageData = base.jpegData(compressionQuality: compression)
+        guard var compressedData = imageData else { return nil }
+        // 如果原始图片已经小于目标大小，直接返回
+        if compressedData.count <= bytes { return base }
+        // 二分法压缩
+        var count: Int = 0
+        var minCompression: CGFloat = 0.0
+        var maxCompression: CGFloat = 1.0
+        while count < attempts, compressedData.count > bytes {
+            count += 1
+            compression = (maxCompression + minCompression)/2.0
+            guard let newData = base.jpegData(compressionQuality: compression) else { break }
+            compressedData = newData
+            if newData.count > bytes {
+                maxCompression = compression
+            } else {
+                minCompression = compression
+            }
+        }
+        return UIImage(data: compressedData, scale: base.scale)
     }
 }
 
-// MARK: - 图片处理
-extension UIImage {
-    
-    /// 近似微信朋友圈图片压缩 (以1280为界以 0.6为压缩系数)
-    /// - Parameters:
-    ///   - pixel: 像素阀值
-    ///   - quality: 压缩系数
-    ///   - pointer: 图片大小
-    /// - Returns: (压缩后图片, 图片质量)
-    @objc public func compress(pixel: CGFloat = 1280.0, quality: CGFloat, fileSize pointer: UnsafeMutablePointer<Int64>? = nil) -> UIImage? {
-        guard pixel > 0.0, quality > 0.01 else { return nil }
-        // 调整尺寸
-        var width: CGFloat = size.width*scale
-        var height: CGFloat = size.height*scale
-        guard width > 0.0, height > 0.0 else { return nil }
-        let boundary: CGFloat = pixel
-        let isSquare: Bool = width == height
-        if width > boundary || height > boundary {
-            if max(width, height)/min(width, height) <= 2.0 {
-                let ratio: CGFloat = boundary/max(width, height)
-                if width >= height {
-                    width = boundary
-                    height = height*ratio
-                } else {
-                    height = boundary
-                    width = width*ratio
-                }
-            } else if min(width, height) > boundary {
-                let ratio: CGFloat = boundary/min(width, height)
-                if width <= height {
-                    width = boundary
-                    height = height*ratio
-                } else {
-                    height = boundary
-                    width = width*ratio
-                }
-            }
-            width = ceil(width)
-            height = ceil(height)
-            if isSquare {
-                width = min(width, height)
-                height = width
-            }
-        }
-        // 缩图片
-        UIGraphicsBeginImageContext(CGSize(width: width, height: height))
-        draw(in: CGRect(x: 0.0, y: 0.0, width: width, height: height))
-        let result = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        // 压图片
-        if let imageData = result?.jpegData(compressionQuality: quality), let image = UIImage(data: imageData) {
-            if let pointer = pointer {
-                pointer.pointee = Int64(imageData.count)
-            }
-            return image
-        }
-        return nil
-    }
-    
-    /**近似微信朋友圈图片压缩(以1280为界以0.6为压缩系数)*/
-    @objc public func compress(quality: CGFloat) -> UIImage? {
-        compress(pixel: 1280.0, quality: quality)
-    }
-}
-
-extension UIImage {
+extension NameSpaceWrapper where Base: UIImage {
     
     /// 将图片写入本地
     /// - Parameter filePath: 本地路径
     /// - Returns: 是否写入成功
-    @objc public func write(toFile filePath: String) -> Bool {
+    public func write(toFile filePath: String) -> Bool {
         let url: URL?
         if #available(iOS 16.0, *) {
             url = URL(filePath: filePath)
@@ -241,7 +197,7 @@ extension UIImage {
     /// 写入图片
     /// - Parameter url: 本地绝对路径
     /// - Returns: 是否写入成功
-    @objc public func write(to url: URL) -> Bool {
+    public func write(to url: URL) -> Bool {
         do {
             try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
         } catch {
@@ -250,7 +206,7 @@ extension UIImage {
 #endif
             return false
         }
-        guard let imageData = Data(image: self) else { return false }
+        guard let imageData = data else { return false }
         do {
             try imageData.write(to: url)
         } catch {
@@ -263,9 +219,11 @@ extension UIImage {
     }
     
     /// 写入图片
-    /// - Parameter referencePath: 参考路径
+    /// - Parameters:
+    ///   - quality: 对于jpg封装格式的压缩参数
+    ///   - referencePath: 参考路径
     /// - Returns: 图片路径
-    @objc public func writeToFile(referencePath: String) -> String? {
+    public func writeToFile(compression quality: CGFloat = 1.0, referencePath: String) -> String? {
         let url: URL?
         if #available(iOS 16.0, *) {
             url = URL(filePath: referencePath)
@@ -282,7 +240,7 @@ extension UIImage {
             return nil
         }
         var format: String = url.pathExtension.lowercased()
-        guard let imageData = Data(image: self, extension: &format) else { return nil }
+        guard let imageData = data(compression: quality, extension: &format) else { return nil }
         let fileUrl: URL = format == url.pathExtension.lowercased() ? url : url.deletingPathExtension().appendingPathExtension(format)
         do {
             try imageData.write(to: fileUrl)

@@ -8,10 +8,10 @@
 import UIKit
 import Foundation
 
-extension UIWindow {
+extension NameSpaceWrapper where Base: UIWindow {
     
     /// 当前Window
-    @objc public class var current: UIWindow! {
+    public class var current: UIWindow! {
         if #available(iOS 15.0, *) {
             return current(in: UIApplication.shared.delegate?.window??.windowScene?.windows.reversed())
         } else {
