@@ -1,12 +1,10 @@
 PODS:
-  - MNSwiftKit/AnimatedImage (0.1.1)
-  - MNSwiftKit/Extension (0.1.1):
-    - MNSwiftKit/AnimatedImage
+  - MNSwiftKit/Core (0.1.1):
     - MNSwiftKit/NameSpace
   - MNSwiftKit/NameSpace (0.1.1)
 
 DEPENDENCIES:
-  - MNSwiftKit/Extension (from `../`)
+  - MNSwiftKit/Core (from `../`)
 
 EXTERNAL SOURCES:
   MNSwiftKit:
@@ -15,6 +13,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   MNSwiftKit: c4d6af7c10235c8db21f28d838259940306cc1bd
 
-PODFILE CHECKSUM: 4ae0fc34afb54302260754d88c190e5cce780965
+PODFILE CHECKSUM: fe0f72e63eb43e41a13b00a17b75465c5f008d49
 
 COCOAPODS: 1.16.2

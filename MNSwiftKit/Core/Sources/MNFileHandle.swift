@@ -1,5 +1,5 @@
 //
-//  FileHandle.swift
+//  MNFileHandle.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2022/2/9.
@@ -200,8 +200,27 @@ extension MNFileHandle {
     /// - Returns: 是否操作成功
     public class func copyItem(atPath srcPath: String, toPath dstPath: String) -> Bool {
         guard FileManager.default.fileExists(atPath: srcPath) else { return false }
-        try? FileManager.default.removeItem(atPath: dstPath)
-        try? FileManager.default.createDirectory(at: URL(fileURLWithPath: dstPath).deletingLastPathComponent(), withIntermediateDirectories: true)
+        if FileManager.default.fileExists(atPath: dstPath) {
+            do {
+                try FileManager.default.removeItem(atPath: dstPath)
+            } catch {
+#if DEBUG
+                print("删除旧文件失败: \(error)")
+#endif
+                return false
+            }
+        }
+        let directory = (dstPath as NSString).deletingLastPathComponent
+        if FileManager.default.fileExists(atPath: directory) == false {
+            do {
+                try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
+            } catch {
+#if DEBUG
+                print("创建目标文件夹失败: \(error)")
+#endif
+                return false
+            }
+        }
         do {
             try FileManager.default.copyItem(atPath: srcPath, toPath: dstPath)
         } catch {
@@ -212,13 +231,33 @@ extension MNFileHandle {
     
     public class func writeItem(atPath filePath: String, toPath targetPath:String, units unitCount: UInt64 = 1024*1024*100) -> Bool {
         guard FileManager.default.fileExists(atPath: filePath) else { return false }
-        try? FileManager.default.removeItem(atPath: targetPath)
-        do {
-            try FileManager.default.createDirectory(at: URL(fileURLWithPath: targetPath).deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
-        } catch {
+        if FileManager.default.fileExists(atPath: targetPath) {
+            do {
+                try FileManager.default.removeItem(atPath: targetPath)
+            } catch {
+#if DEBUG
+                print("删除旧文件失败: \(error)")
+#endif
+                return false
+            }
+        }
+        let directory = (targetPath as NSString).deletingLastPathComponent
+        if FileManager.default.fileExists(atPath: directory) == false {
+            do {
+                try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
+            } catch {
+#if DEBUG
+                print("创建目标文件夹失败: \(error)")
+#endif
+                return false
+            }
+        }
+        guard FileManager.default.createFile(atPath: targetPath, contents: nil, attributes: nil) else {
+#if DEBUG
+            print("创建目标文件失败: \(targetPath)")
+#endif
             return false
         }
-        guard FileManager.default.createFile(atPath: targetPath, contents: nil, attributes: nil) else { return false }
         // 读
         guard let reader = MNFileHandle(forReadingAtPath: filePath) else { return false }
         defer {

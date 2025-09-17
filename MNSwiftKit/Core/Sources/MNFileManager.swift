@@ -7,29 +7,29 @@
 
 import Foundation
 
-public class MNFileManager {
+extension NameSpaceWrapper where Base: FileManager {
     
     /// 磁盘容量
-    public class var diskSize: Int64 {
+    public var diskSize: Int64 {
         var fileSize: Int64 = 0
         do {
-            let attributes = try FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory())
+            let attributes = try base.attributesOfFileSystem(forPath: NSHomeDirectory())
             if let count = attributes[FileAttributeKey.systemSize] as? Int64 {
                 fileSize = count
             }
         } catch {
 #if DEBUG
-            print("读取系统磁盘大小出错: \n\(error)")
+            print("读取系统磁盘大小出错: \(error)")
 #endif
         }
         return fileSize
     }
     
     /// 磁盘空余容量
-    public class var freeSize: Int64 {
+    public var freeSize: Int64 {
         var fileSize: Int64 = 0
         do {
-            let attributes = try FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory())
+            let attributes = try base.attributesOfFileSystem(forPath: NSHomeDirectory())
             if let count = attributes[FileAttributeKey.systemFreeSize] as? Int64 {
                 fileSize = count
             }
@@ -42,7 +42,7 @@ public class MNFileManager {
     }
     
     /// 磁盘使用大小
-    public class var usedSize: Int64 {
+    public var usedSize: Int64 {
         let total = diskSize
         let free = freeSize
         return max(0, total - free)
@@ -51,17 +51,17 @@ public class MNFileManager {
     /// 计算路径下文件大小
     /// - Parameter url: 指定路径
     /// - Returns: 文件大小
-    public class func itemSize(at url: URL) -> Int64 {
+    public func itemSize(at url: URL) -> Int64 {
         guard url.isFileURL else { return 0 }
-        return itemSize(atPath: path(with: url))
+        return itemSize(atPath: url.mn_path)
     }
     
     /// 计算路径下文件大小
     /// - Parameter filePath: 指定路径
     /// - Returns: 文件大小
-    public class func itemSize(atPath filePath: String) -> Int64 {
+    public func itemSize(atPath filePath: String) -> Int64 {
         var isDirectory: ObjCBool = false
-        guard FileManager.default.fileExists(atPath: filePath, isDirectory: &isDirectory) else { return 0 }
+        guard base.fileExists(atPath: filePath, isDirectory: &isDirectory) else { return 0 }
         if isDirectory.boolValue {
             // 文件夹
             guard let subpaths = FileManager.default.subpaths(atPath: filePath) else { return 0 }
@@ -234,13 +234,12 @@ extension MNFileManager {
 }
 
 // MARK: - 辅助
-fileprivate extension MNFileManager {
+extension URL {
     
-    /// URL=>String
-    class func path(with url: URL) -> String {
+    var mn_path: String {
         if #available(iOS 16.0, *) {
-            return url.path(percentEncoded: false)
+            return path(percentEncoded: false)
         }
-        return url.path
+        return path
     }
 }

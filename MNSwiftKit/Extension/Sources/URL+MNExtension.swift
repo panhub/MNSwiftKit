@@ -18,14 +18,6 @@ extension URL {
             self.init(fileURLWithPath: filePath)
         }
     }
-    
-    /// 路径的字符串表示
-    public var rawPath: String {
-        if #available(iOS 16.0, *) {
-            return path(percentEncoded: false)
-        }
-        return path
-    }
 }
 
 
@@ -35,5 +27,13 @@ extension NameSpaceWrapper where Base == URL {
     public var queryItems: [String:String]? {
         guard let components = URLComponents(url: base, resolvingAgainstBaseURL: true), let queryItems = components.queryItems else { return nil }
         return queryItems.reduce(into: [String:String]()) { $0[$1.name] = ($1.value ?? "") }
+    }
+    
+    /// 路径的字符串表示
+    public var path: String {
+        if #available(iOS 16.0, *) {
+            return base.path(percentEncoded: false)
+        }
+        return base.path
     }
 }
