@@ -34,19 +34,12 @@ Pod::Spec.new do |s|
   # 默认模块
   s.default_subspec = 'Full'
   
-  # Core <基础功能>
-  s.subspec 'Core' do |c|
-    c.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
-    c.source_files = 'MNSwiftKit/Core/Sources/**/*.swift'
-    c.dependency 'MNSwiftKit/NameSpace'
-  end
-  
   # Base <控制器基类>
   s.subspec 'Base' do |b|
     b.frameworks = 'UIKit', 'Foundation', 'CoreGraphics', 'WebKit'
     b.source_files = 'MNSwiftKit/Base/Sources/**/*.swift'
     b.resource_bundles = {
-        'MNSwiftKit_Base' => ['MNSwiftKit/Base/Resources/*.{png,jpg,jpeg}']
+        'MNSwiftKit_Base' => ['MNSwiftKit/Base/Resources/*']
     }
     b.dependency 'MNSwiftKit/Toast'
     b.dependency 'MNSwiftKit/Layout'
@@ -215,8 +208,8 @@ Pod::Spec.new do |s|
     e.resource_bundles = {
         'MNSwiftKit_EmoticonKeyboard' => ['MNSwiftKit/EmoticonKeyboard/Resources/*']
     }
-    e.dependency 'MNSwiftKit/Core'
     e.dependency 'MNSwiftKit/Definition'
+    e.dependency 'MNSwiftKit/Extension'
     e.dependency 'MNSwiftKit/NameSpace'
     e.dependency 'MNSwiftKit/PageControl'
     e.dependency 'MNSwiftKit/AnimatedImage'
@@ -238,7 +231,6 @@ Pod::Spec.new do |s|
   s.subspec 'Full' do |full|
     # 'Full' 子模块本身不包含任何源代码
     # 它只是一个“元模块”，用来聚合所有其他子模块的依赖
-    full.dependency 'MNSwiftKit/Core'
     full.dependency 'MNSwiftKit/Base'
     full.dependency 'MNSwiftKit/Toast'
     full.dependency 'MNSwiftKit/Slider'

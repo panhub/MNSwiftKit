@@ -1,20 +1,37 @@
 PODS:
-  - MNSwiftKit/AnimatedImage (0.1.1)
-  - MNSwiftKit/Extension (0.1.1):
-    - MNSwiftKit/AnimatedImage
+  - MNSwiftKit/Base (0.1.1):
+    - MNSwiftKit/CollectionLayout
+    - MNSwiftKit/Definition
+    - MNSwiftKit/EmptyView
+    - MNSwiftKit/Layout
+    - MNSwiftKit/Refresh
+    - MNSwiftKit/Request
+    - MNSwiftKit/Toast
+    - MNSwiftKit/Transitioning
+  - MNSwiftKit/CollectionLayout (0.1.1)
+  - MNSwiftKit/Definition (0.1.1):
+    - MNSwiftKit/NameSpace
+  - MNSwiftKit/EmptyView (0.1.1)
+  - MNSwiftKit/Layout (0.1.1):
     - MNSwiftKit/NameSpace
   - MNSwiftKit/NameSpace (0.1.1)
+  - MNSwiftKit/Networking (0.1.1)
+  - MNSwiftKit/Refresh (0.1.1)
+  - MNSwiftKit/Request (0.1.1):
+    - MNSwiftKit/Networking
+  - MNSwiftKit/Toast (0.1.1)
+  - MNSwiftKit/Transitioning (0.1.1)
 
 DEPENDENCIES:
-  - MNSwiftKit/Extension (from `../`)
+  - MNSwiftKit/Base (from `../`)
 
 EXTERNAL SOURCES:
   MNSwiftKit:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: acf3ee56992d6db7d0ed808bf3dcfd2bdd9df3a7
+  MNSwiftKit: d6f5b0459e2bea38f062ecb557f53e041a7e5ac3
 
-PODFILE CHECKSUM: 4ae0fc34afb54302260754d88c190e5cce780965
+PODFILE CHECKSUM: cbd7b0f258cacf1623447740d11a1766a1de55c5
 
 COCOAPODS: 1.16.2

@@ -60,18 +60,18 @@ import CoreGraphics
             leftBarItem = barItem
         } else {
             leftBarItem = UIControl()
-            leftBarItem.mn_layout.size = CGSize(width: MNNavigationBar.itemSize, height: MNNavigationBar.itemSize)
+            leftBarItem.mn.size = CGSize(width: MNNavigationBar.itemSize, height: MNNavigationBar.itemSize)
             if let delegate = delegate, (delegate.navigationBarShouldDrawBackBarItem?() ?? false) == true {
                 // 返回按钮
                 leftBarItem.layer.contents = BaseResource.image(named: "back")?.cgImage
                 (leftBarItem as! UIControl).addTarget(self, action: #selector(leftBarItemTouchUpInside(_:)), for: UIControl.Event.touchUpInside)
             }
         }
-        leftBarItem.mn_layout.minX = MNNavigationBar.leading
-        var y = (frame.height - UIApplication.StatusBarHeight - leftBarItem.frame.height)/2.0
+        leftBarItem.mn.minX = MNNavigationBar.leading
+        var y = (frame.height - UIApplication.mn.statusBarHeight - leftBarItem.frame.height)/2.0
         y = max(0.0, y)
-        y += UIApplication.StatusBarHeight
-        leftBarItem.mn_layout.minY = y
+        y += UIApplication.mn.statusBarHeight
+        leftBarItem.mn.minY = y
         leftBarItem.autoresizingMask = .flexibleTopMargin
         return leftBarItem
     }()
@@ -82,14 +82,14 @@ import CoreGraphics
             rightBarItem = barItem
         } else {
             rightBarItem = UIControl()
-            rightBarItem.mn_layout.size = CGSize(width: MNNavigationBar.itemSize, height: MNNavigationBar.itemSize)
+            rightBarItem.mn.size = CGSize(width: MNNavigationBar.itemSize, height: MNNavigationBar.itemSize)
             (rightBarItem as! UIControl).addTarget(self, action: #selector(rightBarItemTouchUpInside(_:)), for: UIControl.Event.touchUpInside)
         }
-        var y = (frame.height - UIApplication.StatusBarHeight - rightBarItem.frame.height)/2.0
+        var y = (frame.height - UIApplication.mn.statusBarHeight - rightBarItem.frame.height)/2.0
         y = max(0.0, y)
-        y += UIApplication.StatusBarHeight
-        rightBarItem.mn_layout.minY = y
-        rightBarItem.mn_layout.maxX = frame.width - MNNavigationBar.trailing
+        y += UIApplication.mn.statusBarHeight
+        rightBarItem.mn.minY = y
+        rightBarItem.mn.maxX = frame.width - MNNavigationBar.trailing
         rightBarItem.autoresizingMask = .flexibleTopMargin
         return rightBarItem
     }()
@@ -142,8 +142,8 @@ import CoreGraphics
         let center: CGPoint = titleLabel.center
         let spacing: CGFloat = ceil(max(leftBarItem.frame.maxX, frame.width - rightBarItem.frame.minX)) + MNNavigationBar.trailing
         titleLabel.sizeToFit()
-        titleLabel.mn_layout.width = min(ceil(titleLabel.frame.width), frame.width - spacing*2.0)
-        titleLabel.mn_layout.height = min(ceil(titleLabel.frame.height), frame.height - MN_STATUS_BAR_HEIGHT)
+        titleLabel.mn.width = min(ceil(titleLabel.frame.width), frame.width - spacing*2.0)
+        titleLabel.mn.height = min(ceil(titleLabel.frame.height), frame.height - MN_STATUS_BAR_HEIGHT)
         titleLabel.center = center
     }
 }
@@ -273,8 +273,8 @@ extension MNNavigationBar {
         set {
             let mask = separatorView.autoresizingMask
             separatorView.autoresizingMask = []
-            separatorView.mn_layout.minX = newValue.left
-            separatorView.mn_layout.width = frame.width - newValue.left - newValue.right
+            separatorView.mn.minX = newValue.left
+            separatorView.mn.width = frame.width - newValue.left - newValue.right
             separatorView.autoresizingMask = mask
         }
     }

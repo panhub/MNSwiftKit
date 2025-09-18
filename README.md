@@ -18,7 +18,6 @@ it, simply add the following line to your Podfile:
 
 ```ruby
 pod 'MNSwiftKit'
-pod 'MNSwiftKit/Core'
 pod 'MNSwiftKit/Base'
 pod 'MNSwiftKit/Toast'
 pod 'MNSwiftKit/Slider'

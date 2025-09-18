@@ -1,5 +1,5 @@
 //
-//  MNFileHandle.swift
+//  FileHandle+MNExtension.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2022/2/9.
@@ -7,72 +7,94 @@
 
 import Foundation
 
-public class MNFileHandle {
+extension NameSpaceWrapper where Base: FileHandle {
     
-    private let fileHandle: FileHandle
-    
-    public init?(forReadingAtPath path: String) {
-        guard let fileHandle = FileHandle(forReadingAtPath: path) else { return nil }
-        self.fileHandle = fileHandle
+    /// 构造读取句柄
+    /// - Parameter url: 文件位置
+    /// - Returns: 文件读取句柄
+    public class func reading(from url: URL) -> FileHandle? {
+        var fileHandle: FileHandle?
+        do {
+            fileHandle = try FileHandle(forReadingFrom: url)
+        } catch {
+#if DEBUG
+            print("构造文件句柄失败: \(error)")
+#endif
+        }
+        return fileHandle
     }
+    
+    /// 构建文件写入句柄
+    /// - Parameter url: 写入位置
+    /// - Returns: 文件写入句柄
+    public class func writing(to url: URL) -> FileHandle? {
+        var fileHandle: FileHandle?
+        do {
+            fileHandle = try FileHandle(forWritingTo: url)
+        } catch {
+#if DEBUG
+            print("构造文件句柄失败: \(error)")
+#endif
+        }
+        return fileHandle
+    }
+    
+    /// 构建文件更新句柄
+    /// - Parameter url: 文件位置
+    /// - Returns: 文件更新句柄
+    public class func updating(url: URL) -> FileHandle? {
+        var fileHandle: FileHandle?
+        do {
+            fileHandle = try FileHandle(forUpdating: url)
+        } catch {
+#if DEBUG
+            print("构造文件句柄失败: \(error)")
+#endif
+        }
+        return fileHandle
+    }
+}
 
-    public init?(forWritingAtPath path: String) {
-        guard let fileHandle = FileHandle(forWritingAtPath: path) else { return nil }
-        self.fileHandle = fileHandle
-    }
-
-    public init?(forUpdatingAtPath path: String) {
-        guard let fileHandle = FileHandle(forUpdatingAtPath: path) else { return nil }
-        self.fileHandle = fileHandle
-    }
+extension NameSpaceWrapper where Base: FileHandle {
     
-    public init?(forReadingFrom url: URL) {
-        guard let fileHandle = try? FileHandle(forReadingFrom: url) else { return nil }
-        self.fileHandle = fileHandle
-    }
-
-    public init?(forWritingTo url: URL) {
-        guard let fileHandle = try? FileHandle(forWritingTo: url) else { return nil }
-        self.fileHandle = fileHandle
-    }
-    
-    public init?(forUpdating url: URL) {
-        guard let fileHandle = try? FileHandle(forUpdating: url) else { return nil }
-        self.fileHandle = fileHandle
-    }
-    
+    /// 当前偏移位置
     public var offset: UInt64 {
         if #available(iOS 13.4, *) {
             var count: UInt64 = 0
             do {
-                count = try fileHandle.offset()
+                count = try base.offset()
             } catch {
                 return 0
             }
             return count
         } else {
-            return fileHandle.offsetInFile
+            return base.offsetInFile
         }
     }
     
+    /// 关闭文件句柄
     public func close() {
         if #available(iOS 13.0, *) {
             do {
-                try fileHandle.close()
+                try base.close()
             } catch {
 #if DEBUG
                 print(error)
 #endif
             }
         } else {
-            fileHandle.closeFile()
+            base.closeFile()
         }
     }
     
+    /// 截断数据
+    /// - Parameter offset: 偏移
+    /// - Returns: 是否操作成功
+    @discardableResult
     public func truncate(atOffset offset: UInt64) -> Bool {
         if #available(iOS 13.0, *) {
             do {
-                try fileHandle.truncate(atOffset: offset)
+                try base.truncate(atOffset: offset)
             } catch {
 #if DEBUG
                 print(error)
@@ -80,34 +102,38 @@ public class MNFileHandle {
                 return false
             }
         } else {
-            fileHandle.truncateFile(atOffset: offset)
+            base.truncateFile(atOffset: offset)
         }
         return true
     }
     
+    /// 同步操作
     public func synchronize() {
         if #available(iOS 13.0, *) {
             do {
-                try fileHandle.synchronize()
+                try base.synchronize()
             } catch {
 #if DEBUG
                 print(error)
 #endif
             }
         } else {
-            fileHandle.synchronizeFile()
+            base.synchronizeFile()
         }
     }
 }
 
 // MARK: - Seek
-extension MNFileHandle {
+extension NameSpaceWrapper where Base: FileHandle {
     
+    /// 跳转到结尾处
+    /// - Returns: 数据长度
+    @discardableResult
     public func seekToEnd() -> UInt64 {
         if #available(iOS 13.4, *) {
             var count: UInt64 = 0
             do {
-                count = try fileHandle.seekToEnd()
+                count = try base.seekToEnd()
             } catch {
 #if DEBUG
                 print(error)
@@ -115,47 +141,54 @@ extension MNFileHandle {
             }
             return count
         } else {
-            return fileHandle.seekToEndOfFile()
+            return base.seekToEndOfFile()
         }
     }
     
+    /// 跳转到指定位置
+    /// - Parameter offset: 偏移量
     public func seek(toOffset offset: UInt64) {
         if #available(iOS 13.0, *) {
             do {
-                try fileHandle.seek(toOffset: offset)
+                try base.seek(toOffset: offset)
             } catch {
 #if DEBUG
                 print(error)
 #endif
             }
         } else {
-            fileHandle.seek(toFileOffset: offset)
+            base.seek(toFileOffset: offset)
         }
     }
 }
 
 // MARK: - Read
-extension MNFileHandle {
+extension NameSpaceWrapper where Base: FileHandle {
     
+    /// 读取到结尾
+    /// - Returns: 读取到的数据
     public func readToEnd() -> Data? {
         if #available(iOS 13.4, *) {
             var data: Data?
             do {
-                data = try fileHandle.readToEnd()
+                data = try base.readToEnd()
             } catch {
                 return nil
             }
             return data
         } else {
-            return fileHandle.readDataToEndOfFile()
+            return base.readDataToEndOfFile()
         }
     }
     
+    /// 读取指定数量的数据
+    /// - Parameter count: 指定数量
+    /// - Returns: 读取到的数据
     public func readData(ofCount count: Int) -> Data? {
         var data: Data?
         if #available(iOS 13.4, *) {
             do {
-                data = try fileHandle.read(upToCount: count)
+                data = try base.read(upToCount: count)
             } catch {
 #if DEBUG
                 print(error)
@@ -163,19 +196,23 @@ extension MNFileHandle {
                 return nil
             }
         } else {
-            data = fileHandle.readData(ofLength: count)
+            data = base.readData(ofLength: count)
         }
         return data
     }
 }
 
 // MARK: - Write
-extension MNFileHandle {
+extension NameSpaceWrapper where Base: FileHandle {
     
+    /// 写入数据
+    /// - Parameter data: 数据流
+    /// - Returns: 是否写入成功
+    @discardableResult
     public func write(contentsOf data: Data) -> Bool {
         if #available(iOS 13.4, *) {
             do {
-                try fileHandle.write(contentsOf: data)
+                try base.write(contentsOf: data)
             } catch {
 #if DEBUG
                 print(error)
@@ -184,20 +221,20 @@ extension MNFileHandle {
             }
             return true
         } else {
-            fileHandle.write(data)
+            base.write(data)
             return true
         }
     }
 }
 
 // MARK: - Helper
-extension MNFileHandle {
+extension NameSpaceWrapper where Base: FileHandle {
     
-    /// 复制文件到指定文件
+    /// 复制文件
     /// - Parameters:
-    ///   - srcPath: 原文件
-    ///   - dstPath: 目标文件
-    /// - Returns: 是否操作成功
+    ///   - srcPath: 原文件目录
+    ///   - dstPath: 目标文件目录
+    /// - Returns: 是否复制成功
     public class func copyItem(atPath srcPath: String, toPath dstPath: String) -> Bool {
         guard FileManager.default.fileExists(atPath: srcPath) else { return false }
         if FileManager.default.fileExists(atPath: dstPath) {
@@ -229,6 +266,12 @@ extension MNFileHandle {
         return true
     }
     
+    /// 写入文件
+    /// - Parameters:
+    ///   - filePath: 原文件路径
+    ///   - targetPath: 目标路径
+    ///   - unitCount: 每次写入大小
+    /// - Returns: 是否写入成功
     public class func writeItem(atPath filePath: String, toPath targetPath:String, units unitCount: UInt64 = 1024*1024*100) -> Bool {
         guard FileManager.default.fileExists(atPath: filePath) else { return false }
         if FileManager.default.fileExists(atPath: targetPath) {
@@ -259,19 +302,19 @@ extension MNFileHandle {
             return false
         }
         // 读
-        guard let reader = MNFileHandle(forReadingAtPath: filePath) else { return false }
+        guard let reader = FileHandle(forReadingAtPath: filePath) else { return false }
         defer {
-            reader.close()
+            reader.mn.close()
         }
-        let count = reader.seekToEnd()
+        let count = reader.mn.seekToEnd()
         guard count > 0 else { return false }
         // 写
-        guard let writer = MNFileHandle(forWritingAtPath: targetPath) else { return false }
+        guard let writer = FileHandle(forWritingAtPath: targetPath) else { return false }
         defer {
-            writer.close()
+            writer.mn.close()
         }
         // 再次保证从头开始
-        guard writer.truncate(atOffset: 0) else { return false }
+        guard writer.mn.truncate(atOffset: 0) else { return false }
         // 当前进度
         var offset: UInt64 = 0
         // 是否完成
@@ -282,11 +325,11 @@ extension MNFileHandle {
             // 当前需要读取的长度
             let length = min(count - offset, unitCount)
             autoreleasepool {
-                reader.seek(toOffset: offset)
-                var data = reader.readData(ofCount: Int(length))
+                reader.mn.seek(toOffset: offset)
+                var data = reader.mn.readData(ofCount: Int(length))
                 if let buffer = data {
-                    let _ = writer.seekToEnd()
-                    if writer.write(contentsOf: buffer) == false {
+                    writer.mn.seekToEnd()
+                    if writer.mn.write(contentsOf: buffer) == false {
                         fail = true
                     }
                 } else {

@@ -29,18 +29,30 @@ extension NameSpaceWrapper where Base == String {
         (libraryDirectory as NSString).appendingPathComponent("Preferences")
     }
     
+    /// 在文档目录下追加路径
+    /// - Parameter pathComponent: 追加的路径
+    /// - Returns: 追加后的路径
     public class func document(appending pathComponent: String) -> String {
         (documentDirectory as NSString).appendingPathComponent(pathComponent)
     }
     
+    /// 在文档目录下追加目录
+    /// - Parameter pathComponent: 追加的路径
+    /// - Returns: 追加后的路径
     public class func library(appending pathComponent: String) -> String {
         (libraryDirectory as NSString).appendingPathComponent(pathComponent)
     }
     
+    /// 在缓存目录下追加目录
+    /// - Parameter pathComponent: 追加的路径
+    /// - Returns: 追加后的路径
     public class func caches(appending pathComponent: String) -> String {
         (cachesDirectory as NSString).appendingPathComponent(pathComponent)
     }
     
+    /// 在偏好目录下追加目录
+    /// - Parameter pathComponent: 追加的路径
+    /// - Returns: 追加后的路径
     public class func preferences(appending pathComponent: String) -> String {
         (preferencesDirectory as NSString).appendingPathComponent(pathComponent)
     }
@@ -49,41 +61,53 @@ extension NameSpaceWrapper where Base == String {
 // MARK: - Path
 extension NameSpaceWrapper where Base == String {
     
+    /// 路径分割
     public var pathComponents: [String] {
         (base as NSString).pathComponents
     }
-
+    
+    /// 是否是绝对路径
     public var isAbsolutePath: Bool {
         (base as NSString).isAbsolutePath
     }
-
+    
+    /// 最后一个路径部分
     public var lastPathComponent: String {
         (base as NSString).lastPathComponent
     }
-
+    
+    /// 删除路径最后一部分
     public var deletingLastPathComponent: String {
         (base as NSString).deletingLastPathComponent
     }
-
+    
+    /// 路径后缀
     public var pathExtension: String {
         (base as NSString).pathExtension
     }
-
+    
+    /// 删除路径后缀
     public var deletingPathExtension: String {
         (base as NSString).deletingPathExtension
     }
-
+    
+    /// 追加路径
+    /// - Parameter str: 追加的路径
+    /// - Returns: 追加后的路径
     public func appendingPathComponent(_ str: String) -> String {
         (base as NSString).appendingPathComponent(str)
     }
     
-    public func appendingPathExtension(_ str: String) -> String? {
+    /// 追加后缀
+    /// - Parameter str: 后缀
+    /// - Returns: 追加后的路径
+    public func appendingPathExtension(_ str: String) -> String! {
         (base as NSString).appendingPathExtension(str)
     }
     
     /// 可用的路径
-    /// -----/abc.png => -----/abc 2.png
-    /// -----/abc 2.png => -----/abc 3.png
+    /// -----/abc.png => -----/abc_2.png
+    /// -----/abc_2.png => -----/abc_3.png
     public var availablePath: String? {
         guard isAbsolutePath else { return nil }
         guard FileManager.default.fileExists(atPath: base) else { return base }
