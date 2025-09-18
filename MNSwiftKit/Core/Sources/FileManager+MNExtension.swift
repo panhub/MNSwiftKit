@@ -1,5 +1,5 @@
 //
-//  MNFileManager.swift
+//  FileManager+MNExtension.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2022/2/11.
@@ -53,7 +53,10 @@ extension NameSpaceWrapper where Base: FileManager {
     /// - Returns: 文件大小
     public func itemSize(at url: URL) -> Int64 {
         guard url.isFileURL else { return 0 }
-        return itemSize(atPath: url.mn_path)
+        if #available(iOS 16.0, *) {
+            return itemSize(atPath: url.path(percentEncoded: false))
+        }
+        return itemSize(atPath: url.path)
     }
     
     /// 计算路径下文件大小
@@ -79,8 +82,8 @@ extension NameSpaceWrapper where Base: FileManager {
     /// 计算单个文件大小
     /// - Parameter filePath: 文件路径
     /// - Returns: 文件大小
-    public class func fileSize(atPath filePath: String) -> Int64 {
-        guard FileManager.default.fileExists(atPath: filePath, isDirectory: nil) else { return 0 }
+    public func fileSize(atPath filePath: String) -> Int64 {
+        guard base.fileExists(atPath: filePath, isDirectory: nil) else { return 0 }
         var fileSize: Int64 = 0
         do {
             let attributes = try FileManager.default.attributesOfItem(atPath: filePath)
@@ -97,13 +100,13 @@ extension NameSpaceWrapper where Base: FileManager {
 }
 
 // MARK: - 创建文件夹
-extension MNFileManager {
+extension NameSpaceWrapper where Base: FileManager {
     
     @discardableResult
-    public class func createDirectory(atPath path: String, withIntermediateDirectories createIntermediates: Bool, attributes: [FileAttributeKey : Any]? = nil) -> Bool {
-        guard FileManager.default.fileExists(atPath: path) == false else { return true }
+    public func createDirectory(atPath path: String, withIntermediateDirectories createIntermediates: Bool, attributes: [FileAttributeKey : Any]? = nil) -> Bool {
+        guard base.fileExists(atPath: path) == false else { return true }
         do {
-            try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: createIntermediates, attributes: attributes)
+            try base.createDirectory(atPath: path, withIntermediateDirectories: createIntermediates, attributes: attributes)
         } catch {
 #if DEBUG
             print("创建文件夹失败 path: \(path)\n\(error)")
@@ -114,21 +117,24 @@ extension MNFileManager {
     }
     
     @discardableResult
-    public class func createDirectory(at url: URL, withIntermediateDirectories createIntermediates: Bool, attributes: [FileAttributeKey : Any]? = nil) -> Bool {
-        createDirectory(atPath: path(with: url), withIntermediateDirectories: createIntermediates, attributes: attributes)
+    public func createDirectory(at url: URL, withIntermediateDirectories createIntermediates: Bool, attributes: [FileAttributeKey : Any]? = nil) -> Bool {
+        if #available(iOS 16.0, *) {
+            return createDirectory(atPath: url.path(percentEncoded: false), withIntermediateDirectories: createIntermediates, attributes: attributes)
+        }
+        return createDirectory(atPath: url.path, withIntermediateDirectories: createIntermediates, attributes: attributes)
     }
 }
 
 // MARK: - 复制文件
-extension MNFileManager {
+extension NameSpaceWrapper where Base: FileManager {
     
     @discardableResult
-    public class func copyItem(atPath srcPath: String, toPath dstPath: String, overwritten: Bool = true) -> Bool {
-        guard FileManager.default.fileExists(atPath: srcPath) else { return false }
+    public func copyItem(atPath srcPath: String, toPath dstPath: String, overwritten: Bool = true) -> Bool {
+        guard base.fileExists(atPath: srcPath) else { return false }
         // 判断是否需要删除旧文件
-        if overwritten, FileManager.default.fileExists(atPath: dstPath) {
+        if overwritten, base.fileExists(atPath: dstPath) {
             do {
-                try FileManager.default.removeItem(atPath: dstPath)
+                try base.removeItem(atPath: dstPath)
             } catch {
 #if DEBUG
                 print("复制文件时删除旧文件失败 at: \(srcPath) to: \(dstPath)")
@@ -137,12 +143,12 @@ extension MNFileManager {
             }
         }
         // 若存在文件则直接返回
-        if FileManager.default.fileExists(atPath: dstPath) { return true }
+        if base.fileExists(atPath: dstPath) { return true }
         // 创建目标目录文件夹
         let directory = (dstPath as NSString).deletingLastPathComponent
-        if FileManager.default.fileExists(atPath: directory) == false {
+        if base.fileExists(atPath: directory) == false {
             do {
-                try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
+                try base.createDirectory(atPath: directory, withIntermediateDirectories: true)
             } catch {
 #if DEBUG
                 print("复制文件时创建目标目录失败 at: \(srcPath) to: \(dstPath)")
@@ -152,7 +158,7 @@ extension MNFileManager {
         }
         // 复制文件操作
         do {
-            try FileManager.default.copyItem(atPath: srcPath, toPath: dstPath)
+            try base.copyItem(atPath: srcPath, toPath: dstPath)
         } catch {
 #if DEBUG
             print("复制文件失败 at: \(srcPath) to: \(dstPath)")
@@ -163,29 +169,32 @@ extension MNFileManager {
     }
     
     @discardableResult
-    public class func copyItem(at srcURL: URL, to dstURL: URL, overwritten: Bool = true) -> Bool {
-        copyItem(atPath: path(with: srcURL), toPath: path(with: dstURL), overwritten: overwritten)
+    public func copyItem(at srcURL: URL, to dstURL: URL, overwritten: Bool = true) -> Bool {
+        if #available(iOS 16.0, *) {
+            return copyItem(atPath: srcURL.path(percentEncoded: false), toPath: dstURL.path(percentEncoded: false), overwritten: overwritten)
+        }
+        return copyItem(atPath: srcURL.path, toPath: dstURL.path, overwritten: overwritten)
     }
 }
 
 // MARK: - 移动文件
-extension MNFileManager {
+extension NameSpaceWrapper where Base: FileManager {
     
     @discardableResult
-    public class func moveItem(atPath srcPath: String, toPath dstPath: String) -> Bool {
-        guard FileManager.default.fileExists(atPath: srcPath) else { return false }
-        if FileManager.default.fileExists(atPath: dstPath) {
+    public func moveItem(atPath srcPath: String, toPath dstPath: String) -> Bool {
+        guard base.fileExists(atPath: srcPath) else { return false }
+        if base.fileExists(atPath: dstPath) {
             do {
-                try FileManager.default.removeItem(atPath: dstPath)
+                try base.removeItem(atPath: dstPath)
             } catch {
 #if DEBUG
             print("移动文件时删除旧文件失败 at: \(srcPath) to: \(dstPath)")
 #endif
                 return false
             }
-        } else if FileManager.default.fileExists(atPath: (dstPath as NSString).deletingLastPathComponent) == false {
+        } else if base.fileExists(atPath: (dstPath as NSString).deletingLastPathComponent) == false {
             do {
-                try FileManager.default.createDirectory(atPath: (dstPath as NSString).deletingLastPathComponent, withIntermediateDirectories: true)
+                try base.createDirectory(atPath: (dstPath as NSString).deletingLastPathComponent, withIntermediateDirectories: true)
             } catch {
 #if DEBUG
                 print("移动文件时创建目录文件失败 at: \(srcPath) to: \(dstPath)")
@@ -194,7 +203,7 @@ extension MNFileManager {
             }
         }
         do {
-            try FileManager.default.moveItem(atPath: srcPath, toPath: dstPath)
+            try base.moveItem(atPath: srcPath, toPath: dstPath)
         } catch {
 #if DEBUG
             print("移动文件失败 at: \(srcPath) to: \(dstPath)")
@@ -205,19 +214,22 @@ extension MNFileManager {
     }
     
     @discardableResult
-    public class func moveItem(at srcURL: URL, to dstURL: URL) -> Bool {
-        moveItem(atPath: path(with: srcURL), toPath: path(with: dstURL))
+    public func moveItem(at srcURL: URL, to dstURL: URL) -> Bool {
+        if #available(iOS 16.0, *) {
+            return moveItem(atPath: srcURL.path(percentEncoded: false), toPath: dstURL.path(percentEncoded: false))
+        }
+        return moveItem(atPath: srcURL.path, toPath: dstURL.path)
     }
 }
 
 // MARK: - 删除文件
-extension MNFileManager {
+extension NameSpaceWrapper where Base: FileManager {
     
     @discardableResult
-    public class func removeItem(atPath path: String) -> Bool {
-        guard FileManager.default.fileExists(atPath: path) else { return true }
+    public func removeItem(atPath path: String) -> Bool {
+        guard base.fileExists(atPath: path) else { return true }
         do {
-            try FileManager.default.removeItem(atPath: path)
+            try base.removeItem(atPath: path)
         } catch {
 #if DEBUG
             print("删除文件失败 at: \(path)")
@@ -228,18 +240,10 @@ extension MNFileManager {
     }
     
     @discardableResult
-    public class func removeItem(at url: URL) -> Bool {
-        removeItem(atPath: path(with: url))
-    }
-}
-
-// MARK: - 辅助
-extension URL {
-    
-    var mn_path: String {
+    public func removeItem(at url: URL) -> Bool {
         if #available(iOS 16.0, *) {
-            return path(percentEncoded: false)
+            return removeItem(atPath: url.path(percentEncoded: false))
         }
-        return path
+        return removeItem(atPath: url.path)
     }
 }

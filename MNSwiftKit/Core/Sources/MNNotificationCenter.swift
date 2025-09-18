@@ -1,5 +1,5 @@
 //
-//  CFNotificationCenter.swift
+//  MNNotificationCenter.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2024/5/6.
@@ -10,73 +10,35 @@ import CoreFoundation
 import ObjectiveC.runtime
 import ObjectiveC.objc_sync
 
-fileprivate class CFNotificationTarget: Equatable {
-    /// 响应方法
-    let selector: Selector
-    /// 响应者
-    weak var target: NSObject?
-    
-    /// 构造通知响应者
-    /// - Parameters:
-    ///   - target: 响应者
-    ///   - selector: 响应方法
-    init(target: NSObject, selector: Selector) {
-        self.target = target
-        self.selector = selector
-    }
-    
-    /// 执行响应事件
-    /// - Parameters:
-    ///   - name: 通知名称
-    ///   - object: 通知携带对象
-    ///   - userInfo: 通知携带参数
-    func strike(name: Notification.Name, object: Any? = nil, userInfo: [AnyHashable:Any]? = nil) {
-        guard let target = target else { return }
-        guard let cls = object_getClass(target) else { return }
-        guard let method = class_getInstanceMethod(cls, selector) else { return }
-        let numberOfArguments = method_getNumberOfArguments(method)
-        if numberOfArguments > 0 {
-            let notification = Notification(name: name, object: object, userInfo: userInfo)
-            target.perform(selector, with: notification)
-        } else {
-            target.perform(selector)
-        }
-    }
-    
-    static func == (lhs: CFNotificationTarget, rhs: CFNotificationTarget) -> Bool {
-        guard let lhstarget = lhs.target else { return false }
-        guard let rhstarget = rhs.target else { return false }
-        return lhstarget == rhstarget
-    }
-}
-
 extension NotificationCenter {
     
     /// 获取本地通知中心
-    public static let local: CFNotificationCenter = CFNotificationCenter(source: .local)
+    public static let local = MNNotificationCenter(source: .local)
     
     /// 获取Darwin层通知中心
-    public static let darwin: CFNotificationCenter = CFNotificationCenter(source: .darwin)
+    public static let darwin = MNNotificationCenter(source: .darwin)
 }
 
-/// 通知中心
-public class CFNotificationCenter {
+/// CFNotification通知中心
+public class MNNotificationCenter {
     
     /// 通知中心类型
     public enum Source {
-        ///   本地  darwin层
-        case local, darwin
+        ///   本地
+        case local
+        ///   darwin层, 可跨target通知
+        case darwin
     }
     
     /// 通知中心类型
-    private let source: CFNotificationCenter.Source
+    private let source: MNNotificationCenter.Source
     
     /// 内部保存监听者
-    fileprivate var targets = [Notification.Name:[CFNotificationTarget]]()
+    fileprivate var targets: [Notification.Name:[MNNotificationTarget]] = [:]
     
     /// 构造通知中心
     /// - Parameter source: 通知中心源
-    public init(source: CFNotificationCenter.Source) {
+    public init(source: MNNotificationCenter.Source) {
         self.source = source
     }
     
@@ -118,18 +80,18 @@ public class CFNotificationCenter {
         defer {
             objc_sync_exit(self)
         }
-        var targets = targets[aName] ?? [CFNotificationTarget]()
+        var targets = targets[aName] ?? [MNNotificationTarget]()
         guard targets.contains(where: {
             guard let target = $0.target else { return false }
             return target == aObserver
         }) == false else { return }
-        let target = CFNotificationTarget(target: aObserver, selector: aSelector)
+        let target = MNNotificationTarget(target: aObserver, selector: aSelector)
         targets.append(target)
         self.targets[aName] = targets
         guard targets.count == 1 else { return }
         let observer = UnsafeRawPointer(Unmanaged.passUnretained(self).toOpaque())
         let center = source == .local ? CFNotificationCenterGetLocalCenter() : CFNotificationCenterGetDarwinNotifyCenter()
-        CFNotificationCenterAddObserver(center, observer, CFNotificationCenter.notificationEventHandler, aName.rawValue as CFString, nil, .deliverImmediately)
+        CFNotificationCenterAddObserver(center, observer, MNNotificationCenter.notificationEventHandler, aName.rawValue as CFString, nil, .deliverImmediately)
     }
     
     /// 删除通知
@@ -177,12 +139,12 @@ public class CFNotificationCenter {
     }
 }
 
-extension CFNotificationCenter {
+extension MNNotificationCenter {
     
     /// 通知响应回调
     private static let notificationEventHandler: CFNotificationCallback = { _, observer, name, object, userInfo in
         guard let observer = observer else { return }
-        guard let center = Unmanaged<AnyObject>.fromOpaque(observer).takeUnretainedValue() as? CFNotificationCenter  else { return }
+        guard let center = Unmanaged<AnyObject>.fromOpaque(observer).takeUnretainedValue() as? MNNotificationCenter  else { return }
         guard let name = name else { return }
         let aName = Notification.Name(rawValue: name.rawValue as String)
         objc_sync_enter(center)
@@ -199,4 +161,43 @@ extension CFNotificationCenter {
     }
 }
 
-
+/// 通知目标
+fileprivate class MNNotificationTarget: Equatable {
+    /// 响应方法
+    let selector: Selector
+    /// 响应者
+    weak var target: NSObject?
+    
+    /// 构造通知响应者
+    /// - Parameters:
+    ///   - target: 响应者
+    ///   - selector: 响应方法
+    init(target: NSObject, selector: Selector) {
+        self.target = target
+        self.selector = selector
+    }
+    
+    /// 执行响应事件
+    /// - Parameters:
+    ///   - name: 通知名称
+    ///   - object: 通知携带对象
+    ///   - userInfo: 通知携带参数
+    func strike(name: Notification.Name, object: Any? = nil, userInfo: [AnyHashable:Any]? = nil) {
+        guard let target = target else { return }
+        guard let cls = object_getClass(target) else { return }
+        guard let method = class_getInstanceMethod(cls, selector) else { return }
+        let numberOfArguments = method_getNumberOfArguments(method)
+        if numberOfArguments > 0 {
+            let notification = Notification(name: name, object: object, userInfo: userInfo)
+            target.perform(selector, with: notification)
+        } else {
+            target.perform(selector)
+        }
+    }
+    
+    static func == (lhs: MNNotificationTarget, rhs: MNNotificationTarget) -> Bool {
+        guard let lhstarget = lhs.target else { return false }
+        guard let rhstarget = rhs.target else { return false }
+        return lhstarget == rhstarget
+    }
+}

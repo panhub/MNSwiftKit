@@ -1,5 +1,5 @@
 //
-//  NIBInspectable.swift
+//  MNNibInspectable.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2023/9/19.

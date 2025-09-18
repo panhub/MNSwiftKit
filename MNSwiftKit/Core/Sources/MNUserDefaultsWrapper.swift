@@ -1,5 +1,5 @@
 //
-//  UserDefaultsWrapper.swift
+//  MNUserDefaultsWrapper.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2021/9/23.
@@ -9,7 +9,7 @@ import Foundation
 
 @propertyWrapper
 /// 属性包装器
-public struct UserDefaultsWrapper<T> {
+public struct MNUserDefaultsWrapper<T> {
     /// 存取的key
     private let key: String
     /// 组名
