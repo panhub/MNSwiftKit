@@ -135,6 +135,7 @@ Pod::Spec.new do |s|
   s.subspec 'Definition' do |d|
     d.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
     d.source_files = 'MNSwiftKit/Definition/Sources/**/*.swift'
+    d.dependency 'MNSwiftKit/NameSpace'
   end
   
   # Extension <基础扩展>

@@ -188,7 +188,10 @@
         "Foundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/Definition/Sources/**/*.swift"
+      "source_files": "MNSwiftKit/Definition/Sources/**/*.swift",
+      "dependencies": {
+        "MNSwiftKit/NameSpace": []
+      }
     },
     {
       "name": "Extension",

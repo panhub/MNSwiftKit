@@ -9,7 +9,7 @@ import Foundation
 
 extension DispatchQueue {
     
-    nonisolated(unsafe) fileprivate static var mn_onceTracker: [String] = [String]()
+    nonisolated(unsafe) fileprivate static var MNOnceTracker: [String] = [String]()
 }
 
 extension NameSpaceWrapper where Base == DispatchQueue {
@@ -21,8 +21,8 @@ extension NameSpaceWrapper where Base == DispatchQueue {
     public class func once(token: String, block: ()->Void) {
         objc_sync_enter(self)
         defer { objc_sync_exit(self) }
-        if Base.mn_onceTracker.contains(token) { return }
-        Base.mn_onceTracker.append(token)
+        if Base.MNOnceTracker.contains(token) { return }
+        Base.MNOnceTracker.append(token)
         block()
     }
     

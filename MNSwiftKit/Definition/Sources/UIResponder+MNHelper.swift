@@ -9,13 +9,13 @@ import UIKit
 import Foundation
 import CoreGraphics
 
-extension UIResponder {
+extension NameSpaceWrapper where Base: UIResponder {
     
     /// 寻找符合条件的响应者
     /// - Parameter cls: 指定类型
     /// - Returns: 响应者
     public func seek<T>(as cls: T.Type) -> T? {
-        var next = next
+        var next = base.next
         while let responder = next {
             if responder is T { return responder as? T }
             next = responder.next

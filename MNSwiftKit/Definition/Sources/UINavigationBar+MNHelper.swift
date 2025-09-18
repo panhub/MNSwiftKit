@@ -9,11 +9,14 @@ import UIKit
 import Foundation
 import CoreGraphics
 
-// MARK: - UINavigationBar
-extension UINavigationBar {
+/// 内部保留导航栏高度
+fileprivate var MNNavigationBarHeight: CGFloat?
+
+extension NameSpaceWrapper where Base: UINavigationBar {
     
     /// 导航栏高度
-    @objc public static let Height: CGFloat = {
+    public class var height: CGFloat {
+        if let height = MNNavigationBarHeight { return height }
         var height: CGFloat = 0.0
         if Thread.isMainThread {
             height = UINavigationController().navigationBar.frame.height
@@ -22,6 +25,7 @@ extension UINavigationBar {
                 height = UINavigationController().navigationBar.frame.height
             }
         }
+        MNNavigationBarHeight = height
         return height
-    }()
+    }
 }

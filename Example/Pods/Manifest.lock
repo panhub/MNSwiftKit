@@ -1,18 +1,18 @@
 PODS:
-  - MNSwiftKit/Core (0.1.1):
+  - MNSwiftKit/Definition (0.1.1):
     - MNSwiftKit/NameSpace
   - MNSwiftKit/NameSpace (0.1.1)
 
 DEPENDENCIES:
-  - MNSwiftKit/Core (from `../`)
+  - MNSwiftKit/Definition (from `../`)
 
 EXTERNAL SOURCES:
   MNSwiftKit:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: c4d6af7c10235c8db21f28d838259940306cc1bd
+  MNSwiftKit: acf3ee56992d6db7d0ed808bf3dcfd2bdd9df3a7
 
-PODFILE CHECKSUM: fe0f72e63eb43e41a13b00a17b75465c5f008d49
+PODFILE CHECKSUM: 4f0499f85c4a166fdbb7c9684d216fd20841843e
 
 COCOAPODS: 1.16.2

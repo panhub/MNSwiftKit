@@ -9,47 +9,66 @@ import UIKit
 import Foundation
 import CoreGraphics
 
-extension UIScreen {
+/// 内部保留屏幕尺寸
+fileprivate var MNScreenSize: CGSize?
+
+extension NameSpaceWrapper where Base: UIScreen {
     
     /// 屏幕尺寸最小值
-    @objc public static let Min = {
+    public class var min: CGFloat {
+        if let size = MNScreenSize {
+            return Swift.min(size.width, size.height)
+        }
+        var size: CGSize = .zero
         if #available(iOS 13.0, *), let screen = UIApplication.shared.delegate?.window??.windowScene?.screen {
-            return min(screen.bounds.width, screen.bounds.height)
+            size = screen.bounds.size
+        } else {
+            let window = UIWindow()
+            let screen = window.screen
+            if screen.bounds.width > 0.0, screen.bounds.height > 0.0 {
+                size = screen.bounds.size
+            } else {
+                size = Base.main.bounds.size
+            }
         }
-        let window = UIWindow()
-        let screen = window.screen
-        if screen.bounds.width > 0.0, screen.bounds.height > 0.0 {
-            return min(screen.bounds.width, screen.bounds.height)
-        }
-        return min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
-    }()
+        MNScreenSize = size
+        return Swift.min(size.width, size.height)
+    }
     
     /// 屏幕尺寸最大值
-    @objc public static let Max = {
+    public class var max: CGFloat {
+        if let size = MNScreenSize {
+            return Swift.max(size.width, size.height)
+        }
+        var size: CGSize = .zero
         if #available(iOS 13.0, *), let screen = UIApplication.shared.delegate?.window??.windowScene?.screen {
-            return max(screen.bounds.width, screen.bounds.height)
+            size = screen.bounds.size
+        } else {
+            let window = UIWindow()
+            let screen = window.screen
+            if screen.bounds.width > 0.0, screen.bounds.height > 0.0 {
+                size = screen.bounds.size
+            } else {
+                size = Base.main.bounds.size
+            }
         }
-        let window = UIWindow()
-        let screen = window.screen
-        if screen.bounds.width > 0.0, screen.bounds.height > 0.0 {
-            return max(screen.bounds.width, screen.bounds.height)
-        }
-        return max(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
-    }()
+        MNScreenSize = size
+        return Swift.max(size.width, size.height)
+    }
     
     /// 当前屏幕宽
-    @objc public static var Width: CGFloat {
+    public class var width: CGFloat {
         if #available(iOS 13.0, *), let screen = UIApplication.shared.delegate?.window??.windowScene?.screen {
             return screen.bounds.width
         }
-        return UIScreen.main.bounds.width
+        return Base.main.bounds.width
     }
     
     /// 当前屏幕高
-    @objc public static var Height: CGFloat {
+    public class var height: CGFloat {
         if #available(iOS 13.0, *), let screen = UIApplication.shared.delegate?.window??.windowScene?.screen {
             return screen.bounds.height
         }
-        return UIScreen.main.bounds.height
+        return Base.main.bounds.height
     }
 }

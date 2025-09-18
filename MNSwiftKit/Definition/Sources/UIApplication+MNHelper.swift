@@ -8,15 +8,23 @@
 import UIKit
 import Foundation
 
-extension UIApplication {
+/// 内部保留状态栏高度
+fileprivate var MNApplicationStatusBarHeight: CGFloat?
+
+extension NameSpaceWrapper where Base: UIApplication {
     
     /// 状态栏高度
-    @objc public static let StatusBarHeight: CGFloat = {
+    public class var statusBarHeight: CGFloat {
+        if let height = MNApplicationStatusBarHeight { return height }
+        var height: CGFloat = 0.0
         if #available(iOS 13.0, *) {
-            guard let statusBarManager = UIApplication.shared.delegate?.window??.windowScene?.statusBarManager else { return 0.0 }
-            return statusBarManager.statusBarFrame.height
+            if let statusBarManager = Base.shared.delegate?.window??.windowScene?.statusBarManager {
+                height = statusBarManager.statusBarFrame.height
+            }
         } else {
-            return UIApplication.shared.statusBarFrame.height
+            height = Base.shared.statusBarFrame.height
         }
-    }()
+        MNApplicationStatusBarHeight = height
+        return height
+    }
 }

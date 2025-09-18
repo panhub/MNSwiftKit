@@ -9,21 +9,25 @@ import UIKit
 import Foundation
 import CoreGraphics
 
-// MARK: - UIWindow
-extension UIWindow {
+/// 内部保留屏幕安全区域
+fileprivate var MNWindowSafeAreaInsets: UIEdgeInsets?
+
+extension NameSpaceWrapper where Base: UIWindow {
     
     /// 安全区域
-    @objc public static let Safe: UIEdgeInsets = {
-        var inset: UIEdgeInsets = .zero
+    public class var safeAreaInsets: UIEdgeInsets {
+        if let areaInsets = MNWindowSafeAreaInsets { return areaInsets }
+        var areaInsets: UIEdgeInsets = .zero
         if #available(iOS 11.0, *) {
             if Thread.isMainThread {
-                inset = UIWindow().safeAreaInsets
+                areaInsets = UIWindow().safeAreaInsets
             } else {
                 DispatchQueue.main.sync {
-                    inset = UIWindow().safeAreaInsets
+                    areaInsets = UIWindow().safeAreaInsets
                 }
             }
         }
-        return inset
-    }()
+        MNWindowSafeAreaInsets = areaInsets
+        return areaInsets
+    }
 }

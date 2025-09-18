@@ -9,11 +9,14 @@ import UIKit
 import Foundation
 import CoreGraphics
 
-// MARK: - UITabBar
-extension UITabBar {
+/// 内部保留标签栏高度
+fileprivate var MNTabBarHeight: CGFloat?
+
+extension NameSpaceWrapper where Base: UITabBar {
     
     /// 标签栏高度
-    @objc public static let Height: CGFloat = {
+    public class var height: CGFloat {
+        if let height = MNTabBarHeight { return height }
         var height: CGFloat = 0.0
         if Thread.isMainThread {
             height = UITabBarController().tabBar.frame.height
@@ -22,6 +25,7 @@ extension UITabBar {
                 height = UITabBarController().tabBar.frame.height
             }
         }
+        MNTabBarHeight = height
         return height
-    }()
+    }
 }
