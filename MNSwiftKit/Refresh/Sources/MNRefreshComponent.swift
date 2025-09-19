@@ -95,7 +95,7 @@ import CoreGraphics
         frame = frame
         autoresizingMask = .flexibleWidth
         // 记录UIScrollView最开始的contentInset
-        referenceInset = scrollView.mn_refresh.contentInset
+        referenceInset = scrollView.mn.contentInset
         // 设置永远支持垂直弹簧效果
         scrollView.alwaysBounceVertical = true
         // 开始监听

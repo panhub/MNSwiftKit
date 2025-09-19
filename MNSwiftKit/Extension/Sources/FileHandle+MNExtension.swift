@@ -323,7 +323,7 @@ extension NameSpaceWrapper where Base: FileHandle {
             // 是否失败
             var fail: Bool = false
             // 当前需要读取的长度
-            let length = min(count - offset, unitCount)
+            let length = Swift.min(count - offset, unitCount)
             autoreleasepool {
                 reader.mn.seek(toOffset: offset)
                 var data = reader.mn.readData(ofCount: Int(length))

@@ -16,7 +16,7 @@ public class MNDrawerAnimator: MNTransitionAnimator {
         toView.transform = CGAffineTransform(translationX: containerView.frame.width, y: 0.0)
         containerView.insertSubview(toView, aboveSubview: fromView)
         // 阴影
-        toView.addTransitioningShadow()
+        toView.mn.addTransitioningShadow()
         // 动画
         let backgroundColor = containerView.backgroundColor
         containerView.backgroundColor = fromController.preferredTransitionBackgroundColor ?? .white
@@ -27,7 +27,7 @@ public class MNDrawerAnimator: MNTransitionAnimator {
         } completion: { [weak self] _ in
             guard let self = self else { return }
             self.fromView.transform = .identity
-            self.toView.removeTransitioningShadow()
+            self.toView.mn.removeTransitioningShadow()
             self.containerView.backgroundColor = backgroundColor
             self.completeTransitionAnimation()
         }
@@ -40,7 +40,7 @@ public class MNDrawerAnimator: MNTransitionAnimator {
         toView.transform = CGAffineTransform(scaleX: 0.93, y: 0.93)
         containerView.insertSubview(toView, belowSubview: fromView)
         // 添加阴影
-        fromView.addTransitioningShadow()
+        fromView.mn.addTransitioningShadow()
         // 动画
         let backgroundColor = containerView.backgroundColor
         containerView.backgroundColor = toController.preferredTransitionBackgroundColor ?? .white
@@ -52,7 +52,7 @@ public class MNDrawerAnimator: MNTransitionAnimator {
         } completion: { [weak self] _ in
             guard let self = self else { return }
             self.fromView.transform = .identity
-            self.fromView.removeTransitioningShadow()
+            self.fromView.mn.removeTransitioningShadow()
             self.containerView.backgroundColor = backgroundColor
             self.completeTransitionAnimation()
         }
@@ -65,7 +65,7 @@ public class MNDrawerAnimator: MNTransitionAnimator {
         toView.transform = CGAffineTransform(scaleX: 0.93, y: 0.93)
         containerView.insertSubview(toView, belowSubview: fromView)
         // 添加阴影
-        fromView.addTransitioningShadow()
+        fromView.mn.addTransitioningShadow()
         // 动画
         let backgroundColor = containerView.backgroundColor
         let transform = CGAffineTransform(translationX: containerView.frame.width, y: 0.0)
@@ -78,7 +78,7 @@ public class MNDrawerAnimator: MNTransitionAnimator {
             guard let self = self else { return }
             self.toView.transform = .identity
             self.fromView.transform = .identity
-            self.fromView.removeTransitioningShadow()
+            self.fromView.mn.removeTransitioningShadow()
             self.containerView.backgroundColor = backgroundColor
             self.completeTransitionAnimation()
         }

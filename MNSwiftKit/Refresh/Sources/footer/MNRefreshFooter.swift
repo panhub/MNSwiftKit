@@ -15,8 +15,8 @@ open class MNRefreshFooter: MNRefreshComponent {
     open override func didChangeOffset(_ offset: UIOffset) {
         guard let scrollView = scrollView else { return }
         var rect = frame
-        rect.origin.x = scrollView.frame.width/2.0 - scrollView.mn_refresh.contentInset.left + offset.horizontal - rect.width/2.0
-        rect.origin.y = max(scrollView.mn_refresh.contentHeight, scrollView.frame.height - referenceInset.top - referenceInset.bottom) + offset.vertical
+        rect.origin.x = scrollView.frame.width/2.0 - scrollView.mn.contentInset.left + offset.horizontal - rect.width/2.0
+        rect.origin.y = max(scrollView.mn.contentHeight, scrollView.frame.height - referenceInset.top - referenceInset.bottom) + offset.vertical
         frame = rect
     }
     
@@ -29,10 +29,10 @@ open class MNRefreshFooter: MNRefreshComponent {
         guard let scrollView = scrollView else { return }
         
         // 刷新四周约束
-        referenceInset = scrollView.mn_refresh.contentInset
+        referenceInset = scrollView.mn.contentInset
         
         // 当前偏移
-        let offsetY = scrollView.mn_refresh.offsetY
+        let offsetY = scrollView.mn.offsetY
         // 刚好看到控件的偏移
         let happenOffsetY = offsetWhenAppear
         
@@ -75,20 +75,20 @@ open class MNRefreshFooter: MNRefreshComponent {
             // 刷新结束
             UIView.animate(withDuration: MNRefreshComponent.SlowAnimationDuration) { [weak self] in
                 guard let self = self, let scrollView = self.scrollView else { return }
-                scrollView.mn_refresh.bottomInset -= self.deltaInset
+                scrollView.mn.bottomInset -= self.deltaInset
             } completion: { [weak self] _ in
                 // 回调结束刷新
                 guard let self = self else { return }
                 self.executeEndRefreshing()
             }
             // 判断是否需要回滚
-            if let scrollView = scrollView, heightForContentMoreThanBackView > 0.1, abs(scrollView.mn_refresh.contentHeight - contentHeight) > 0.1 {
-                scrollView.mn_refresh.offsetY = scrollView.mn_refresh.offsetY
+            if let scrollView = scrollView, heightForContentMoreThanBackView > 0.1, abs(scrollView.mn.contentHeight - contentHeight) > 0.1 {
+                scrollView.mn.offsetY = scrollView.mn.offsetY
             }
         case .refreshing:
             // 开始刷新
             if let scrollView = scrollView {
-                contentHeight = scrollView.mn_refresh.contentHeight
+                contentHeight = scrollView.mn.contentHeight
             }
             UIView.animate(withDuration: MNRefreshComponent.FastAnimationDuration) { [weak self] in
                 guard let self = self, let scrollView = self.scrollView else { return }
@@ -97,9 +97,9 @@ open class MNRefreshFooter: MNRefreshComponent {
                 if deltaHeight < 0.0 {
                     bottom -= deltaHeight
                 }
-                self.deltaInset = bottom - scrollView.mn_refresh.bottomInset
-                scrollView.mn_refresh.bottomInset = bottom
-                scrollView.mn_refresh.offsetY = self.offsetWhenAppear + self.frame.height
+                self.deltaInset = bottom - scrollView.mn.bottomInset
+                scrollView.mn.bottomInset = bottom
+                scrollView.mn.offsetY = self.offsetWhenAppear + self.frame.height
             } completion: { [weak self] _ in
                 // 回调开始刷新
                 guard let self = self else { return }

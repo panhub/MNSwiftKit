@@ -775,8 +775,31 @@ fileprivate class MNDataEmptyObserver: NSObject {
 // MARK: - Display & Remove
 extension UIView {
     
+    /// 判断是否需要展示空数据视图
+    @objc fileprivate func empty_display_if_needed() {
+        guard let emptyView = mn.emptyView else { return }
+        guard let dataSource = emptyView.dataSource else { return }
+        var visible: Bool = false
+        if let display = dataSource.dataEmptyViewShouldDisplay?(self) {
+            visible = display
+        } else if let itemCount = empty_item_count {
+            visible = itemCount <= 0
+        } else if self is UIScrollView {
+            let scrollView = self as! UIScrollView
+            let contentSize = scrollView.contentSize
+            visible = (contentSize.width.isNaN || contentSize.height.isNaN || contentSize.width <= 0.0 || contentSize.height <= 0.0)
+        }
+        if visible {
+            // 显示
+            emptyView.show()
+        } else {
+            // 隐藏
+            emptyView.dismiss()
+        }
+    }
+    
     /// 表格数量
-    private var empty_itemCount: Int? {
+    private var empty_item_count: Int? {
         if self is UITableView {
             var itemCount: Int = 0
             let tableView = self as! UITableView
@@ -801,29 +824,6 @@ extension UIView {
         }
         return nil
     }
-    
-    /// 判断是否需要展示空数据视图
-    @objc fileprivate func empty_displayIfNeeded() {
-        guard let emptyView = mn_empty.contentView else { return }
-        guard let dataSource = emptyView.dataSource else { return }
-        var visible: Bool = false
-        if let display = dataSource.dataEmptyViewShouldDisplay?(self) {
-            visible = display
-        } else if let itemCount = empty_itemCount {
-            visible = itemCount <= 0
-        } else if self is UIScrollView {
-            let scrollView = self as! UIScrollView
-            let contentSize = scrollView.contentSize
-            visible = (contentSize.width.isNaN || contentSize.height.isNaN || contentSize.width <= 0.0 || contentSize.height <= 0.0)
-        }
-        if visible {
-            // 显示
-            emptyView.show()
-        } else {
-            // 隐藏
-            emptyView.dismiss()
-        }
-    }
 }
 
 // MARK: - 构造命名空间/包装器
@@ -836,126 +836,114 @@ extension UIView {
         nonisolated(unsafe) static var display: String = "com.mn.data.empty.auto.display"
         nonisolated(unsafe) static var components: String = "com.mn.data.empty.components"
     }
-    
-    public class MNDataEmptyWrapper {
-        
-        fileprivate let view: UIView
-        
-        fileprivate init(view: UIView) {
-            self.view = view
-        }
-    }
-    
-    /// 空数据视图包装器
-    public var mn_empty: MNDataEmptyWrapper { MNDataEmptyWrapper(view: self) }
 }
 
-extension UIView.MNDataEmptyWrapper {
+extension NameSpaceWrapper where Base: UIView {
     
     /// 空数据视图数据源
     @MainActor
-    @objc public var dataSource: MNDataEmptySource? {
+    public var emptySource: MNDataEmptySource? {
         set {
             if let newValue = newValue {
                 let emptyView = viewForDataEmpty()
                 emptyView.dataSource = newValue
-                if view is UIScrollView {
-                    observer.beginObserve(view as! UIScrollView)
+                if base is UIScrollView {
+                    observer.beginObserve(base as! UIScrollView)
                 }
-            } else if let contentView = contentView {
-                contentView.dataSource = nil
-                if view is UIScrollView {
+            } else if let emptyView = emptyView {
+                emptyView.dataSource = nil
+                if base is UIScrollView {
                     observer.endObserve()
                 }
             }
         }
         get {
-            guard let contentView = contentView else { return nil }
-            return contentView.dataSource
+            guard let emptyView = emptyView else { return nil }
+            return emptyView.dataSource
         }
     }
     
     /// 空数据视图代理
     @MainActor
-    @objc public var delegate: MNDataEmptyDelegate? {
+    public var emptyDelegate: MNDataEmptyDelegate? {
         set {
             if let newValue = newValue {
                 let emptyView = viewForDataEmpty()
                 emptyView.delegate = newValue
-            } else if let contentView = contentView {
-                contentView.delegate = nil
+            } else if let emptyView = emptyView {
+                emptyView.delegate = nil
             }
         }
         get {
-            guard let contentView = contentView else { return nil }
-            return contentView.delegate
+            guard let emptyView = emptyView else { return nil }
+            return emptyView.delegate
         }
     }
     
     /// 自动根据数据源刷新空数据视图
-    public var autoDisplay: Bool {
+    public var autoDisplayEmpty: Bool {
         set {
             if newValue {
-                if view is UIScrollView {
-                    observer.beginObserve(view as! UIScrollView)
+                if base is UIScrollView {
+                    observer.beginObserve(base as! UIScrollView)
                 }
             } else {
                 observer.endObserve()
             }
-            objc_setAssociatedObject(view, &UIView.MNDataEmptyAssociated.display, newValue, .OBJC_ASSOCIATION_ASSIGN)
+            objc_setAssociatedObject(base, &UIView.MNDataEmptyAssociated.display, newValue, .OBJC_ASSOCIATION_ASSIGN)
         }
         get {
-            objc_getAssociatedObject(view, &UIView.MNDataEmptyAssociated.display) as? Bool ?? true
+            objc_getAssociatedObject(base, &UIView.MNDataEmptyAssociated.display) as? Bool ?? true
         }
     }
     
     
     /// 空数据元素集合
-    public var components: [MNDataEmptyComponent] {
+    public var emptyComponents: [MNDataEmptyComponent] {
         set {
-            if let contentView = contentView {
-                contentView.components = newValue
+            if let emptyView = emptyView {
+                emptyView.components = newValue
             }
-            objc_setAssociatedObject(view, &UIView.MNDataEmptyAssociated.components, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(base, &UIView.MNDataEmptyAssociated.components, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
         get {
-            if let contentView = contentView {
-                return contentView.components
+            if let emptyView = emptyView {
+                return emptyView.components
             }
-            return objc_getAssociatedObject(view, &UIView.MNDataEmptyAssociated.components) as? [MNDataEmptyComponent] ?? []
+            return objc_getAssociatedObject(base, &UIView.MNDataEmptyAssociated.components) as? [MNDataEmptyComponent] ?? []
         }
     }
     
     /// 空数据视图
-    fileprivate var contentView: MNDataEmptyView? {
+    fileprivate var emptyView: MNDataEmptyView? {
         set {
-            objc_setAssociatedObject(view, &UIView.MNDataEmptyAssociated.view, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(base, &UIView.MNDataEmptyAssociated.view, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
         get {
-            objc_getAssociatedObject(view, &UIView.MNDataEmptyAssociated.view) as? MNDataEmptyView
+            objc_getAssociatedObject(base, &UIView.MNDataEmptyAssociated.view) as? MNDataEmptyView
         }
     }
     
     /// 空数据监听
     fileprivate var observer: MNDataEmptyObserver {
-        if let observer = objc_getAssociatedObject(view, &UIView.MNDataEmptyAssociated.observer) as? MNDataEmptyObserver {
+        if let observer = objc_getAssociatedObject(base, &UIView.MNDataEmptyAssociated.observer) as? MNDataEmptyObserver {
             return observer
         }
-        let observer = MNDataEmptyObserver(target: view, action: #selector(view.empty_displayIfNeeded))
-        objc_setAssociatedObject(view, &UIView.MNDataEmptyAssociated.observer, observer, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        let observer = MNDataEmptyObserver(target: base, action: #selector(base.empty_display_if_needed))
+        objc_setAssociatedObject(base, &UIView.MNDataEmptyAssociated.observer, observer, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         return observer
     }
     
     /// 关联空数据视图
     /// - Returns: 空数据视图
     private func viewForDataEmpty() -> MNDataEmptyView {
-        if let emptyView = contentView { return emptyView }
-        let emptyView = MNDataEmptyView(referenceView: view)
-        let components = components
+        if let emptyView = emptyView { return emptyView }
+        let emptyView = MNDataEmptyView(referenceView: base)
+        let components = emptyComponents
         if components.isEmpty == false {
             emptyView.components = components
         }
-        contentView = emptyView
+        self.emptyView = emptyView
         return emptyView
     }
 }

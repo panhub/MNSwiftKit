@@ -45,7 +45,7 @@ extension NameSpaceWrapper where Base: FileManager {
     public var usedSize: Int64 {
         let total = diskSize
         let free = freeSize
-        return max(0, total - free)
+        return Swift.max(0, total - free)
     }
     
     /// 计算路径下文件大小

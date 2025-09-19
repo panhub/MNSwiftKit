@@ -68,9 +68,9 @@ import CoreGraphics
             }
         }
         leftBarItem.mn.minX = MNNavigationBar.leading
-        var y = (frame.height - UIApplication.mn.statusBarHeight - leftBarItem.frame.height)/2.0
+        var y = (frame.height - MN_STATUS_BAR_HEIGHT - leftBarItem.frame.height)/2.0
         y = max(0.0, y)
-        y += UIApplication.mn.statusBarHeight
+        y += MN_STATUS_BAR_HEIGHT
         leftBarItem.mn.minY = y
         leftBarItem.autoresizingMask = .flexibleTopMargin
         return leftBarItem
@@ -85,9 +85,9 @@ import CoreGraphics
             rightBarItem.mn.size = CGSize(width: MNNavigationBar.itemSize, height: MNNavigationBar.itemSize)
             (rightBarItem as! UIControl).addTarget(self, action: #selector(rightBarItemTouchUpInside(_:)), for: UIControl.Event.touchUpInside)
         }
-        var y = (frame.height - UIApplication.mn.statusBarHeight - rightBarItem.frame.height)/2.0
+        var y = (frame.height - MN_STATUS_BAR_HEIGHT - rightBarItem.frame.height)/2.0
         y = max(0.0, y)
-        y += UIApplication.mn.statusBarHeight
+        y += MN_STATUS_BAR_HEIGHT
         rightBarItem.mn.minY = y
         rightBarItem.mn.maxX = frame.width - MNNavigationBar.trailing
         rightBarItem.autoresizingMask = .flexibleTopMargin
@@ -199,66 +199,21 @@ extension MNNavigationBar {
         get { nil }
         set {
             guard let image = BaseResource.image(named: "back") else { return }
-            guard let cgImage = image.cgImage else { return }
-            UIGraphicsBeginImageContextWithOptions(image.size, false, image.scale)
-            guard let context = UIGraphicsGetCurrentContext() else { return }
-            context.translateBy(x: 0.0, y: image.size.height)
-            context.scaleBy(x: 1.0, y: -1.0)
-            context.setBlendMode(.normal)
-            let rect = CGRect(origin: .zero, size: image.size)
-            context.clip(to: rect, mask: cgImage)
-            (newValue ?? .black).setFill()
-            context.fill(rect)
-            let currentImage = UIGraphicsGetImageFromCurrentImageContext()
-            UIGraphicsEndImageContext()
-            leftItemImage = currentImage
+            guard let backImage = image.mn.rendering(to: newValue ?? .black) else { return }
+            leftItemImage = backImage
         }
     }
     
     /// 导航栏左按钮图片
     @objc public var leftItemImage: UIImage? {
-        get {
-            if let imageView = leftBarItem as? UIImageView {
-                return imageView.image ?? imageView.highlightedImage
-            } else if let button = leftBarItem as? UIButton {
-                return button.currentBackgroundImage ?? button.currentImage
-            } else if let contents = leftBarItem.layer.contents {
-                return UIImage(cgImage: contents as! CGImage)
-            }
-            return nil
-        }
-        set {
-            if let imageView = leftBarItem as? UIImageView {
-                imageView.image = newValue
-            } else if let button = leftBarItem as? UIButton {
-                button.setBackgroundImage(newValue, for: .normal)
-            } else {
-                leftBarItem.layer.contents = newValue?.cgImage
-            }
-        }
+        get { leftBarItem.mn.contents }
+        set { leftBarItem.mn.contents = newValue }
     }
     
     /// 导航栏右按钮图片
     @objc public var rightItemImage: UIImage? {
-        get {
-            if let imageView = rightBarItem as? UIImageView {
-                return imageView.image ?? imageView.highlightedImage
-            } else if let button = rightBarItem as? UIButton {
-                return button.currentBackgroundImage ?? button.currentImage
-            } else if let contents = rightBarItem.layer.contents {
-                return UIImage(cgImage: contents as! CGImage)
-            }
-            return nil
-        }
-        set {
-            if let imageView = rightBarItem as? UIImageView {
-                imageView.image = newValue
-            } else if let button = rightBarItem as? UIButton {
-                button.setBackgroundImage(newValue, for: .normal)
-            } else {
-                rightBarItem.layer.contents = newValue?.cgImage
-            }
-        }
+        get { rightBarItem.mn.contents }
+        set { rightBarItem.mn.contents = newValue }
     }
     
     /// 顶部阴影线颜色
@@ -283,11 +238,13 @@ extension MNNavigationBar {
 // MARK: - Event
 private extension MNNavigationBar {
     
-    @objc func leftBarItemTouchUpInside(_ leftBarItem: UIView) -> Void {
-        delegate?.navigationBarLeftBarItemTouchUpInside?(leftBarItem)
+    @objc func leftBarItemTouchUpInside(_ leftBarItem: UIView) {
+        guard let delegate = delegate else { return }
+        delegate.navigationBarLeftBarItemTouchUpInside?(leftBarItem)
     }
     
-    @objc func rightBarItemTouchUpInside(_ rightBarItem: UIView) -> Void {
-        delegate?.navigationBarRightBarItemTouchUpInside?(rightBarItem)
+    @objc func rightBarItemTouchUpInside(_ rightBarItem: UIView) {
+        guard let delegate = delegate else { return }
+        delegate.navigationBarRightBarItemTouchUpInside?(rightBarItem)
     }
 }

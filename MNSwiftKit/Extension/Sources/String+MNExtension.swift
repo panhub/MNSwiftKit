@@ -123,34 +123,34 @@ extension NameSpaceWrapper where Base == String {
     
     /// 根据闭区间获取字符串 eg: a[1...3]
     public subscript(range: ClosedRange<Int>) -> String {
-        let start = base.index(base.startIndex, offsetBy: max(range.lowerBound, 0))
-        let end = base.index(base.startIndex, offsetBy: min(range.upperBound, base.count - 1))
+        let start = base.index(base.startIndex, offsetBy: Swift.max(range.lowerBound, 0))
+        let end = base.index(base.startIndex, offsetBy: Swift.min(range.upperBound, base.count - 1))
         return String(base[start...end])
     }
     
     /// 根据半开半闭区间获取字符串 eg: a[1..<3]
     public subscript(range: Range<Int>) -> String {
-        let start = base.index(base.startIndex, offsetBy: max(range.lowerBound, 0))
-        let end = base.index(base.startIndex, offsetBy: min(range.upperBound, base.count))
+        let start = base.index(base.startIndex, offsetBy: Swift.max(range.lowerBound, 0))
+        let end = base.index(base.startIndex, offsetBy: Swift.min(range.upperBound, base.count))
         return String(base[start..<end])
     }
     
     /// 根据半区间获取字符串 eg: a[...2]
     public subscript(range: PartialRangeThrough<Int>) -> String {
-        let end = base.index(base.startIndex, offsetBy: min(range.upperBound, base.count - 1))
+        let end = base.index(base.startIndex, offsetBy: Swift.min(range.upperBound, base.count - 1))
         return String(base[base.startIndex...end])
     }
 
     /// 根据半区间获取字符串 eg: a[0...]
     public subscript(range: PartialRangeFrom<Int>) -> String {
-        let start = base.index(base.startIndex, offsetBy: max(range.lowerBound, 0))
+        let start = base.index(base.startIndex, offsetBy: Swift.max(range.lowerBound, 0))
         let end = base.index(base.startIndex, offsetBy: base.count - 1)
         return String(base[start...end])
     }
 
     /// 根据半区间获取字符串 eg: a[..<3]
     public subscript(range: PartialRangeUpTo<Int>) -> String {
-        let end = base.index(base.startIndex, offsetBy: min(range.upperBound, base.count))
+        let end = base.index(base.startIndex, offsetBy: Swift.min(range.upperBound, base.count))
         return String(base[base.startIndex..<end])
     }
 }

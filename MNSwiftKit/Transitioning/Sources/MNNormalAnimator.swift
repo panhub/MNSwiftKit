@@ -18,7 +18,7 @@ public class MNNormalAnimator: MNTransitionAnimator {
         shadowView.backgroundColor = UIColor.clear
         containerView.insertSubview(shadowView, aboveSubview: fromView)
         // 添加控制器
-        toView.addTransitioningShadow()
+        toView.mn.addTransitioningShadow()
         toView.frame = context.finalFrame(for: toController)
         toView.transform = CGAffineTransform(translationX: containerView.frame.width, y: 0.0)
         containerView.insertSubview(toView, aboveSubview: shadowView)
@@ -33,7 +33,7 @@ public class MNNormalAnimator: MNTransitionAnimator {
             guard let self = self else { return }
             shadowView.removeFromSuperview()
             self.fromView.transform = .identity
-            self.toView.removeTransitioningShadow()
+            self.toView.mn.removeTransitioningShadow()
             self.completeTransitionAnimation()
         }
     }
@@ -49,7 +49,7 @@ public class MNNormalAnimator: MNTransitionAnimator {
         toView.transform = CGAffineTransform(translationX: -containerView.frame.width/2.0, y: 0.0)
         containerView.insertSubview(toView, belowSubview: shadowView)
         // 转场阴影
-        fromView.addTransitioningShadow()
+        fromView.mn.addTransitioningShadow()
         // 动画
         let transform = CGAffineTransform(translationX: containerView.frame.width, y: 0.0)
         UIView.animate(withDuration: transitionDuration(using: context), delay: 0.0, options: .curveEaseInOut) { [weak self] in
@@ -61,7 +61,7 @@ public class MNNormalAnimator: MNTransitionAnimator {
             guard let self = self else { return }
             shadowView.removeFromSuperview()
             self.fromView.transform = .identity
-            self.fromView.removeTransitioningShadow()
+            self.fromView.mn.removeTransitioningShadow()
             self.completeTransitionAnimation()
         }
     }
@@ -73,7 +73,7 @@ public class MNNormalAnimator: MNTransitionAnimator {
         toView.transform = CGAffineTransform(translationX: -containerView.frame.width/2.0, y: 0.0)
         containerView.insertSubview(toView, belowSubview: fromView)
         // 转场阴影
-        fromView.addTransitioningShadow()
+        fromView.mn.addTransitioningShadow()
         // 动画
         let transform = CGAffineTransform(translationX: containerView.frame.width, y: 0.0)
         UIView.animate(withDuration: transitionDuration(using: context), delay: 0.0, options: .curveEaseInOut) { [weak self] in
@@ -84,7 +84,7 @@ public class MNNormalAnimator: MNTransitionAnimator {
             guard let self = self else { return }
             self.toView.transform = .identity
             self.fromView.transform = .identity
-            self.fromView.removeTransitioningShadow()
+            self.fromView.mn.removeTransitioningShadow()
             self.completeTransitionAnimation()
         }
     }

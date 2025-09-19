@@ -125,7 +125,7 @@ extension NameSpaceWrapper where Base: UIImage {
     /// - Returns: 调整后的图片
     public func resizing(to dimension: CGFloat) -> UIImage! {
         var size = CGSize(width: base.size.width*base.scale, height: base.size.height*base.scale)
-        guard max(size.width, size.height) > dimension else { return base }
+        guard Swift.max(size.width, size.height) > dimension else { return base }
         if size.width >= size.height {
             size.height = dimension/size.width*size.height
             size.width = dimension
@@ -155,7 +155,7 @@ extension NameSpaceWrapper where Base: UIImage {
     /// - Returns: 调整后的图片
     public func compress(to bytes: Int, attempts: Int = 10) -> UIImage! {
         var compression: CGFloat = 1.0
-        var imageData = base.jpegData(compressionQuality: compression)
+        let imageData = base.jpegData(compressionQuality: compression)
         guard var compressedData = imageData else { return nil }
         // 如果原始图片已经小于目标大小，直接返回
         if compressedData.count <= bytes { return base }

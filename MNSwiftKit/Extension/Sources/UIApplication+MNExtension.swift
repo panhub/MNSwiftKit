@@ -32,7 +32,11 @@ extension NameSpaceWrapper where Base: UIApplication {
     /// - Parameters:
     ///   - string: 指定链接
     ///   - completion: 结果回调是否成功打开
-    public class func open(_ string: String, completion: ((_ isSuccess: Bool) -> Void)? = nil) {
+    public func open(_ string: String!, completion: ((_ isSuccess: Bool) -> Void)? = nil) {
+        guard let string = string else {
+            completion?(false)
+            return
+        }
         guard let url = URL(string: string) else {
             completion?(false)
             return
@@ -44,16 +48,18 @@ extension NameSpaceWrapper where Base: UIApplication {
     /// - Parameters:
     ///   - url: 指定链接
     ///   - completion: 结果回调是否成功打开
-    public class func open(_ url: URL, completion: ((_ isSuccess: Bool) -> Void)? = nil) {
+    public func open(_ url: URL!, completion: ((_ isSuccess: Bool) -> Void)? = nil) {
+        guard let url = url else {
+            completion?(false)
+            return
+        }
         if #available(iOS 10.0, *) {
-            Base.shared.open(url, options: [:], completionHandler: completion)
+            base.open(url, options: [:], completionHandler: completion)
+        } else if base.canOpenURL(url) {
+            let result = base.openURL(url)
+            completion?(result)
         } else {
-            if Base.shared.canOpenURL(url) {
-                let result = Base.shared.openURL(url)
-                completion?(result)
-            } else {
-                completion?(false)
-            }
+            completion?(false)
         }
     }
     
@@ -61,7 +67,7 @@ extension NameSpaceWrapper where Base: UIApplication {
     /// - Parameters:
     ///   - number: QQ号
     ///   - completion: 结果回调是否成功打开
-    public class func openQQ(_ number: String, completion: ((_ isSuccess: Bool) -> Void)? = nil) {
+    public func openQQ(_ number: String, completion: ((_ isSuccess: Bool) -> Void)? = nil) {
         let string = "mqq://im/chat?chat_type=wpa&uin=\(number)&version=1&src_type=web"
         open(string, completion: completion)
     }
@@ -71,7 +77,7 @@ extension NameSpaceWrapper where Base: UIApplication {
     ///   - number: QQ群号
     ///   - key: 群标记
     ///   - completion: 结果回调是否成功打开
-    public class func openQQGroup(_ number: String, key: String, completion: ((_ isSuccess: Bool) -> Void)? = nil) {
+    public func openQQGroup(_ number: String, key: String, completion: ((_ isSuccess: Bool) -> Void)? = nil) {
         let string = "mqqapi://card/show_pslcard?src_type=internal&version=1&uin=\(number)&key=\(key)&card_type=group&source=external"
         open(string, completion: completion)
     }
@@ -80,7 +86,7 @@ extension NameSpaceWrapper where Base: UIApplication {
     /// - Parameters:
     ///   - mode: 打开方式
     ///   - completion: 结果回调
-    public class func openScore(mode: MNOpenScoreMode = .current, completion: ((_ isSuccess: Bool) -> Void)? = nil) {
+    public func openScore(mode: MNOpenScoreMode = .current, completion: ((_ isSuccess: Bool) -> Void)? = nil) {
         switch mode {
         case .current:
             if #available(iOS 14.0, *), let windowScene = Base.shared.delegate?.window??.windowScene {

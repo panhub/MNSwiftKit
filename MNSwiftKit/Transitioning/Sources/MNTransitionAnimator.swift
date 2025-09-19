@@ -42,12 +42,12 @@ open class MNTransitionAnimator: NSObject {
     /// 转场类
     private static let Animations: [String] = ["MNNormalAnimator", "MNDrawerAnimator", "MNModalAnimator", "MNFlipAnimator"]
     
-    public required override init() {
+    required public override init() {
         super.init()
     }
     
     /// 获取转场实例
-    @objc public static func animator(animation: Animation = .normal) -> MNTransitionAnimator {
+    @objc public class func animator(animation: Animation = .normal) -> MNTransitionAnimator {
         // 获取命名空间
         let nameSpace = NSStringFromClass(MNTransitionAnimator.self).components(separatedBy: ".").first!
         // 转换为类
@@ -124,9 +124,9 @@ extension MNTransitionAnimator {
         case .push:
             // 进栈转场
             guard let bottomBar = bottomBar, let firstController = fromController.navigationController?.viewControllers.first, fromController == firstController else { break }
-            let snapshotView = bottomBar.transitioningSnapshotView
-            fromController.transitioningBottomBar = bottomBar
-            fromController.transitioningBottomSnapshot = snapshotView
+            let snapshotView = bottomBar.mn.transitioningSnapshotView
+            fromController.mn.transitioningBottomBar = bottomBar
+            fromController.mn.transitioningBottomSnapshot = snapshotView
             guard fromController.bottomBarShouldLeave() else { break }
             switch bottomBarAnimation {
             case .adsorb:
@@ -145,7 +145,7 @@ extension MNTransitionAnimator {
         case .pop:
             // 出栈转场
             guard toController.bottomBarShouldEnter() else { break }
-            guard let snapshotView = toController.transitioningBottomSnapshot else { break }
+            guard let snapshotView = toController.mn.transitioningBottomSnapshot else { break }
             snapshotView.transform = .identity
             switch bottomBarAnimation {
             case .adsorb:
@@ -166,7 +166,7 @@ extension MNTransitionAnimator {
         switch bottomBarAnimation {
         case .move:
             let viewController: UIViewController = operation == .push ? fromController : toController
-            guard let snapshotView = viewController.transitioningBottomSnapshot else { break }
+            guard let snapshotView = viewController.mn.transitioningBottomSnapshot else { break }
             containerView.isUserInteractionEnabled = false
             UIView.animate(withDuration: duration, delay: 0.0, options: .curveEaseInOut) {
                 if let _ = snapshotView.superview {
@@ -183,28 +183,28 @@ extension MNTransitionAnimator {
         switch operation {
         case .push:
             // 进栈结束
-            if let snapshotView = fromController.transitioningBottomSnapshot {
+            if let snapshotView = fromController.mn.transitioningBottomSnapshot {
                 snapshotView.removeFromSuperview()
                 if transitionCompleted == false {
-                    fromController.transitioningBottomSnapshot = nil
+                    fromController.mn.transitioningBottomSnapshot = nil
                 }
             }
-            if transitionCompleted == false, let bottomBar = fromController.transitioningBottomBar {
-                fromController.transitioningBottomBar = nil
+            if transitionCompleted == false, let bottomBar = fromController.mn.transitioningBottomBar {
+                fromController.mn.transitioningBottomBar = nil
                 if fromController.bottomBarShouldLeave() {
                     bottomBar.isHidden = false
                 }
             }
         case .pop:
             // 恢复标签栏
-            if let snapshotView = toController.transitioningBottomSnapshot {
+            if let snapshotView = toController.mn.transitioningBottomSnapshot {
                 snapshotView.removeFromSuperview()
                 if transitionCompleted {
-                    toController.transitioningBottomSnapshot = nil
+                    toController.mn.transitioningBottomSnapshot = nil
                 }
             }
-            if transitionCompleted, let bottomBar = toController.transitioningBottomBar {
-                toController.transitioningBottomBar = nil
+            if transitionCompleted, let bottomBar = toController.mn.transitioningBottomBar {
+                toController.mn.transitioningBottomBar = nil
                 if toController.bottomBarShouldEnter() {
                     bottomBar.isHidden = false
                 }
@@ -219,7 +219,7 @@ extension MNTransitionAnimator {
         toView.transform = CGAffineTransform(scaleX: 0.93, y: 0.93)
         containerView.insertSubview(toView, belowSubview: fromView)
         // 添加阴影
-        fromView.addTransitioningShadow()
+        fromView.mn.addTransitioningShadow()
         // 动画
         let backgroundColor = containerView.backgroundColor
         let transform = CGAffineTransform(translationX: containerView.frame.width, y: 0.0)
@@ -232,7 +232,7 @@ extension MNTransitionAnimator {
             guard let self = self else { return }
             self.toView.transform = .identity
             self.fromView.transform = .identity
-            self.fromView.removeTransitioningShadow()
+            self.fromView.mn.removeTransitioningShadow()
             self.containerView.backgroundColor = backgroundColor
             self.completeTransitionAnimation()
         }

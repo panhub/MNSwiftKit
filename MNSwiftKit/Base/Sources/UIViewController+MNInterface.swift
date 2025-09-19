@@ -24,6 +24,7 @@ extension UIViewController {
     }
 }
 
+/// 定义控制器
 public protocol UIViewControllerInterface {
     /// 是否是主控制器
     var isRootViewController: Bool { get }
@@ -50,6 +51,7 @@ extension UIViewController: UIViewControllerInterface {
     @objc open var isChildViewController: Bool { (view.frame.width + view.frame.height) != (UIScreen.main.bounds.width + UIScreen.main.bounds.height) }
 }
 
+/// 定制标签栏
 public protocol MNTabBarSupported {
     /// 按钮大小
     var bottomBarItemSize: CGSize { get }

@@ -1,8 +1,10 @@
 PODS:
+  - MNSwiftKit/AnimatedImage (0.1.1)
   - MNSwiftKit/Base (0.1.1):
     - MNSwiftKit/CollectionLayout
     - MNSwiftKit/Definition
     - MNSwiftKit/EmptyView
+    - MNSwiftKit/Extension
     - MNSwiftKit/Layout
     - MNSwiftKit/Refresh
     - MNSwiftKit/Request
@@ -12,6 +14,9 @@ PODS:
   - MNSwiftKit/Definition (0.1.1):
     - MNSwiftKit/NameSpace
   - MNSwiftKit/EmptyView (0.1.1)
+  - MNSwiftKit/Extension (0.1.1):
+    - MNSwiftKit/AnimatedImage
+    - MNSwiftKit/NameSpace
   - MNSwiftKit/Layout (0.1.1):
     - MNSwiftKit/NameSpace
   - MNSwiftKit/NameSpace (0.1.1)
@@ -30,7 +35,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: d6f5b0459e2bea38f062ecb557f53e041a7e5ac3
+  MNSwiftKit: 8d0d470912aab043f6cf5ed1fd8c54f71640918b
 
 PODFILE CHECKSUM: cbd7b0f258cacf1623447740d11a1766a1de55c5
 

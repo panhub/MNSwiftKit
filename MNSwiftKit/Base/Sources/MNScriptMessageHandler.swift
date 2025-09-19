@@ -13,7 +13,7 @@ import Foundation
     // 支持的命令
     @objc var cmds: [String] { get }
     // 调用命令
-    @objc func call(cmd: String, body: Any) -> Void
+    @objc func call(cmd: String, body: Any)
 }
 
 // MARK: - 添加响应处理

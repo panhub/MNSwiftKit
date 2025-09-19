@@ -7,6 +7,7 @@
 
 import UIKit
 
+/// 定制文字布局对象
 class MNCollectionViewWordLayout: MNCollectionViewLayout {
     
     /// 标签对齐方式

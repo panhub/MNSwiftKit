@@ -33,7 +33,7 @@ open class MNNavigationController: UINavigationController {
         navigationBar.isHidden = true
         // 设置转场代理
         delegate = self
-        mn_transitioning.delegate = MNTransitionDelegate()
+        mn.transitioningDelegate = MNTransitionDelegate()
     }
 }
 

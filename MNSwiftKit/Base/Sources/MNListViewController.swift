@@ -69,7 +69,7 @@ open class MNListViewController: MNExtendViewController {
 extension MNListViewController {
     
     open override func prepareLoadData(_ request: HTTPDataRequest) {
-        guard contentView.existToast == false, listView.mn_refresh.isLoading == false else { return }
+        guard contentView.existToast == false, listView.mn.isLoading == false else { return }
         contentView.showActivityToast("请稍后")
     }
     
@@ -111,7 +111,7 @@ extension MNListViewController {
     private func moveRefreshHeader(toParent listView: UIScrollView) {
         let header = preferredRefreshHeader
         header.addTarget(self, action: #selector(refresh))
-        listView.mn_refresh.header = header
+        listView.mn.header = header
         didMoveRefreshHeader(header, toParent: listView)
     }
     
@@ -119,21 +119,21 @@ extension MNListViewController {
         let footer = preferredLoadFooter
         footer.state = .noMoreData
         footer.addTarget(self, action: #selector(loadMore))
-        listView.mn_refresh.footer = footer
+        listView.mn.footer = footer
         didMoveLoadFooter(footer, toParent: listView)
     }
     
     @objc private func refresh() {
-        guard listView.mn_refresh.isLoadMore == false else {
-            listView.mn_refresh.endRefreshing()
+        guard listView.mn.isLoadMore == false else {
+            listView.mn.endRefreshing()
             return
         }
         beginRefresh()
     }
     
     @objc private func loadMore() {
-        guard listView.mn_refresh.isRefreshing == false else {
-            listView.mn_refresh.endLoadMore()
+        guard listView.mn.isRefreshing == false else {
+            listView.mn.endLoadMore()
             return
         }
         beginLoadMore()
@@ -142,7 +142,7 @@ extension MNListViewController {
     /// 开始刷新
     @objc open func beginRefresh() {
         guard let request = httpRequest, request.isLoading == false else {
-            listView.mn_refresh.endRefreshing()
+            listView.mn.endRefreshing()
             return
         }
         reloadData()
@@ -151,7 +151,7 @@ extension MNListViewController {
     /// 开始加载更多
     @objc open func beginLoadMore() {
         guard let request = httpRequest, request.isLoading == false else {
-            listView.mn_refresh.endLoadMore()
+            listView.mn.endLoadMore()
             return
         }
         loadData()
@@ -159,10 +159,10 @@ extension MNListViewController {
     
     /// 结束刷新/加载更多
     @objc open func endRefrshing() {
-        listView.mn_refresh.endRefreshing()
-        listView.mn_refresh.endLoadMore()
+        listView.mn.endRefreshing()
+        listView.mn.endLoadMore()
         guard let request = httpRequest else { return }
-        listView.mn_refresh.isLoadMoreEnabled = request.hasMore
+        listView.mn.isLoadMoreEnabled = request.hasMore
     }
     
     /// 即将添加刷新控件

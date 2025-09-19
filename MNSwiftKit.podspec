@@ -46,6 +46,7 @@ Pod::Spec.new do |s|
     b.dependency 'MNSwiftKit/Refresh'
     b.dependency 'MNSwiftKit/Request'
     b.dependency 'MNSwiftKit/Definition'
+    b.dependency 'MNSwiftKit/Extension'
     b.dependency 'MNSwiftKit/EmptyView'
     b.dependency 'MNSwiftKit/Transitioning'
     b.dependency 'MNSwiftKit/CollectionLayout'
@@ -96,6 +97,7 @@ Pod::Spec.new do |s|
   s.subspec 'Refresh' do |r|
     r.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
     r.source_files = 'MNSwiftKit/Refresh/Sources/**/*.swift'
+    r.dependency 'MNSwiftKit/NameSpace'
   end
   
   # Request <网络请求封装>
@@ -143,6 +145,7 @@ Pod::Spec.new do |s|
   s.subspec 'EmptyView' do |e|
     e.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
     e.source_files = 'MNSwiftKit/EmptyView/Sources/**/*.swift'
+    e.dependency 'MNSwiftKit/NameSpace'
   end
   
   # Networking <网络请求>
@@ -199,6 +202,7 @@ Pod::Spec.new do |s|
   s.subspec 'Transitioning' do |t|
     t.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
     t.source_files = 'MNSwiftKit/Transitioning/Sources/**/*.swift'
+    t.dependency 'MNSwiftKit/NameSpace'
   end
   
   # EmoticonKeyboard <表情键盘>

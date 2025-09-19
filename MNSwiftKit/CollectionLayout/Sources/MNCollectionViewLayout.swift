@@ -3,12 +3,12 @@
 //  anhe
 //
 //  Created by panhub on 2022/6/2.
-//  数据流约束对象
+//  瀑布流约束对象
 
 import UIKit
 
 public extension UICollectionView {
-    // 标识符
+    /// 自定义标识符
     struct Identifier {
         static let cell: String = "com.mn.collection.cell.reuseIdentifier"
         static let header: String = "com.mn.collection.section.header.reuseIdentifier"
@@ -16,86 +16,141 @@ public extension UICollectionView {
     }
 }
 
+/// 布局对象定制代理
 @objc public protocol MNCollectionViewLayoutDelegate: NSObjectProtocol {
-    /**获取区间隔*/
+    
+    /// 定制区内容间隔
+    /// - Parameters:
+    ///   - collectionView: 视图
+    ///   - collectionViewLayout: 约束对象
+    ///   - index: 区索引
+    /// - Returns: 区四周间隔
     @objc optional func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, insetForSectionAt index: Int) -> UIEdgeInsets
-    /**获取区头间隔*/
+    
+    /// 定制区头视图间隔
+    /// - Parameters:
+    ///   - collectionView: 视图
+    ///   - collectionViewLayout: 约束对象
+    ///   - section: 区索引
+    /// - Returns: 区头视图间隔
     @objc optional func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, insetForHeaderInSection section: Int) -> UIEdgeInsets
-    /**获取区尾间隔*/
+    
+    /// 定制区尾视图间隔
+    /// - Parameters:
+    ///   - collectionView: 视图
+    ///   - collectionViewLayout: 约束对象
+    ///   - section: 区索引
+    /// - Returns: 区尾视图间隔
     @objc optional func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, insetForFooterInSection section: Int) -> UIEdgeInsets
-    /**获取相邻项间隔*/
+    
+    /// 定制相邻项间隔
+    /// - Parameters:
+    ///   - collectionView: 视图
+    ///   - collectionViewLayout: 约束对象
+    ///   - section: 区索引
+    /// - Returns: 相邻项间隔
     @objc optional func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat
-    /**获取行间隔*/
+    
+    /// 定制滑动方向相邻行间隔
+    /// - Parameters:
+    ///   - collectionView: 视图
+    ///   - collectionViewLayout: 约束对象
+    ///   - section: 区索引
+    /// - Returns: 相邻行间隔
     @objc optional func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat
-    /**获取区头尺寸*/
+    
+    /// 定制区头尺寸
+    /// - Parameters:
+    ///   - collectionView: 视图
+    ///   - collectionViewLayout: 约束对象
+    ///   - section: 区索引
+    /// - Returns: 区头尺寸
     @objc optional func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize
-    /**获取区尾尺寸*/
+    
+    /// 定制区尾尺寸
+    /// - Parameters:
+    ///   - collectionView: 视图
+    ///   - collectionViewLayout: 约束对象
+    ///   - section: 区索引
+    /// - Returns: 区尾尺寸
     @objc optional func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize
-    /**获取每一项尺寸*/
+    
+    /// 定制每一项尺寸
+    /// - Parameters:
+    ///   - collectionView: 视图
+    ///   - collectionViewLayout: 约束对象
+    ///   - indexPath: 索引
+    /// - Returns: 尺寸
     @objc optional func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize
-    /**获取区列数/行数*/
+    
+    /// 定制区列数/行数
+    /// - Parameters:
+    ///   - collectionView: 视图
+    ///   - collectionViewLayout: 约束对象
+    ///   - section: 区索引
+    /// - Returns: 列数/行数
     @objc optional func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, numberOfColumnsInSection section: Int) -> Int
 }
 
 public class MNCollectionViewLayout: UICollectionViewLayout {
-    /**尺寸*/
+    /// 尺寸
     public var itemSize: CGSize = .zero {
         didSet { invalidateLayout() }
     }
-    /**纵向相邻间隔*/
+    /// 滑动方向相邻间隔
     public var minimumLineSpacing: CGFloat = 0.0 {
         didSet { invalidateLayout() }
     }
-    /**横向相邻间隔*/
+    /// 滑动相反方向间隔
     public var minimumInteritemSpacing: CGFloat = 0.0 {
         didSet { invalidateLayout() }
     }
-    /**区头大小(竖向取高度, 纵向取宽度)*/
+    /// 区头大小(竖向取高度, 纵向取宽度)
     public var headerReferenceSize: CGSize = .zero {
         didSet { invalidateLayout() }
     }
-    /**区尾大小(竖向取高度, 纵向取宽度)*/
+    /// 区尾大小(竖向取高度, 纵向取宽度)
     public var footerReferenceSize: CGSize = .zero {
         didSet { invalidateLayout() }
     }
-    /**区头间隔*/
+    /// 区头间隔
     public var headerInset: UIEdgeInsets = .zero {
         didSet { invalidateLayout() }
     }
-    /**区尾间隔*/
+    /// 区尾间隔
     public var footerInset: UIEdgeInsets = .zero {
         didSet { invalidateLayout() }
     }
-    /**区间隔*/
+    /// 区间隔
     public var sectionInset: UIEdgeInsets = .zero {
         didSet { invalidateLayout() }
     }
-    /**纵向列数, 横向行数*/
+    /// 纵向列数, 横向行数
     public var numberOfColumns: Int = 3 {
         didSet { invalidateLayout() }
     }
-    /**指定内容尺寸*/
+    /// 指定内容尺寸
     public var preferredContentSize: CGSize = .zero {
         didSet { invalidateLayout() }
     }
-    /**单位区块包含的数量*/
+    /// 单位区块包含的数量
     private static let AttributesUnion: Int = 20
-    /**区内每一列/行的高/宽缓存*/
-    public var caches: [[CGFloat]] = [[CGFloat]]()
-    /**所有布局对象(包括区头区尾)缓存*/
-    public var attributes: [UICollectionViewLayoutAttributes] = [UICollectionViewLayoutAttributes]()
-    /**区头布局对象缓存*/
-    public var headerAttributes: [Int: UICollectionViewLayoutAttributes] = [Int: UICollectionViewLayoutAttributes]()
-    /**区尾布局对象缓存*/
-    public var footerAttributes: [Int: UICollectionViewLayoutAttributes] = [Int: UICollectionViewLayoutAttributes]()
-    /**区布局对象缓存*/
-    public var sectionAttributes: [[UICollectionViewLayoutAttributes]] = [[UICollectionViewLayoutAttributes]]()
-    /**周期内布局对象的范围, 便于后期计算返回*/
+    /// 区内每一列/行的高/宽缓存
+    public var caches: [[CGFloat]] = []
+    /// 所有布局对象(包括区头区尾)缓存
+    public var attributes: [UICollectionViewLayoutAttributes] = []
+    /// 区头布局对象缓存
+    public var headerAttributes: [Int: UICollectionViewLayoutAttributes] = [:]
+    /// 区尾布局对象缓存
+    public var footerAttributes: [Int: UICollectionViewLayoutAttributes] = [:]
+    /// 区布局对象缓存
+    public var sectionAttributes: [[UICollectionViewLayoutAttributes]] = []
+    /// 周期内布局对象的范围, 便于后期计算返回
     private var unions: [CGRect] = [CGRect]()
-    /**数据源代理*/
+    /// 数据源代理
     public weak var delegate: MNCollectionViewLayoutDelegate?
     
-    /**重写*/
+    
     public override func prepare() {
         super.prepare()
         unions.removeAll()

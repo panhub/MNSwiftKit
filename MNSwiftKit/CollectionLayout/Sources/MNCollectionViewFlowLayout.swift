@@ -7,6 +7,7 @@
 
 import UIKit
 
+/// 定制瀑布流布局对象
 public class MNCollectionViewFlowLayout: MNCollectionViewLayout {
     
     /// 滑动方向

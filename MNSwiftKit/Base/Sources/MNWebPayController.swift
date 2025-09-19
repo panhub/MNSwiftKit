@@ -45,9 +45,11 @@ public struct MNWebPayment {
      */
 }
 
-/**回调支付结束*/
-public protocol MNWebPurchaseHandler: NSObjectProtocol {
-    func webPayDidFinish(_ controller: MNWebPayController) -> Void
+/// 支付结束代理
+public protocol MNWebPayEventHandler: NSObjectProtocol {
+    /// 支付结束告知
+    /// - Parameter controller: 网页支付控制器
+    func webPayDidFinish(_ controller: MNWebPayController)
 }
 
 private func MNWebPayBase64Decoding(_ string: String) -> String {
@@ -67,9 +69,9 @@ public class MNWebPayController: MNWebViewController {
     /// 用户传值
     public var userInfo: Any?
     /// 结束回调
-    public var finishPayHandler: ((MNWebPayController) -> Void)?
-    /// 代理回调
-    public weak var payHandler: MNWebPurchaseHandler?
+    public var completionHandler: ((MNWebPayController) -> Void)?
+    /// 回调代理
+    public weak var eventHandler: MNWebPayEventHandler?
     
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -96,21 +98,20 @@ public class MNWebPayController: MNWebViewController {
         if navigationAction.navigationType == .linkActivated, let contains = request.url?.host?.contains(MNWebPayBase64Decoding("5oiR55qE6Leo5Z+f5qCH6K+G56ym")), contains {
             decisionHandler(.cancel)
             // 对于跨域, 需要手动跳转
-            MNWebPayController.open(url: request.url) { [weak self] result in
-                if result == false {
-                    // 打开失败
-                    self?.cancel(message: "打开应用失败")
-                }
+            UIApplication.shared.mn.open(request.url) { [weak self] isSuccess in
+                guard let self = self else { return }
+                guard isSuccess == false else { return }
+                // 打开失败
+                self.cancel(message: "打开应用失败")
             }
         } else if var url = request.url?.absoluteString {
             if url.contains(MNWebPayment.shared.wxScheme) {
                 allowsOpenURL = false
                 decisionHandler(.cancel)
-                MNWebPayController.open(url:request.url) { [weak self] result in
-                    if result == false {
-                        // 打开失败
-                        self?.cancel(message: MNWebPayBase64Decoding("6Lez6L2s5b6u5L+h5aSx6LSl"))
-                    }
+                UIApplication.shared.mn.open(request.url) { [weak self] isSuccess in
+                    guard let self = self else { return }
+                    guard isSuccess == false else { return }
+                    self.cancel(message: MNWebPayBase64Decoding("6Lez6L2s5b6u5L+h5aSx6LSl"))
                 }
             } else if allowsOpenURL, url.contains(MNWebPayment.shared.wxH5Identifier) {
                 allowsOpenURL = false
@@ -151,11 +152,10 @@ public class MNWebPayController: MNWebViewController {
                 url = url.replacingOccurrences(of: "false", with: "0")
                 url = url.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) ?? url
                 decisionHandler(.cancel)
-                MNWebPayController.open(url: URL(string: url)) { [weak self] result in
-                    if result == false {
-                        // 打开失败
-                        self?.cancel(message: MNWebPayBase64Decoding("6Lez6L2s5pSv5LuY5a6d5aSx6LSl"))
-                    }
+                UIApplication.shared.mn.open(request.url) { [weak self] isSuccess in
+                    guard let self = self else { return }
+                    guard isSuccess == false else { return }
+                    self.cancel(message: MNWebPayBase64Decoding("6Lez6L2s5pSv5LuY5a6d5aSx6LSl"))
                 }
             } else {
                 decisionHandler(.allow)
@@ -170,15 +170,7 @@ public class MNWebPayController: MNWebViewController {
     private func cancel(message: String) {
         MNToast.showInfo(message) { [weak self] in
             guard let self = self else { return }
-            if let nav = self.navigationController {
-                if nav.viewControllers.count > 1 {
-                    nav.popViewController(animated: true)
-                } else if let _ = nav.presentingViewController {
-                    nav.dismiss(animated: true, completion: nil)
-                }
-            } else if let _ = self.presentingViewController {
-                self.dismiss(animated: true, completion: nil)
-            }
+            self.mn.pop()
         }
     }
     
@@ -194,10 +186,14 @@ public class MNWebPayController: MNWebViewController {
         return true
     }
     
-    /**接收到支付结束通知*/
-    @objc func finishPayment() -> Void {
-        finishPayHandler?(self)
-        payHandler?.webPayDidFinish(self)
+    /// 接收到支付结束通知
+    @objc private func finishPayment() {
+        if let completionHandler = completionHandler {
+            completionHandler(self)
+        }
+        if let eventHandler = eventHandler {
+            eventHandler.webPayDidFinish(self)
+        }
     }
 }
 
@@ -206,29 +202,4 @@ extension MNWebPayController {
     public override func navigationBarShouldDrawBackBarItem() -> Bool { true }
     public override func navigationBarShouldCreateLeftBarItem() -> UIView? { nil }
     public override func navigationBarShouldCreateRightBarItem() -> UIView? { nil }
-}
-
-// MARK: - 打开链接
-extension MNWebPayController {
-    
-    /// 打开链接
-    /// - Parameters:
-    ///   - url: 链接
-    ///   - completionHandler: 结果回调
-    fileprivate class func open(url: URL?, completion completionHandler:((Bool)->Void)?) {
-        guard let url = url else {
-            completionHandler?(false)
-            return
-        }
-        if #available(iOS 10.0, *) {
-            UIApplication.shared.open(url, options: [:], completionHandler: completionHandler)
-        } else {
-            if UIApplication.shared.canOpenURL(url) {
-                let result = UIApplication.shared.openURL(url)
-                completionHandler?(result)
-            } else {
-                completionHandler?(false)
-            }
-        }
-    }
 }

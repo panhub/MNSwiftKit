@@ -8,69 +8,72 @@
 import UIKit
 import ObjectiveC.runtime
 
-public extension UIView {
+extension NameSpaceWrapper where Base: UIView {
     
     /// 转场截图
-    @objc var transitioningSnapshotView: UIImageView {
-        let alpha = alpha
-        let isHidden = isHidden
-        self.alpha = 1.0
-        self.isHidden = false
+    public var transitioningSnapshotView: UIImageView {
+        let alpha = base.alpha
+        let isHidden = base.isHidden
+        base.alpha = 1.0
+        base.isHidden = false
         var image: UIImage?
         if #available(iOS 10.0, *) {
-            let renderer = UIGraphicsImageRenderer(bounds: bounds)
+            let renderer = UIGraphicsImageRenderer(bounds: base.bounds)
             image = renderer.image { context in
-                self.layer.render(in: context.cgContext)
+                self.base.layer.render(in: context.cgContext)
             }
         } else {
-            UIGraphicsBeginImageContextWithOptions(bounds.size, false, layer.contentsScale)
+            UIGraphicsBeginImageContextWithOptions(base.bounds.size, false, base.layer.contentsScale)
             if let context = UIGraphicsGetCurrentContext() {
-                self.layer.render(in: context)
+                self.base.layer.render(in: context)
             }
             image = UIGraphicsGetImageFromCurrentImageContext()
             UIGraphicsEndImageContext()
         }
-        self.alpha = alpha
-        self.isHidden = isHidden
-        let imageView = UIImageView(frame: frame)
+        base.alpha = alpha
+        base.isHidden = isHidden
+        let imageView = UIImageView(frame: base.frame)
         imageView.image = image
         return imageView
     }
     
     /// 添加转场阴影
-    @objc func addTransitioningShadow() -> Void {
-        layer.shadowOffset = .zero
-        layer.shadowOpacity = 0.7
-        layer.shadowColor = UIColor.black.cgColor
-        layer.shadowPath = UIBezierPath(rect: layer.bounds).cgPath
+    public func addTransitioningShadow() -> Void {
+        base.layer.shadowOffset = .zero
+        base.layer.shadowOpacity = 0.7
+        base.layer.shadowColor = UIColor.black.cgColor
+        base.layer.shadowPath = UIBezierPath(rect: base.layer.bounds).cgPath
     }
     
     /// 清除转场阴影
-    @objc func removeTransitioningShadow() -> Void {
-        layer.shadowPath = nil
-        layer.shadowColor = nil
-        layer.shadowOpacity = 0.0
+    public func removeTransitioningShadow() -> Void {
+        base.layer.shadowPath = nil
+        base.layer.shadowColor = nil
+        base.layer.shadowOpacity = 0.0
     }
 }
 
 extension UIViewController {
     
-    private struct MNTransitioningAssociated {
+    fileprivate struct MNTransitioningAssociated {
         
         nonisolated(unsafe) static var bottomBar = "com.mn.view.transition.bottom.bar.key"
         nonisolated(unsafe) static var bottomSnapshot = "com.mn.view.transition.bottom.snapshot.key"
     }
+}
+
+extension NameSpaceWrapper where Base: UIViewController {
     
     /// 转场标签栏
-    @objc public var transitioningBottomBar: UIView? {
-        get { return objc_getAssociatedObject(self, &MNTransitioningAssociated.bottomBar) as? UIView }
-        set { objc_setAssociatedObject(self, &MNTransitioningAssociated.bottomBar, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
+    public var transitioningBottomBar: UIView? {
+        get { objc_getAssociatedObject(base, &UIViewController.MNTransitioningAssociated.bottomBar) as? UIView }
+        set { objc_setAssociatedObject(base, &UIViewController.MNTransitioningAssociated.bottomBar, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
     }
     
     /// 转场标签栏截图
-    @objc public var transitioningBottomSnapshot: UIView? {
-        get { return objc_getAssociatedObject(self, &MNTransitioningAssociated.bottomSnapshot) as? UIView }
-        set { objc_setAssociatedObject(self, &MNTransitioningAssociated.bottomSnapshot, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
+    public var transitioningBottomSnapshot: UIView? {
+        get { objc_getAssociatedObject(base, &UIViewController.MNTransitioningAssociated.bottomSnapshot) as? UIView }
+        set { objc_setAssociatedObject(base, &UIViewController.MNTransitioningAssociated.bottomSnapshot, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
     }
 }
 

@@ -200,10 +200,8 @@ extension MNWebViewController {
         guard let webView = webView else { return }
         guard webView.isLoading else { return }
         webView.stopLoading()
-        if let reloadButton = reloadButton, reloadButton.layer.speed == 1.0 {
-            let pauseTime = reloadButton.layer.convertTime(CACurrentMediaTime(), from: nil)
-            reloadButton.layer.speed = 0.0
-            reloadButton.layer.timeOffset = pauseTime
+        if let reloadButton = reloadButton {
+            reloadButton.layer.mn.pauseAnimation()
         }
     }
 }
@@ -277,9 +275,7 @@ extension MNWebViewController {
         animation.fillMode = .forwards
         animation.repeatCount = Float.greatestFiniteMagnitude
         reloadButton.layer.add(animation, forKey: "rotation")
-        let pauseTime = reloadButton.layer.convertTime(CACurrentMediaTime(), from: nil)
-        reloadButton.layer.speed = 0.0
-        reloadButton.layer.timeOffset = pauseTime
+        reloadButton.layer.mn.pauseAnimation()
         return reloadButton
     }
 }
@@ -288,13 +284,8 @@ extension MNWebViewController {
 extension MNWebViewController: WKNavigationDelegate {
     /// 开始加载
     public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        if let reloadButton = reloadButton, reloadButton.layer.speed == 0.0 {
-            let pauseTime = reloadButton.layer.timeOffset
-            reloadButton.layer.speed = 1.0
-            reloadButton.layer.timeOffset = 0.0
-            reloadButton.layer.beginTime = 0.0
-            let timeSincePause = reloadButton.layer.convertTime(CACurrentMediaTime(), from: nil) - pauseTime
-            reloadButton.layer.beginTime = timeSincePause
+        if let reloadButton = reloadButton {
+            reloadButton.layer.mn.resumeAnimation()
         }
         if let delegate = delegate {
             delegate.webViewControllerDidStart?(self)
@@ -302,14 +293,13 @@ extension MNWebViewController: WKNavigationDelegate {
     }
     /*当内容开始到达主帧时被调用(即将完成)*/
     public func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
-        delegate?.webViewControllerWillFinish?(self)
+        guard let delegate = delegate else { return }
+        delegate.webViewControllerWillFinish?(self)
     }
     /*加载完成(并非真正的完成, 比如重定向)*/
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        if let reloadButton = reloadButton, reloadButton.layer.speed == 1.0 {
-            let pauseTime = reloadButton.layer.convertTime(CACurrentMediaTime(), from: nil)
-            reloadButton.layer.speed = 0.0
-            reloadButton.layer.timeOffset = pauseTime
+        if let reloadButton = reloadButton {
+            reloadButton.layer.mn.pauseAnimation()
         }
         if let delegate = delegate {
             delegate.webViewControllerDidFinish?(self)
@@ -318,10 +308,8 @@ extension MNWebViewController: WKNavigationDelegate {
     /*加载失败*/
     public func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         if (error as NSError).code == 102, (error as NSError).domain == WKErrorDomain { return }
-        if let reloadButton = reloadButton, reloadButton.layer.speed == 1.0 {
-            let pauseTime = reloadButton.layer.convertTime(CACurrentMediaTime(), from: nil)
-            reloadButton.layer.speed = 0.0
-            reloadButton.layer.timeOffset = pauseTime
+        if let reloadButton = reloadButton {
+            reloadButton.layer.mn.pauseAnimation()
         }
         if let delegate = delegate, (error as NSError).code != NSURLErrorCancelled {
             delegate.webViewController?(self, didFailLoad: error)
@@ -330,10 +318,8 @@ extension MNWebViewController: WKNavigationDelegate {
     /*在提交的主帧中发生错误时调用*/
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         if (error as NSError).code == 102, (error as NSError).domain == WKErrorDomain { return }
-        if let reloadButton = reloadButton, reloadButton.layer.speed == 1.0 {
-            let pauseTime = reloadButton.layer.convertTime(CACurrentMediaTime(), from: nil)
-            reloadButton.layer.speed = 0.0
-            reloadButton.layer.timeOffset = pauseTime
+        if let reloadButton = reloadButton {
+            reloadButton.layer.mn.pauseAnimation()
         }
     }
     /**当webView接受SSL认证挑战*/

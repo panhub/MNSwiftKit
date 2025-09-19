@@ -14,8 +14,8 @@ extension NameSpaceWrapper where Base: UIView {
     public var anchor: CGPoint {
         get { base.layer.anchorPoint }
         set {
-            let x = min(max(0.0, newValue.x), 1.0)
-            let y = min(max(0.0, newValue.y), 1.0)
+            let x = Swift.min(Swift.max(0.0, newValue.x), 1.0)
+            let y = Swift.min(Swift.max(0.0, newValue.y), 1.0)
             let frame = base.frame
             let point = base.layer.anchorPoint
             let xMargin = x - point.x

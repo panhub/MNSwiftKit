@@ -14,42 +14,30 @@ extension UINavigationController {
         
         nonisolated(unsafe) static var delegate: String = "com.mn.navigation.transitioning.delegate"
     }
-    
-    public class MNTransitionWrapper {
-        
-        fileprivate let nav: UINavigationController
-        
-        fileprivate init(nav: UINavigationController) {
-            self.nav = nav
-        }
-    }
-    
-    /// 转场包装器
-    public var mn_transitioning: MNTransitionWrapper { MNTransitionWrapper(nav: self) }
 }
 
 
-extension UINavigationController.MNTransitionWrapper {
+extension NameSpaceWrapper where Base: UINavigationController {
     
     /// 转场代理
-    public var delegate: MNTransitionDelegate? {
-        get { objc_getAssociatedObject(nav, &UINavigationController.MNTransitionAssociated.delegate) as? MNTransitionDelegate }
+    public var transitioningDelegate: MNTransitionDelegate? {
+        get { objc_getAssociatedObject(base, &UINavigationController.MNTransitionAssociated.delegate) as? MNTransitionDelegate }
         set {
-            objc_setAssociatedObject(nav, &UINavigationController.MNTransitionAssociated.delegate, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(base, &UINavigationController.MNTransitionAssociated.delegate, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             guard let newValue = newValue else { return }
             // 解除旧导航绑定
             if let navigationController = newValue.navigationController {
                 navigationController.delegate = newValue.delegate
-                navigationController.mn_transitioning.delegate = nil
+                navigationController.mn.transitioningDelegate = nil
                 newValue.delegate = nil
                 newValue.navigationController = nil
             }
             // 绑定新的导航
-            newValue.delegate = nav.delegate
-            newValue.navigationController = nav
-            nav.delegate = newValue
+            newValue.delegate = base.delegate
+            newValue.navigationController = base
+            base.delegate = newValue
             // 拦截交互手势
-            if let recognizer = nav.interactivePopGestureRecognizer {
+            if let recognizer = base.interactivePopGestureRecognizer {
                 recognizer.delegate = newValue
                 recognizer.removeTarget(nil, action: nil)
                 if let panGestureRecognizer = recognizer as? UIPanGestureRecognizer {
@@ -141,30 +129,30 @@ extension MNTransitionDelegate: UINavigationControllerDelegate {
         if animated == false, let index = navigationController.viewControllers.firstIndex(of: viewController) {
             if index == 0 {
                 // 恢复标签栏
-                if let bottomBar = viewController.transitioningBottomBar {
-                    viewController.transitioningBottomBar = nil
+                if let bottomBar = viewController.mn.transitioningBottomBar {
+                    viewController.mn.transitioningBottomBar = nil
                     if viewController.bottomBarShouldEnter() {
                         bottomBar.isHidden = false
                     }
                 }
                 // 删除截图
-                if let snapshotView = viewController.transitioningBottomSnapshot {
-                    viewController.transitioningBottomSnapshot = nil
+                if let snapshotView = viewController.mn.transitioningBottomSnapshot {
+                    viewController.mn.transitioningBottomSnapshot = nil
                     snapshotView.removeFromSuperview()
                 }
             } else {
                 // 保存标签栏
                 guard let bottomBar = bottomBar else { return }
                 guard let first = navigationController.viewControllers.first else { return }
-                if first.transitioningBottomBar == nil {
-                    first.transitioningBottomBar = bottomBar
+                if first.mn.transitioningBottomBar == nil {
+                    first.mn.transitioningBottomBar = bottomBar
                     if first.bottomBarShouldLeave() {
                         bottomBar.isHidden = true
                     }
                 }
-                if first.transitioningBottomSnapshot == nil {
-                    let snapshotView = bottomBar.transitioningSnapshotView
-                    first.transitioningBottomSnapshot = snapshotView
+                if first.mn.transitioningBottomSnapshot == nil {
+                    let snapshotView = bottomBar.mn.transitioningSnapshotView
+                    first.mn.transitioningBottomSnapshot = snapshotView
                 }
             }
         }
