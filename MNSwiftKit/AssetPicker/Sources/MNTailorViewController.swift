@@ -88,7 +88,7 @@ class MNTailorViewController: UIViewController {
         tailorView.videoPath = videoPath
         tailorView.minTailorDuration = minTailorDuration
         tailorView.maxTailorDuration = maxTailorDuration
-        tailorView.layer.mn_picker.setRadius(5.0, by: [.topRight, .bottomRight])
+        tailorView.layer.mn.setRadius(5.0, by: [.topRight, .bottomRight])
         return tailorView
     }()
     /// 加载指示图
@@ -177,12 +177,12 @@ class MNTailorViewController: UIViewController {
         playControl.mn.maxY = closeButton.frame.minY - 20.0
         playControl.isUserInteractionEnabled = false
         playControl.backgroundColor = BlackColor
-        playControl.layer.mn_picker.setRadius(5.0, by: [.topLeft, .bottomLeft])
+        playControl.layer.mn.setRadius(5.0, by: [.topLeft, .bottomLeft])
         playControl.addTarget(self, action: #selector(playControlTouchUpInside(_:)), for: .touchUpInside)
         view.addSubview(playControl)
         
         badgeView.mn.width = 25.0
-        badgeView.mn_picker.sizeFitToWidth()
+        badgeView.mn.sizeFitToWidth()
         badgeView.isUserInteractionEnabled = false
         badgeView.highlightedImage = AssetPickerResource.image(named: "player_pause")
         badgeView.center = CGPoint(x: playControl.bounds.midX, y: playControl.bounds.midY)
@@ -199,15 +199,15 @@ class MNTailorViewController: UIViewController {
         var naturalSize: CGSize = naturalSize
         if naturalSize.width >= naturalSize.height {
             // 横向视频
-            naturalSize = naturalSize.mn_picker.multiplyTo(width: width)
+            naturalSize = naturalSize.mn.multiplyTo(width: width)
             if floor(naturalSize.height) > height {
-                naturalSize = self.naturalSize.mn_picker.multiplyTo(height: height)
+                naturalSize = self.naturalSize.mn.multiplyTo(height: height)
             }
         } else {
             // 纵向视频
-            naturalSize = naturalSize.mn_picker.multiplyTo(height: height)
+            naturalSize = naturalSize.mn.multiplyTo(height: height)
             if floor(naturalSize.width) > width {
-                naturalSize = self.naturalSize.mn_picker.multiplyTo(width: width)
+                naturalSize = self.naturalSize.mn.multiplyTo(width: width)
             }
         }
         naturalSize.width = ceil(naturalSize.width)
@@ -231,7 +231,7 @@ class MNTailorViewController: UIViewController {
         
         if duration > 0.0, let thumbnail = thumbnail {
             playView.coverView.image = thumbnail
-            timeLabel.text = "00:00/\(Date(timeIntervalSince1970: ceil(duration)).mn_picker.timeString)"
+            timeLabel.text = "00:00/\(Date(timeIntervalSince1970: ceil(duration)).mn.playTime)"
             tailorView.reloadData()
         } else {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
@@ -251,7 +251,7 @@ class MNTailorViewController: UIViewController {
         let alert = UIAlertController(title: nil, message: msg, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "确定", style: .default, handler: { [weak self] _ in
             guard let self = self else { return }
-            self.mn_picker.pop()
+            self.mn.pop()
         }))
     }
 }
@@ -265,7 +265,7 @@ extension MNTailorViewController {
         if let delegate = delegate, delegate.responds(to: #selector(delegate.tailorControllerDidCancel)) {
             delegate.tailorControllerDidCancel?(self)
         } else {
-            self.mn_picker.pop()
+            self.mn.pop()
         }
     }
     
@@ -317,7 +317,7 @@ extension MNTailorViewController {
             // 原视频 拷贝视频即可
             view.showActivityToast("视频导出中")
             DispatchQueue.global().async { [weak self] in
-                let url: URL = URL(picker_fileAtPath: exportingPath)
+                let url: URL = URL(fileAtPath: exportingPath)
                 do {
                     try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
                 } catch {
@@ -522,7 +522,7 @@ extension MNTailorViewController: MNPlayerDelegate {
         guard player.isPlaying else { return }
         tailorView.progress = Double(player.progress)
         guard let components = timeLabel.text?.components(separatedBy: "/"), components.count == 2 else { return }
-        timeLabel.text = "\(Date(timeIntervalSince1970: ceil(player.timeInterval)).mn_picker.timeString)/\(components.last!)"
+        timeLabel.text = "\(Date(timeIntervalSince1970: ceil(player.timeInterval)).mn.playTime)/\(components.last!)"
     }
     
     func player(_ player: MNPlayer, didPlayFail msg: String) {

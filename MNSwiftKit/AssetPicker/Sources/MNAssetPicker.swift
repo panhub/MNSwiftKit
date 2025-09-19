@@ -82,10 +82,10 @@ extension MNAssetPicker {
         finish(pickingHandler).cancel(cancelHandler ?? {_ in}).present(in: viewController, animated: animated)
     }
     
-    @discardableResult
     /// 设置选择结果回调
     /// - Parameter pickingHandler: 选择结束回调代码块
     /// - Returns: 选择器
+    @discardableResult
     public func finish(_ pickingHandler: @escaping (_ picker: MNAssetPicker, _ assets: [MNAsset])->Void) -> MNAssetPicker {
         self.pickingHandler = pickingHandler
         return self
@@ -106,7 +106,7 @@ extension MNAssetPicker {
     ///   - animated: 是否动态
     ///   - completion: 弹出结束回调
     public func present(in viewController: UIViewController? = nil, animated: Bool = true, completion: (() -> Void)? = nil) {
-        let parentViewController: UIViewController? = viewController ?? .mn_picker.current
+        let parentViewController: UIViewController? = viewController ?? .mn.current
         guard let parentViewController = parentViewController else { return }
         isAnimated = animated
         options.delegate = self

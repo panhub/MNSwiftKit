@@ -5,7 +5,9 @@
 //  Created by panhub on 2022/11/11.
 //  MNSwiftKit命名空间
 
+import UIKit
 import Foundation
+import CoreGraphics
 import ObjectiveC.runtime
 
 /// 命名空间 后续扩展即可
@@ -17,19 +19,19 @@ public class NameSpaceWrapper<Base> {
 }
 
 /// 命名空间支持
-public protocol NameSpaceConvertible {
+public protocol NameSpaceSupported {
     
-    associatedtype NameSpaceBase
+    associatedtype Base
     
     /// 实例构造MNSwiftKit命名空间入口
-    var mn: NameSpaceWrapper<NameSpaceBase> { get }
+    var mn: NameSpaceWrapper<Base> { get }
     
     /// 非实例构造MNSwiftKit命名空间入口
-    static var mn: NameSpaceWrapper<NameSpaceBase>.Type { get }
+    static var mn: NameSpaceWrapper<Base>.Type { get }
 }
 
 /// 为命名空间添加属性
-extension NameSpaceConvertible {
+extension NameSpaceSupported {
     
     /// 实例的MNSwiftKit命名空间
     public var mn: NameSpaceWrapper<Self> { NameSpaceWrapper<Self>(base: self) }
@@ -38,32 +40,53 @@ extension NameSpaceConvertible {
     public static var mn: NameSpaceWrapper<Self>.Type { NameSpaceWrapper<Self>.self }
 }
 
+/// 为Int添加`MNSwiftKit`命名空间
+extension Int: NameSpaceSupported {}
+
+/// 为UInt添加`MNSwiftKit`命名空间
+extension UInt: NameSpaceSupported {}
+
+/// 为Int64添加`MNSwiftKit`命名空间
+extension Int64: NameSpaceSupported {}
+
+/// 为UInt64添加`MNSwiftKit`命名空间
+extension UInt64: NameSpaceSupported {}
+
+/// 为Int64添加`MNSwiftKit`命名空间
+extension Int32: NameSpaceSupported {}
+
+/// 为UInt64添加`MNSwiftKit`命名空间
+extension UInt32: NameSpaceSupported {}
+
 /// 为URL添加`MNSwiftKit`命名空间
-extension URL: NameSpaceConvertible {}
+extension URL: NameSpaceSupported {}
 
 /// 为Data添加`MNSwiftKit`命名空间
-extension Data: NameSpaceConvertible {}
+extension Data: NameSpaceSupported {}
 
 /// 为Date添加`MNSwiftKit`命名空间
-extension Date: NameSpaceConvertible {}
+extension Date: NameSpaceSupported {}
 
 /// 为Array添加`MNSwiftKit`命名空间
-extension Array: NameSpaceConvertible {}
+extension Array: NameSpaceSupported {}
 
 /// 为String添加`MNSwiftKit`命名空间
-extension String: NameSpaceConvertible {}
+extension String: NameSpaceSupported {}
+
+/// 为CGSize添加`MNSwiftKit`命名空间
+extension CGSize: NameSpaceSupported {}
 
 /// 为CGRect添加`MNSwiftKit`命名空间
-extension CGRect: NameSpaceConvertible {}
+extension CGRect: NameSpaceSupported {}
 
 /// 为Calendar添加`MNSwiftKit`命名空间
-extension Calendar: NameSpaceConvertible {}
-
-/// 为UIView.ContentMode添加`MNSwiftKit`命名空间
-extension UIView.ContentMode: NameSpaceConvertible {}
-
-/// 为CALayerContentsGravity添加`MNSwiftKit`命名空间
-extension CALayerContentsGravity: NameSpaceConvertible {}
+extension Calendar: NameSpaceSupported {}
 
 /// 为Objective-C对象添加`MNSwiftKit`命名空间
-extension NSObject: NameSpaceConvertible {}
+extension NSObject: NameSpaceSupported {}
+
+/// 为UIView.ContentMode添加`MNSwiftKit`命名空间
+extension UIView.ContentMode: NameSpaceSupported {}
+
+/// 为CALayerContentsGravity添加`MNSwiftKit`命名空间
+extension CALayerContentsGravity: NameSpaceSupported {}

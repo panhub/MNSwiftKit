@@ -7,16 +7,8 @@
 
 import Foundation
 
-extension DateFormatter {
-    
-    /// 播放时间格式化
-    fileprivate static let mn_playTimeFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
-        formatter.dateFormat = "mm:ss"
-        return formatter
-    }()
-}
+/// 内部保留播放时间格式化起
+fileprivate var MNPlayTimeFormatter: DateFormatter?
 
 extension NameSpaceWrapper where Base == Date {
     
@@ -31,13 +23,20 @@ extension NameSpaceWrapper where Base == Date {
     
     /// 播放时间格式化
     public var playTime: String {
-        let formatter = DateFormatter.mn_playTimeFormatter
-        if base.timeIntervalSince1970 >= 3600.0 {
-            formatter.dateFormat = "H:mm:ss"
+        var dateFormatter: DateFormatter!
+        if let formatter = MNPlayTimeFormatter {
+            dateFormatter = formatter
         } else {
-            formatter.dateFormat = "mm:ss"
+            let formatter = DateFormatter()
+            dateFormatter = formatter
+            MNPlayTimeFormatter = formatter
         }
-        return formatter.string(from: base)
+        if base.timeIntervalSince1970 >= 3600.0 {
+            dateFormatter.dateFormat = "H:mm:ss"
+        } else {
+            dateFormatter.dateFormat = "mm:ss"
+        }
+        return dateFormatter.string(from: base)
     }
     
     /// 日期格式化

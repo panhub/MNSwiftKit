@@ -1,42 +1,44 @@
 PODS:
   - MNSwiftKit/AnimatedImage (0.1.1)
-  - MNSwiftKit/Base (0.1.1):
-    - MNSwiftKit/CollectionLayout
+  - MNSwiftKit/AssetPicker (0.1.1):
+    - MNSwiftKit/AnimatedImage
     - MNSwiftKit/Definition
     - MNSwiftKit/EmptyView
+    - MNSwiftKit/Exporter
     - MNSwiftKit/Extension
     - MNSwiftKit/Layout
+    - MNSwiftKit/NameSpace
+    - MNSwiftKit/Player
     - MNSwiftKit/Refresh
-    - MNSwiftKit/Request
+    - MNSwiftKit/Slider
     - MNSwiftKit/Toast
-    - MNSwiftKit/Transitioning
-  - MNSwiftKit/CollectionLayout (0.1.1)
   - MNSwiftKit/Definition (0.1.1):
     - MNSwiftKit/NameSpace
-  - MNSwiftKit/EmptyView (0.1.1)
+  - MNSwiftKit/EmptyView (0.1.1):
+    - MNSwiftKit/NameSpace
+  - MNSwiftKit/Exporter (0.1.1)
   - MNSwiftKit/Extension (0.1.1):
     - MNSwiftKit/AnimatedImage
     - MNSwiftKit/NameSpace
   - MNSwiftKit/Layout (0.1.1):
     - MNSwiftKit/NameSpace
   - MNSwiftKit/NameSpace (0.1.1)
-  - MNSwiftKit/Networking (0.1.1)
-  - MNSwiftKit/Refresh (0.1.1)
-  - MNSwiftKit/Request (0.1.1):
-    - MNSwiftKit/Networking
+  - MNSwiftKit/Player (0.1.1)
+  - MNSwiftKit/Refresh (0.1.1):
+    - MNSwiftKit/NameSpace
+  - MNSwiftKit/Slider (0.1.1)
   - MNSwiftKit/Toast (0.1.1)
-  - MNSwiftKit/Transitioning (0.1.1)
 
 DEPENDENCIES:
-  - MNSwiftKit/Base (from `../`)
+  - MNSwiftKit/AssetPicker (from `../`)
 
 EXTERNAL SOURCES:
   MNSwiftKit:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: 8d0d470912aab043f6cf5ed1fd8c54f71640918b
+  MNSwiftKit: 87a1aae0cd565e80e2d986fe6a00f250d85745a9
 
-PODFILE CHECKSUM: cbd7b0f258cacf1623447740d11a1766a1de55c5
+PODFILE CHECKSUM: 25ec812947df2185e720f4696e7c17733b03f437
 
 COCOAPODS: 1.16.2

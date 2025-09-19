@@ -30,14 +30,10 @@ class MNAssetPickerController: UIViewController {
     private var selections: [MNAsset] = [MNAsset]()
     /// 上一次交互索引
     private var lastTouchIndex: Int = .min
-    /// 状态栏修改
-    private lazy var statusBarStyle: UIStatusBarStyle = {
-        return options.mode == .dark ? .lightContent : .default
-    }()
+    /// 是否需要隐藏状态栏
     private var statusBarHidden: Bool = false
-    override var prefersStatusBarHidden: Bool { statusBarHidden }
-    override var preferredStatusBarStyle: UIStatusBarStyle { statusBarStyle }
-    override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation { .fade }
+    /// 状态栏修改
+    private lazy var statusBarStyle: UIStatusBarStyle = options.mode == .dark ? .lightContent : .default
     /// 顶部栏
     private lazy var navBar: MNAssetPickerNavBar = MNAssetPickerNavBar(options: options)
     /// 相册视图
@@ -46,6 +42,10 @@ class MNAssetPickerController: UIViewController {
     private lazy var toolBar: MNAssetPickerToolBar = MNAssetPickerToolBar(options: options)
     /// 资源展示
     private lazy var collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
+    
+    override var prefersStatusBarHidden: Bool { statusBarHidden }
+    override var preferredStatusBarStyle: UIStatusBarStyle { statusBarStyle }
+    override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation { .fade }
     
     init(options: MNAssetPickerOptions) {
         self.options = options
@@ -87,8 +87,8 @@ class MNAssetPickerController: UIViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.scrollsToTop = false
-        collectionView.mn_empty.delegate = self
-        collectionView.mn_empty.dataSource = self
+        collectionView.mn.emptySource = self
+        collectionView.mn.emptyDelegate = self
         collectionView.alwaysBounceVertical = true
         collectionView.collectionViewLayout = layout
         collectionView.showsVerticalScrollIndicator = false
@@ -145,13 +145,13 @@ class MNAssetPickerController: UIViewController {
             footer.mn.height = MN_TAB_BAR_HEIGHT
             footer.color = options.mode == .light ? .black : .gray
             footer.offset = UIOffset(horizontal: 0.0, vertical: -options.contentInset.bottom)
-            collectionView.mn_refresh.footer = footer
+            collectionView.mn.footer = footer
         } else {
             // 降序则下滑加载更多
             let header = MNRefreshStateHeader(target: self, action: #selector(loadMore))
             header.color = options.mode == .light ? .black : .gray
             header.offset = UIOffset(horizontal: 0.0, vertical: options.contentInset.top)
-            collectionView.mn_refresh.header = header
+            collectionView.mn.header = header
         }
         
         if options.maxPickingCount > 1, options.allowsSlidePicking, options.allowsMultiplePickingPhoto, options.allowsMultiplePickingGif, options.allowsMultiplePickingVideo, options.allowsMultiplePickingLivePhoto {
@@ -293,17 +293,17 @@ extension MNAssetPickerController {
         let completionHandler: ()->Void = { [weak self] in
             guard let self = self else { return }
             self.updateAlbum(album)
-            self.collectionView.mn_refresh.endRefreshing()
-            self.collectionView.mn_refresh.endLoadMore()
+            self.collectionView.mn.endRefreshing()
+            self.collectionView.mn.endLoadMore()
             let hasMore: Bool = album.offset < album.count
-            if let header = self.collectionView.mn_refresh.header {
+            if let header = self.collectionView.mn.header {
                 if hasMore {
                     header.endRefreshing()
                 } else {
                     header.endRefreshingAndNoMoreData()
                 }
             }
-            if let footer = self.collectionView.mn_refresh.footer {
+            if let footer = self.collectionView.mn.footer {
                 if hasMore {
                     footer.endRefreshing()
                 } else {
@@ -313,10 +313,10 @@ extension MNAssetPickerController {
             self.navBar.badge.isUserInteractionEnabled = true
             self.collectionView.closeToast()
         }
-        if (album.assets.count > 0 || album.page > 1) && collectionView.mn_refresh.isLoading == false {
+        if (album.assets.count > 0 || album.page > 1) && collectionView.mn.isLoading == false {
             completionHandler()
         } else {
-            if collectionView.mn_refresh.isLoading == false {
+            if collectionView.mn.isLoading == false {
                 collectionView.showActivityToast("请稍后")
             }
             navBar.badge.isUserInteractionEnabled = false
@@ -331,8 +331,8 @@ extension MNAssetPickerController {
     /// 加载更多
     @objc private func loadMore() {
         guard let album = albumView.albums.first(where: { $0.isSelected }) else {
-            collectionView.mn_refresh.endRefreshing()
-            collectionView.mn_refresh.endLoadMore()
+            collectionView.mn.endRefreshing()
+            collectionView.mn.endLoadMore()
             return
         }
         fetchAssets(in: album)

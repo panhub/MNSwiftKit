@@ -148,6 +148,61 @@ extension NameSpaceWrapper where Base: UIImage {
         return image
     }
     
+    /// 近似微信朋友圈图片压缩 (以1280为界以 0.6为压缩系数)
+    /// - Parameters:
+    ///   - dimension: 像素阀值
+    ///   - quality: 压缩系数
+    ///   - pointer: 图片大小
+    /// - Returns: (压缩后图片, 图片质量)
+    public func resizing(to dimension: CGFloat = 1280.0, quality: CGFloat, fileSize pointer: UnsafeMutablePointer<Int64>? = nil) -> UIImage? {
+        guard dimension > 0.0, quality > 0.01 else { return nil }
+        // 调整尺寸
+        var width: CGFloat = base.size.width*base.scale
+        var height: CGFloat = base.size.height*base.scale
+        guard width > 0.0, height > 0.0 else { return nil }
+        let isSquare: Bool = width == height
+        if width > dimension || height > dimension {
+            if Swift.max(width, height)/Swift.min(width, height) <= 2.0 {
+                let ratio: CGFloat = dimension/Swift.max(width, height)
+                if width >= height {
+                    width = dimension
+                    height = height*ratio
+                } else {
+                    height = dimension
+                    width = width*ratio
+                }
+            } else if Swift.min(width, height) > dimension {
+                let ratio: CGFloat = dimension/Swift.min(width, height)
+                if width <= height {
+                    width = dimension
+                    height = height*ratio
+                } else {
+                    height = dimension
+                    width = width*ratio
+                }
+            }
+            width = ceil(width)
+            height = ceil(height)
+            if isSquare {
+                width = Swift.min(width, height)
+                height = width
+            }
+        }
+        // 缩图片
+        UIGraphicsBeginImageContext(CGSize(width: width, height: height))
+        base.draw(in: CGRect(x: 0.0, y: 0.0, width: width, height: height))
+        let result = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        // 压图片
+        if let result = result, let imageData = result.jpegData(compressionQuality: quality), let image = UIImage(data: imageData) {
+            if let pointer = pointer {
+                pointer.pointee = Int64(imageData.count)
+            }
+            return image
+        }
+        return nil
+    }
+    
     /// 调整图片至大约内存大小
     /// - Parameter:
     ///   - bytes: 字节数

@@ -171,7 +171,9 @@ Pod::Spec.new do |s|
     p.dependency 'MNSwiftKit/Refresh'
     p.dependency 'MNSwiftKit/Exporter'
     p.dependency 'MNSwiftKit/Definition'
+    p.dependency 'MNSwiftKit/Extension'
     p.dependency 'MNSwiftKit/EmptyView'
+    p.dependency 'MNSwiftKit/NameSpace'
     p.dependency 'MNSwiftKit/AnimatedImage'
   end
   

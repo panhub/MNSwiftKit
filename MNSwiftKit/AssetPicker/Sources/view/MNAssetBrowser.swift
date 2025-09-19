@@ -334,7 +334,7 @@ extension MNAssetBrowser {
     ///   - handler: 状态更新回调
     public func present(in superview: UIView? = nil, from index: Int = 0, animated: Bool = true, states handler: ((_ state: MNAssetBrowser.DisplayState)->Void)? = nil) {
         
-        guard let superview = superview ?? UIWindow.mn_picker.current else {
+        guard let superview = superview ?? UIWindow.mn.current else {
 #if DEBUG
             print("browser superview is null.")
 #endif
@@ -388,7 +388,7 @@ extension MNAssetBrowser {
         self.stateHandler = handler
         
         fromView.isHidden = true
-        backgroundView.image = superview.layer.mn_picker.snapshot
+        backgroundView.image = superview.layer.mn.snapshotImage
         fromView.isHidden = false
         
         buildView()
@@ -403,7 +403,7 @@ extension MNAssetBrowser {
         animationView.alpha = 0.0
         animationView.backgroundColor = backgroundColor ?? .black
         
-        let targetSize = animatedImage.size.mn_picker.scaleFit(toSize: CGSize(width: frame.width, height: frame.height - 1.0))
+        let targetSize = animatedImage.size.mn.scaleFit(in: CGSize(width: frame.width, height: frame.height - 1.0))
         let toRect = CGRect(x: (self.bounds.width - targetSize.width)/2.0, y: (bounds.height - targetSize.height)/2.0, width: targetSize.width, height: targetSize.height)
         
         interactiveView.image = animatedImage
@@ -498,7 +498,7 @@ extension MNAssetBrowser {
             // 重新截屏
             isHidden = true
             toView!.isHidden = true
-            backgroundView.image = superview.layer.mn_picker.snapshot
+            backgroundView.image = superview.layer.mn.snapshotImage
             isHidden = false
             toView!.isHidden = false
         }
@@ -720,7 +720,7 @@ extension MNAssetBrowser: UIGestureRecognizerDelegate {
                 interactiveToView!.isHidden = true
                 lastBackgroundImage = backgroundView.image
                 if let superview = superview {
-                    backgroundView.image = superview.layer.mn_picker.snapshot
+                    backgroundView.image = superview.layer.mn.snapshotImage
                 }
                 isHidden = false
                 interactiveToView!.isHidden = false
@@ -734,7 +734,7 @@ extension MNAssetBrowser: UIGestureRecognizerDelegate {
             interactiveFrame = interactiveView.frame
             
             var toSize = interactiveToView!.bounds.size
-            if toSize.width > bounds.size.width || toSize.height > bounds.size.height { toSize = toSize.mn_picker.scaleFit(toSize: CGSize(width: bounds.width, height: bounds.height - 1.0)) }
+            if toSize.width > bounds.size.width || toSize.height > bounds.size.height { toSize = toSize.mn.scaleFit(in: CGSize(width: bounds.width, height: bounds.height - 1.0)) }
             interactiveDelay = (bounds.height - toSize.height)/2.0
             interactiveRatio = CGPoint(x: toSize.width/interactiveFrame.width, y: toSize.height/interactiveFrame.height)
             isAllowsZoomInteractive = max(bounds.width, bounds.height) - max(interactiveView.bounds.width, interactiveView.bounds.height) >= 50.0

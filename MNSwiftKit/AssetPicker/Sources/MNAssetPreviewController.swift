@@ -101,7 +101,7 @@ class MNAssetPreviewController: UIViewController {
             select.layer.cornerRadius = min(select.frame.width, select.frame.height)/2.0
             select.addTarget(self, action: #selector(selectButtonTouchUpInside(_:)), for: .touchUpInside)
             let normalImage = AssetPickerResource.image(named: "selectbox")
-            let selectedImage = AssetPickerResource.image(named: "checkbox_fill")?.mn_picker.renderBy(color: options.themeColor)
+            let selectedImage = AssetPickerResource.image(named: "checkbox_fill")?.mn.rendering(to: options.themeColor)
             if #available(iOS 15.0, *) {
                 var configuration = UIButton.Configuration.plain()
                 configuration.background.backgroundColor = .clear

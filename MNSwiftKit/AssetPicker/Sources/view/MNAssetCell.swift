@@ -99,7 +99,7 @@ class MNAssetCell: UICollectionViewCell {
         
         // 云端标记
         cloudView.isUserInteractionEnabled = false
-        cloudView.image = AssetPickerResource.image(named: "cloud")?.mn_picker.renderBy(color: .white.withAlphaComponent(0.85))
+        cloudView.image = AssetPickerResource.image(named: "cloud")?.mn.rendering(to: .white.withAlphaComponent(0.85))
         cloudView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(cloudView)
         cloudView.addConstraints([
@@ -124,7 +124,7 @@ class MNAssetCell: UICollectionViewCell {
             NSLayoutConstraint(item: previewButton, attribute: .right, relatedBy: .equal, toItem: contentView, attribute: .right, multiplier: 1.0, constant: 0.0)
         ])
         
-        let previewBadge = UIImageView(image: AssetPickerResource.image(named: "preview")?.mn_picker.renderBy(color: .white.withAlphaComponent(0.85)))
+        let previewBadge = UIImageView(image: AssetPickerResource.image(named: "preview")?.mn.rendering(to: .white.withAlphaComponent(0.85)))
         previewBadge.translatesAutoresizingMaskIntoConstraints = false
         previewButton.addSubview(previewBadge)
         previewBadge.addConstraints([
@@ -135,9 +135,9 @@ class MNAssetCell: UICollectionViewCell {
         contentView.addConstraint(NSLayoutConstraint(item: previewBadge, attribute: .centerY, relatedBy: .equal, toItem: cloudView, attribute: .centerY, multiplier: 1.0, constant: 0.0))
         
         // 资源类型
-        badgeView.setImage(AssetPickerResource.image(named: "video")?.mn_picker.renderBy(color: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .normal)
-        badgeView.setImage(AssetPickerResource.image(named: "livephoto")?.mn_picker.renderBy(color: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .highlighted)
-        badgeView.setImage(AssetPickerResource.image(named: "gif")?.mn_picker.renderBy(color: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .selected)
+        badgeView.setImage(AssetPickerResource.image(named: "video")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .normal)
+        badgeView.setImage(AssetPickerResource.image(named: "livephoto")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .highlighted)
+        badgeView.setImage(AssetPickerResource.image(named: "gif")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .selected)
         badgeView.contentMode = .scaleAspectFit
         badgeView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(badgeView)
@@ -294,7 +294,7 @@ class MNAssetCell: UICollectionViewCell {
     
     /// 更新文件大小
     func updateFileSize() {
-        fileSizeLabel.text = asset.fileSizeValue
+        fileSizeLabel.text = asset.fileSizeString
         fileSizeLabel.isHidden = false
         durationLabel.isHidden = true
     }

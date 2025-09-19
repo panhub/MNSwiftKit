@@ -6,7 +6,7 @@ platform :ios, '9.0'
 target 'MNSwiftKit_Example' do
 
   #pod 'MNSwiftKit', :path => '../'
-  pod 'MNSwiftKit/Base', :path => '../'
+  #pod 'MNSwiftKit/Base', :path => '../'
   #pod 'MNSwiftKit/Toast', :path => '../'
   #pod 'MNSwiftKit/Slider', :path => '../'
   #pod 'MNSwiftKit/Utility', :path => '../'
@@ -22,7 +22,7 @@ target 'MNSwiftKit_Example' do
   #pod 'MNSwiftKit/Extension', :path => '../'
   #pod 'MNSwiftKit/EmptyView', :path => '../'
   #pod 'MNSwiftKit/Networking', :path => '../'
-  #pod 'MNSwiftKit/AssetPicker', :path => '../'
+  pod 'MNSwiftKit/AssetPicker', :path => '../'
   #pod 'MNSwiftKit/NameSpace', :path => '../'
   #pod 'MNSwiftKit/PageControl', :path => '../'
   #pod 'MNSwiftKit/Components', :path => '../'

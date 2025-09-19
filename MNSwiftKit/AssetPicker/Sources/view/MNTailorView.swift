@@ -208,7 +208,7 @@ class MNTailorView: UIView {
         let widthByDuration: CGFloat = contentSize.width/duration
         let durationByWidth: TimeInterval = duration/contentSize.width
         tailorHandler.spacing = max(pointer.frame.width, ceil(minTailorDuration*widthByDuration))
-        naturalSize = naturalSize.mn_picker.multiplyTo(height: contentSize.height)
+        naturalSize = naturalSize.mn.multiplyTo(height: contentSize.height)
         let thumbnailCount: Int = Int(ceil(duration/(durationByWidth*naturalSize.width)))
         naturalSize.width *= UIScreen.main.scale
         naturalSize.height *= UIScreen.main.scale
@@ -249,7 +249,7 @@ class MNTailorView: UIView {
                 UIGraphicsEndImageContext()
                 if let image = thumbnail {
                     // 裁剪图片
-                    var thumbnailSize: CGSize = contentSize.mn_picker.multiplyTo(height: image.size.height)
+                    var thumbnailSize: CGSize = contentSize.mn.multiplyTo(height: image.size.height)
                     thumbnailSize.width = min(ceil(thumbnailSize.width), image.size.width)
                     UIGraphicsBeginImageContext(thumbnailSize)
                     image.draw(in: CGRect(x: 0.0, y: 0.0, width: thumbnailSize.width, height: thumbnailSize.height))
@@ -257,7 +257,7 @@ class MNTailorView: UIView {
                     UIGraphicsEndImageContext()
                 }
                 if let thumbnail = thumbnail {
-                    grayImage = thumbnail.mn_picker.grayed
+                    grayImage = thumbnail.mn.grayed
                 }
                 if grayImage == nil { thumbnail = nil }
             }

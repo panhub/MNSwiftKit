@@ -64,6 +64,6 @@ class MNTailorTimeView: UIView {
     
     func update(duration: TimeInterval) {
         
-        timeLabel.text = Date(timeIntervalSince1970: duration).mn_picker.timeString
+        timeLabel.text = Date(timeIntervalSince1970: duration).mn.playTime
     }
 }

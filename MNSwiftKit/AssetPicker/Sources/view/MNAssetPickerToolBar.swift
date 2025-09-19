@@ -107,8 +107,8 @@ class MNAssetPickerToolBar: UIView {
         doneButton.titleLabel?.font = .systemFont(ofSize: 15.0, weight: .medium)
         doneButton.setTitleColor(UIColor(red:251.0/255.0, green:251.0/255.0, blue:251.0/255.0, alpha:1.0), for: .normal)
         doneButton.setTitleColor(options.mode == .light ? UIColor(red:251.0/255.0, green:251.0/255.0, blue:251.0/255.0, alpha:1.0) : .white.withAlphaComponent(0.5), for: .disabled)
-        doneButton.setBackgroundImage(UIImage(picker_color: options.themeColor), for: .normal)
-        doneButton.setBackgroundImage(UIImage(picker_color: disabledColor), for: .disabled)
+        doneButton.setBackgroundImage(UIImage(color: options.themeColor), for: .normal)
+        doneButton.setBackgroundImage(UIImage(color: disabledColor), for: .disabled)
         doneButton.contentVerticalAlignment = .center
         doneButton.contentHorizontalAlignment = .center
         doneButton.translatesAutoresizingMaskIntoConstraints = false
@@ -158,7 +158,7 @@ extension MNAssetPickerToolBar {
         var suffix: String
         if options.showFileSize {
             let fileSize: Int64 = assets.reduce(0) { $0 + max($1.fileSize, 0) }
-            suffix = fileSize > 0 ? fileSize.mn_picker.fileSizeString : ""
+            suffix = fileSize > 0 ? fileSize.mn.fileSizeString : ""
         } else {
             suffix = assets.count > 0 ? "\(assets.count)" : ""
         }

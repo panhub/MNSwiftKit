@@ -63,16 +63,16 @@ public class MNAsset: NSObject {
     
     /// 时长(duration的字符串表现形式)
     @objc public lazy var durationValue: String = {
-        Date(timeIntervalSince1970: duration).mn_picker.timeString
+        Date(timeIntervalSince1970: duration).mn.playTime
     }()
     
     /// 文件大小
     @objc public var fileSize: Int64 = 0
     
     /// 文件大小字符串
-    @objc internal lazy var fileSizeValue: String = {
+    @objc internal lazy var fileSizeString: String = {
         guard fileSize > 0 else { return "" }
-        return fileSize.mn_picker.fileSizeString
+        return fileSize.mn.fileSizeString
     }()
     
     /// 缩略图
@@ -162,7 +162,7 @@ public class MNAsset: NSObject {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.fileSize = fileSize
-            self.fileSizeValue = fileSize.mn_picker.fileSizeString
+            self.fileSizeString = fileSize.mn.fileSizeString
             self.fileSizeUpdateHandler?(self)
         }
     }
@@ -191,10 +191,10 @@ public class MNAsset: NSObject {
             let image = content as! UIImage
             if let images = image.images, images.count > 1 {
                 type = .gif
-                cover = images.first!.mn_picker.resizing(toMax: max(renderSize.width, renderSize.height))
+                cover = images.first!.mn.resizing(to: max(renderSize.width, renderSize.height))
             } else {
                 type = .photo
-                cover = image.mn_picker.resizing(toMax: max(renderSize.width, renderSize.height))
+                cover = image.mn.resizing(to: max(renderSize.width, renderSize.height))
             }
             self.content = image
         } else if content is String {
@@ -213,10 +213,10 @@ public class MNAsset: NSObject {
         } else if #available(iOS 9.1, *) {
             if content is PHLivePhoto, let livePhoto = content as? PHLivePhoto, let videoURL = livePhoto.videoFileURL, let imageURL = livePhoto.imageFileURL {
                 type = .livePhoto
-                cover = UIImage(contentsOfFile: imageURL.mn_picker.path)?.mn_picker.resizing(toMax: max(renderSize.width, renderSize.height))
+                cover = UIImage(contentsOfFile: imageURL.mn.path)?.mn.resizing(to: max(renderSize.width, renderSize.height))
                 if let options = options, options.showFileSize {
                     var fileSize: Int64 = 0
-                    if let attributes = try? FileManager.default.attributesOfItem(atPath: imageURL.mn_picker.path), let imageFileSize = attributes[FileAttributeKey.size] as? Int64 {
+                    if let attributes = try? FileManager.default.attributesOfItem(atPath: imageURL.mn.path), let imageFileSize = attributes[FileAttributeKey.size] as? Int64 {
                         fileSize += imageFileSize
                     }
                     if let attributes = try? FileManager.default.attributesOfItem(atPath: videoURL.path), let videoFileSize = attributes[FileAttributeKey.size] as? Int64 {

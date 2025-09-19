@@ -76,7 +76,7 @@ class MNAssetAlbumCell: UITableViewCell {
         selectedView.isHidden = true
         selectedView.isUserInteractionEnabled = false
         selectedView.translatesAutoresizingMaskIntoConstraints = false
-        selectedView.image = AssetPickerResource.image(named: "checkmark")?.mn_picker.renderBy(color: options.themeColor)
+        selectedView.image = AssetPickerResource.image(named: "checkmark")?.mn.rendering(to: options.themeColor)
         contentView.addSubview(selectedView)
         selectedView.addConstraints([
             NSLayoutConstraint(item: selectedView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 23.0),

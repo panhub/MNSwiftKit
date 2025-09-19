@@ -162,7 +162,7 @@ extension MNAssetHelper {
                 let isCancelled: Bool = (info?[PHImageCancelledKey] as? NSNumber)?.boolValue ?? false
                 guard isCancelled == false else { return }
                 guard let result = result else { return }
-                let image = result.mn_picker.resized
+                let image = result.mn.resized
                 let isDegraded: Bool = (info?[PHImageResultIsDegradedKey] as? NSNumber)?.boolValue ?? false
                 asset.update(cover: image)
                 if isDegraded == false {
@@ -216,7 +216,7 @@ extension MNAssetHelper {
             guard isCancelled == false else { return }
             asset.requestId = PHInvalidImageRequestID
             guard let result = result else { return }
-            let image = result.mn_picker.resized
+            let image = result.mn.resized
             DispatchQueue.main.async {
                 completionHandler?(asset, image)
             }
@@ -307,12 +307,12 @@ extension MNAssetHelper {
                 asset.downloadId = PHInvalidImageRequestID
                 let isCancelled: Bool = (info?[PHImageCancelledKey] as? NSNumber)?.boolValue ?? false
                 guard isCancelled == false else { return }
-                let result: UIImage? = asset.type == .gif ? UIImage.image(contentsOfData: imageData) : (imageData == nil ? nil : UIImage(data: imageData!))
+                let result: UIImage? = asset.type == .gif ? UIImage.mn.image(contentsOfData: imageData) : (imageData == nil ? nil : UIImage(data: imageData!))
                 if let image = result {
-                    if image.isAnimatedImage {
+                    if image.mn.isAnimatedImage {
                         asset.content = image
                     } else {
-                        asset.content = image.mn_picker.resized
+                        asset.content = image.mn.resized
                     }
                 }
                 DispatchQueue.main.async {
@@ -486,25 +486,25 @@ extension MNAssetHelper {
                 var image: UIImage?
                 var fileSize: Int64 = 0
                 var isAllowCompress: Bool = false
-                if let result = asset.type == .gif ? UIImage.image(contentsOfData: imageData) : (imageData == nil ? nil : UIImage(data: imageData!)) {
-                    if result.isAnimatedImage {
+                if let result = asset.type == .gif ? UIImage.mn.image(contentsOfData: imageData) : (imageData == nil ? nil : UIImage(data: imageData!)) {
+                    if result.mn.isAnimatedImage {
                         image = result
                         fileSize = Int64(imageData!.count)
                     } else if #available(iOS 10.0, *), options.allowsExportHeifc == false, phAsset.isHeifc {
                         // 判断是否需要转化heif/heic格式图片
                         if let ciImage = CIImage(data: imageData!), let colorSpace = ciImage.colorSpace, let jpgData = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace, options: [CIImageRepresentationOption(rawValue: kCGImageDestinationLossyCompressionQuality as String):max(min(options.compressionQuality, 1.0), 0.1)]) {
-                            image = UIImage(data: jpgData)?.mn_picker.resized
+                            image = UIImage(data: jpgData)?.mn.resized
                             if let _ = image {
                                 fileSize = Int64(jpgData.count)
                             }
                         }
                     } else {
                         isAllowCompress = true
-                        image = result.mn_picker.resized
+                        image = result.mn.resized
                         fileSize = Int64(imageData!.count)
                     }
                     if isAllowCompress, options.compressionQuality < 1.0 {
-                        image = image?.mn_picker.compress(pixel: 1280.0, quality: max(options.compressionQuality, 0.5), fileSize: &fileSize)
+                        image = image?.mn.resizing(to: 1280.0, quality: max(options.compressionQuality, 0.5), fileSize: &fileSize)
                         if image == nil { fileSize = 0 }
                     }
                 }

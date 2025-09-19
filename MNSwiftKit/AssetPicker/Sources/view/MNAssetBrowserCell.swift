@@ -378,7 +378,7 @@ extension MNAssetBrowserCell {
     private func updateImage(_ image: UIImage) {
         scrollView.zoomScale = 1.0
         scrollView.contentOffset = .zero
-        scrollView.contentView.mn.size = image.size.mn_picker.scaleFit(toSize: CGSize(width: scrollView.frame.width, height: scrollView.frame.height - 1.0))
+        scrollView.contentView.mn.size = image.size.mn.scaleFit(in: CGSize(width: scrollView.frame.width, height: scrollView.frame.height - 1.0))
         scrollView.contentSize = CGSize(width: scrollView.bounds.width, height: max(scrollView.contentView.bounds.height, scrollView.bounds.height))
         scrollView.contentView.center = CGPoint(x: scrollView.bounds.maxX/2.0, y: scrollView.bounds.maxY/2.0)
         if (scrollView.contentView.bounds.height > scrollView.bounds.height) {
@@ -443,7 +443,7 @@ extension MNAssetBrowserCell {
 extension MNAssetBrowserCell: MNPlayerDelegate {
     
     func playerDidEndDecode(_ player: MNPlayer) {
-        durationLabel.text = Date(timeIntervalSince1970: TimeInterval(player.duration)).mn_picker.timeString
+        durationLabel.text = Date(timeIntervalSince1970: TimeInterval(player.duration)).mn.playTime
     }
     
     func playerDidChangeStatus(_ player: MNPlayer) {
@@ -461,7 +461,7 @@ extension MNAssetBrowserCell: MNPlayerDelegate {
     
     func playerDidPlayTimeInterval(_ player: MNPlayer) {
         slider.setValue(player.progress, animated: false)
-        timeLabel.text = Date(timeIntervalSince1970: player.timeInterval).mn_picker.timeString
+        timeLabel.text = Date(timeIntervalSince1970: player.timeInterval).mn.playTime
     }
     
     func player(_ player: MNPlayer, didPlayFail msg: String) {

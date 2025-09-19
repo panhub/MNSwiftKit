@@ -128,7 +128,10 @@
         "Foundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/Refresh/Sources/**/*.swift"
+      "source_files": "MNSwiftKit/Refresh/Sources/**/*.swift",
+      "dependencies": {
+        "MNSwiftKit/NameSpace": []
+      }
     },
     {
       "name": "Request",
@@ -202,7 +205,10 @@
         "Foundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/EmptyView/Sources/**/*.swift"
+      "source_files": "MNSwiftKit/EmptyView/Sources/**/*.swift",
+      "dependencies": {
+        "MNSwiftKit/NameSpace": []
+      }
     },
     {
       "name": "Networking",
@@ -246,7 +252,9 @@
         "MNSwiftKit/Refresh": [],
         "MNSwiftKit/Exporter": [],
         "MNSwiftKit/Definition": [],
+        "MNSwiftKit/Extension": [],
         "MNSwiftKit/EmptyView": [],
+        "MNSwiftKit/NameSpace": [],
         "MNSwiftKit/AnimatedImage": []
       }
     },
@@ -294,7 +302,10 @@
         "Foundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/Transitioning/Sources/**/*.swift"
+      "source_files": "MNSwiftKit/Transitioning/Sources/**/*.swift",
+      "dependencies": {
+        "MNSwiftKit/NameSpace": []
+      }
     },
     {
       "name": "EmoticonKeyboard",
