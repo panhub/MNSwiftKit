@@ -160,9 +160,9 @@ Pod::Spec.new do |s|
   # AssetPicker <资源选择器>
   s.subspec 'AssetPicker' do |p|
     p.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'Photos', 'CoreFoundation', 'CoreGraphics'
-    p.source_files = 'MNSwiftKit/AssetPicker/Sources/**/*.swift'
+    p.source_files = 'MNSwiftKit/AssetPicker/Sources/*'
     p.resource_bundles = {
-        'MNSwiftKit_AssetPicker' => ['MNSwiftKit/AssetPicker/Resources/**/*.{png,jpg,jpeg}']
+        'MNSwiftKit_AssetPicker' => ['MNSwiftKit/AssetPicker/Resources/*']
     }
     p.dependency 'MNSwiftKit/Toast'
     p.dependency 'MNSwiftKit/Slider'
@@ -174,7 +174,23 @@ Pod::Spec.new do |s|
     p.dependency 'MNSwiftKit/Extension'
     p.dependency 'MNSwiftKit/EmptyView'
     p.dependency 'MNSwiftKit/NameSpace'
+    p.dependency 'MNSwiftKit/AssetBrowser'
     p.dependency 'MNSwiftKit/AnimatedImage'
+  end
+  
+  # AssetBrowser <资源浏览器>
+  s.subspec 'AssetBrowser' do |a|
+    a.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'Photos', 'CoreFoundation', 'CoreGraphics'
+    a.source_files = 'MNSwiftKit/AssetBrowser/Sources/*'
+    a.resource_bundles = {
+        'MNSwiftKit_AssetBrowser' => ['MNSwiftKit/AssetBrowser/Resources/*']
+    }
+    a.dependency 'MNSwiftKit/Slider'
+    a.dependency 'MNSwiftKit/Player'
+    a.dependency 'MNSwiftKit/Layout'
+    a.dependency 'MNSwiftKit/Definition'
+    a.dependency 'MNSwiftKit/Extension'
+    a.dependency 'MNSwiftKit/AnimatedImage'
   end
   
   # NameSpace <命名空间>
@@ -258,6 +274,7 @@ Pod::Spec.new do |s|
     full.dependency 'MNSwiftKit/PageControl'
     full.dependency 'MNSwiftKit/Components'
     full.dependency 'MNSwiftKit/Transitioning'
+    full.dependency 'MNSwiftKit/AssetBrowser'
     full.dependency 'MNSwiftKit/AnimatedImage'
     full.dependency 'MNSwiftKit/CollectionLayout'
     full.dependency 'MNSwiftKit/EmoticonKeyboard'

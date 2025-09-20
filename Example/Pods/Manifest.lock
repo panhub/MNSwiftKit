@@ -1,7 +1,15 @@
 PODS:
   - MNSwiftKit/AnimatedImage (0.1.1)
+  - MNSwiftKit/AssetBrowser (0.1.1):
+    - MNSwiftKit/AnimatedImage
+    - MNSwiftKit/Definition
+    - MNSwiftKit/Extension
+    - MNSwiftKit/Layout
+    - MNSwiftKit/Player
+    - MNSwiftKit/Slider
   - MNSwiftKit/AssetPicker (0.1.1):
     - MNSwiftKit/AnimatedImage
+    - MNSwiftKit/AssetBrowser
     - MNSwiftKit/Definition
     - MNSwiftKit/EmptyView
     - MNSwiftKit/Exporter
@@ -37,8 +45,8 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: 87a1aae0cd565e80e2d986fe6a00f250d85745a9
+  MNSwiftKit: a75852e0939819283633db2a0d06ac66008b9462
 
-PODFILE CHECKSUM: 25ec812947df2185e720f4696e7c17733b03f437
+PODFILE CHECKSUM: 9eee9c28edf005a86416cdaa90d81919fcb95cf0
 
 COCOAPODS: 1.16.2

@@ -238,10 +238,10 @@
         "CoreFoundation",
         "CoreGraphics"
       ],
-      "source_files": "MNSwiftKit/AssetPicker/Sources/**/*.swift",
+      "source_files": "MNSwiftKit/AssetPicker/Sources/*",
       "resource_bundles": {
         "MNSwiftKit_AssetPicker": [
-          "MNSwiftKit/AssetPicker/Resources/**/*.{png,jpg,jpeg}"
+          "MNSwiftKit/AssetPicker/Resources/*"
         ]
       },
       "dependencies": {
@@ -255,6 +255,32 @@
         "MNSwiftKit/Extension": [],
         "MNSwiftKit/EmptyView": [],
         "MNSwiftKit/NameSpace": [],
+        "MNSwiftKit/AssetBrowser": [],
+        "MNSwiftKit/AnimatedImage": []
+      }
+    },
+    {
+      "name": "AssetBrowser",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "AVFoundation",
+        "Photos",
+        "CoreFoundation",
+        "CoreGraphics"
+      ],
+      "source_files": "MNSwiftKit/AssetBrowser/Sources/*",
+      "resource_bundles": {
+        "MNSwiftKit_AssetBrowser": [
+          "MNSwiftKit/AssetBrowser/Resources/*"
+        ]
+      },
+      "dependencies": {
+        "MNSwiftKit/Slider": [],
+        "MNSwiftKit/Player": [],
+        "MNSwiftKit/Layout": [],
+        "MNSwiftKit/Definition": [],
+        "MNSwiftKit/Extension": [],
         "MNSwiftKit/AnimatedImage": []
       }
     },
@@ -373,6 +399,7 @@
         "MNSwiftKit/PageControl": [],
         "MNSwiftKit/Components": [],
         "MNSwiftKit/Transitioning": [],
+        "MNSwiftKit/AssetBrowser": [],
         "MNSwiftKit/AnimatedImage": [],
         "MNSwiftKit/CollectionLayout": [],
         "MNSwiftKit/EmoticonKeyboard": []

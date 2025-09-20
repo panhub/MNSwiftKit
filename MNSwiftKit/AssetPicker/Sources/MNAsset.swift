@@ -19,17 +19,6 @@ public typealias MNAssetUpdateHandler = (_ asset: MNAsset)->Void
 public class MNAsset: NSObject {
     
     /**
-     资源类型
-     - photo: 图片
-     - video: 视频
-     - livePhoto: LivePhoto
-     - gif: 动态图
-     */
-    @objc public enum ContentType: Int {
-        case photo, gif, livePhoto, video
-    }
-    
-    /**
      文件来源
      - unknown: 未知
      - cloud: iCloud

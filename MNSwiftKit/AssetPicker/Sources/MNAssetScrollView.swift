@@ -11,11 +11,7 @@ import UIKit
 class MNAssetScrollView: UIScrollView {
     
     /// 内容视图
-    lazy var contentView: UIView = {
-        let contentView = UIView(frame: bounds)
-        contentView.backgroundColor = .clear
-        return contentView
-    }()
+    let contentView = UIView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -28,11 +24,12 @@ class MNAssetScrollView: UIScrollView {
         alwaysBounceHorizontal = false
         showsVerticalScrollIndicator = false
         showsHorizontalScrollIndicator = false
-        
         if #available(iOS 11.0, *) {
             contentInsetAdjustmentBehavior = .never
         }
         
+        contentView.frame = bounds
+        contentView.backgroundColor = .clear
         addSubview(contentView)
     }
     
