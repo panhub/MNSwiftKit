@@ -8,18 +8,6 @@
 import UIKit
 import Photos
 import PhotosUI
-//#if canImport(MNSwiftKitSlider)
-//import MNSwiftKitSlider
-//#endif
-//#if canImport(MNSwiftKitPlayer)
-//import MNSwiftKitPlayer
-//#endif
-//#if canImport(MNSwiftKitLayout)
-//import MNSwiftKitLayout
-//#endif
-//#if canImport(MNSwiftKitDefinition)
-//import MNSwiftKitDefinition
-//#endif
 
 /// 资源浏览器表格
 class MNAssetBrowserCell: UICollectionViewCell {
@@ -33,7 +21,7 @@ class MNAssetBrowserCell: UICollectionViewCell {
     static let ToolBarHeight: CGFloat = MN_BOTTOM_SAFE_HEIGHT + 60.0
     
     /// 资源模型
-    private(set) var asset: MNAsset!
+    private(set) var item: MNBrowseItem!
     /// 当前状态
     private var state: State = .idle
     /// 是否允许自动播放
@@ -48,125 +36,32 @@ class MNAssetBrowserCell: UICollectionViewCell {
     /// LivePhoto标记
     private var liveBadgeView: UIImageView!
     /// 滑动支持
-    lazy var scrollView: MNAssetScrollView = {
-        let scrollView = MNAssetScrollView(frame: bounds)
-        scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        return scrollView
-    }()
+    let scrollView = MNAssetScrollView()
     /// 播放视频
-    private lazy var playView: MNPlayView = {
-        let playView = MNPlayView(frame: scrollView.contentView.bounds)
-        playView.backgroundColor = .clear
-        playView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        return playView
-    }()
+    private let playView = MNPlayView()
     /// 展示LivePhoto
     private lazy var livePhotoView: UIView? = {
         guard #available(iOS 9.1, *) else { return nil }
-        let livePhotoView = PHLivePhotoView(frame: scrollView.contentView.bounds)
+        let livePhotoView = PHLivePhotoView()
         livePhotoView.clipsToBounds = true
         livePhotoView.contentMode = .scaleAspectFit
-        livePhotoView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         livePhotoView.delegate = self
-        liveBadgeView = UIImageView(frame: CGRect(x: 11.0, y: 11.0, width: 27.0, height: 27.0))
-        liveBadgeView.autoresizingMask = [.flexibleRightMargin, .flexibleBottomMargin]
-        liveBadgeView.contentMode = .scaleToFill
-        //liveBadgeView.image = PHLivePhotoView.livePhotoBadgeImage(options: [.liveOff])
-        liveBadgeView.image = PHLivePhotoView.livePhotoBadgeImage()
-        livePhotoView.addSubview(liveBadgeView)
         return livePhotoView
     }()
     /// 展示图片
-    private lazy var imageView: UIImageView = {
-        let imageView = UIImageView(frame: scrollView.contentView.bounds)
-        imageView.clipsToBounds = true
-        imageView.contentMode = .scaleAspectFit
-        imageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        return imageView
-    }()
+    private let imageView = UIImageView()
     /// 加载进度条
-    private lazy var progressView: MNAssetProgressView = {
-        let progressView = MNAssetProgressView(frame: CGRect(x: 0.0, y: 0.0, width: 40.0, height: 40.0))
-        progressView.center = CGPoint(x: contentView.bounds.width/2.0, y: contentView.bounds.height/2.0)
-        progressView.isHidden = true
-        progressView.layer.cornerRadius = progressView.bounds.width/2.0
-        progressView.clipsToBounds = true
-        return progressView
-    }()
+    private let progressView = MNAssetProgressView()
     /// 播放器控制栏
-    private lazy var toolBar: UIImageView = {
-        let toolBar = UIImageView(frame: CGRect(x: 0.0, y: 0.0, width: contentView.bounds.width, height: MNAssetBrowserCell.ToolBarHeight))
-        toolBar.mn.maxY = contentView.bounds.height
-        toolBar.image = AssetPickerResource.image(named: "bottom")
-        toolBar.isUserInteractionEnabled = true
-        toolBar.contentMode = .scaleToFill
-        return toolBar
-    }()
+    private let toolBar = UIImageView()
     /// 播放按钮
-    private lazy var playButton: UIButton = {
-        var playButton: UIButton
-        if #available(iOS 15.0, *) {
-            var configuration = UIButton.Configuration.plain()
-            configuration.background.backgroundColor = .clear
-            configuration.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: -5.0, trailing: -5.0)
-            playButton = UIButton(configuration: configuration)
-            playButton.configurationUpdateHandler = { button in
-                switch button.state {
-                case .normal:
-                    button.configuration?.background.image = AssetPickerResource.image(named: "browser_play")
-                case .selected:
-                    button.configuration?.background.image = AssetPickerResource.image(named: "browser_pause")
-                default: break
-                }
-            }
-        } else {
-            playButton = UIButton(type: .custom)
-            playButton.adjustsImageWhenHighlighted = false
-            playButton.setBackgroundImage(AssetPickerResource.image(named: "browser_play"), for: .normal)
-            playButton.setBackgroundImage(AssetPickerResource.image(named: "browser_pause"), for: .selected)
-        }
-        playButton.frame = CGRect(x: 0.0, y: 0.0, width: 25.0, height: 25.0)
-        playButton.mn.minX = 10.0
-        playButton.mn.midY = (toolBar.bounds.height - MN_BOTTOM_SAFE_HEIGHT)/2.0
-        playButton.addTarget(self, action: #selector(playButtonTouchUpInside), for: .touchUpInside)
-        return playButton
-    }()
+    private let playButton = UIButton(type: .custom)
     /// 时间
-    private lazy var timeLabel: UILabel = {
-        let timeLabel = UILabel(frame: .zero)
-        timeLabel.text = "00:00"
-        timeLabel.textColor = .white
-        timeLabel.textAlignment = .center
-        timeLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .medium)
-        timeLabel.sizeToFit()
-        timeLabel.mn.width = ceil(timeLabel.frame.width) + 25.0
-        timeLabel.mn.midY = playButton.frame.midY
-        timeLabel.mn.minX = playButton.frame.maxX
-        return timeLabel
-    }()
+    private let timeLabel = UILabel()
     /// 时长
-    private lazy var durationLabel: UILabel = {
-        let durationLabel = UILabel(frame: .zero)
-        durationLabel.text = "00:00"
-        durationLabel.font = timeLabel.font
-        durationLabel.textColor = timeLabel.textColor
-        durationLabel.textAlignment = .right
-        durationLabel.sizeToFit()
-        durationLabel.mn.width = ceil(durationLabel.frame.width) + 12.5
-        durationLabel.mn.maxX = toolBar.frame.width - 15.0
-        durationLabel.mn.midY = playButton.frame.midY
-        return durationLabel
-    }()
+    private let durationLabel = UILabel()
     /// 进度控制
-    private lazy var slider: MNSlider = {
-        let slider = MNSlider(frame: CGRect(x: timeLabel.frame.maxX, y: 0.0, width: durationLabel.frame.minX - timeLabel.frame.maxX, height: 15.0))
-        slider.mn.midY = playButton.frame.midY
-        slider.delegate = self
-        slider.trackHeight = 3.0
-        slider.progressColor = .white
-        slider.trackColor = .white.withAlphaComponent(0.35)
-        return slider
-    }()
+    private let slider = MNSlider()
     /// 视频播放器
     private lazy var player: MNPlayer = {
         let player = MNPlayer()
@@ -254,19 +149,139 @@ class MNAssetBrowserCell: UICollectionViewCell {
         contentView.backgroundColor = .clear
         contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(scrollView)
-        scrollView.contentView.addSubview(playView)
-        if #available(iOS 9.1, *), let livePhotoView = livePhotoView {
-            scrollView.contentView.addSubview(livePhotoView)
-        }
-        scrollView.contentView.addSubview(imageView)
-        contentView.addSubview(progressView)
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            scrollView.leftAnchor.constraint(equalTo: contentView.leftAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            scrollView.rightAnchor.constraint(equalTo: contentView.rightAnchor)
+        ])
         
-        toolBar.addSubview(playButton)
-        toolBar.addSubview(timeLabel)
-        toolBar.addSubview(durationLabel)
-        toolBar.addSubview(slider)
+        playView.backgroundColor = .clear
+        playView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.contentView.addSubview(playView)
+        NSLayoutConstraint.activate([
+            playView.topAnchor.constraint(equalTo: scrollView.contentView.topAnchor),
+            playView.leftAnchor.constraint(equalTo: scrollView.contentView.leftAnchor),
+            playView.bottomAnchor.constraint(equalTo: scrollView.contentView.bottomAnchor),
+            playView.rightAnchor.constraint(equalTo: scrollView.contentView.rightAnchor)
+        ])
+        
+        if #available(iOS 9.1, *), let livePhotoView = livePhotoView {
+            livePhotoView.translatesAutoresizingMaskIntoConstraints = false
+            scrollView.contentView.addSubview(livePhotoView)
+            NSLayoutConstraint.activate([
+                livePhotoView.topAnchor.constraint(equalTo: scrollView.contentView.topAnchor),
+                livePhotoView.leftAnchor.constraint(equalTo: scrollView.contentView.leftAnchor),
+                livePhotoView.bottomAnchor.constraint(equalTo: scrollView.contentView.bottomAnchor),
+                livePhotoView.rightAnchor.constraint(equalTo: scrollView.contentView.rightAnchor)
+            ])
+            liveBadgeView = UIImageView()
+            liveBadgeView.contentMode = .scaleToFill
+            //liveBadgeView.image = PHLivePhotoView.livePhotoBadgeImage(options: [.liveOff])
+            liveBadgeView.image = PHLivePhotoView.livePhotoBadgeImage()
+            liveBadgeView.translatesAutoresizingMaskIntoConstraints = false
+            livePhotoView.addSubview(liveBadgeView)
+            NSLayoutConstraint.activate([
+                liveBadgeView.topAnchor.constraint(equalTo: livePhotoView.topAnchor, constant: 11.0),
+                liveBadgeView.leftAnchor.constraint(equalTo: livePhotoView.leftAnchor, constant: 11.0),
+                liveBadgeView.widthAnchor.constraint(equalToConstant: 27.0),
+                liveBadgeView.heightAnchor.constraint(equalTo: liveBadgeView.widthAnchor, multiplier: 1.0)
+            ])
+        }
+        
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.contentView.addSubview(imageView)
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: scrollView.contentView.topAnchor),
+            imageView.leftAnchor.constraint(equalTo: scrollView.contentView.leftAnchor),
+            imageView.bottomAnchor.constraint(equalTo: scrollView.contentView.bottomAnchor),
+            imageView.rightAnchor.constraint(equalTo: scrollView.contentView.rightAnchor)
+        ])
+        
+        progressView.isHidden = true
+        progressView.clipsToBounds = true
+        progressView.layer.cornerRadius = progressView.bounds.width/2.0
+        progressView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(progressView)
+        NSLayoutConstraint.activate([
+            progressView.widthAnchor.constraint(equalToConstant: 40.0),
+            progressView.heightAnchor.constraint(equalTo: progressView.widthAnchor, multiplier: 1.0),
+            progressView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            progressView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+        ])
+        
+        // MNAssetBrowserCell.ToolBarHeight
+        toolBar.contentMode = .scaleToFill
+        toolBar.isUserInteractionEnabled = true
+        toolBar.image = AssetBrowserResource.image(named: "bottom")
+        toolBar.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(toolBar)
+        NSLayoutConstraint.activate([
+            toolBar.leftAnchor.constraint(equalTo: contentView.leftAnchor),
+            toolBar.rightAnchor.constraint(equalTo: contentView.rightAnchor),
+            toolBar.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            toolBar.heightAnchor.constraint(equalToConstant: MNAssetBrowserCell.ToolBarHeight)
+        ])
+        toolBar.transform = .init(translationX: 0.0, y: MNAssetBrowserCell.ToolBarHeight)
+        
+        if #unavailable(iOS 15.0, ) {
+            playButton.adjustsImageWhenHighlighted = false
+        }
+        playButton.setBackgroundImage(AssetBrowserResource.image(named: "browser_play"), for: .normal)
+        playButton.setBackgroundImage(AssetBrowserResource.image(named: "browser_pause"), for: .selected)
+        playButton.addTarget(self, action: #selector(playButtonTouchUpInside), for: .touchUpInside)
+        playButton.translatesAutoresizingMaskIntoConstraints = false
+        toolBar.addSubview(playButton)
+        NSLayoutConstraint.activate([
+            playButton.leftAnchor.constraint(equalTo: toolBar.leftAnchor, constant: 10.0),
+            playButton.widthAnchor.constraint(equalToConstant: 25.0),
+            playButton.heightAnchor.constraint(equalTo: playButton.widthAnchor, multiplier: 1.0),
+            playButton.centerYAnchor.constraint(equalTo: toolBar.topAnchor, constant: (MNAssetBrowserCell.ToolBarHeight - MN_BOTTOM_SAFE_HEIGHT)/2.0)
+        ])
+        
+        timeLabel.text = "00:00"
+        timeLabel.textColor = .white
+        timeLabel.numberOfLines = 1
+        timeLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .medium)
+        timeLabel.sizeToFit()
+        timeLabel.translatesAutoresizingMaskIntoConstraints = false
+        toolBar.addSubview(timeLabel)
+        NSLayoutConstraint.activate([
+            timeLabel.leftAnchor.constraint(equalTo: playButton.rightAnchor, constant: 10.0),
+            timeLabel.widthAnchor.constraint(equalToConstant: ceil(timeLabel.frame.width) + 3.0),
+            timeLabel.heightAnchor.constraint(equalToConstant: ceil(timeLabel.frame.height) + 1.0),
+            timeLabel.centerYAnchor.constraint(equalTo: playButton.centerYAnchor)
+        ])
+        
+        durationLabel.font = timeLabel.font
+        durationLabel.textColor = timeLabel.textColor
+        durationLabel.numberOfLines = 1
+        durationLabel.textAlignment = .right
+        durationLabel.translatesAutoresizingMaskIntoConstraints = false
+        toolBar.addSubview(durationLabel)
+        NSLayoutConstraint.activate([
+            durationLabel.rightAnchor.constraint(equalTo: toolBar.rightAnchor, constant: -15.0),
+            durationLabel.widthAnchor.constraint(equalTo: timeLabel.widthAnchor),
+            durationLabel.heightAnchor.constraint(equalTo: timeLabel.heightAnchor),
+            durationLabel.centerYAnchor.constraint(equalTo: playButton.centerYAnchor)
+        ])
+        
+        slider.delegate = self
+        slider.trackHeight = 3.0
+        slider.progressColor = .white
+        slider.trackColor = .white.withAlphaComponent(0.35)
+        slider.translatesAutoresizingMaskIntoConstraints = false
+        toolBar.addSubview(slider)
+        NSLayoutConstraint.activate([
+            slider.leftAnchor.constraint(equalTo: timeLabel.rightAnchor, constant: 5.0),
+            slider.rightAnchor.constraint(equalTo: durationLabel.leftAnchor, constant: -5.0),
+            slider.heightAnchor.constraint(equalToConstant: 15.0),
+            slider.centerYAnchor.constraint(equalTo: playButton.centerYAnchor)
+        ])
     }
     
     required init?(coder: NSCoder) {

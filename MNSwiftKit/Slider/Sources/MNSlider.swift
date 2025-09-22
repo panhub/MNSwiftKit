@@ -35,19 +35,19 @@ import UIKit
 }
 
 public class MNSlider: UIView {
-    /**事件代理*/
+    /// 事件代理
     public weak var delegate: MNSliderDelegate?
-    /**进度*/
+    /// 进度
     public private(set) var value: Double = 0.0
-    /**是否在拖拽*/
+    /// 是否在拖拽
     public private(set) var isDragging: Bool = false
-    /**内容视图*/
+    /// 内容视图
     private lazy var contentView: UIView = {
         let contentView = UIView(frame: bounds)
         contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         return contentView
     }()
-    /**轨迹*/
+    /// 轨迹
     private lazy var trackView: UIView = {
         let trackView = UIView(frame: CGRect(x: 0.0, y: (contentView.frame.height - 4.0)/2.0, width: contentView.frame.width, height: 4.0))
         trackView.clipsToBounds = true
@@ -56,7 +56,7 @@ public class MNSlider: UIView {
         trackView.autoresizingMask = [.flexibleWidth, .flexibleTopMargin, .flexibleBottomMargin]
         return trackView
     }()
-    /**进度*/
+    /// 进度
     private lazy var progressView: UIView = {
         let progressView = UIView(frame: trackView.bounds)
         progressView.isUserInteractionEnabled = false
@@ -64,7 +64,7 @@ public class MNSlider: UIView {
         progressView.backgroundColor = .white
         return progressView
     }()
-    /**滑块*/
+    /// 滑块
     private lazy var thumbView: UIView = {
         let thumbView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: contentView.frame.height, height: contentView.frame.height))
         thumbView.contentMode = .scaleAspectFit
@@ -77,7 +77,7 @@ public class MNSlider: UIView {
         thumbView.layer.shadowColor = UIColor.black.withAlphaComponent(0.3).cgColor
         return thumbView
     }()
-    /**滑块图片*/
+    /// 滑块图片
     private lazy var thumbImageView: UIImageView = {
         let thumbImageView = UIImageView(frame: thumbView.bounds)
         thumbImageView.clipsToBounds = true
