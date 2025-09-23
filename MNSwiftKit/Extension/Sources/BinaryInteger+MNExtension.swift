@@ -10,19 +10,19 @@ import Foundation
 
 extension NameSpaceWrapper where Base: BinaryInteger {
     
-    /// 文件存储字符串形式
+    /// 文件存储形式字符串
     public var fileSizeString: String {
         
         byteFormat(for: .file, units: .useAll)
     }
     
-    /// 内存大小字符串形式
+    /// 内存大小形式字符串
     public var memorySizeString: String {
         
         byteFormat(for: .memory, units: .useAll)
     }
     
-    /// 对字节数格式化
+    /// 格式化储存形式字符串
     /// - Parameters:
     ///   - style: 格式化类型
     ///   - units: 单位
