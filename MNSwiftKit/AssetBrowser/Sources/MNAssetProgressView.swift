@@ -11,7 +11,7 @@ import UIKit
 class MNAssetProgressView: UIView {
     
     /// 当前进度
-    private var progress: Double = 0.0
+    private var progress: CGFloat = 0.0
     
     /// 进度展示层
     private let progressLayer = CAShapeLayer()
@@ -47,7 +47,7 @@ class MNAssetProgressView: UIView {
         let bezierPath = UIBezierPath(arcCenter: CGPoint(x: bounds.midX, y: bounds.midY), radius: diameter/2.0, startAngle: -.pi/2.0, endAngle: .pi/2.0 + .pi, clockwise: true)
         progressLayer.path = bezierPath.cgPath
         progressLayer.lineWidth = diameter
-        progressLayer.strokeEnd = CGFloat(progress)
+        progressLayer.strokeEnd = progress
     }
 }
 
@@ -56,13 +56,13 @@ extension MNAssetProgressView {
     
     /// 设置进度
     /// - Parameters:
-    ///   - progress: 进度值
+    ///   - value: 进度值
     ///   - animated: 是否动态展示
-    func setProgress(_ progress: Double, animated: Bool = false) {
-        self.progress = progress
+    func setProgress(_ value: any BinaryFloatingPoint, animated: Bool = false) {
+        progress = CGFloat(value)
         CATransaction.begin()
         CATransaction.setDisableActions(animated == false)
-        progressLayer.strokeEnd = CGFloat(progress)
+        progressLayer.strokeEnd = progress
         CATransaction.commit()
     }
 }

@@ -21,7 +21,7 @@ class MNAssetBrowserCell: UICollectionViewCell {
     static let ToolBarHeight: CGFloat = MN_BOTTOM_SAFE_HEIGHT + 60.0
     
     /// 资源模型
-    private(set) var item: MNBrowseItem!
+    private(set) var item: MNAssetBrowser.Item!
     /// 当前状态
     private var state: State = .idle
     /// 是否允许自动播放
@@ -71,24 +71,28 @@ class MNAssetBrowserCell: UICollectionViewCell {
         return player
     }()
     /// 封面图更新回调
-    private lazy var coverUpdateHandler: (MNAsset, UIImage?)->Void = {
-        let coverUpdateHandler: (MNAsset, UIImage?)->Void = { [weak self] asset, thumbnail in
-            guard let self = self, let model = self.asset, asset == model else { return }
+    private lazy var coverUpdateHandler: (MNAssetBrowser.Item, UIImage?)->Void = {
+        let coverUpdateHandler: (MNAssetBrowser.Item, UIImage?)->Void = { [weak self] model, cover in
+            guard let self = self, let item = self.item, model == item else { return }
             switch self.state {
             case .loading, .prepared:
-                guard var image = thumbnail else { break }
-                if let content = asset.content, let img = content as? UIImage { image = img }
-                if let images = image.images, images.count > 1 { image = images.first! }
+                guard var image = cover else { break }
+                if let contents = model.contents, contents is UIImage {
+                    image = contents as! UIImage
+                }
+                if let images = image.images, images.count > 1 {
+                    image = images.first!
+                }
                 self.updateImage(image)
-                if asset.type == .video {
+                if model.type == .video {
                     self.playView.coverView.image = image
                     self.playView.coverView.isHidden = false
                 } else {
                     self.imageView.image = image
                 }
-                if asset.progress > 0.0, asset.progress < 1.0 {
+                if model.progress > 0.0, model.progress < 1.0 {
                     self.progressView.isHidden = false
-                    self.progressView.setProgress(asset.progress)
+                    self.progressView.setProgress(model.progress)
                 }
                 // 获取内容
                 if self.state == .loading {
@@ -102,9 +106,9 @@ class MNAssetBrowserCell: UICollectionViewCell {
         return coverUpdateHandler
     }()
     /// 进度更新回调
-    private lazy var progressUpdateHandler: (Double, Error?, MNAsset)->Void = {
-        let progressUpdateHandler: (Double, Error?, MNAsset)->Void = { [weak self] progress, error, asset in
-            guard let self = self, let model = self.asset, asset == model else { return }
+    private lazy var progressUpdateHandler: (Double, Error?, MNAssetBrowser.Item)->Void = {
+        let progressUpdateHandler: (Double, Error?, MNBrowseItem)->Void = { [weak self] progress, error, asset in
+            guard let self = self, let item = self.item, asset == model else { return }
             switch self.state {
             case .downloading, .prepared:
                 if error != nil || progress <= 0.0 {

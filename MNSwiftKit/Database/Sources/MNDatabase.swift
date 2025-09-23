@@ -5,11 +5,13 @@
 //  Created by panhub on 2022/3/4.
 //  数据库解决方案
 
-import SQLite3
 import Foundation
 import AVFoundation
 import ObjectiveC.runtime
 import CoreGraphics.CGBase
+#if !canImport(SQLCipher)
+import SQLite3
+#endif
 
 extension Dictionary where Key == String, Value == Any {
     

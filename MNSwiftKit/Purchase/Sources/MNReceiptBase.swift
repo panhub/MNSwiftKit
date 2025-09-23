@@ -5,8 +5,10 @@
 //  Created by panhub on 2023/12/1.
 //  购买收据缓存
 
-import SQLite3
 import Foundation
+#if !canImport(SQLCipher)
+import SQLite3
+#endif
 
 /// 主键
 fileprivate var MNReceiptPrimaryKey = "id"

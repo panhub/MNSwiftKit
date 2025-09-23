@@ -44,22 +44,6 @@ import CoreMedia
     case video
 }
 
-/// 资源浏览支持
-@objc public class MNBrowseItem: NSObject {
-    
-    /// 内容
-    @objc var contents: Any?
-    
-    /// 类型
-    @objc var type: MNBrowseType = .photo
-    
-    /// 封面图
-    @objc var cover: UIImage?
-    
-    /// 引用的视图
-    @objc weak var container: UIView?
-}
-
 /// 资源浏览器
 public class MNAssetBrowser: UIView {
     
@@ -95,8 +79,28 @@ public class MNAssetBrowser: UIView {
         case willAppear, didAppear, willDisappear, didDisappear
     }
     
+    /// 资源浏览支持
+    @objc(MNAssetBrowserItem)
+    public class Item: NSObject {
+        
+        /// 内容
+        @objc public var contents: Any?
+        
+        /// 类型
+        @objc public var type: MNBrowseType = .photo
+        
+        /// 封面图
+        @objc public var cover: UIImage?
+        
+        /// 引用的视图
+        @objc public weak var container: UIView?
+        
+        /// 进度
+        @objc public var progress: Double = 0.0
+    }
+    
     /// 资源集合
-    private var items: [MNBrowseItem] = []
+    private var items: [MNAssetBrowser.Item] = []
     /// 左按钮事件
     @objc public var leftBarEvent: MNAssetBrowser.Event = .none
     /// 右按钮事件
@@ -153,7 +157,7 @@ public class MNAssetBrowser: UIView {
     
     /// 构造资源浏览器
     /// - Parameter items: 资源集合
-    public init(items: [MNBrowseItem]) {
+    public init(items: [MNAssetBrowser.Item]) {
         super.init(frame: UIScreen.main.bounds)
         self.items.append(contentsOf: items)
     }
@@ -321,7 +325,7 @@ extension MNAssetBrowser {
     
     /// 更新当前展示的资源
     /// - Parameter item: 新的资源模型
-    public func updateCurrentItem(_ item: MNBrowseItem) {
+    public func updateCurrentItem(_ item: MNAssetBrowser.Item) {
         guard displayIndex >= 0, displayIndex < items.count else { return }
         guard let cell = currentDisplayCell else { return }
         let old = items.remove(at: displayIndex)
@@ -329,7 +333,7 @@ extension MNAssetBrowser {
             item.container = old.container
         }
         items.insert(item, at: displayIndex)
-        cell.updateAsset(asset)
+        //cell.updateAsset(asset)
         cell.prepareDisplaying()
     }
     
@@ -525,7 +529,7 @@ extension MNAssetBrowser {
             //fatalError("unknown animated image.")
             return
         }
-        let item = MNBrowseItem()
+        let item = MNAssetBrowser.Item()
         item.cover = animatedImage
         item.container = container
         item.contents = animatedImage
