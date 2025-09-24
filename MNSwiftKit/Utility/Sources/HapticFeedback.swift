@@ -28,10 +28,14 @@ public class HapticFeedback {
             occurred(.error)
         }
         
-        private class func occurred(_ notificationType: UINotificationFeedbackGenerator.FeedbackType) {
+        public class func occurred(_ notificationType: UINotificationFeedbackGenerator.FeedbackType, at location: CGPoint? = nil) {
             let generator = UINotificationFeedbackGenerator()
             generator.prepare()
-            generator.notificationOccurred(notificationType)
+            if let location = location, #available(iOS 17.5, *) {
+                generator.notificationOccurred(notificationType, at: location)
+            } else {
+                generator.notificationOccurred(notificationType)
+            }
         }
     }
     
@@ -55,10 +59,29 @@ public class HapticFeedback {
             occurred(.heavy)
         }
         
-        private class func occurred(_ style: UIImpactFeedbackGenerator.FeedbackStyle) {
-            let generator = UIImpactFeedbackGenerator(style: style)
+        public class func occurred(_ style: UIImpactFeedbackGenerator.FeedbackStyle, view: UIView? = nil, at location: CGPoint? = nil, intensity: CGFloat? = nil) {
+            var generator: UIImpactFeedbackGenerator!
+            if let view = view, #available(iOS 17.5, *) {
+                generator = UIImpactFeedbackGenerator(style: style, view: view)
+            } else {
+                generator = UIImpactFeedbackGenerator(style: style)
+            }
             generator.prepare()
-            generator.impactOccurred()
+            if #available(iOS 17.5, *) {
+                if let location = location, let intensity = intensity {
+                    generator.impactOccurred(intensity: intensity, at: location)
+                } else if let location = location {
+                    generator.impactOccurred(at: location)
+                } else if let intensity = intensity {
+                    generator.impactOccurred(intensity: intensity)
+                } else {
+                    generator.impactOccurred()
+                }
+            } else if #available(iOS 13.0, *), let intensity = intensity {
+                generator.impactOccurred(intensity: intensity)
+            } else {
+                generator.impactOccurred()
+            }
         }
     }
     
@@ -66,10 +89,14 @@ public class HapticFeedback {
     @available(iOS 10.0, *)
     public class Selection {
 
-        public class func changed() {
+        public class func changed(at location: CGPoint? = nil) {
             let generator = UISelectionFeedbackGenerator()
             generator.prepare()
-            generator.selectionChanged()
+            if let location = location, #available(iOS 17.5, *) {
+                generator.selectionChanged(at: location)
+            } else {
+                generator.selectionChanged()
+            }
         }
     }
     
