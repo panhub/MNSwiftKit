@@ -49,67 +49,68 @@ public class MNSlider: UIView {
     private let thumbView = UIView()
     /// 滑块圆点
     private let thumbImageView = UIImageView()
-    /// 轨迹高度约束
-    private var trackHeightConstraint: NSLayoutConstraint!
     /// 滑块左侧约束
     private var thumbLeftConstraint: NSLayoutConstraint!
     /// 滑块宽度约束
     private var thumbWidthConstraint: NSLayoutConstraint!
-    /// 进度条约束
-    private var progressLeftConstraint: NSLayoutConstraint!
+    /// 进度条宽度约束
+    private var progressWidthConstraint: NSLayoutConstraint!
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
         
         trackView.clipsToBounds = true
-        trackView.backgroundColor = .lightGray
+        trackView.layer.cornerRadius = 2.0
+        trackView.backgroundColor = .lightGray.withAlphaComponent(0.3)
         trackView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(trackView)
-        trackHeightConstraint = trackView.heightAnchor.constraint(equalToConstant: 4.0)
         NSLayoutConstraint.activate([
             trackView.leftAnchor.constraint(equalTo: leftAnchor),
             trackView.rightAnchor.constraint(equalTo: rightAnchor),
-            trackHeightConstraint,
+            trackView.heightAnchor.constraint(equalToConstant: 4.0),
             trackView.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
         
-        progressView.backgroundColor = .white
+        progressView.backgroundColor = .lightGray
         progressView.isUserInteractionEnabled = false
         progressView.translatesAutoresizingMaskIntoConstraints = false
         trackView.addSubview(progressView)
-        progressLeftConstraint = progressView.leftAnchor.constraint(equalTo: trackView.leftAnchor)
+        progressWidthConstraint = progressView.widthAnchor.constraint(equalToConstant: 0.0)
         NSLayoutConstraint.activate([
             progressView.topAnchor.constraint(equalTo: trackView.topAnchor),
-            progressLeftConstraint,
+            progressView.leftAnchor.constraint(equalTo: trackView.leftAnchor),
             progressView.bottomAnchor.constraint(equalTo: trackView.bottomAnchor),
-            progressView.widthAnchor.constraint(equalToConstant: 0.0)
+            progressWidthConstraint
         ])
         
-        thumbView.backgroundColor = .white
-//        thumbView.layer.shadowRadius = 1.0
-//        thumbView.layer.shadowOpacity = 0.25
-//        thumbView.layer.shadowOffset = CGSize(width: 1.0, height: 1.0)
-//        thumbView.layer.shadowColor = UIColor.black.withAlphaComponent(0.3).cgColor
+        thumbView.layer.cornerRadius = 7.0
+        thumbView.layer.shadowRadius = 2.5
+        thumbView.layer.shadowOpacity = 1.0
+        thumbView.layer.shadowOffset = .zero
+        thumbView.layer.shadowColor = UIColor.clear.cgColor
+        thumbView.backgroundColor = .white.withAlphaComponent(0.5)
         thumbView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(thumbView)
         thumbLeftConstraint = thumbView.leftAnchor.constraint(equalTo: leftAnchor)
-        thumbWidthConstraint = thumbView.widthAnchor.constraint(equalToConstant: 15.0)
+        thumbWidthConstraint = thumbView.widthAnchor.constraint(equalToConstant: 14.0)
         NSLayoutConstraint.activate([
             thumbLeftConstraint,
             thumbWidthConstraint,
-            thumbView.heightAnchor.constraint(equalToConstant: 15.0),
+            thumbView.heightAnchor.constraint(equalToConstant: 14.0),
             thumbView.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
         
         thumbImageView.clipsToBounds = true
+        thumbImageView.layer.cornerRadius = 3.0
         thumbImageView.contentMode = .scaleAspectFit
+        thumbImageView.backgroundColor = .white
         thumbImageView.translatesAutoresizingMaskIntoConstraints = false
         thumbView.addSubview(thumbImageView)
         NSLayoutConstraint.activate([
-            thumbImageView.topAnchor.constraint(equalTo: thumbView.topAnchor),
-            thumbImageView.leftAnchor.constraint(equalTo: thumbView.leftAnchor),
-            thumbImageView.bottomAnchor.constraint(equalTo: thumbView.bottomAnchor),
-            thumbImageView.rightAnchor.constraint(equalTo: thumbView.rightAnchor)
+            thumbImageView.topAnchor.constraint(equalTo: thumbView.topAnchor, constant: 4.0),
+            thumbImageView.leftAnchor.constraint(equalTo: thumbView.leftAnchor, constant: 4.0),
+            thumbImageView.bottomAnchor.constraint(equalTo: thumbView.bottomAnchor, constant: -4.0),
+            thumbImageView.rightAnchor.constraint(equalTo: thumbView.rightAnchor, constant: -4.0)
         ])
         
         let pan = UIPanGestureRecognizer(target: self, action: #selector(pan(recognizer:)))
@@ -131,14 +132,13 @@ public class MNSlider: UIView {
         super.layoutSubviews()
         setNeedsUpdateConstraints()
         updateConstraintsIfNeeded()
-        trackView.layer.cornerRadius = trackHeightConstraint.constant/2.0
     }
     
-    public override func updateConstraintsIfNeeded() {
-        super.updateConstraintsIfNeeded()
+    public override func updateConstraints() {
+        super.updateConstraints()
         let width = frame.width - thumbWidthConstraint.constant
         thumbLeftConstraint.constant = width*value
-        progressLeftConstraint.constant = thumbLeftConstraint.constant + thumbWidthConstraint.constant/2.0
+        progressWidthConstraint.constant = thumbLeftConstraint.constant + thumbWidthConstraint.constant/2.0
     }
     
     /// 更新进度
@@ -165,10 +165,10 @@ extension MNSlider: UIGestureRecognizerDelegate {
     }
 }
 
-// MARK: - 交互处理
+// MARK: - Recognizer Selector
 private extension MNSlider {
     
-    @objc func pan(recognizer: UIPanGestureRecognizer) {
+    @objc private func pan(recognizer: UIPanGestureRecognizer) {
         switch recognizer.state {
         case .began:
             if let delegate = delegate {
@@ -181,7 +181,7 @@ private extension MNSlider {
             var constant = thumbLeftConstraint.constant
             constant += translation.x
             thumbLeftConstraint.constant = Swift.max(0.0, Swift.min(constant, frame.width - thumbWidthConstraint.constant))
-            progressLeftConstraint.constant = thumbLeftConstraint.constant + thumbWidthConstraint.constant/2.0
+            progressWidthConstraint.constant = thumbLeftConstraint.constant + thumbWidthConstraint.constant/2.0
             updateProgress()
             if let delegate = delegate {
                 delegate.sliderDidDragging?(self)
@@ -196,13 +196,13 @@ private extension MNSlider {
         }
     }
     
-    @objc func tap(recognizer: UITapGestureRecognizer) {
+    @objc private func tap(recognizer: UITapGestureRecognizer) {
         if let delegate = delegate {
             delegate.sliderWillBeginTouching?(self)
         }
         let location = recognizer.location(in: self)
         thumbLeftConstraint.constant = Swift.max(0.0, Swift.min(location.x, frame.width - thumbWidthConstraint.constant))
-        progressLeftConstraint.constant = thumbLeftConstraint.constant + thumbWidthConstraint.constant/2.0
+        progressWidthConstraint.constant = thumbLeftConstraint.constant + thumbWidthConstraint.constant/2.0
         updateProgress()
         if let delegate = delegate {
             delegate.sliderDidEndTouching?(self)
@@ -210,14 +210,18 @@ private extension MNSlider {
     }
 }
 
-// MARK: - 修改进度
+// MARK: - Progress
 extension MNSlider {
     
+    /// 设置进度值
+    /// - Parameters:
+    ///   - value: 进度值
+    ///   - animated: 是否动态
     public func setValue<T>(_ value: T, animated: Bool = false) where T: BinaryFloatingPoint {
-        setValue(Double(value), animated: animated)
+        updateProgress(Double(value), animated: animated)
     }
     
-    public func updateProgress(_ progress: Double, animated: Bool = false) {
+    private func updateProgress(_ progress: Double, animated: Bool = false) {
         guard isDragging == false else { return }
         value = Swift.max(0.0, Swift.min(progress, 1.0))
         let animations: ()->Void = { [weak self] in
@@ -236,16 +240,28 @@ extension MNSlider {
 // MARK: - Buid UI
 extension MNSlider {
     
-    // 修改轨迹
+    /// 轨迹高度
     public var trackHeight: CGFloat {
-        get { trackHeightConstraint.constant }
-        set { trackHeightConstraint.constant = newValue }
+        get {
+            guard let constraint = trackView.constraints.first(where: { $0.firstAttribute == .height }) else { return 0.0 }
+            return constraint.constant
+        }
+        set {
+            guard let constraint = trackView.constraints.first(where: { $0.firstAttribute == .height }) else { return }
+            constraint.constant = newValue
+        }
     }
     
     /// 轨迹颜色
     public var trackColor: UIColor? {
         get { trackView.backgroundColor }
         set { trackView.backgroundColor = newValue }
+    }
+    
+    /// 轨迹圆角
+    public var trackRadius: CGFloat {
+        get { trackView.layer.cornerRadius }
+        set { trackView.layer.cornerRadius = newValue }
     }
     
     /// 边框颜色
@@ -275,16 +291,28 @@ extension MNSlider {
         set { thumbView.backgroundColor = newValue }
     }
     
-    /// 滑块图片
-    public var thumbImage: UIImage? {
-        get { thumbImageView.image }
-        set { thumbImageView.image = newValue }
-    }
-    
     /// 滑块圆角
     public var thumbRadius: CGFloat {
         get { thumbView.layer.cornerRadius }
         set { thumbView.layer.cornerRadius = newValue }
+    }
+    
+    /// 滑块大小
+    public var thumbSize: CGSize {
+        get {
+            var size: CGSize = .init(width: thumbWidthConstraint.constant, height: 0.0)
+            if let constraint = thumbView.constraints.first(where: { $0.firstAttribute == .height }) {
+                size.height = constraint.constant
+            }
+            return size
+        }
+        set {
+            thumbWidthConstraint.constant = newValue.width
+            if let constraint = thumbView.constraints.first(where: { $0.firstAttribute == .height }) {
+                constraint.constant = newValue.height
+            }
+            setNeedsLayout()
+        }
     }
     
     /// 滑块阴影颜色
@@ -294,5 +322,65 @@ extension MNSlider {
             return UIColor(cgColor: color)
         }
         set { thumbView.layer.shadowColor = newValue?.cgColor }
+    }
+    
+    /// 滑块阴影范围
+    public var thumbShadowRadius: CGFloat {
+        get { thumbView.layer.shadowRadius }
+        set { thumbView.layer.shadowRadius = newValue }
+    }
+    
+    /// 滑块图片
+    public var thumbImage: UIImage? {
+        get { thumbImageView.image }
+        set { thumbImageView.image = newValue }
+    }
+    
+    /// 滑块图片颜色
+    public var thumbImageColor: UIColor? {
+        get { thumbImageView.backgroundColor }
+        set { thumbImageView.backgroundColor = newValue }
+    }
+    
+    /// 滑块图片颜色
+    public var thumbImageRadius: CGFloat {
+        get { thumbImageView.layer.cornerRadius }
+        set { thumbImageView.layer.cornerRadius = newValue }
+    }
+    
+    /// 滑块图片四周约束
+    public var thumbImageInset: UIEdgeInsets {
+        get {
+            var inset: UIEdgeInsets = .zero
+            thumbImageView.constraints.forEach { constraint in
+                switch constraint.firstAttribute {
+                case .top:
+                    inset.top = constraint.constant
+                case .left, .leading:
+                    inset.left = constraint.constant
+                case .bottom:
+                    inset.bottom = -constraint.constant
+                case .right, .trailing:
+                    inset.right = -constraint.constant
+                default: break
+                }
+            }
+            return inset
+        }
+        set {
+            thumbImageView.constraints.forEach { constraint in
+                switch constraint.firstAttribute {
+                case .top:
+                    constraint.constant = newValue.top
+                case .left, .leading:
+                    constraint.constant = newValue.left
+                case .bottom:
+                    constraint.constant = -newValue.bottom
+                case .right, .trailing:
+                    constraint.constant = -newValue.right
+                default: break
+                }
+            }
+        }
     }
 }
