@@ -8,28 +8,47 @@
 import UIKit
 import CoreAudio
 import CoreMedia
-//#if canImport(MNSwiftKitLayout)
-//import MNSwiftKitLayout
-//#endif
-//#if canImport(MNSwiftKitDefinition)
-//import MNSwiftKitDefinition
-//#endif
+
 
 /// 资源浏览代理
 @objc public protocol MNAssetBrowseDelegate: NSObjectProtocol {
+    
     /// 资源浏览器浏览告知, 通过`displayIndex`获取当前展示索引
     /// - Parameter browser: 资源浏览器
-    @objc optional func assetBrowserDidScroll(_ browser: MNAssetBrowser) -> Void
+    @objc optional func assetBrowserDidScroll(_ browser: MNAssetBrowser)
+    
     /// 资源浏览器状态变化
     /// - Parameters:
     ///   - browser: 资源浏览器
     ///   - state: 状态
     @objc optional func assetBrowser(_ browser: MNAssetBrowser, didChange state: MNAssetBrowser.State)
+    
     /// 资源浏览器按钮点击事件
     /// - Parameters:
     ///   - browser: 资源浏览器
     ///   - tag: 按钮标识
     @objc optional func assetBrowser(_ browser: MNAssetBrowser, navigationItemTouchUpInside event: MNAssetBrowser.Event)
+    
+    /// 资源浏览器获取封面
+    /// - Parameters:
+    ///   - browser: 资源浏览器
+    ///   - item: 资源模型
+    ///   - handler: 结束回调
+    @objc optional func assetBrowser(_ browser: MNAssetBrowser, fetchCover item: MNAssetBrowser.Item, completion handler: MNAssetBrowserCell.CoverUpdateHandler)
+    
+    /// 资源浏览器获取内容
+    /// - Parameters:
+    ///   - browser: 资源浏览器
+    ///   - item: 资源模型
+    ///   - progressHandler: 进度回调
+    ///   - completionHandler: 结束回调
+    @objc optional func assetBrowser(_ browser: MNAssetBrowser, fetchContent item: MNAssetBrowser.Item, progress progressHandler: MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: MNAssetBrowserCell.ContentUpdateHandler)
+    
+    /// 展示结束
+    /// - Parameters:
+    ///   - browser: 资源浏览器
+    ///   - item: 资源模型
+    @objc optional func assetBrowser(_ browser: MNAssetBrowser, didEndDisplaying item: MNAssetBrowser.Item)
 }
 
 /// 资源类型
@@ -717,7 +736,9 @@ extension MNAssetBrowser: UICollectionViewDelegate, UICollectionViewDataSource {
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MNAssetBrowserCell", for: indexPath)
-        if let cell = cell as? MNAssetBrowserCell {
+        if cell is MNAssetBrowserCell {
+            let cell = cell as! MNAssetBrowserCell
+            cell.delegate = self
             cell.isAllowsAutoPlaying = autoPlaying
             cell.maximumZoomScale = maximumZoomScale
         }
@@ -728,12 +749,15 @@ extension MNAssetBrowser: UICollectionViewDelegate, UICollectionViewDataSource {
         guard let cell = cell as? MNAssetBrowserCell else { return }
         guard indexPath.item < items.count else { return }
         let item = items[indexPath.item]
-        //cell.updateAsset(item)
+        cell.update(item: item)
     }
     
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? MNAssetBrowserCell else { return }
         cell.endDisplaying()
+        if let item = cell.item, let delegate = delegate {
+            delegate.assetBrowser?(self, didEndDisplaying: item)
+        }
     }
     
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
@@ -743,6 +767,26 @@ extension MNAssetBrowser: UICollectionViewDelegate, UICollectionViewDataSource {
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         updateDisplayIndex()
+    }
+}
+
+// MARK: - MNAssetBrowserCellEventHandler
+extension MNAssetBrowser: MNAssetBrowserCellEventHandler {
+    
+    func browserCell(_ cell: MNAssetBrowserCell, fetchCover item: Item, completion handler: (Item, UIImage?) -> Void) {
+        if let cover = item.cover {
+            handler(item, cover)
+        } else if let delegate = delegate {
+            delegate.assetBrowser?(self, fetchCover: item, completion: handler)
+        }
+    }
+    
+    func browserCell(_ cell: MNAssetBrowserCell, fetchContent item: Item, progress progressHandler: (Item, Double, (any Error)?) -> Void, completion completionHandler: (Item) -> Void) {
+        if let _ = item.contents {
+            completionHandler(item)
+        } else if let delegate = delegate {
+            delegate.assetBrowser?(self, fetchContent: item, progress: progressHandler, completion: completionHandler)
+        }
     }
 }
 

@@ -9,8 +9,33 @@ import UIKit
 import Photos
 import PhotosUI
 
+protocol MNAssetBrowserCellEventHandler: NSObjectProtocol {
+    
+    /// 获取封面事件
+    /// - Parameter cell: 表格
+    /// - Parameter item: 资源模型
+    /// - Parameter handler: 结束回调
+    func browserCell(_ cell: MNAssetBrowserCell, fetchCover item: MNAssetBrowser.Item, completion handler: MNAssetBrowserCell.CoverUpdateHandler)
+    
+    /// 获取内容事件
+    /// - Parameter cell: 表格
+    /// - Parameter item: 资源模型
+    /// - Parameter progressHandler: 进度回调
+    /// - Parameter completionHandler: 结束回调
+    func browserCell(_ cell: MNAssetBrowserCell, fetchContent item: MNAssetBrowser.Item, progress progressHandler: MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: MNAssetBrowserCell.ContentUpdateHandler)
+}
+
 /// 资源浏览器表格
-class MNAssetBrowserCell: UICollectionViewCell {
+public class MNAssetBrowserCell: UICollectionViewCell {
+    
+    /// 封面更新回调
+    public typealias CoverUpdateHandler = (MNAssetBrowser.Item, UIImage?)->Void
+    
+    /// 进度更新回调
+    public typealias ProgressUpdateHandler = (MNAssetBrowser.Item, Double, Error?)->Void
+    
+    /// 内容更新回调
+    public typealias ContentUpdateHandler = (MNAssetBrowser.Item)->Void
     
     /// 当前状态
     private enum State {
@@ -22,6 +47,8 @@ class MNAssetBrowserCell: UICollectionViewCell {
     
     /// 资源模型
     private(set) var item: MNAssetBrowser.Item!
+    /// 事件代理
+    weak var delegate: MNAssetBrowserCellEventHandler!
     /// 当前状态
     private var state: State = .idle
     /// 是否允许自动播放
@@ -71,44 +98,45 @@ class MNAssetBrowserCell: UICollectionViewCell {
         return player
     }()
     /// 封面图更新回调
-    private lazy var coverUpdateHandler: (MNAssetBrowser.Item, UIImage?)->Void = {
-        let coverUpdateHandler: (MNAssetBrowser.Item, UIImage?)->Void = { [weak self] model, cover in
-            guard let self = self, let item = self.item, model == item else { return }
+    private lazy var coverUpdateHandler: CoverUpdateHandler = {
+        let coverUpdateHandler: CoverUpdateHandler = { [weak self] item, cover in
+            guard let self = self, let asset = self.item, item == asset else { return }
             switch self.state {
             case .loading, .prepared:
                 guard var image = cover else { break }
-                if let contents = model.contents, contents is UIImage {
+                if let contents = item.contents, contents is UIImage {
                     image = contents as! UIImage
                 }
-                if let images = image.images, images.count > 1 {
-                    image = images.first!
+                if let images = image.images, images.count > 1, let first = images.first {
+                    image = first
                 }
                 self.updateImage(image)
-                if model.type == .video {
+                if asset.type == .video {
                     self.playView.coverView.image = image
                     self.playView.coverView.isHidden = false
                 } else {
                     self.imageView.image = image
                 }
-                if model.progress > 0.0, model.progress < 1.0 {
+                if item.progress > 0.0, item.progress < 1.0 {
                     self.progressView.isHidden = false
-                    self.progressView.setProgress(model.progress)
+                    self.progressView.setProgress(item.progress)
                 }
                 // 获取内容
                 if self.state == .loading {
                     self.state = .downloading
                 }
-                asset.cancelDownload()
-                MNAssetHelper.fetchContent(asset, progress: self.progressUpdateHandler, completion: self.contentUpdateHandler)
+                if let delegate = self.delegate {
+                    delegate.browserCell(self, fetchContent: item, progress: self.progressUpdateHandler, completion: self.contentUpdateHandler)
+                }
             default: break
             }
         }
         return coverUpdateHandler
     }()
     /// 进度更新回调
-    private lazy var progressUpdateHandler: (Double, Error?, MNAssetBrowser.Item)->Void = {
-        let progressUpdateHandler: (Double, Error?, MNBrowseItem)->Void = { [weak self] progress, error, asset in
-            guard let self = self, let item = self.item, asset == model else { return }
+    private lazy var progressUpdateHandler: ProgressUpdateHandler = {
+        let progressUpdateHandler: ProgressUpdateHandler = { [weak self] item, progress, error in
+            guard let self = self, let asset = self.item, asset == item else { return }
             switch self.state {
             case .downloading, .prepared:
                 if error != nil || progress <= 0.0 {
@@ -126,9 +154,9 @@ class MNAssetBrowserCell: UICollectionViewCell {
         return progressUpdateHandler
     }()
     /// 内容更新回调
-    private lazy var contentUpdateHandler: (MNAsset)->Void = {
-        let contentUpdateHandler: (MNAsset)->Void = { [weak self] asset in
-            guard let self = self, let model = self.asset, asset == model else { return }
+    private lazy var contentUpdateHandler: ContentUpdateHandler = {
+        let contentUpdateHandler: ContentUpdateHandler = { [weak self] item in
+            guard let self = self, let asset = self.item, asset == item else { return }
             self.progressView.isHidden = true
             switch self.state {
             case .downloading:
@@ -230,7 +258,6 @@ class MNAssetBrowserCell: UICollectionViewCell {
             toolBar.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             toolBar.heightAnchor.constraint(equalToConstant: MNAssetBrowserCell.ToolBarHeight)
         ])
-        toolBar.transform = .init(translationX: 0.0, y: MNAssetBrowserCell.ToolBarHeight)
         
         if #unavailable(iOS 15.0, ) {
             playButton.adjustsImageWhenHighlighted = false
@@ -297,26 +324,31 @@ class MNAssetBrowserCell: UICollectionViewCell {
 extension MNAssetBrowserCell {
     
     /// 更新资源
-    /// - Parameter asset: 资源模型
-    func updateAsset(_ asset: MNAsset) {
-        self.asset = asset
+    /// - Parameter item: 资源模型
+    func update(item: MNAssetBrowser.Item) {
+        self.item = item
         imageView.image = nil
-        imageView.isHidden = asset.type == .video
-        playView.isHidden = asset.type != .video
+        imageView.isHidden = item.type == .video
+        playView.isHidden = imageView.isHidden == false
         progressView.isHidden = true
         playButton.isSelected = false
         toolBar.isHidden = playView.isHidden
-        livePhotoView?.isHidden = true
-        if toolBar.isHidden == false {
+        if let livePhotoView = livePhotoView {
+            livePhotoView.isHidden = true
+        }
+        if toolBar.isHidden {
+            toolBar.transform = .init(translationX: 0.0, y: MNAssetBrowserCell.ToolBarHeight)
+        } else {
             slider.setValue(0.0, animated: false)
             timeLabel.text = "00:00"
             durationLabel.text = "00:00"
-            toolBar.mn.maxY = toolBar.superview!.bounds.height
+            toolBar.transform = .identity
         }
         // 获取缩略图
         state = .loading
-        asset.cancelRequest()
-        MNAssetHelper.fetchCover(asset, completion: coverUpdateHandler)
+        if let delegate = delegate {
+            delegate.browserCell(self, fetchCover: item, completion: coverUpdateHandler)
+        }
     }
     
     /// 预备展示
@@ -332,14 +364,15 @@ extension MNAssetBrowserCell {
     
     /// 开始展示
     private func beginDisplaying() {
-        guard let content = asset?.content else { return }
+        guard let item = item else { return }
+        guard let content = item.contents else { return }
         state = .displaying
-        if asset.type == .video {
+        if item.type == .video {
             player.add([URL(fileURLWithPath: content as! String)])
             if isAllowsAutoPlaying {
                 player.play()
             }
-        } else if asset.type == .livePhoto {
+        } else if item.type == .livePhoto {
             if #available(iOS 9.1, *), let livePhotoView = livePhotoView as? PHLivePhotoView {
                 livePhotoView.livePhoto = content as? PHLivePhoto
                 if let _ = livePhotoView.livePhoto {
@@ -360,29 +393,26 @@ extension MNAssetBrowserCell {
     /// 结束展示
     func endDisplaying() {
         state = .idle
-        if asset.type == .video {
+        guard let item = item else { return }
+        if item.type == .video {
             player.removeAll()
             playView.coverView.image = nil
-        } else if asset.type == .livePhoto {
+        } else if item.type == .livePhoto {
             if #available(iOS 9.1, *), let livePhotoView = livePhotoView as? PHLivePhotoView, let _ = livePhotoView.livePhoto {
                 livePhotoView.stopPlayback()
                 livePhotoView.livePhoto = nil
             }
         }
-        if let asset = asset {
-            asset.cancelRequest()
-            asset.cancelDownload()
-        }
     }
     
     /// 暂停展示
     func pauseDisplaying() {
-        guard let _ = asset else { return }
-        if asset.type == .video {
+        guard let item = item else { return }
+        if item.type == .video {
             if player.status == .playing {
                 player.pause()
             }
-        } else if asset.type == .livePhoto {
+        } else if item.type == .livePhoto {
             if #available(iOS 9.1, *), let livePhotoView = livePhotoView as? PHLivePhotoView, let _ = livePhotoView.livePhoto {
                 livePhotoView.stopPlayback()
                 // 解决滑动过程中播放的问题
@@ -408,14 +438,11 @@ extension MNAssetBrowserCell {
     
     /// 更新控制栏是否可见
     /// - Parameters:
-    ///   - isVisible: 是否可见
-    ///   - isAnimated: 是否动态展示
-    func updateToolBar(_ isVisible: Bool, animated isAnimated: Bool) {
+    ///   - visible: 是否可见
+    ///   - animated: 是否动态展示
+    func updateToolBar(_ visible: Bool, animated: Bool) {
         guard toolBar.isHidden == false else { return }
-        UIView.animate(withDuration: isAnimated ? 0.3 : 0.0, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
-            guard let self = self else { return }
-            self.toolBar.mn.minY = self.contentView.bounds.height - (isVisible ? self.toolBar.bounds.height : 0.0)
-        }, completion: nil)
+        makePlayToolBarVisible(visible, animated: animated)
     }
 }
 
@@ -424,22 +451,28 @@ extension MNAssetBrowserCell {
     
     /// 设置播放控制栏是否可见
     /// - Parameters:
-    ///   - isVisible: 是否可见
+    ///   - visible: 是否可见
     ///   - animated: 是否动态展示
-    func makePlayToolBarVisible(_ isVisible: Bool, animated: Bool) {
-        UIView.animate(withDuration: animated ? 0.25 : 0.0, delay: 0.0, options: [.curveEaseInOut], animations: { [weak self] in
+    func makePlayToolBarVisible(_ visible: Bool, animated: Bool) {
+        let animations: ()->Void = { [weak self] in
             guard let self = self else { return }
-            self.toolBar.mn.minY = self.contentView.frame.height - (isVisible ? self.toolBar.frame.height : 0.0)
-        }, completion: nil)
+            self.toolBar.transform = visible ? .identity : .init(translationX: 0.0, y: MNAssetBrowserCell.ToolBarHeight)
+        }
+        if animated {
+            UIView.animate(withDuration: 0.28, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: animations)
+        } else {
+            animations()
+        }
     }
     
     /// 播放按钮点击事件
     /// - Parameter sender: 播放按钮
     @objc func playButtonTouchUpInside(_ sender: UIButton) {
-        guard player.status != .failed else { return }
-        if player.status == .playing {
+        switch player.status {
+        case .failed: break
+        case .playing:
             player.pause()
-        } else {
+        default:
             player.play()
         }
     }
@@ -450,9 +483,9 @@ extension MNAssetBrowserCell {
     
     /// 获取当前截图
     var currentImage: UIImage? {
-        guard let asset = asset else { return nil }
-        if asset.type == .video || asset.type == .livePhoto { return asset.cover }
-        guard let image = asset.content as? UIImage else { return asset.cover }
+        guard let item = item else { return nil }
+        if item.type == .video || item.type == .livePhoto { return item.cover }
+        guard let image = item.contents as? UIImage else { return item.cover }
         guard let images = image.images, images.count > 1 else { return image }
         return images.first
     }
@@ -461,11 +494,11 @@ extension MNAssetBrowserCell {
 // MARK: - MNPlayerDelegate
 extension MNAssetBrowserCell: MNPlayerDelegate {
     
-    func playerDidEndDecode(_ player: MNPlayer) {
+    public func playerDidEndDecode(_ player: MNPlayer) {
         durationLabel.text = Date(timeIntervalSince1970: TimeInterval(player.duration)).mn.playTime
     }
     
-    func playerDidChangeStatus(_ player: MNPlayer) {
+    public func playerDidChangeStatus(_ player: MNPlayer) {
         playButton.isSelected = player.status == .playing
         if player.status.rawValue > MNPlayer.Status.failed.rawValue {
             if playView.coverView.isHidden == false {
@@ -478,44 +511,40 @@ extension MNAssetBrowserCell: MNPlayerDelegate {
         }
     }
     
-    func playerDidPlayTimeInterval(_ player: MNPlayer) {
+    public func playerDidPlayTimeInterval(_ player: MNPlayer) {
         slider.setValue(player.progress, animated: false)
         timeLabel.text = Date(timeIntervalSince1970: player.timeInterval).mn.playTime
-    }
-    
-    func player(_ player: MNPlayer, didPlayFail msg: String) {
-        contentView.showInfoToast(msg)
     }
 }
 
 // MARK: - MNSliderDelegate
 extension MNAssetBrowserCell: MNSliderDelegate {
     
-    func sliderShouldBeginDragging(_ slider: MNSlider) -> Bool {
+    public func sliderShouldBeginDragging(_ slider: MNSlider) -> Bool {
         return player.status.rawValue > MNPlayer.Status.failed.rawValue
     }
     
-    func sliderShouldBeginTouching(_ slider: MNSlider) -> Bool {
+    public func sliderShouldBeginTouching(_ slider: MNSlider) -> Bool {
         return player.status.rawValue > MNPlayer.Status.failed.rawValue
     }
     
-    func sliderWillBeginDragging(_ slider: MNSlider) {
+    public func sliderWillBeginDragging(_ slider: MNSlider) {
         player.pause()
     }
     
-    func sliderDidDragging(_ slider: MNSlider) {
+    public func sliderDidDragging(_ slider: MNSlider) {
         player.seek(progress: slider.value, completion: nil)
     }
     
-    func sliderDidEndDragging(_ slider: MNSlider) {
+    public func sliderDidEndDragging(_ slider: MNSlider) {
         player.play()
     }
     
-    func sliderWillBeginTouching(_ slider: MNSlider) {
+    public func sliderWillBeginTouching(_ slider: MNSlider) {
         player.pause()
     }
     
-    func sliderDidEndTouching(_ slider: MNSlider) {
+    public func sliderDidEndTouching(_ slider: MNSlider) {
         player.seek(progress: slider.value) { [weak self] finish in
             guard finish, let self = self else { return }
             self.player.play()
@@ -526,18 +555,18 @@ extension MNAssetBrowserCell: MNSliderDelegate {
 @available(iOS 9.1, *)
 extension MNAssetBrowserCell: PHLivePhotoViewDelegate {
     
-    func livePhotoView(_ livePhotoView: PHLivePhotoView, canBeginPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) -> Bool {
+    public func livePhotoView(_ livePhotoView: PHLivePhotoView, canBeginPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) -> Bool {
         liveBadgeView.alpha == 1.0
     }
     
     
-    func livePhotoView(_ livePhotoView: PHLivePhotoView, willBeginPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) {
+    public func livePhotoView(_ livePhotoView: PHLivePhotoView, willBeginPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) {
         UIView.animate(withDuration: 0.2) { [weak self] in
             self?.liveBadgeView.alpha = 0.0
         }
     }
     
-    func livePhotoView(_ livePhotoView: PHLivePhotoView, didEndPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) {
+    public func livePhotoView(_ livePhotoView: PHLivePhotoView, didEndPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) {
         UIView.animate(withDuration: 0.2) { [weak self] in
             self?.liveBadgeView.alpha = 1.0
         }
