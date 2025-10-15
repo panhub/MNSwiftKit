@@ -11,12 +11,19 @@ import MNSwiftKit
 
 class ViewController: UIViewController {
     
+    let imageView = UIImageView()
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
         view.backgroundColor = .white
         
+        
+        imageView.image = UIImage(named: "image_1")
+        imageView.frame = .init(x: 150.0, y: 150.0, width: 150.0, height: 150.0)
+        view.addSubview(imageView)
         
         //        print("============\(MN_SCREEN_WIDTH)============")
         //        print("============\(MN_SCREEN_HEIGHT)============")
@@ -33,7 +40,10 @@ class ViewController: UIViewController {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesEnded(touches, with: event)
+        guard let touche = touches.first else { return }
+        let location = touche.location(in: view)
+        guard imageView.frame.contains(location) else { return }
+        MNAssetBrowser.present(container: imageView, in: view)
     }
     
     override func didReceiveMemoryWarning() {

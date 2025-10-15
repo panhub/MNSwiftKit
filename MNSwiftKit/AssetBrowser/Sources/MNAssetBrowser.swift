@@ -13,9 +13,11 @@ import CoreMedia
 /// 资源浏览代理
 @objc public protocol MNAssetBrowseDelegate: NSObjectProtocol {
     
-    /// 资源浏览器浏览告知, 通过`displayIndex`获取当前展示索引
-    /// - Parameter browser: 资源浏览器
-    @objc optional func assetBrowserDidScroll(_ browser: MNAssetBrowser)
+    /// 资源浏览器浏览告知
+    /// - Parameters:
+    ///   - browser: 资源浏览器
+    ///   - index: 索引
+    @objc optional func assetBrowser(_ browser: MNAssetBrowser, didScrollToItemAt index: Int)
     
     /// 资源浏览器状态变化
     /// - Parameters:
@@ -168,10 +170,6 @@ public class MNAssetBrowser: UIView {
     private lazy var backgroundView = UIImageView()
     /// 资源集合视图
     private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-    /// 当前展示的表格
-    private var currentDisplayCell: MNAssetBrowserCell? {
-        collectionView.cellForItem(at: IndexPath(item: displayIndex, section: 0)) as? MNAssetBrowserCell
-    }
     
     
     /// 构造资源浏览器
@@ -221,7 +219,6 @@ public class MNAssetBrowser: UIView {
         layout.minimumLineSpacing = interItemSpacing
         layout.minimumInteritemSpacing = 0.0
         layout.sectionInset = UIEdgeInsets(top: 0.0, left: interItemSpacing/2.0, bottom: 0.0, right: interItemSpacing/2.0)
-        //let collectionView = UICollectionView(frame: bounds.inset(by: UIEdgeInsets(top: 0.0, left: -MNAssetBrowser.interItemSpacing/2.0, bottom: 0.0, right: -MNAssetBrowser.interItemSpacing/2.0)), collectionViewLayout: layout)
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.scrollsToTop = false
@@ -329,6 +326,11 @@ public class MNAssetBrowser: UIView {
 // MARK: - Update
 extension MNAssetBrowser {
     
+    /// 当前展示的表格
+    private var currentDisplayCell: MNAssetBrowserCell? {
+        collectionView.cellForItem(at: IndexPath(item: displayIndex, section: 0)) as? MNAssetBrowserCell
+    }
+    
     /// 更新当前索引
     private func updateDisplayIndex() {
         let currentIndex: Int = Int(round(collectionView.contentOffset.x/collectionView.bounds.width))
@@ -338,7 +340,7 @@ extension MNAssetBrowser {
             cell.prepareDisplaying()
         }
         if let delegate = delegate {
-            delegate.assetBrowserDidScroll?(self)
+            delegate.assetBrowser?(self, didScrollToItemAt: displayIndex)
         }
     }
     
@@ -352,34 +354,9 @@ extension MNAssetBrowser {
             item.container = old.container
         }
         items.insert(item, at: displayIndex)
-        //cell.updateAsset(asset)
+        cell.update(item: item)
         cell.prepareDisplaying()
     }
-    
-    /// 添加视图到导航右视图
-    /// - Parameter creator: 创建视图
-//    public func addCustomViewToNavigation(_ creator: ()->[UIView]) {
-//        let views = creator()
-//        for view in views {
-//            if let control = view as? UIControl, control.allTargets.isEmpty {
-//                control.addTarget(self, action: #selector(buttonTouchUpInside(_:)), for: .touchUpInside)
-//            }
-//            view.mn.minX = navigationItemView.frame.width
-//            view.mn.midY = navigationItemView.frame.height/2.0
-//            navigationItemView.mn.width = view.frame.maxX + 17.0
-//            navigationItemView.addSubview(view)
-//        }
-//        if let _ = navigationItemView.superview {
-//            // 已经放置导航右视图 更新位置
-//            navigationItemView.mn.maxX = navigationView.frame.width
-//            if navigationView.isUserInteractionEnabled == false {
-//                // 未开启交互
-//                navigationView.contentMode = .scaleToFill
-//                navigationView.isUserInteractionEnabled = true
-//                navigationView.image = AssetPickerResource.image(named: "top")
-//            }
-//        }
-//    }
 }
 
 // MARK: - 弹出
@@ -391,7 +368,7 @@ extension MNAssetBrowser {
     ///   - index: 起始索引
     ///   - animated: 是否动态展示
     ///   - handler: 状态更新回调
-    public func present(in superview: UIView? = nil, from index: Int = 0, animated: Bool = true, change handler: ((_ state: MNAssetBrowser.State)->Void)? = nil) {
+    public func present(in superview: UIView? = nil, from index: Int = 0, animated: Bool = true, state handler: ((_ state: MNAssetBrowser.State)->Void)? = nil) {
         
         guard let superview = superview ?? UIWindow.mn.current else {
 #if DEBUG
@@ -527,7 +504,7 @@ extension MNAssetBrowser {
     ///   - image: 过渡动画图片
     ///   - animated: 是否动态展示
     ///   - handler: 状态更新提醒
-    public class func present(container: UIView, in superview: UIView? = nil, using image: UIImage? = nil, animated: Bool = true, change handler: ((_ state: MNAssetBrowser.State)->Void)? = nil) {
+    public class func present(container: UIView, in superview: UIView? = nil, using image: UIImage? = nil, animated: Bool = true, state handler: ((_ state: MNAssetBrowser.State)->Void)? = nil) {
         var animatedImage: UIImage?
         if let image = image {
             animatedImage = image
@@ -555,7 +532,7 @@ extension MNAssetBrowser {
         item.type = animatedImage.mn.isAnimatedImage ? .gif : .photo
         let browser = MNAssetBrowser(items: [item])
         browser.backgroundColor = .black
-        browser.present(in: superview, from: 0, animated: animated, change: handler)
+        browser.present(in: superview, from: 0, animated: animated, state: handler)
     }
 }
 
@@ -566,7 +543,7 @@ extension MNAssetBrowser {
     /// - Parameters:
     ///   - animated: 是否动态
     ///   - handler: 状态更新回调
-    public func dismiss(animated: Bool = true, change handler: ((_ state: MNAssetBrowser.State)->Void)? = nil) {
+    public func dismiss(animated: Bool = true, state handler: ((_ state: MNAssetBrowser.State)->Void)? = nil) {
         
         guard let superview = superview else { return }
         let isUserInteractionEnabled = superview.isUserInteractionEnabled

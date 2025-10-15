@@ -212,7 +212,7 @@ public class MNAssetBrowserCell: UICollectionViewCell {
             liveBadgeView = UIImageView()
             liveBadgeView.contentMode = .scaleToFill
             //liveBadgeView.image = PHLivePhotoView.livePhotoBadgeImage(options: [.liveOff])
-            liveBadgeView.image = PHLivePhotoView.livePhotoBadgeImage()
+            liveBadgeView.image = PHLivePhotoView.livePhotoBadgeImage(options: .overContent)
             liveBadgeView.translatesAutoresizingMaskIntoConstraints = false
             livePhotoView.addSubview(liveBadgeView)
             NSLayoutConstraint.activate([
@@ -249,7 +249,7 @@ public class MNAssetBrowserCell: UICollectionViewCell {
         // MNAssetBrowserCell.ToolBarHeight
         toolBar.contentMode = .scaleToFill
         toolBar.isUserInteractionEnabled = true
-        toolBar.image = AssetBrowserResource.image(named: "bottom")
+        toolBar.image = AssetBrowserResource.image(named: "mask")
         toolBar.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(toolBar)
         NSLayoutConstraint.activate([
@@ -259,11 +259,11 @@ public class MNAssetBrowserCell: UICollectionViewCell {
             toolBar.heightAnchor.constraint(equalToConstant: MNAssetBrowserCell.ToolBarHeight)
         ])
         
-        if #unavailable(iOS 15.0, ) {
+        if #unavailable(iOS 15.0) {
             playButton.adjustsImageWhenHighlighted = false
         }
-        playButton.setBackgroundImage(AssetBrowserResource.image(named: "browser_play"), for: .normal)
-        playButton.setBackgroundImage(AssetBrowserResource.image(named: "browser_pause"), for: .selected)
+        playButton.setBackgroundImage(AssetBrowserResource.image(named: "play"), for: .normal)
+        playButton.setBackgroundImage(AssetBrowserResource.image(named: "pause"), for: .selected)
         playButton.addTarget(self, action: #selector(playButtonTouchUpInside), for: .touchUpInside)
         playButton.translatesAutoresizingMaskIntoConstraints = false
         toolBar.addSubview(playButton)
