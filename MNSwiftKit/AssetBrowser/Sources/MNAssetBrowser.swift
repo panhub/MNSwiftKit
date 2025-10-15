@@ -11,7 +11,7 @@ import CoreMedia
 
 
 /// 资源浏览代理
-@objc public protocol MNAssetBrowseDelegate: NSObjectProtocol {
+@objc public protocol MNAssetBrowseDelegate: AnyObject {
     
     /// 资源浏览器浏览告知
     /// - Parameters:
@@ -34,27 +34,27 @@ import CoreMedia
     /// 资源浏览器获取封面
     /// - Parameters:
     ///   - browser: 资源浏览器
-    ///   - item: 资源模型
+    ///   - asset: 资源模型
     ///   - handler: 结束回调
-    @objc optional func assetBrowser(_ browser: MNAssetBrowser, fetchCover item: MNAssetBrowser.Item, completion handler: MNAssetBrowserCell.CoverUpdateHandler)
+    @objc optional func assetBrowser(_ browser: MNAssetBrowser, fetchCover asset: any MNAssetBrowseSupported, completion handler: MNAssetBrowserCell.CoverUpdateHandler)
     
     /// 资源浏览器获取内容
     /// - Parameters:
     ///   - browser: 资源浏览器
-    ///   - item: 资源模型
+    ///   - asset: 资源模型
     ///   - progressHandler: 进度回调
     ///   - completionHandler: 结束回调
-    @objc optional func assetBrowser(_ browser: MNAssetBrowser, fetchContent item: MNAssetBrowser.Item, progress progressHandler: MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: MNAssetBrowserCell.ContentUpdateHandler)
+    @objc optional func assetBrowser(_ browser: MNAssetBrowser, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: MNAssetBrowserCell.ContentUpdateHandler)
     
     /// 展示结束
     /// - Parameters:
     ///   - browser: 资源浏览器
-    ///   - item: 资源模型
-    @objc optional func assetBrowser(_ browser: MNAssetBrowser, didEndDisplaying item: MNAssetBrowser.Item)
+    ///   - asset: 资源模型
+    @objc optional func assetBrowser(_ browser: MNAssetBrowser, didEndDisplaying asset: any MNAssetBrowseSupported)
 }
 
 /// 资源类型
-@objc public enum MNBrowseType: Int {
+@objc public enum MNAssetType: Int {
     /// 静态图
     case photo
     /// 动图
@@ -63,6 +63,28 @@ import CoreMedia
     case livePhoto
     /// 视频
     case video
+}
+
+/// 资源浏览支持
+@objc public protocol MNAssetBrowseSupported: AnyObject {
+    
+    /// 唯一标识
+    var identifier: String { get }
+    
+    /// 内容
+    var contents: Any? { set get }
+    
+    /// 资源类型
+    var type: MNAssetType { get }
+    
+    /// 封面
+    var cover: UIImage? { get }
+    
+    /// 外部引用容器
+    var container: UIView? { set get }
+    
+    /// 加载进度
+    var progress: Double { get }
 }
 
 /// 资源浏览器
@@ -100,28 +122,25 @@ public class MNAssetBrowser: UIView {
         case willAppear, didAppear, willDisappear, didDisappear
     }
     
-    /// 资源浏览支持
+    /// 资源浏览项
     @objc(MNAssetBrowserItem)
-    public class Item: NSObject {
+    public class Item: NSObject, MNAssetBrowseSupported {
         
-        /// 内容
+        @objc public var identifier: String = "\(Date().timeIntervalSince1970)"
+
         @objc public var contents: Any?
         
-        /// 类型
-        @objc public var type: MNBrowseType = .photo
+        @objc public var type: MNAssetType = .photo
         
-        /// 封面图
         @objc public var cover: UIImage?
         
-        /// 引用的视图
         @objc public weak var container: UIView?
         
-        /// 进度
         @objc public var progress: Double = 0.0
     }
     
     /// 资源集合
-    private var items: [MNAssetBrowser.Item] = []
+    private var assets: [MNAssetBrowseSupported] = []
     /// 左按钮事件
     @objc public var leftBarEvent: MNAssetBrowser.Event = .none
     /// 右按钮事件
@@ -173,10 +192,10 @@ public class MNAssetBrowser: UIView {
     
     
     /// 构造资源浏览器
-    /// - Parameter items: 资源集合
-    public init(items: [MNAssetBrowser.Item]) {
+    /// - Parameter assets: 资源集合
+    public init(assets: [MNAssetBrowseSupported]) {
         super.init(frame: UIScreen.main.bounds)
-        self.items.append(contentsOf: items)
+        self.assets.append(contentsOf: assets)
     }
     
     required init?(coder: NSCoder) {
@@ -317,7 +336,7 @@ public class MNAssetBrowser: UIView {
     /// 删除时清理缓存
     public override func removeFromSuperview() {
         if clearWhenExit {
-            items.forEach { $0.contents = nil }
+            assets.forEach { $0.contents = nil }
         }
         super.removeFromSuperview()
     }
@@ -345,16 +364,16 @@ extension MNAssetBrowser {
     }
     
     /// 更新当前展示的资源
-    /// - Parameter item: 新的资源模型
-    public func updateCurrentItem(_ item: MNAssetBrowser.Item) {
-        guard displayIndex >= 0, displayIndex < items.count else { return }
+    /// - Parameter asset: 新的资源模型
+    public func updateCurrentAsset(_ asset: MNAssetBrowseSupported) {
+        guard displayIndex >= 0, displayIndex < assets.count else { return }
         guard let cell = currentDisplayCell else { return }
-        let old = items.remove(at: displayIndex)
+        let old = assets.remove(at: displayIndex)
         if displayIndex == fromIndex {
-            item.container = old.container
+            asset.container = old.container
         }
-        items.insert(item, at: displayIndex)
-        cell.update(item: item)
+        assets.insert(asset, at: displayIndex)
+        cell.update(asset: asset)
         cell.prepareDisplaying()
     }
 }
@@ -378,15 +397,15 @@ extension MNAssetBrowser {
         }
         
         // 保证资源模型可用
-        guard items.isEmpty == false, index < items.count else {
+        guard assets.isEmpty == false, index < assets.count else {
 #if DEBUG
             print("unknown assets.")
 #endif
             return
         }
         
-        let item = items[index]
-        guard let container = item.container else {
+        let asset = assets[index]
+        guard let container = asset.container else {
 #if DEBUG
             print("unknown from asset container.")
 #endif
@@ -395,7 +414,7 @@ extension MNAssetBrowser {
         
         // 提取转场图片
         var animatedImage: UIImage?
-        if let cover = item.cover {
+        if let cover = asset.cover {
             animatedImage = cover
         } else if container is UIImageView {
             let imageView = container as! UIImageView
@@ -403,8 +422,8 @@ extension MNAssetBrowser {
         } else if container is UIButton {
             let button = container as! UIButton
             animatedImage = button.currentBackgroundImage ?? button.currentImage
-        } else if let content = item.contents, content is UIImage {
-            let image = content as! UIImage
+        } else if let contents = asset.contents, contents is UIImage {
+            let image = contents as! UIImage
             animatedImage = image
         }
         if let image = animatedImage, let images = image.images, images.count > 1 {
@@ -527,10 +546,10 @@ extension MNAssetBrowser {
         }
         let item = MNAssetBrowser.Item()
         item.cover = animatedImage
-        item.container = container
         item.contents = animatedImage
+        item.container = container
         item.type = animatedImage.mn.isAnimatedImage ? .gif : .photo
-        let browser = MNAssetBrowser(items: [item])
+        let browser = MNAssetBrowser(assets: [item])
         browser.backgroundColor = .black
         browser.present(in: superview, from: 0, animated: animated, state: handler)
     }
@@ -549,8 +568,8 @@ extension MNAssetBrowser {
         let isUserInteractionEnabled = superview.isUserInteractionEnabled
         superview.isUserInteractionEnabled = false
         
-        let item = items[displayIndex]
-        var toView: UIView! = displayIndex == fromIndex ? fromView : item.container
+        let asset = assets[displayIndex]
+        var toView: UIView! = displayIndex == fromIndex ? fromView : asset.container
         if let subview = toView {
             if subview != fromView {
                 let rect = subview.superview!.convert(subview.frame, to: self)
@@ -582,7 +601,7 @@ extension MNAssetBrowser {
         }
         
         var animatedImage: UIImage?
-        if let cover = item.cover {
+        if let cover = asset.cover {
             animatedImage = cover
         } else if toView is UIImageView {
             let imageView = toView as! UIImageView
@@ -708,7 +727,7 @@ extension MNAssetBrowser: UICollectionViewDelegate, UICollectionViewDataSource {
     }
     
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        items.count
+        assets.count
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -724,16 +743,16 @@ extension MNAssetBrowser: UICollectionViewDelegate, UICollectionViewDataSource {
     
     public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? MNAssetBrowserCell else { return }
-        guard indexPath.item < items.count else { return }
-        let item = items[indexPath.item]
-        cell.update(item: item)
+        guard indexPath.item < assets.count else { return }
+        let asset = assets[indexPath.item]
+        cell.update(asset: asset)
     }
     
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? MNAssetBrowserCell else { return }
         cell.endDisplaying()
-        if let item = cell.item, let delegate = delegate {
-            delegate.assetBrowser?(self, didEndDisplaying: item)
+        if let asset = cell.asset, let delegate = delegate {
+            delegate.assetBrowser?(self, didEndDisplaying: asset)
         }
     }
     
@@ -750,19 +769,19 @@ extension MNAssetBrowser: UICollectionViewDelegate, UICollectionViewDataSource {
 // MARK: - MNAssetBrowserCellEventHandler
 extension MNAssetBrowser: MNAssetBrowserCellEventHandler {
     
-    func browserCell(_ cell: MNAssetBrowserCell, fetchCover item: Item, completion handler: (Item, UIImage?) -> Void) {
-        if let cover = item.cover {
-            handler(item, cover)
+    func browserCell(_ cell: MNAssetBrowserCell, fetchCover asset: any MNAssetBrowseSupported, completion handler: (any MNAssetBrowseSupported, UIImage?) -> Void) {
+        if let cover = asset.cover {
+            handler(asset, cover)
         } else if let delegate = delegate {
-            delegate.assetBrowser?(self, fetchCover: item, completion: handler)
+            delegate.assetBrowser?(self, fetchCover: asset, completion: handler)
         }
     }
     
-    func browserCell(_ cell: MNAssetBrowserCell, fetchContent item: Item, progress progressHandler: (Item, Double, (any Error)?) -> Void, completion completionHandler: (Item) -> Void) {
-        if let _ = item.contents {
-            completionHandler(item)
+    func browserCell(_ cell: MNAssetBrowserCell, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: (any MNAssetBrowseSupported, Double, (any Error)?) -> Void, completion completionHandler: (any MNAssetBrowseSupported) -> Void) {
+        if let _ = asset.contents {
+            completionHandler(asset)
         } else if let delegate = delegate {
-            delegate.assetBrowser?(self, fetchContent: item, progress: progressHandler, completion: completionHandler)
+            delegate.assetBrowser?(self, fetchContent: asset, progress: progressHandler, completion: completionHandler)
         }
     }
 }
@@ -825,8 +844,8 @@ extension MNAssetBrowser: UIGestureRecognizerDelegate {
             
             cell.pauseDisplaying()
             
-            let item = items[displayIndex]
-            var interactiveToView: UIView! = displayIndex == fromIndex ? fromView : item.container
+            let asset = assets[displayIndex]
+            var interactiveToView: UIView! = displayIndex == fromIndex ? fromView : asset.container
             if let subview = interactiveToView {
                 if subview != fromView {
                     let rect = subview.superview!.convert(subview.frame, to: self)

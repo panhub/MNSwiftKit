@@ -13,29 +13,29 @@ protocol MNAssetBrowserCellEventHandler: NSObjectProtocol {
     
     /// 获取封面事件
     /// - Parameter cell: 表格
-    /// - Parameter item: 资源模型
+    /// - Parameter asset: 资源模型
     /// - Parameter handler: 结束回调
-    func browserCell(_ cell: MNAssetBrowserCell, fetchCover item: MNAssetBrowser.Item, completion handler: MNAssetBrowserCell.CoverUpdateHandler)
+    func browserCell(_ cell: MNAssetBrowserCell, fetchCover asset: any MNAssetBrowseSupported, completion handler: MNAssetBrowserCell.CoverUpdateHandler)
     
     /// 获取内容事件
     /// - Parameter cell: 表格
-    /// - Parameter item: 资源模型
+    /// - Parameter asset: 资源模型
     /// - Parameter progressHandler: 进度回调
     /// - Parameter completionHandler: 结束回调
-    func browserCell(_ cell: MNAssetBrowserCell, fetchContent item: MNAssetBrowser.Item, progress progressHandler: MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: MNAssetBrowserCell.ContentUpdateHandler)
+    func browserCell(_ cell: MNAssetBrowserCell, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: MNAssetBrowserCell.ContentUpdateHandler)
 }
 
 /// 资源浏览器表格
 public class MNAssetBrowserCell: UICollectionViewCell {
     
     /// 封面更新回调
-    public typealias CoverUpdateHandler = (MNAssetBrowser.Item, UIImage?)->Void
+    public typealias CoverUpdateHandler = (any MNAssetBrowseSupported, UIImage?)->Void
     
     /// 进度更新回调
-    public typealias ProgressUpdateHandler = (MNAssetBrowser.Item, Double, Error?)->Void
+    public typealias ProgressUpdateHandler = (any MNAssetBrowseSupported, Double, Error?)->Void
     
     /// 内容更新回调
-    public typealias ContentUpdateHandler = (MNAssetBrowser.Item)->Void
+    public typealias ContentUpdateHandler = (any MNAssetBrowseSupported)->Void
     
     /// 当前状态
     private enum State {
@@ -46,7 +46,7 @@ public class MNAssetBrowserCell: UICollectionViewCell {
     static let ToolBarHeight: CGFloat = MN_BOTTOM_SAFE_HEIGHT + 60.0
     
     /// 资源模型
-    private(set) var item: MNAssetBrowser.Item!
+    private(set) var asset: (any MNAssetBrowseSupported)!
     /// 事件代理
     weak var delegate: MNAssetBrowserCellEventHandler!
     /// 当前状态
@@ -99,12 +99,12 @@ public class MNAssetBrowserCell: UICollectionViewCell {
     }()
     /// 封面图更新回调
     private lazy var coverUpdateHandler: CoverUpdateHandler = {
-        let coverUpdateHandler: CoverUpdateHandler = { [weak self] item, cover in
-            guard let self = self, let asset = self.item, item == asset else { return }
+        let coverUpdateHandler: CoverUpdateHandler = { [weak self] asset, cover in
+            guard let self = self, let item = self.asset, asset.identifier == item.identifier else { return }
             switch self.state {
             case .loading, .prepared:
                 guard var image = cover else { break }
-                if let contents = item.contents, contents is UIImage {
+                if let contents = asset.contents, contents is UIImage {
                     image = contents as! UIImage
                 }
                 if let images = image.images, images.count > 1, let first = images.first {
@@ -117,16 +117,16 @@ public class MNAssetBrowserCell: UICollectionViewCell {
                 } else {
                     self.imageView.image = image
                 }
-                if item.progress > 0.0, item.progress < 1.0 {
+                if asset.progress > 0.0, asset.progress < 1.0 {
                     self.progressView.isHidden = false
-                    self.progressView.setProgress(item.progress)
+                    self.progressView.setProgress(asset.progress)
                 }
                 // 获取内容
                 if self.state == .loading {
                     self.state = .downloading
                 }
                 if let delegate = self.delegate {
-                    delegate.browserCell(self, fetchContent: item, progress: self.progressUpdateHandler, completion: self.contentUpdateHandler)
+                    delegate.browserCell(self, fetchContent: asset, progress: self.progressUpdateHandler, completion: self.contentUpdateHandler)
                 }
             default: break
             }
@@ -135,8 +135,8 @@ public class MNAssetBrowserCell: UICollectionViewCell {
     }()
     /// 进度更新回调
     private lazy var progressUpdateHandler: ProgressUpdateHandler = {
-        let progressUpdateHandler: ProgressUpdateHandler = { [weak self] item, progress, error in
-            guard let self = self, let asset = self.item, asset == item else { return }
+        let progressUpdateHandler: ProgressUpdateHandler = { [weak self] asset, progress, error in
+            guard let self = self, let item = self.asset, asset.identifier == item.identifier else { return }
             switch self.state {
             case .downloading, .prepared:
                 if error != nil || progress <= 0.0 {
@@ -155,8 +155,8 @@ public class MNAssetBrowserCell: UICollectionViewCell {
     }()
     /// 内容更新回调
     private lazy var contentUpdateHandler: ContentUpdateHandler = {
-        let contentUpdateHandler: ContentUpdateHandler = { [weak self] item in
-            guard let self = self, let asset = self.item, asset == item else { return }
+        let contentUpdateHandler: ContentUpdateHandler = { [weak self] asset in
+            guard let self = self, let item = self.asset, asset.identifier == item.identifier else { return }
             self.progressView.isHidden = true
             switch self.state {
             case .downloading:
@@ -324,11 +324,11 @@ public class MNAssetBrowserCell: UICollectionViewCell {
 extension MNAssetBrowserCell {
     
     /// 更新资源
-    /// - Parameter item: 资源模型
-    func update(item: MNAssetBrowser.Item) {
-        self.item = item
+    /// - Parameter asset: 资源模型
+    func update(asset: any MNAssetBrowseSupported) {
+        self.asset = asset
         imageView.image = nil
-        imageView.isHidden = item.type == .video
+        imageView.isHidden = asset.type == .video
         playView.isHidden = imageView.isHidden == false
         progressView.isHidden = true
         playButton.isSelected = false
@@ -347,7 +347,7 @@ extension MNAssetBrowserCell {
         // 获取缩略图
         state = .loading
         if let delegate = delegate {
-            delegate.browserCell(self, fetchCover: item, completion: coverUpdateHandler)
+            delegate.browserCell(self, fetchCover: asset, completion: coverUpdateHandler)
         }
     }
     
@@ -364,17 +364,17 @@ extension MNAssetBrowserCell {
     
     /// 开始展示
     private func beginDisplaying() {
-        guard let item = item else { return }
-        guard let content = item.contents else { return }
+        guard let asset = asset else { return }
+        guard let contents = asset.contents else { return }
         state = .displaying
-        if item.type == .video {
-            player.add([URL(fileURLWithPath: content as! String)])
+        if asset.type == .video {
+            player.add([URL(fileURLWithPath: contents as! String)])
             if isAllowsAutoPlaying {
                 player.play()
             }
-        } else if item.type == .livePhoto {
+        } else if asset.type == .livePhoto {
             if #available(iOS 9.1, *), let livePhotoView = livePhotoView as? PHLivePhotoView {
-                livePhotoView.livePhoto = content as? PHLivePhoto
+                livePhotoView.livePhoto = contents as? PHLivePhoto
                 if let _ = livePhotoView.livePhoto {
                     imageView.isHidden = true
                     livePhotoView.isHidden = false
@@ -384,7 +384,7 @@ extension MNAssetBrowserCell {
                 }
             }
         } else {
-            guard let image = content as? UIImage else { return }
+            guard let image = contents as? UIImage else { return }
             updateImage(image)
             imageView.image = image
         }
@@ -393,11 +393,11 @@ extension MNAssetBrowserCell {
     /// 结束展示
     func endDisplaying() {
         state = .idle
-        guard let item = item else { return }
-        if item.type == .video {
+        guard let asset = asset else { return }
+        if asset.type == .video {
             player.removeAll()
             playView.coverView.image = nil
-        } else if item.type == .livePhoto {
+        } else if asset.type == .livePhoto {
             if #available(iOS 9.1, *), let livePhotoView = livePhotoView as? PHLivePhotoView, let _ = livePhotoView.livePhoto {
                 livePhotoView.stopPlayback()
                 livePhotoView.livePhoto = nil
@@ -407,12 +407,12 @@ extension MNAssetBrowserCell {
     
     /// 暂停展示
     func pauseDisplaying() {
-        guard let item = item else { return }
-        if item.type == .video {
+        guard let asset = asset else { return }
+        if asset.type == .video {
             if player.status == .playing {
                 player.pause()
             }
-        } else if item.type == .livePhoto {
+        } else if asset.type == .livePhoto {
             if #available(iOS 9.1, *), let livePhotoView = livePhotoView as? PHLivePhotoView, let _ = livePhotoView.livePhoto {
                 livePhotoView.stopPlayback()
                 // 解决滑动过程中播放的问题
@@ -483,9 +483,9 @@ extension MNAssetBrowserCell {
     
     /// 获取当前截图
     var currentImage: UIImage? {
-        guard let item = item else { return nil }
-        if item.type == .video || item.type == .livePhoto { return item.cover }
-        guard let image = item.contents as? UIImage else { return item.cover }
+        guard let asset = asset else { return nil }
+        if asset.type == .video || asset.type == .livePhoto { return asset.cover }
+        guard let image = asset.contents as? UIImage else { return asset.cover }
         guard let images = image.images, images.count > 1 else { return image }
         return images.first
     }
