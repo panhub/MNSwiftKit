@@ -13,17 +13,25 @@ class ViewController: UIViewController {
     
     let imageView = UIImageView()
     
+    lazy var slider = MNSlider(frame: .init(x: imageView.frame.minX, y: imageView.frame.maxY + 50.0, width: 200.0, height: 50.0))
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        view.backgroundColor = .white
+        view.backgroundColor = .red
         
-        
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 10.0
         imageView.image = UIImage(named: "image_1")
         imageView.frame = .init(x: 150.0, y: 150.0, width: 150.0, height: 150.0)
         view.addSubview(imageView)
+        
+        slider.minimumValue = -1.0
+        slider.maximumValue = 1.0
+        slider.setValueChange(handler: valueChanged(_:))
+        view.addSubview(slider)
+        
         
         //        print("============\(MN_SCREEN_WIDTH)============")
         //        print("============\(MN_SCREEN_HEIGHT)============")
@@ -42,8 +50,15 @@ class ViewController: UIViewController {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touche = touches.first else { return }
         let location = touche.location(in: view)
-        guard imageView.frame.contains(location) else { return }
-        MNAssetBrowser.present(container: imageView, in: view)
+        if imageView.frame.contains(location) {
+            MNAssetBrowser.present(container: imageView, in: view)
+        } else {
+            slider.setValue(0.0, animated: true)
+        }
+    }
+    
+    @objc private func valueChanged(_ slider: MNSlider) {
+        print(slider.value)
     }
     
     override func didReceiveMemoryWarning() {

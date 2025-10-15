@@ -37,8 +37,12 @@ import UIKit
 public class MNSlider: UIView {
     /// 事件代理
     public weak var delegate: MNSliderDelegate?
-    /// 进度
-    public private(set) var value: Double = 0.0
+    /// 数值变化回调
+    private var valueChangeHandler: ((MNSlider)->Void)?
+    /// 当前数值
+    public private(set) var value: CGFloat = 0.0
+    /// 当前进度
+    public private(set) var progress: CGFloat = 0.0
     /// 是否在拖拽
     public private(set) var isDragging: Bool = false
     /// 轨迹
@@ -55,6 +59,18 @@ public class MNSlider: UIView {
     private var thumbWidthConstraint: NSLayoutConstraint!
     /// 进度条宽度约束
     private var progressWidthConstraint: NSLayoutConstraint!
+    /// 最小值
+    public var minimumValue: CGFloat = 0.0 {
+        didSet {
+            updateValue()
+        }
+    }
+    /// 最大值
+    public var maximumValue: CGFloat = 1.0 {
+        didSet {
+            updateValue()
+        }
+    }
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -101,16 +117,15 @@ public class MNSlider: UIView {
         ])
         
         thumbImageView.clipsToBounds = true
-        thumbImageView.layer.cornerRadius = 3.0
+        thumbImageView.layer.cornerRadius = 7.0
         thumbImageView.contentMode = .scaleAspectFit
-        thumbImageView.backgroundColor = .white
         thumbImageView.translatesAutoresizingMaskIntoConstraints = false
         thumbView.addSubview(thumbImageView)
         NSLayoutConstraint.activate([
-            thumbImageView.topAnchor.constraint(equalTo: thumbView.topAnchor, constant: 4.0),
-            thumbImageView.leftAnchor.constraint(equalTo: thumbView.leftAnchor, constant: 4.0),
-            thumbImageView.bottomAnchor.constraint(equalTo: thumbView.bottomAnchor, constant: -4.0),
-            thumbImageView.rightAnchor.constraint(equalTo: thumbView.rightAnchor, constant: -4.0)
+            thumbImageView.topAnchor.constraint(equalTo: thumbView.topAnchor),
+            thumbImageView.leftAnchor.constraint(equalTo: thumbView.leftAnchor),
+            thumbImageView.bottomAnchor.constraint(equalTo: thumbView.bottomAnchor),
+            thumbImageView.rightAnchor.constraint(equalTo: thumbView.rightAnchor)
         ])
         
         let pan = UIPanGestureRecognizer(target: self, action: #selector(pan(recognizer:)))
@@ -137,16 +152,29 @@ public class MNSlider: UIView {
     public override func updateConstraints() {
         super.updateConstraints()
         let width = frame.width - thumbWidthConstraint.constant
-        thumbLeftConstraint.constant = width*value
+        thumbLeftConstraint.constant = width*progress
         progressWidthConstraint.constant = thumbLeftConstraint.constant + thumbWidthConstraint.constant/2.0
+    }
+    
+    /// 添加进度值变化闭包
+    /// - Parameter handler: 响应者
+    public func setValueChange(handler: ((MNSlider)->Void)?) {
+        valueChangeHandler = handler
     }
     
     /// 更新进度
     private func updateProgress() {
         let width = frame.width - thumbWidthConstraint.constant
         guard width > 0.0 else { return }
-        let progress = thumbLeftConstraint.constant/width
-        value = Swift.max(0.0, Swift.min(1.0, progress))
+        let proportion = thumbLeftConstraint.constant/width
+        progress = Swift.max(0.0, Swift.min(1.0, proportion))
+        updateValue()
+    }
+    
+    /// 更新数值
+    private func updateValue() {
+        let difference = maximumValue - minimumValue
+        value = difference > 0.0 ? (difference*progress + minimumValue) : minimumValue
     }
 }
 
@@ -183,6 +211,9 @@ private extension MNSlider {
             thumbLeftConstraint.constant = Swift.max(0.0, Swift.min(constant, frame.width - thumbWidthConstraint.constant))
             progressWidthConstraint.constant = thumbLeftConstraint.constant + thumbWidthConstraint.constant/2.0
             updateProgress()
+            if let valueChangeHandler = valueChangeHandler {
+                valueChangeHandler(self)
+            }
             if let delegate = delegate {
                 delegate.sliderDidDragging?(self)
             }
@@ -204,6 +235,9 @@ private extension MNSlider {
         thumbLeftConstraint.constant = Swift.max(0.0, Swift.min(location.x, frame.width - thumbWidthConstraint.constant))
         progressWidthConstraint.constant = thumbLeftConstraint.constant + thumbWidthConstraint.constant/2.0
         updateProgress()
+        if let valueChangeHandler = valueChangeHandler {
+            valueChangeHandler(self)
+        }
         if let delegate = delegate {
             delegate.sliderDidEndTouching?(self)
         }
@@ -213,17 +247,26 @@ private extension MNSlider {
 // MARK: - Progress
 extension MNSlider {
     
+    public func setValue<T>(_ value: T, animated: Bool) where T: BinaryFloatingPoint {
+        let difference = maximumValue - minimumValue
+        guard difference > 0.0 else { return }
+        let current = CGFloat(value) - minimumValue
+        guard current >= 0.0, current <= difference else { return }
+        updateProgress(current/difference, animated: animated)
+    }
+    
     /// 设置进度值
     /// - Parameters:
     ///   - value: 进度值
     ///   - animated: 是否动态
-    public func setValue<T>(_ value: T, animated: Bool = false) where T: BinaryFloatingPoint {
+    public func setProgress<T>(_ value: T, animated: Bool = false) where T: BinaryFloatingPoint {
         updateProgress(Double(value), animated: animated)
     }
     
-    private func updateProgress(_ progress: Double, animated: Bool = false) {
+    private func updateProgress(_ value: CGFloat, animated: Bool = false) {
         guard isDragging == false else { return }
-        value = Swift.max(0.0, Swift.min(progress, 1.0))
+        progress = Swift.max(0.0, Swift.min(value, 1.0))
+        updateValue()
         let animations: ()->Void = { [weak self] in
             guard let self = self else { return }
             self.setNeedsLayout()
