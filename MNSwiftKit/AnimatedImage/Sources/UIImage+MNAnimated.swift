@@ -15,7 +15,8 @@ extension NameSpaceWrapper where Base: UIImage {
     
     /// 是否是动态图
     public var isAnimatedImage: Bool {
-        NSStringFromClass(Base.self).contains("UIAnimatedImage")
+        if base.duration > 0.0, let images = base.images, images.count > 1 { return true }
+        return false
     }
     
     /// 数据流
