@@ -92,11 +92,13 @@ extension NameSpaceWrapper where Base: UIImage {
     }
     
     /// 调整图片颜色
-    /// - Parameter color: 渲染颜色
-    /// - Returns: 渲染后的图片
-    public func rendering(to color: UIColor) -> UIImage! {
+    /// - Parameters:
+    ///   - color: 渲染颜色
+    ///   - opaque: 透明度
+    /// 渲染后的图片
+    public func rendering(to color: UIColor, opaque: Bool = false) -> UIImage! {
         guard let cgImage = base.cgImage else { return nil }
-        UIGraphicsBeginImageContextWithOptions(base.size, true, base.scale)
+        UIGraphicsBeginImageContextWithOptions(base.size, opaque, base.scale)
         guard let context = UIGraphicsGetCurrentContext() else { return nil }
         context.translateBy(x: 0.0, y: base.size.height)
         context.scaleBy(x: 1.0, y: -1.0)

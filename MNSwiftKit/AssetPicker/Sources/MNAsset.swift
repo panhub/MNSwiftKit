@@ -16,7 +16,7 @@ import AVFoundation.AVAsset
 public typealias MNAssetUpdateHandler = (_ asset: MNAsset)->Void
 
 /// 资源模型
-public class MNAsset: NSObject {
+public class MNAsset: NSObject, MNAssetBrowseSupported {
     
     /**
      文件来源
@@ -32,7 +32,7 @@ public class MNAsset: NSObject {
     @objc public var identifier: String = ""
     
     /// 文件类型
-    @objc public var type: ContentType = .photo
+    @objc public var type: MNAssetType = .photo
     
     /// 来源
     @objc public var source: ResourceSource = .unknown
@@ -42,7 +42,7 @@ public class MNAsset: NSObject {
      视频: 路径
      LivePhoto : PHLivePhoto
      */
-    @objc public var content: Any?
+    @objc public var contents: Any?
     
     /// 显示大小
     @objc public var renderSize: CGSize = CGSize(width: 250.0, height: 250.0)
@@ -110,54 +110,75 @@ public class MNAsset: NSObject {
     public convenience init(asset: PHAsset) {
         self.init()
         phAsset = asset
-        type = asset.contentType
+        type = asset.mn.contentType
         duration = asset.duration
         identifier = asset.localIdentifier
     }
     
     /// 取消内容请求
-    func cancelRequest() {
+    public func cancelRequest() {
         MNAssetHelper.cancelRequest(self)
     }
     
     /// 取消内容下载请求
-    func cancelDownload() {
+    public func cancelDownload() {
         MNAssetHelper.cancelDownload(self)
     }
     
-    /// 修改缩略图
+    /// 更新缩略图
     /// - Parameter cover: 缩略图
-    func update(cover: UIImage?) {
-        DispatchQueue.main.async { [weak self] in
+    public func update(cover: UIImage?) {
+        let executeHandler: ()->Void = { [weak self] in
             guard let self = self else { return }
             self.cover = cover
-            self.coverUpdateHandler?(self)
+            if let coverUpdateHandler = self.coverUpdateHandler {
+                coverUpdateHandler(self)
+            }
+        }
+        if Thread.isMainThread {
+            executeHandler()
+        } else {
+            DispatchQueue.main.async(execute: executeHandler)
         }
     }
     
-    /// 修改来源
+    /// 更新来源
     /// - Parameter source: 来源
-    func update(source: ResourceSource) {
-        DispatchQueue.main.async { [weak self] in
+    public func update(source: ResourceSource) {
+        let executeHandler: ()->Void = { [weak self] in
             guard let self = self else { return }
             self.source = source
-            self.sourceUpdateHandler?(self)
+            if let sourceUpdateHandler = self.sourceUpdateHandler {
+                sourceUpdateHandler(self)
+            }
+        }
+        if Thread.isMainThread {
+            executeHandler()
+        } else {
+            DispatchQueue.main.async(execute: executeHandler)
         }
     }
     
-    /// 修改文件大小
+    /// 更新文件大小
     /// - Parameter fileSize: 文件大小
-    func update(fileSize: Int64) {
-        DispatchQueue.main.async { [weak self] in
+    public func update(fileSize: Int64) {
+        let executeHandler: ()->Void = { [weak self] in
             guard let self = self else { return }
             self.fileSize = fileSize
             self.fileSizeString = fileSize.mn.fileSizeString
-            self.fileSizeUpdateHandler?(self)
+            if let fileSizeUpdateHandler = self.fileSizeUpdateHandler {
+                fileSizeUpdateHandler(self)
+            }
+        }
+        if Thread.isMainThread {
+            executeHandler()
+        } else {
+            DispatchQueue.main.async(execute: executeHandler)
         }
     }
     
     deinit {
-        content = nil
+        contents = nil
         coverUpdateHandler = nil
         sourceUpdateHandler = nil
         fileSizeUpdateHandler = nil
@@ -169,84 +190,81 @@ public class MNAsset: NSObject {
     /// - Parameters:
     ///   - content: 文件内容
     ///   - options: 资源选项
-    public convenience init?(content: Any, options: MNAssetPickerOptions? = nil) {
+    public convenience init?(contents: Any, options: MNAssetPickerOptions? = nil) {
         self.init()
-        isEnabled = true
         source = .local
-        if let options = options { renderSize = options.renderSize }
+        if let options = options {
+            renderSize = options.renderSize
+        }
         var filePath: String!
-        if content is UIImage {
+        if contents is UIImage {
             // 图片
-            let image = content as! UIImage
-            if let images = image.images, images.count > 1 {
+            let image = contents as! UIImage
+            if let images = image.images, let first = images.first {
                 type = .gif
-                cover = images.first!.mn.resizing(to: max(renderSize.width, renderSize.height))
+                cover = first.mn.resizing(to: max(renderSize.width, renderSize.height))
             } else {
                 type = .photo
                 cover = image.mn.resizing(to: max(renderSize.width, renderSize.height))
             }
-            self.content = image
-        } else if content is String {
-            filePath = content as? String
-        } else if content is URL, let url = content as? URL, url.isFileURL {
-            filePath = url.path
+            self.contents = image
+        } else if contents is String {
+            filePath = contents as? String
+        } else if contents is URL, let url = contents as? URL, url.isFileURL {
+            filePath = url.mn.path
         }
         if let filePath = filePath, FileManager.default.fileExists(atPath: filePath) {
             type = .video
-            duration = MNAssetExporter.duration(mediaAtPath: filePath)
             cover = MNAssetExporter.thumbnail(videoAtPath: filePath)
-            if let options = options, options.showFileSize, let attributes = try? FileManager.default.attributesOfItem(atPath: filePath), let fileSize = (attributes[FileAttributeKey.size] as? NSNumber)?.int64Value {
+            duration = MNAssetExporter.duration(mediaAtPath: filePath)
+            if let options = options, options.showFileSize, let attributes = try? FileManager.default.attributesOfItem(atPath: filePath), let fileSize = attributes[.size] as? Int64 {
                 self.fileSize = fileSize
             }
-            self.content = filePath
+            self.contents = filePath
         } else if #available(iOS 9.1, *) {
-            if content is PHLivePhoto, let livePhoto = content as? PHLivePhoto, let videoURL = livePhoto.videoFileURL, let imageURL = livePhoto.imageFileURL {
+            if contents is PHLivePhoto, let livePhoto = contents as? PHLivePhoto, let videoURL = livePhoto.mn.videoFileURL, let imageURL = livePhoto.mn.imageFileURL {
                 type = .livePhoto
-                cover = UIImage(contentsOfFile: imageURL.mn.path)?.mn.resizing(to: max(renderSize.width, renderSize.height))
+                if let image = UIImage(contentsOfFile: imageURL.mn.path) {
+                    cover = image.mn.resizing(to: max(renderSize.width, renderSize.height))
+                }
                 if let options = options, options.showFileSize {
                     var fileSize: Int64 = 0
-                    if let attributes = try? FileManager.default.attributesOfItem(atPath: imageURL.mn.path), let imageFileSize = attributes[FileAttributeKey.size] as? Int64 {
+                    if let attributes = try? FileManager.default.attributesOfItem(atPath: imageURL.mn.path), let imageFileSize = attributes[.size] as? Int64 {
                         fileSize += imageFileSize
                     }
-                    if let attributes = try? FileManager.default.attributesOfItem(atPath: videoURL.path), let videoFileSize = attributes[FileAttributeKey.size] as? Int64 {
+                    if let attributes = try? FileManager.default.attributesOfItem(atPath: videoURL.path), let videoFileSize = attributes[.size] as? Int64 {
                         fileSize += videoFileSize
                     }
                     self.fileSize = fileSize
                 }
-                self.content = livePhoto
+                self.contents = livePhoto
             }
         }
-        guard let _ = self.content else { return nil }
+        guard let _ = self.contents else { return nil }
     }
     
     public override func isEqual(_ object: Any?) -> Bool {
-        guard super.isEqual(object) == false else { return true }
+        if super.isEqual(object) { return true }
         guard let asset = object as? MNAsset else { return false }
-        guard let localIdentifier = phAsset?.localIdentifier, let otherIdentifier = asset.phAsset?.localIdentifier else { return false }
-        return localIdentifier == otherIdentifier
+        return identifier == asset.identifier
     }
 }
 
 extension MNAsset {
     
     /// 依据资源内容判定资源大小
-    func updateFileSize() {
-        guard let content = content else { return }
+    public func reloadFileSize() {
+        guard let contents = contents else { return }
         var paths: [String] = [String]()
         switch type {
         case .video:
-            paths.append(content as! String)
+            paths.append(contents as! String)
         case .livePhoto:
             if #available(iOS 9.1, *) {
-                let livePhoto = content as! PHLivePhoto
-                if let videoURL = livePhoto.videoFileURL, let imageURL = livePhoto.imageFileURL {
-                    if #available(iOS 16.0, *) {
-                        paths.append(videoURL.path(percentEncoded: false))
-                        paths.append(imageURL.path(percentEncoded: false))
-                    } else {
-                        paths.append(videoURL.path)
-                        paths.append(imageURL.path)
-                    }
+                let livePhoto = contents as! PHLivePhoto
+                if let videoURL = livePhoto.mn.videoFileURL, let imageURL = livePhoto.mn.imageFileURL {
+                    paths.append(videoURL.mn.path)
+                    paths.append(imageURL.mn.path)
                 }
             }
         default: break
@@ -255,10 +273,14 @@ extension MNAsset {
         for path in paths {
             do {
                 let attributes = try FileManager.default.attributesOfItem(atPath: path)
-                if let size = (attributes[FileAttributeKey.size] as? NSNumber)?.int64Value, size > 0 {
+                if let size = attributes[.size] as? Int64 {
                     fileSize += size
                 }
-            } catch {}
+            } catch {
+#if DEBUG
+                print("查询文件大小出错: \(error)")
+#endif
+            }
         }
         if fileSize > 0 {
             update(fileSize: fileSize)

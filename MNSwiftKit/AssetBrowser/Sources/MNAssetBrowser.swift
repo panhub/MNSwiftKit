@@ -35,8 +35,8 @@ import CoreMedia
     /// - Parameters:
     ///   - browser: 资源浏览器
     ///   - asset: 资源模型
-    ///   - handler: 结束回调
-    @objc optional func assetBrowser(_ browser: MNAssetBrowser, fetchCover asset: any MNAssetBrowseSupported, completion handler: MNAssetBrowserCell.CoverUpdateHandler)
+    ///   - completionHandler: 结束回调
+    @objc optional func assetBrowser(_ browser: MNAssetBrowser, fetchCover asset: any MNAssetBrowseSupported, completion completionHandler: @escaping MNAssetBrowserCell.CoverUpdateHandler)
     
     /// 资源浏览器获取内容
     /// - Parameters:
@@ -44,7 +44,7 @@ import CoreMedia
     ///   - asset: 资源模型
     ///   - progressHandler: 进度回调
     ///   - completionHandler: 结束回调
-    @objc optional func assetBrowser(_ browser: MNAssetBrowser, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: MNAssetBrowserCell.ContentUpdateHandler)
+    @objc optional func assetBrowser(_ browser: MNAssetBrowser, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: @escaping MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: @escaping MNAssetBrowserCell.ContentUpdateHandler)
     
     /// 展示结束
     /// - Parameters:
@@ -203,6 +203,9 @@ public class MNAssetBrowser: UIView {
     }
     
     deinit {
+        if clearWhenExit {
+            assets.forEach { $0.contents = nil }
+        }
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -331,14 +334,6 @@ public class MNAssetBrowser: UIView {
             let pan = UIPanGestureRecognizer(target: self, action: #selector(pan(_:)))
             addGestureRecognizer(pan)
         }
-    }
-    
-    /// 删除时清理缓存
-    public override func removeFromSuperview() {
-        if clearWhenExit {
-            assets.forEach { $0.contents = nil }
-        }
-        super.removeFromSuperview()
     }
 }
 
@@ -766,18 +761,18 @@ extension MNAssetBrowser: UICollectionViewDelegate, UICollectionViewDataSource {
     }
 }
 
-// MARK: - MNAssetBrowserCellEventHandler
-extension MNAssetBrowser: MNAssetBrowserCellEventHandler {
+// MARK: - MNAssetBrowseResourceHandler
+extension MNAssetBrowser: MNAssetBrowseResourceHandler {
     
-    func browserCell(_ cell: MNAssetBrowserCell, fetchCover asset: any MNAssetBrowseSupported, completion handler: (any MNAssetBrowseSupported, UIImage?) -> Void) {
+    func browserCell(_ cell: MNAssetBrowserCell, fetchCover asset: any MNAssetBrowseSupported, completion completionHandler: @escaping (any MNAssetBrowseSupported, UIImage?) -> Void) {
         if let cover = asset.cover {
-            handler(asset, cover)
+            completionHandler(asset, cover)
         } else if let delegate = delegate {
-            delegate.assetBrowser?(self, fetchCover: asset, completion: handler)
+            delegate.assetBrowser?(self, fetchCover: asset, completion: completionHandler)
         }
     }
     
-    func browserCell(_ cell: MNAssetBrowserCell, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: (any MNAssetBrowseSupported, Double, (any Error)?) -> Void, completion completionHandler: (any MNAssetBrowseSupported) -> Void) {
+    func browserCell(_ cell: MNAssetBrowserCell, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: @escaping (any MNAssetBrowseSupported, Double, (any Error)?) -> Void, completion completionHandler: @escaping (any MNAssetBrowseSupported) -> Void) {
         if let _ = asset.contents {
             completionHandler(asset)
         } else if let delegate = delegate {

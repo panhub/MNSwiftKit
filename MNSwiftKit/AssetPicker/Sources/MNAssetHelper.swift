@@ -62,7 +62,7 @@ extension MNAssetHelper {
             var albums: [MNAssetAlbum] = [MNAssetAlbum]()
             let smartResult = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
             smartResult.enumerateObjects { collection, _, stop in
-                if collection.isCameraRoll {
+                if collection.mn.isCameraRoll {
                     let album = MNAssetAlbum(collection: collection, options: options)
                     albums.append(album)
                     stop.pointee = true
@@ -89,7 +89,7 @@ extension MNAssetHelper {
     ///   - completionHandler: 结束回调
     class func fetchAsset(in album: MNAssetAlbum, options: MNAssetPickerOptions, start startHandler: (()->Void)? = nil, completion completionHandler: @escaping ()->Void) {
         DispatchQueue.global().async {
-            /// 循环取直到满足分页数量
+            // 循环拉取直到满足分页数量
             var assets = [MNAsset]()
             let pageCount = options.pageCount
             let fetchOptions = album.fetchOptions
@@ -101,7 +101,7 @@ extension MNAssetHelper {
                 fetchOptions.fetchLimit = pageCount
                 let result = PHAsset.fetchAssets(in: album.collection, options: fetchOptions)
                 result.enumerateObjects { element, _, _ in
-                    var type = element.contentType
+                    var type = element.mn.contentType
                     if type == .video {
                         let duration: TimeInterval = floor(element.duration)
                         if (options.minExportDuration > 0.0 && duration < options.minExportDuration) || (options.maxExportDuration > 0.0 && duration > options.maxExportDuration && (options.allowsEditing == false || options.maxPickingCount > 1 || options.allowsMultiplePickingVideo == false)) { return }
@@ -146,7 +146,7 @@ extension MNAssetHelper {
     /// - Parameters:
     ///   - asset: 资源模型
     ///   - options: 选择器配置
-    class func fetchProfile(_ asset: MNAsset, options: MNAssetPickerOptions) {
+    public class func fetchProfile(_ asset: MNAsset, options: MNAssetPickerOptions) {
         // 缩略图
         if let _ = asset.cover {
             asset.coverUpdateHandler?(asset)
@@ -197,7 +197,7 @@ extension MNAssetHelper {
     /// - Parameters:
     ///   - asset: 资源模型
     ///   - completionHandler: 结束后回调
-    class func fetchCover(_ asset: MNAsset, completion completionHandler: ((MNAsset, UIImage?)->Void)?) {
+    public class func fetchCover(_ asset: MNAsset, completion completionHandler: ((MNAsset, UIImage?)->Void)?) {
         if let image = asset.cover {
             completionHandler?(asset, image)
             return
@@ -232,15 +232,30 @@ extension MNAssetHelper {
     ///   - asset: 资源模型
     ///   - progressHandler: 进度回调
     ///   - completionHandler: 结果回调
-    class func fetchContent(_ asset: MNAsset, progress progressHandler: ((Double, Error?, MNAsset)->Void)?, completion completionHandler: ((MNAsset)->Void)?) {
-        if let _ = asset.content {
-            completionHandler?(asset)
+    public class func fetchContents(_ asset: MNAsset, progress progressHandler: ((MNAsset, Double, Error?)->Void)?, completion completionHandler: ((MNAsset)->Void)?) {
+        if let _ = asset.contents {
+            if let completionHandler = completionHandler {
+                completionHandler(asset)
+            }
             return
         }
         guard let phAsset = asset.phAsset else {
-            progressHandler?(0.0, nil, asset)
-            completionHandler?(asset)
+            if let progressHandler = progressHandler {
+                progressHandler(asset, 0.0, nil)
+            }
+            if let completionHandler = completionHandler {
+                completionHandler(asset)
+            }
             return
+        }
+        // 进度回调
+        let progressHandler: PHAssetVideoProgressHandler = { progress, error, _, _ in
+            DispatchQueue.main.async {
+                asset.progress = progress
+                if let progressHandler = progressHandler {
+                    progressHandler(asset, progress, error)
+                }
+            }
         }
         switch asset.type {
         case .video:
@@ -248,23 +263,20 @@ extension MNAssetHelper {
             options.version = .current
             options.deliveryMode = .automatic
             options.isNetworkAccessAllowed = true
-            options.progressHandler = { progress, error, _, _ in
-                DispatchQueue.main.async {
-                    asset.progress = progress
-                    progressHandler?(progress, error, asset)
-                }
-            }
+            options.progressHandler = progressHandler
             asset.downloadId = PHImageManager.default().requestAVAsset(forVideo: phAsset, options: options) { [weak asset] result, _, info in
                 guard let asset = asset else { return }
                 asset.progress = 0.0
                 asset.downloadId = PHInvalidImageRequestID
-                let isCancelled: Bool = (info?[PHImageCancelledKey] as? NSNumber)?.boolValue ?? false
+                let isCancelled: Bool = info?[PHImageCancelledKey] as? Bool ?? false
                 guard isCancelled == false else { return }
                 if let avAsset = result as? AVURLAsset {
-                    asset.content = avAsset.url.path
+                    asset.contents = avAsset.url.mn.path
                 }
                 DispatchQueue.main.async {
-                    completionHandler?(asset)
+                    if let completionHandler = completionHandler {
+                        completionHandler(asset)
+                    }
                 }
             }
         case .livePhoto:
@@ -272,51 +284,45 @@ extension MNAssetHelper {
             guard let options = MNAssetHelper.helper.livePhotoOptions as? PHLivePhotoRequestOptions else { break }
             options.isNetworkAccessAllowed = true
             options.deliveryMode = .highQualityFormat
-            options.progressHandler = { progress, error, _, _ in
-                DispatchQueue.main.async {
-                    asset.progress = progress
-                    progressHandler?(progress, error, asset)
-                }
-            }
+            options.progressHandler = progressHandler
             asset.downloadId = PHImageManager.default().requestLivePhoto(for: phAsset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: options) { [weak asset] result, info in
                 guard let asset = asset else { return }
                 asset.progress = 0.0
                 asset.downloadId = PHInvalidImageRequestID
-                let isCancelled: Bool = (info?[PHImageCancelledKey] as? NSNumber)?.boolValue ?? false
+                let isCancelled: Bool = info?[PHImageCancelledKey] as? Bool ?? false
                 guard isCancelled == false else { return }
                 if let livePhoto = result {
-                    asset.content = livePhoto
+                    asset.contents = livePhoto
                 }
                 DispatchQueue.main.async {
-                    completionHandler?(asset)
+                    if let completionHandler = completionHandler {
+                        completionHandler(asset)
+                    }
                 }
             }
         default:
             let options = MNAssetHelper.helper.imageOptions
             options.isNetworkAccessAllowed = true
             options.deliveryMode = .highQualityFormat
-            options.progressHandler = { progress, error, _, _ in
-                DispatchQueue.main.async {
-                    asset.progress = progress
-                    progressHandler?(progress, error, asset)
-                }
-            }
+            options.progressHandler = progressHandler
             let resultHandler: (Data?, String?, Any, [AnyHashable : Any]?) -> Void = { [weak asset] imageData, _, _, info in
                 guard let asset = asset else { return }
                 asset.progress = 0.0
                 asset.downloadId = PHInvalidImageRequestID
-                let isCancelled: Bool = (info?[PHImageCancelledKey] as? NSNumber)?.boolValue ?? false
+                let isCancelled: Bool = info?[PHImageCancelledKey] as? Bool ?? false
                 guard isCancelled == false else { return }
                 let result: UIImage? = asset.type == .gif ? UIImage.mn.image(contentsOfData: imageData) : (imageData == nil ? nil : UIImage(data: imageData!))
                 if let image = result {
                     if image.mn.isAnimatedImage {
-                        asset.content = image
+                        asset.contents = image
                     } else {
-                        asset.content = image.mn.resized
+                        asset.contents = image.mn.resized
                     }
                 }
                 DispatchQueue.main.async {
-                    completionHandler?(asset)
+                    if let completionHandler = completionHandler {
+                        completionHandler(asset)
+                    }
                 }
             }
             if #available(iOS 13.0, *) {
@@ -337,7 +343,7 @@ extension MNAssetHelper {
     ///   - options: 选择器配置模型
     ///   - progressHandler: 进度回调
     ///   - completionHandler: 结束回调
-    class func exportAsynchronously(_ assets: [MNAsset], options: MNAssetPickerOptions, progress progressHandler: ((Int, Int)->Void)?, completion completionHandler: @escaping ([MNAsset])->Void) {
+    public class func exportAsynchronously(_ assets: [MNAsset], options: MNAssetPickerOptions, progress progressHandler: ((Int, Int)->Void)?, completion completionHandler: @escaping ([MNAsset])->Void) {
         DispatchQueue.global().async {
             guard assets.count > 0 else {
                 DispatchQueue.main.async {
@@ -357,8 +363,8 @@ extension MNAssetHelper {
     ///   - succeed: 已导出成功的资源模型
     ///   - progressHandler: 进度回调
     ///   - completionHandler: 结束回调
-    private class func exportRecursively(_ assets: [MNAsset], index: Int, options: MNAssetPickerOptions, succeed: [MNAsset], progress progressHandler: ((Int, Int)->Void)?, completion completionHandler: @escaping ([MNAsset])->Void) {
-        DispatchQueue.global().async {
+    private class func exportRecursively(_ assets: [MNAsset], index: Int, options: MNAssetPickerOptions, succeed: [MNAsset], progress progressHandler: ((_ current: Int, _ count: Int)->Void)?, completion completionHandler: @escaping ([MNAsset])->Void) {
+        DispatchQueue.global(qos: .userInitiated).async {
             // 超出则结束
             guard index < assets.count else {
                 DispatchQueue.main.async {
@@ -368,16 +374,18 @@ extension MNAssetHelper {
             }
             // 回调进度
             DispatchQueue.main.async {
-                progressHandler?(index + 1, assets.count)
+                if let progressHandler = progressHandler {
+                    progressHandler(index + 1, assets.count)
+                }
             }
             // 获取内容
             let asset: MNAsset = assets[index]
-            MNAssetHelper.exportContent( asset, options: options) { asset in
-                var array: [MNAsset] = succeed
-                if let _ = asset.content {
-                    array.append(asset)
+            MNAssetHelper.exportContents( asset, options: options) { asset in
+                var elements: [MNAsset] = succeed
+                if let _ = asset.contents {
+                    elements.append(asset)
                 }
-                MNAssetHelper.exportRecursively(assets, index: index + 1, options: options, succeed: array, progress: progressHandler, completion: completionHandler)
+                MNAssetHelper.exportRecursively(assets, index: index + 1, options: options, succeed: elements, progress: progressHandler, completion: completionHandler)
             }
         }
     }
@@ -387,13 +395,15 @@ extension MNAssetHelper {
     ///   - asset: 资源模型
     ///   - options: 选择器配置模型
     ///   - completionHandler: 结束回调
-    private class func exportContent(_ asset: MNAsset, options: MNAssetPickerOptions, completion completionHandler: ((MNAsset)->Void)?) {
+    private class func exportContents(_ asset: MNAsset, options: MNAssetPickerOptions, completion completionHandler: ((MNAsset)->Void)?) {
         guard let phAsset = asset.phAsset else {
-            completionHandler?(asset)
+            if let completionHandler = completionHandler {
+                completionHandler(asset)
+            }
             return
         }
         // 开始下载数据
-        asset.content = nil
+        asset.contents = nil
         switch asset.type {
         case .video:
             let videoOptions = MNAssetHelper.helper.videoOptions
@@ -402,20 +412,17 @@ extension MNAssetHelper {
             videoOptions.deliveryMode = .highQualityFormat
             PHImageManager.default().requestAVAsset(forVideo: phAsset, options: videoOptions) { result, _, _ in
                 if let avAsset = result as? AVURLAsset {
-                    if options.allowsExportMov == false, avAsset.url.pathExtension.lowercased().contains("mov") {
-                        let outputURL: URL = MNAssetHelper.exportURL(preset: options.outputURL, ext: "mp4")
-                        try? FileManager.default.createDirectory(at: outputURL.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
+                    let outputURL: URL = MNAssetHelper.exportURL(preset: options.outputURL, ext: options.allowsExportVideo ? "mp4" : avAsset.url.pathExtension.lowercased())
+                    try? FileManager.default.createDirectory(at: outputURL.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
+                    if options.allowsExportVideo {
                         if let exportSession = AVAssetExportSession(asset: avAsset, presetName: options.exportPreset ?? AVAssetExportPresetHighestQuality) {
                             exportSession.outputURL = outputURL
                             exportSession.outputFileType = .mp4
                             exportSession.shouldOptimizeForNetworkUse = true
-                            exportSession.exportAsynchronously { [weak exportSession] in
-                                let status = exportSession?.status ?? .failed
-                                if status == .completed, FileManager.default.fileExists(atPath: outputURL.path) {
-                                    asset.content = outputURL.path
-                                    asset.updateFileSize()
-                                } else {
-                                    try? FileManager.default.removeItem(at: outputURL)
+                            exportSession.exportAsynchronously {
+                                if FileManager.default.fileExists(atPath: outputURL.mn.path) {
+                                    asset.contents = outputURL.mn.path
+                                    asset.reloadFileSize()
                                 }
                                 DispatchQueue.main.async {
                                     completionHandler?(asset)
@@ -427,8 +434,15 @@ extension MNAssetHelper {
                             }
                         }
                     } else {
-                        asset.content = avAsset.url.path
-                        asset.updateFileSize()
+                        do {
+                            try FileManager.default.copyItem(at: avAsset.url, to: outputURL)
+                            asset.contents = outputURL.mn.path
+                            asset.reloadFileSize()
+                        } catch {
+#if DEBUG
+                            print("拷贝视频失败: \(error)")
+#endif
+                        }
                         DispatchQueue.main.async {
                             completionHandler?(asset)
                         }
@@ -442,7 +456,9 @@ extension MNAssetHelper {
         case .livePhoto:
             guard #available(iOS 9.1, *), let livePhotoOptions = MNAssetHelper.helper.livePhotoOptions as? PHLivePhotoRequestOptions else {
                 DispatchQueue.main.async {
-                    completionHandler?(asset)
+                    if let completionHandler = completionHandler {
+                        completionHandler(asset)
+                    }
                 }
                 break
             }
@@ -452,11 +468,11 @@ extension MNAssetHelper {
                 if let livePhoto = result {
                     if options.allowsExportLiveResource {
                         MNAssetHelper.exportLivePhoto(livePhoto) { imageUrl, videoUrl in
-                            if let image = imageUrl, let video = videoUrl {
-                                livePhoto.imageFileURL = image
-                                livePhoto.videoFileURL = video
-                                asset.content = livePhoto
-                                asset.updateFileSize()
+                            if let video = videoUrl, let image = imageUrl {
+                                livePhoto.mn.videoFileURL = video
+                                livePhoto.mn.imageFileURL = image
+                                asset.contents = livePhoto
+                                asset.reloadFileSize()
                                 DispatchQueue.main.async {
                                     completionHandler?(asset)
                                 }
@@ -467,7 +483,7 @@ extension MNAssetHelper {
                             }
                         }
                     } else {
-                        asset.content = livePhoto
+                        asset.contents = livePhoto
                         DispatchQueue.main.async {
                             completionHandler?(asset)
                         }
@@ -490,7 +506,7 @@ extension MNAssetHelper {
                     if result.mn.isAnimatedImage {
                         image = result
                         fileSize = Int64(imageData!.count)
-                    } else if #available(iOS 10.0, *), options.allowsExportHeifc == false, phAsset.isHeifc {
+                    } else if #available(iOS 10.0, *), options.allowsExportHeifc == false, phAsset.mn.isHeifc {
                         // 判断是否需要转化heif/heic格式图片
                         if let ciImage = CIImage(data: imageData!), let colorSpace = ciImage.colorSpace, let jpgData = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace, options: [CIImageRepresentationOption(rawValue: kCGImageDestinationLossyCompressionQuality as String):max(min(options.compressionQuality, 1.0), 0.1)]) {
                             image = UIImage(data: jpgData)?.mn.resized
@@ -508,7 +524,7 @@ extension MNAssetHelper {
                         if image == nil { fileSize = 0 }
                     }
                 }
-                asset.content = image
+                asset.contents = image
                 if fileSize > 0 {
                     asset.update(fileSize: fileSize)
                 }
@@ -529,7 +545,7 @@ extension MNAssetHelper {
     private class func exportURL(preset url: URL?, ext: String) -> URL {
         if let url = url {
             if url.isFileURL {
-                if FileManager.default.fileExists(atPath: url.path) {
+                if FileManager.default.fileExists(atPath: url.mn.path) {
                     return url.deletingLastPathComponent().appendingPathComponent("\(Int(Date().timeIntervalSince1970*1000))").appendingPathExtension(url.pathExtension)
                 }
                 return url
@@ -545,7 +561,7 @@ extension MNAssetHelper {
     
     /// 取消资源请求
     /// - Parameter asset: 资源模型
-    class func cancelRequest(_ asset: MNAsset) {
+    public class func cancelRequest(_ asset: MNAsset) {
         let requestId = asset.requestId
         if requestId == PHInvalidImageRequestID { return }
         asset.requestId = PHInvalidImageRequestID
@@ -554,7 +570,7 @@ extension MNAssetHelper {
     
     /// 取消资源下载
     /// - Parameter asset: 资源模型
-    class func cancelDownload(_ asset: MNAsset) {
+    public class func cancelDownload(_ asset: MNAsset) {
         let downloadId = asset.downloadId
         if downloadId == PHInvalidImageRequestID { return }
         asset.downloadId = PHInvalidImageRequestID
@@ -565,9 +581,9 @@ extension MNAssetHelper {
 // MARK: - 相册操作
 extension MNAssetHelper {
     
-    @objc class func deleteAssets(_ assets: [PHAsset], completion: ((Error?)->Void)?) {
-        DispatchQueue.global().async {
-            guard assets.count > 0 else {
+    public class func deleteAssets(_ assets: [PHAsset], completion: ((Error?)->Void)?) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            guard assets.isEmpty == false else {
                 DispatchQueue.main.async {
                     completion?(MNPHError.deleteError(.isEmpty))
                 }
@@ -575,9 +591,9 @@ extension MNAssetHelper {
             }
             PHPhotoLibrary.shared().performChanges {
                 PHAssetChangeRequest.deleteAssets(assets as NSFastEnumeration)
-            } completionHandler: { flag, error in
+            } completionHandler: { isSuccess, error in
                 DispatchQueue.main.async {
-                    if flag {
+                    if isSuccess {
                         completion?(nil)
                     } else {
                         completion?(error == nil ? MNPHError.deleteError(.unknown) : MNPHError.deleteError(.underlyingError(error!)))
@@ -587,27 +603,27 @@ extension MNAssetHelper {
         }
     }
     
-    @objc class func writeImage(toAlbum image: Any, completion: ((String?, Error?)->Void)?) {
+    public class func writeImage(toAlbum image: Any, completion: ((String?, Error?)->Void)?) {
         writeAssets([image], toAlbum: nil) { identifiers, error in
             completion?(identifiers?.first, error)
         }
     }
     
-    @objc class func writeVideo(toAlbum video: Any, completion: ((String?, Error?)->Void)?) {
+    public class func writeVideo(toAlbum video: Any, completion: ((String?, Error?)->Void)?) {
         writeAssets([video], toAlbum: nil) { identifiers, error in
             completion?(identifiers?.first, error)
         }
     }
     
     @available(iOS 9.1, *)
-    @objc class func writeLivePhoto(toAlbum livePhoto: PHLivePhoto, completion: ((String?, Error?)->Void)?) {
+    public class func writeLivePhoto(toAlbum livePhoto: PHLivePhoto, completion: ((String?, Error?)->Void)?) {
         writeAssets([livePhoto], toAlbum: nil) { identifiers, error in
             completion?(identifiers?.first, error)
         }
     }
     
-    @objc class func writeAssets(_ assets: [Any], toAlbum title: String? = nil, completion: (([String]?, Error?)->Void)?) {
-        DispatchQueue.global().async {
+    public class func writeAssets(_ assets: [Any], toAlbum title: String? = nil, completion: (([String]?, Error?)->Void)?) {
+        DispatchQueue.global(qos: .userInitiated).async {
             var identifiers: [String] = [String]()
             var placeholders: [PHObjectPlaceholder] = [PHObjectPlaceholder]()
             PHPhotoLibrary.shared().performChanges {
@@ -615,7 +631,7 @@ extension MNAssetHelper {
                     // 转换资源
                     if asset is String {
                         guard let path = asset as? String, FileManager.default.fileExists(atPath: path) else { continue }
-                        asset = URL(fileURLWithPath: path) as AnyObject
+                        asset = URL(fileAtPath: path) as AnyObject
                     } else if asset is Data {
                         guard let image = UIImage(data: asset as! Data) else { continue }
                         asset = image
@@ -625,7 +641,7 @@ extension MNAssetHelper {
                     if asset is UIImage {
                         placeholder = PHAssetChangeRequest.creationRequestForAsset(from: asset as! UIImage).placeholderForCreatedAsset
                     } else if asset is URL {
-                        guard let url = asset as? URL, url.isFileURL, FileManager.default.fileExists(atPath: url.path) else { continue }
+                        guard let url = asset as? URL, url.isFileURL, FileManager.default.fileExists(atPath: url.mn.path) else { continue }
                         if ["mp4", "mov", "3gp"].contains(url.pathExtension.lowercased()) {
                             placeholder = PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)?.placeholderForCreatedAsset
                         } else if ["jpg", "png", "jpeg", "gif", "heif"].contains(url.pathExtension.lowercased()) {
@@ -635,34 +651,34 @@ extension MNAssetHelper {
                     // LivePhoto
                     if #available(iOS 9.1, *) {
                         if asset is PHLivePhoto {
-                            let videoURL = (asset as? PHLivePhoto)?.videoFileURL
-                            let imageURL = (asset as? PHLivePhoto)?.imageFileURL
-                            guard let video = videoURL, FileManager.default.fileExists(atPath: video.path), let image = imageURL, FileManager.default.fileExists(atPath: image.path) else { continue }
+                            let videoURL = (asset as? PHLivePhoto)?.mn.videoFileURL
+                            let imageURL = (asset as? PHLivePhoto)?.mn.imageFileURL
+                            guard let videoURL = videoURL, FileManager.default.fileExists(atPath: videoURL.mn.path), let imageURL = imageURL, FileManager.default.fileExists(atPath: imageURL.mn.path) else { continue }
                             let request = PHAssetCreationRequest.forAsset()
-                            request.addResource(with: .video, fileURL: video, options: nil)
-                            request.addResource(with: .photo, fileURL: image, options: nil)
+                            request.addResource(with: .video, fileURL: videoURL, options: nil)
+                            request.addResource(with: .photo, fileURL: imageURL, options: nil)
                             placeholder = request.placeholderForCreatedAsset
                         } else if asset is [MNLivePhotoResourceKey:AnyObject] {
                             guard let dictionary = asset as? [MNLivePhotoResourceKey:AnyObject] else { continue }
                             var videoURL: URL?, imageURL: URL?
                             if let path = dictionary[MNLivePhotoImageUrlKey] as? String, FileManager.default.fileExists(atPath: path) {
                                 if (path as NSString).pathExtension.lowercased() == "jpg" || (path as NSString).pathExtension.lowercased() == "jpeg" {
-                                    imageURL = URL(fileURLWithPath: path)
+                                    imageURL = URL(fileAtPath: path)
                                 }
-                            } else if let url = dictionary[MNLivePhotoImageUrlKey] as? URL, FileManager.default.fileExists(atPath: url.path) {
+                            } else if let url = dictionary[MNLivePhotoImageUrlKey] as? URL, FileManager.default.fileExists(atPath: url.mn.path) {
                                 if url.pathExtension.lowercased() == "jpg" || url.pathExtension.lowercased() == "jpeg" {
                                     imageURL = url
                                 }
                             }
                             if let path = dictionary[MNLivePhotoVideoUrlKey] as? String, FileManager.default.fileExists(atPath: path), (path as NSString).pathExtension.lowercased() == "mov" {
-                                videoURL = URL(fileURLWithPath: path)
-                            } else if let url = dictionary[MNLivePhotoVideoUrlKey] as? URL, FileManager.default.fileExists(atPath: url.path), url.pathExtension.lowercased() == "mov" {
+                                videoURL = URL(fileAtPath: path)
+                            } else if let url = dictionary[MNLivePhotoVideoUrlKey] as? URL, FileManager.default.fileExists(atPath: url.mn.path), url.pathExtension.lowercased() == "mov" {
                                 videoURL = url
                             }
-                            guard let video = videoURL, let image = imageURL else { continue }
+                            guard let videoURL = videoURL, let imageURL = imageURL else { continue }
                             let request = PHAssetCreationRequest.forAsset()
-                            request.addResource(with: .video, fileURL: video, options: nil)
-                            request.addResource(with: .photo, fileURL: image, options: nil)
+                            request.addResource(with: .video, fileURL: videoURL, options: nil)
+                            request.addResource(with: .photo, fileURL: imageURL, options: nil)
                             placeholder = request.placeholderForCreatedAsset
                         } else if asset is [AnyObject] {
                             guard let array = asset as? [AnyObject], array.count == 2 else { continue }
@@ -671,12 +687,12 @@ extension MNAssetHelper {
                                 if item is String {
                                     guard let path = item as? String, FileManager.default.fileExists(atPath: path) else { continue }
                                     if (path as NSString).pathExtension.lowercased() == "mov" {
-                                        videoURL = URL(fileURLWithPath: path)
+                                        videoURL = URL(fileAtPath: path)
                                     } else if (path as NSString).pathExtension.lowercased() == "jpg" || (path as NSString).pathExtension.lowercased() == "jpeg" {
-                                        imageURL = URL(fileURLWithPath: path)
+                                        imageURL = URL(fileAtPath: path)
                                     }
                                 } else if item is URL {
-                                    guard let url = item as? URL, FileManager.default.fileExists(atPath: url.path) else { continue }
+                                    guard let url = item as? URL, FileManager.default.fileExists(atPath: url.mn.path) else { continue }
                                     if url.pathExtension.lowercased() == "mov" {
                                         videoURL = url
                                     } else if url.pathExtension.lowercased() == "jpg" || url.pathExtension.lowercased() == "jpeg" {
@@ -684,18 +700,18 @@ extension MNAssetHelper {
                                     }
                                 }
                             }
-                            guard let video = videoURL, let image = imageURL else { continue }
+                            guard let videoURL = videoURL, let imageURL = imageURL else { continue }
                             let request = PHAssetCreationRequest.forAsset()
-                            request.addResource(with: .video, fileURL: video, options: nil)
-                            request.addResource(with: .photo, fileURL: image, options: nil)
+                            request.addResource(with: .video, fileURL: videoURL, options: nil)
+                            request.addResource(with: .photo, fileURL: imageURL, options: nil)
                             placeholder = request.placeholderForCreatedAsset
                         }
                     }
-                    guard let _ = placeholder else { continue }
-                    placeholders.append(placeholder!)
-                    identifiers.append(placeholder!.localIdentifier)
+                    guard let placeholder = placeholder else { continue }
+                    placeholders.append(placeholder)
+                    identifiers.append(placeholder.localIdentifier)
                 }
-                if placeholders.count > 0 {
+                if placeholders.isEmpty == false {
                     MNAssetHelper.creationRequestForAssetCollection(with: title)?.addAssets(placeholders as NSFastEnumeration)
                 }
             } completionHandler: { result, error in
@@ -732,13 +748,14 @@ extension MNAssetHelper {
 // MARK: - LivePhoto
 @available(iOS 9.1, *)
 extension MNAssetHelper {
+    
     // 合成
-    @objc class func requestLivePhoto(resourceFileURLs urls: [URL], completion: ((PHLivePhoto?, Error?)->Void)?) {
-        DispatchQueue.global().async {
+    public class func requestLivePhoto(resourceFileURLs urls: [URL], completion: ((PHLivePhoto?, Error?)->Void)?) {
+        DispatchQueue.global(qos: .userInitiated).async {
             var videoURL: URL?
             var imageURL: URL?
             for url in urls {
-                guard url.isFileURL, FileManager.default.fileExists(atPath: url.path) else { continue }
+                guard url.isFileURL, FileManager.default.fileExists(atPath: url.mn.path) else { continue }
                 let pathExtension = url.pathExtension.lowercased()
                 try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
                 if pathExtension == "mov" {
@@ -755,9 +772,9 @@ extension MNAssetHelper {
             }
             PHLivePhoto.request(withResourceFileURLs: [video, image], placeholderImage: nil, targetSize: .zero, contentMode: .aspectFit) { photo, info in
                 if let livePhoto = photo {
-                    guard ((info[PHLivePhotoInfoIsDegradedKey] as? NSNumber)?.boolValue ?? false) == false else { return }
-                    livePhoto.videoFileURL = video
-                    livePhoto.imageFileURL = image
+                    guard (info[PHLivePhotoInfoIsDegradedKey] as? Bool ?? false) == false else { return }
+                    livePhoto.mn.videoFileURL = video
+                    livePhoto.mn.imageFileURL = image
                     DispatchQueue.main.async {
                         completion?(livePhoto, nil)
                     }
@@ -772,11 +789,11 @@ extension MNAssetHelper {
     }
     
     // 导出
-    @objc class func exportLivePhoto(_ livePhoto: PHLivePhoto, completion: ((URL?, URL?)->Void)?) {
+    public class func exportLivePhoto(_ livePhoto: PHLivePhoto, completion: ((_ imageUrl: URL?, _ videoUrl: URL?)->Void)?) {
         let videoUrl = URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!).appendingPathComponent("\(Int(Date().timeIntervalSince1970*1000.0))").appendingPathExtension("MOV")
         let imageUrl = URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!).appendingPathComponent("\(Int(Date().timeIntervalSince1970*1000.0))").appendingPathExtension("JPG")
-        exportLivePhoto(livePhoto, imageUrl: imageUrl, videoUrl: videoUrl) { result in
-            if result {
+        exportLivePhoto(livePhoto, imageUrl: imageUrl, videoUrl: videoUrl) { isSuccess in
+            if isSuccess {
                 completion?(imageUrl, videoUrl)
             } else {
                 completion?(nil, nil)
@@ -784,7 +801,7 @@ extension MNAssetHelper {
         }
     }
     
-    @objc class func exportLivePhoto(_ livePhoto: PHLivePhoto, imageUrl: URL, videoUrl: URL, completion: ((Bool)->Void)?) {
+    public class func exportLivePhoto(_ livePhoto: PHLivePhoto, imageUrl: URL, videoUrl: URL, completion: ((_ isSuccess: Bool)->Void)?) {
         for url in [imageUrl, videoUrl] {
             try? FileManager.default.removeItem(at: url)
             try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
@@ -793,25 +810,27 @@ extension MNAssetHelper {
         let resources = PHAssetResource.assetResources(for: livePhoto)
         for resource in resources {
             group.enter()
-            let buffer = PHLivePhotoBuffer()
-            buffer.type = resource.type
+            var contents = Data()
+            let type = resource.type
             let options = PHAssetResourceRequestOptions()
             options.isNetworkAccessAllowed = true
             PHAssetResourceManager.default().requestData(for: resource, options: options) { data in
-                buffer.data.append(contentsOf: data)
+                contents.append(data)
             } completionHandler: { error in
                 if error == nil {
-                    if buffer.type == .pairedVideo {
-                        try? buffer.data.write(to: videoUrl, options: .atomic)
-                    } else {
-                        try? buffer.data.write(to: imageUrl, options: .atomic)
+                    do {
+                        try contents.write(to: type == .pairedVideo ? videoUrl : imageUrl, options: .atomic)
+                    } catch {
+#if DEBUG
+                        print("写入LivePhoto文件失败: \(error)")
+#endif
                     }
                 }
                 group.leave()
             }
         }
         group.notify(queue: DispatchQueue.main) {
-            if FileManager.default.fileExists(atPath: imageUrl.path), FileManager.default.fileExists(atPath: videoUrl.path) {
+            if FileManager.default.fileExists(atPath: imageUrl.mn.path), FileManager.default.fileExists(atPath: videoUrl.mn.path) {
                 completion?(true)
             } else {
                 try? FileManager.default.removeItem(at: videoUrl)

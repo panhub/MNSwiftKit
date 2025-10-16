@@ -109,7 +109,7 @@ class MNTailorViewController: UIViewController {
         let player = MNPlayer(urls: [URL(fileURLWithPath: videoPath)])
         player.delegate = self
         player.layer = playView.layer
-        player.observeTime = CMTime(value: 1, timescale: 30)
+        player.periodicFrequency = 30
         return player
     }()
     

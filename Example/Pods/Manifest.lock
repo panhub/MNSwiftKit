@@ -7,8 +7,24 @@ PODS:
     - MNSwiftKit/Layout
     - MNSwiftKit/Player
     - MNSwiftKit/Slider
+  - MNSwiftKit/AssetPicker (0.1.1):
+    - MNSwiftKit/AnimatedImage
+    - MNSwiftKit/AssetBrowser
+    - MNSwiftKit/Definition
+    - MNSwiftKit/EmptyView
+    - MNSwiftKit/Exporter
+    - MNSwiftKit/Extension
+    - MNSwiftKit/Layout
+    - MNSwiftKit/NameSpace
+    - MNSwiftKit/Player
+    - MNSwiftKit/Refresh
+    - MNSwiftKit/Slider
+    - MNSwiftKit/Toast
   - MNSwiftKit/Definition (0.1.1):
     - MNSwiftKit/NameSpace
+  - MNSwiftKit/EmptyView (0.1.1):
+    - MNSwiftKit/NameSpace
+  - MNSwiftKit/Exporter (0.1.1)
   - MNSwiftKit/Extension (0.1.1):
     - MNSwiftKit/AnimatedImage
     - MNSwiftKit/NameSpace
@@ -16,10 +32,13 @@ PODS:
     - MNSwiftKit/NameSpace
   - MNSwiftKit/NameSpace (0.1.1)
   - MNSwiftKit/Player (0.1.1)
+  - MNSwiftKit/Refresh (0.1.1):
+    - MNSwiftKit/NameSpace
   - MNSwiftKit/Slider (0.1.1)
+  - MNSwiftKit/Toast (0.1.1)
 
 DEPENDENCIES:
-  - MNSwiftKit/AssetBrowser (from `../`)
+  - MNSwiftKit/AssetPicker (from `../`)
 
 EXTERNAL SOURCES:
   MNSwiftKit:
@@ -28,6 +47,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   MNSwiftKit: a75852e0939819283633db2a0d06ac66008b9462
 
-PODFILE CHECKSUM: 557ec83ce2552f85b8f8129c91ce866343b5da74
+PODFILE CHECKSUM: 9eee9c28edf005a86416cdaa90d81919fcb95cf0
 
 COCOAPODS: 1.16.2

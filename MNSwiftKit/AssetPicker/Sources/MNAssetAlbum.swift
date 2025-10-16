@@ -29,7 +29,7 @@ class MNAssetAlbum: NSObject {
     let fetchOptions = PHFetchOptions()
     
     /// 封面资源模型
-    var coverAsset: MNAsset?
+    var cover: MNAsset?
     
     /// 相簿资源集合
     var assets: [MNAsset] = [MNAsset]()
@@ -42,8 +42,8 @@ class MNAssetAlbum: NSObject {
     ///   - collection: 系统照片束
     ///   - options: 选择器选项
     init(collection: PHAssetCollection, options: MNAssetPickerOptions) {
-        self.name = collection.localizedName
         self.collection = collection
+        self.name = collection.mn.localizedName
         super.init()
         if options.allowsPickingVideo == false {
             fetchOptions.predicate = NSPredicate(format: "mediaType == %d", PHAssetMediaType.image.rawValue)
@@ -58,14 +58,12 @@ class MNAssetAlbum: NSObject {
         if let first = result.firstObject {
             let asset = MNAsset(asset: first)
             asset.renderSize = options.renderSize
-            coverAsset = asset
+            cover = asset
         }
-        if collection.isCameraRoll {
 #if !targetEnvironment(simulator)
         // 这里可以添加拍摄入口
         // TODO:
 #endif
-        }
     }
     
     /// 添加资源

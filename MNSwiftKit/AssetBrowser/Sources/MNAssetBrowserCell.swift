@@ -9,20 +9,20 @@ import UIKit
 import Photos
 import PhotosUI
 
-protocol MNAssetBrowserCellEventHandler: NSObjectProtocol {
+protocol MNAssetBrowseResourceHandler: NSObjectProtocol {
     
     /// 获取封面事件
     /// - Parameter cell: 表格
     /// - Parameter asset: 资源模型
-    /// - Parameter handler: 结束回调
-    func browserCell(_ cell: MNAssetBrowserCell, fetchCover asset: any MNAssetBrowseSupported, completion handler: MNAssetBrowserCell.CoverUpdateHandler)
+    /// - Parameter completionHandler: 结束回调
+    func browserCell(_ cell: MNAssetBrowserCell, fetchCover asset: any MNAssetBrowseSupported, completion completionHandler: @escaping MNAssetBrowserCell.CoverUpdateHandler)
     
     /// 获取内容事件
     /// - Parameter cell: 表格
     /// - Parameter asset: 资源模型
     /// - Parameter progressHandler: 进度回调
     /// - Parameter completionHandler: 结束回调
-    func browserCell(_ cell: MNAssetBrowserCell, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: MNAssetBrowserCell.ContentUpdateHandler)
+    func browserCell(_ cell: MNAssetBrowserCell, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: @escaping MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: @escaping MNAssetBrowserCell.ContentUpdateHandler)
 }
 
 /// 资源浏览器表格
@@ -48,7 +48,7 @@ public class MNAssetBrowserCell: UICollectionViewCell {
     /// 资源模型
     private(set) var asset: (any MNAssetBrowseSupported)!
     /// 事件代理
-    weak var delegate: MNAssetBrowserCellEventHandler!
+    weak var delegate: MNAssetBrowseResourceHandler!
     /// 当前状态
     private var state: State = .idle
     /// 是否允许自动播放

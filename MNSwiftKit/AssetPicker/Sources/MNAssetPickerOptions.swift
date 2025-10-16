@@ -80,9 +80,9 @@ public class MNAssetPickerOptions: NSObject {
      */
     @objc public var allowsExportHeifc: Bool = false
     /**
-     是否允许输出Mov格式视频
+     是否允许`AVAssetExportSession`输出视频
      */
-    @objc public var allowsExportMov: Bool = false
+    @objc public var allowsExportVideo: Bool = false
     /**
      如果需要压缩 压缩系数
      */

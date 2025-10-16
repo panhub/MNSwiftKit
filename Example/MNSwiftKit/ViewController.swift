@@ -54,7 +54,11 @@ class ViewController: UIViewController {
         if imageView.frame.contains(location) {
             MNAssetBrowser.present(container: imageView, in: view)
         } else {
-            slider.setValue(0.0, animated: true)
+            //slider.setValue(0.0, animated: true)
+            let picker = MNAssetPicker()
+            picker.present { picker, assets in
+                
+            }
         }
     }
     

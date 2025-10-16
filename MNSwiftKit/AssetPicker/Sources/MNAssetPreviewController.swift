@@ -169,9 +169,8 @@ class MNAssetPreviewController: UIViewController {
     }
     
     deinit {
-        guard cleanWhenExit else { return }
-        for asset in assets.filter({ $0.content != nil }) {
-            asset.content = nil
+        if cleanWhenExit {
+            assets.forEach { $0.contents = nil }
         }
     }
     
@@ -222,7 +221,7 @@ class MNAssetPreviewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if let cell = cellForItemAtCurrent() {
+        if let cell = currentDisplayCell {
             cell.pauseDisplaying()
         }
     }
@@ -238,6 +237,7 @@ extension MNAssetPreviewController: UICollectionViewDataSource, UICollectionView
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "com.mn.asset.preview.cell", for: indexPath)
         if let cell = cell as? MNAssetBrowserCell {
+            cell.delegate = self
             cell.isAllowsAutoPlaying = isAllowsAutoPlaying
         }
         return cell
@@ -246,13 +246,17 @@ extension MNAssetPreviewController: UICollectionViewDataSource, UICollectionView
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? MNAssetBrowserCell, indexPath.item < assets.count else { return }
         let asset = assets[indexPath.item]
-        cell.updateAsset(asset)
+        cell.update(asset: asset)
         cell.updateToolBar(navView.frame.minY >= 0.0, animated: false)
     }
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? MNAssetBrowserCell else { return }
         cell.endDisplaying()
+        if let asset = cell.asset as? MNAsset {
+            asset.cancelRequest()
+            asset.cancelDownload()
+        }
     }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
@@ -265,8 +269,28 @@ extension MNAssetPreviewController: UICollectionViewDataSource, UICollectionView
     }
 }
 
+// MARK: - MNAssetBrowseResourceHandler
+extension MNAssetPreviewController: MNAssetBrowseResourceHandler {
+    
+    func browserCell(_ cell: MNAssetBrowserCell, fetchCover asset: any MNAssetBrowseSupported, completion completionHandler: @escaping (any MNAssetBrowseSupported, UIImage?) -> Void) {
+        
+        MNAssetHelper.fetchCover(asset as! MNAsset, completion: completionHandler)
+    }
+    
+    func browserCell(_ cell: MNAssetBrowserCell, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: @escaping (any MNAssetBrowseSupported, Double, (any Error)?) -> Void, completion completionHandler: @escaping (any MNAssetBrowseSupported) -> Void) {
+        
+        MNAssetHelper.fetchContents(asset as! MNAsset, progress: progressHandler, completion: completionHandler)
+    }
+}
+
 // MARK: -
 private extension MNAssetPreviewController {
+    
+    /// 获取当前表格
+    private var currentDisplayCell: MNAssetBrowserCell? {
+        if displayIndex == .min { return nil }
+        return collectionView.cellForItem(at: IndexPath(item: displayIndex, section: 0)) as? MNAssetBrowserCell
+    }
     
     /// 更新索引
     func updateDisplayIndex() {
@@ -278,7 +302,7 @@ private extension MNAssetPreviewController {
             // 删除无效资源
             if cleanWhenExit {
                 // 清空资源 释放内存
-                assets[index].content = nil
+                assets[index].contents = nil
             }
             assets.remove(at: index)
             currentIndex = assets.firstIndex(of: asset)!
@@ -294,19 +318,12 @@ private extension MNAssetPreviewController {
         if asset.isSelected {
             selectView.selection(index: currentIndex)
         }
-        if let cell = cellForItemAtCurrent() {
-            cell.prepareDisplaying()
+        if let cell = currentDisplayCell {
+            cell.prepareDisplay()
         }
         if let delegate = delegate {
             delegate.previewController?(didScroll: self)
         }
-    }
-    
-    /// 获取当前表格
-    /// - Returns: 当前表格
-    func cellForItemAtCurrent() -> MNAssetBrowserCell? {
-        if displayIndex == .min { return nil }
-        return collectionView.cellForItem(at: IndexPath(item: displayIndex, section: 0)) as? MNAssetBrowserCell
     }
 }
 
@@ -316,7 +333,7 @@ extension MNAssetPreviewController {
     /// 双击事件
     /// - Parameter recognizer: 手势
     @objc func double(recognizer: UITapGestureRecognizer) {
-        guard let cell = cellForItemAtCurrent() else { return }
+        guard let cell = currentDisplayCell else { return }
         let location = recognizer.location(in: cell.scrollView.contentView)
         guard cell.scrollView.contentView.bounds.contains(location) else { return }
         if cell.scrollView.zoomScale > 1.0 {
@@ -337,7 +354,7 @@ extension MNAssetPreviewController {
             guard view.bounds.inset(by: UIEdgeInsets(top: navView.frame.maxY, left: 0.0, bottom: 0.0, right: 0.0)).contains(location) else { return }
             guard view.bounds.inset(by: UIEdgeInsets(top: selectView.frame.minY, left: 0.0, bottom: view.bounds.height - selectView.frame.maxY, right: 0.0)).contains(location) == false else { return }
         }
-        guard let cell = cellForItemAtCurrent() else { return }
+        guard let cell = currentDisplayCell else { return }
         let location = recognizer.location(in: cell.scrollView.contentView)
         guard cell.scrollView.contentView.bounds.contains(location) else { return }
         let isHidden = navView.frame.maxY <= 0.0
@@ -393,7 +410,8 @@ extension MNAssetPreviewController {
     /// 自定义按钮点击事件
     /// - Parameter sender: 自定义按钮
     @objc private func buttonTouchUpInside(_ sender: UIControl) {
-        delegate?.previewController?(self, buttonTouchUpInside: sender)
+        guard let delegate = delegate else { return }
+        delegate.previewController?(self, buttonTouchUpInside: sender)
     }
 }
 

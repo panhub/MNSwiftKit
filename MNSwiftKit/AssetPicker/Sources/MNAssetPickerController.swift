@@ -504,10 +504,10 @@ extension MNAssetPickerController: UICollectionViewDelegate, UICollectionViewDat
     /// - Parameter asset: 视频资源模型
     private func tailorVideo(_ asset: MNAsset) {
         view.showActivityToast("请稍后")
-        MNAssetHelper.fetchContent(asset, progress: nil) { [weak self] asset in
+        MNAssetHelper.fetchContents(asset, progress: nil) { [weak self] asset in
             guard let self = self else { return }
-            if let videoPath = asset.content as? String {
-                asset.content = nil
+            if let videoPath = asset.contents as? String {
+                asset.contents = nil
                 self.view.closeToast()
                 let vc = MNTailorViewController(videoPath: videoPath)
                 vc.delegate = self
@@ -605,7 +605,7 @@ extension MNAssetPickerController: MNTailorViewControllerDelegate {
     }
     
     func tailorController(_ tailorController: MNTailorViewController, didTailorVideoAtPath videoPath: String) {
-        guard let asset = MNAsset(content: videoPath, options: options) else {
+        guard let asset = MNAsset(contents: videoPath, options: options) else {
             try? FileManager.default.removeItem(atPath: videoPath)
             tailorController.view.showMsgToast("视频导出失败")
             return
@@ -623,10 +623,10 @@ extension MNAssetPickerController: MNAssetCellDelegate {
             return
         }
         let browser = MNAssetBrowser(assets: [asset])
-        browser.events = [.back]
+        browser.leftBarEvent = .back
+        browser.clearWhenExit = true
+        browser.exitWhenPulled = true
         browser.backgroundColor = .black
-        browser.dismissWhenPulled = true
-        browser.clearWhenRemoved = true
         browser.present(in: view) { [weak self] state in
             guard let self = self else { return }
             switch state {
