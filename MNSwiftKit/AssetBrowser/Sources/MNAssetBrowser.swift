@@ -356,7 +356,7 @@ extension MNAssetBrowser {
         if currentIndex == displayIndex { return }
         displayIndex = currentIndex
         if let cell = currentDisplayCell {
-            cell.prepareDisplaying()
+            cell.prepareDisplay()
         }
         if let delegate = delegate {
             delegate.assetBrowser?(self, didScrollToItemAt: displayIndex)
@@ -365,7 +365,7 @@ extension MNAssetBrowser {
     
     /// 更新当前展示的资源
     /// - Parameter asset: 新的资源模型
-    public func updateCurrentAsset(_ asset: MNAssetBrowseSupported) {
+    public func updateDisplayAsset(_ asset: MNAssetBrowseSupported) {
         guard displayIndex >= 0, displayIndex < assets.count else { return }
         guard let cell = currentDisplayCell else { return }
         let old = assets.remove(at: displayIndex)
@@ -374,7 +374,7 @@ extension MNAssetBrowser {
         }
         assets.insert(asset, at: displayIndex)
         cell.update(asset: asset)
-        cell.prepareDisplaying()
+        cell.prepareDisplay()
     }
 }
 

@@ -94,7 +94,7 @@ public class MNAssetBrowserCell: UICollectionViewCell {
         let player = MNPlayer()
         player.delegate = self
         player.layer = playView.layer
-        player.observeTime = CMTime(value: 1, timescale: 40)
+        player.periodicFrequency = 40
         return player
     }()
     /// 封面图更新回调
@@ -162,7 +162,7 @@ public class MNAssetBrowserCell: UICollectionViewCell {
             case .downloading:
                 self.state = .prepared
             case .prepared:
-                self.beginDisplaying()
+                self.beginDisplay()
             default: break
             }
         }
@@ -352,18 +352,18 @@ extension MNAssetBrowserCell {
     }
     
     /// 预备展示
-    func prepareDisplaying() {
+    func prepareDisplay() {
         switch state {
         case .loading, .downloading:
             state = .prepared
         case .prepared:
-            beginDisplaying()
+            beginDisplay()
         default: break
         }
     }
     
     /// 开始展示
-    private func beginDisplaying() {
+    private func beginDisplay() {
         guard let asset = asset else { return }
         guard let contents = asset.contents else { return }
         state = .displaying
@@ -503,7 +503,8 @@ extension MNAssetBrowserCell: MNPlayerDelegate {
         if player.status.rawValue > MNPlayer.Status.failed.rawValue {
             if playView.coverView.isHidden == false {
                 DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) { [weak self] in
-                    self?.playView.coverView.isHidden = true
+                    guard let self = self else { return }
+                    self.playView.coverView.isHidden = true
                 }
             }
         } else {
@@ -562,13 +563,15 @@ extension MNAssetBrowserCell: PHLivePhotoViewDelegate {
     
     public func livePhotoView(_ livePhotoView: PHLivePhotoView, willBeginPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) {
         UIView.animate(withDuration: 0.2) { [weak self] in
-            self?.liveBadgeView.alpha = 0.0
+            guard let self = self else { return }
+            self.liveBadgeView.alpha = 0.0
         }
     }
     
     public func livePhotoView(_ livePhotoView: PHLivePhotoView, didEndPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) {
         UIView.animate(withDuration: 0.2) { [weak self] in
-            self?.liveBadgeView.alpha = 1.0
+            guard let self = self else { return }
+            self.liveBadgeView.alpha = 1.0
         }
     }
 }

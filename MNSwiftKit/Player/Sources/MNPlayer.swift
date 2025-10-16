@@ -13,47 +13,59 @@ import ObjectiveC.runtime
 
 /// 播放器代理
 @objc public protocol MNPlayerDelegate: NSObjectProtocol {
+    
     /// 解码结束
     /// - Parameter player: 播放器
     @objc optional func playerDidEndDecode(_ player: MNPlayer)
+    
     /// 播放时间回调
     /// - Parameter player: 播放器
     @objc optional func playerDidPlayTimeInterval(_ player: MNPlayer)
+    
     /// 播放状态改变
     /// - Parameter player: 播放器
     @objc optional func playerDidChangeStatus(_ player: MNPlayer)
+    
     /// 已经播放结束
     /// - Parameter player: 播放器
     @objc optional func playerDidPlayToEndTime(_ player: MNPlayer)
+    
     /// 已加载时间
     /// - Parameter player: 播放器
     @objc optional func playerDidLoadTimeRanges(_ player: MNPlayer)
+    
     /// 无缓冲内容
     /// - Parameter player: 播放器
     @objc optional func playerLikelyBufferEmpty(_ player: MNPlayer)
+    
     /// 已缓冲可以播放
     /// - Parameter player: 播放器
     @objc optional func playerLikelyToKeepUp(_ player: MNPlayer)
-    /// 已经改变播放内容
+    
+    /// 准备播放
     /// - Parameter player: 播放器
-    @objc optional func playerDidChangePlayItem(_ player: MNPlayer)
+    @objc optional func playerPreparePlayItem(_ player: MNPlayer)
+    
+    /// 想要播放下一项内容
+    /// - Parameter player: 播放器
+    /// - Returns: 是否允许继续播放下一项
+    @objc optional func playerShouldPlayNextItem(_ player: MNPlayer) -> Bool
+    
+    /// 已经解码文件, 询问是否可以播放
+    /// - Parameter player: 播放器
+    /// - Returns: 是否可以播放
+    @objc optional func playerShouldStartPlaying(_ player: MNPlayer) -> Bool
+    
+    /// 询问从哪里开始播放
+    /// - Parameter player: 播放器
+    /// - Returns: 开始播放的位置
+    @objc optional func playerShouldPlayToBeginTime(_ player: MNPlayer) -> TimeInterval
+    
     /// 播放失败
     /// - Parameters:
     ///   - player: 播放器
     ///   - msg: 错误信息
     @objc optional func player(_ player: MNPlayer, didPlayFail msg: String)
-    /// 想要播放下一项内容
-    /// - Parameter player: 播放器
-    /// - Returns: 是否允许继续播放下一项
-    @objc optional func playerShouldPlayNextItem(_ player: MNPlayer) -> Bool
-    /// 已经解码文件, 询问是否可以播放
-    /// - Parameter player: 播放器
-    /// - Returns: 是否可以播放
-    @objc optional func playerShouldStartPlaying(_ player: MNPlayer) -> Bool
-    /// 询问从哪里开始播放
-    /// - Parameter player: 播放器
-    /// - Returns: 开始播放的位置
-    @objc optional func playerShouldPlayToBeginTime(_ player: MNPlayer) -> TimeInterval
 }
 
 /// 音视频播放器
@@ -61,8 +73,8 @@ public class MNPlayer: NSObject {
     
     /// 播放状态
     public enum Status: Int {
-        /// 此时空闲
-        case unknown
+        /// 空闲
+        case idle
         /// 失败
         case failed
         /// 正在播放
@@ -87,9 +99,10 @@ public class MNPlayer: NSObject {
     }
     
     /// 当前状态
-    public private(set) var status: Status = .unknown {
+    public private(set) var status: Status = .idle {
         didSet {
-            delegate?.playerDidChangeStatus?(self)
+            guard let delegate = delegate else { return }
+            delegate.playerDidChangeStatus?(self)
         }
     }
     
@@ -183,17 +196,18 @@ public class MNPlayer: NSObject {
     public weak var delegate: MNPlayerDelegate?
     
     /// 监听周期
-    public var observeTime: CMTime = .zero {
+    public var periodicFrequency: Int = 0 {
         willSet {
             guard let observer = observer else { return }
             player.removeTimeObserver(observer)
             self.observer = nil
         }
         didSet {
-            guard observeTime != .zero else { return }
-            observer = player.addPeriodicTimeObserver(forInterval: observeTime, queue: DispatchQueue.main) { [weak self] time in
+            guard periodicFrequency > 0 else { return }
+            observer = player.addPeriodicTimeObserver(forInterval: CMTime(value: 1, timescale: CMTimeScale(periodicFrequency)), queue: DispatchQueue.main) { [weak self] time in
                 guard let self = self else { return }
-                self.delegate?.playerDidPlayTimeInterval?(self)
+                guard let delegate = self.delegate else { return }
+                delegate.playerDidPlayTimeInterval?(self)
             }
         }
     }
@@ -230,19 +244,27 @@ public class MNPlayer: NSObject {
         guard let keyPath = keyPath else { return }
         switch keyPath {
         case #keyPath(AVPlayerItem.status):
-            let status = AVPlayerItem.Status(rawValue: change?[.newKey] as? Int ?? AVPlayerItem.Status.unknown.rawValue)
+            guard let change = change, let value = change[.newKey] as? Int, let status = AVPlayerItem.Status(rawValue: value) else { break }
             switch status {
             case .readyToPlay:
-                guard self.status == .unknown else { return }
-                delegate?.playerDidEndDecode?(self)
-                let play: Bool = delegate?.playerShouldStartPlaying?(self) ?? true
+                guard self.status == .idle else { return }
+                if let delegate = delegate {
+                    delegate.playerDidEndDecode?(self)
+                }
+                var play = false
+                if let delegate = delegate, let flag = delegate.playerShouldStartPlaying?(self) {
+                    play = flag
+                }
                 if play {
                     guard sessionActive() else {
-                        fail(reason: "会话类别设置失败")
+                        fail(reason: "设置会话类别失败")
                         return
                     }
-                    let begin = delegate?.playerShouldPlayToBeginTime?(self) ?? 0.0
-                    seek(seconds: begin) { [weak self] finish in
+                    var time = 0.0
+                    if let delegate = delegate, let begin = delegate.playerShouldPlayToBeginTime?(self), begin > 0.0 {
+                        time = begin
+                    }
+                    seek(seconds: time) { [weak self] finish in
                         guard let self = self else { return }
                         if finish {
                             self.player.play()
@@ -263,11 +285,17 @@ public class MNPlayer: NSObject {
                 break
             }
         case #keyPath(AVPlayerItem.loadedTimeRanges):
-            delegate?.playerDidLoadTimeRanges?(self)
+            if let delegate = delegate {
+                delegate.playerDidLoadTimeRanges?(self)
+            }
         case #keyPath(AVPlayerItem.isPlaybackBufferEmpty):
-            delegate?.playerLikelyBufferEmpty?(self)
+            if let delegate = delegate {
+                delegate.playerLikelyBufferEmpty?(self)
+            }
         case #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp):
-            delegate?.playerLikelyToKeepUp?(self)
+            if let delegate = delegate {
+                delegate.playerLikelyToKeepUp?(self)
+            }
         default: break
         }
     }
@@ -285,7 +313,9 @@ extension MNPlayer {
         addObserver(with: playerItem)
         player.replaceCurrentItem(with: playerItem)
         objc_sync_exit(self)
-        delegate?.playerDidChangePlayItem?(self)
+        if let delegate = delegate {
+            delegate.playerPreparePlayItem?(self)
+        }
     }
     
     /// 获取播放内容
@@ -302,7 +332,9 @@ extension MNPlayer {
                 track.isEnabled = true
             }
         }
-        if isAllowsUsingCache, key.count > 0 { items[key] = playerItem }
+        if isAllowsUsingCache, key.isEmpty == false {
+            items[key] = playerItem
+        }
         return playerItem
     }
     
@@ -327,8 +359,11 @@ extension MNPlayer {
         guard currentItem.status == .readyToPlay else { return }
         if status == .finished {
             // 跳转开始部分
-            let begin = delegate?.playerShouldPlayToBeginTime?(self) ?? 0.0
-            seek(seconds: begin) { [weak self] finish in
+            var time = 0.0
+            if let delegate = delegate, let begin = delegate.playerShouldPlayToBeginTime?(self), begin > 0.0 {
+                time = begin
+            }
+            seek(seconds: time) { [weak self] finish in
                 guard finish, let self = self else { return }
                 self.player.play()
                 self.status = .playing
@@ -348,7 +383,7 @@ extension MNPlayer {
     
     /// 播放下一个
     public func playNext() {
-        guard playIndex <= (urls.count - 2) else { return }
+        guard playIndex < (urls.count - 1) else { return }
         playIndex += 1
         prepare()
     }
@@ -371,9 +406,14 @@ extension MNPlayer {
             fail(reason: "会话类别设置失败")
             return
         }
-        if status == .playing { pause() }
-        let begin = delegate?.playerShouldPlayToBeginTime?(self) ?? 0.0
-        seek(seconds: begin) { [weak self] _ in
+        if status == .playing {
+            pause()
+        }
+        var time = 0.0
+        if let delegate = delegate, let begin = delegate.playerShouldPlayToBeginTime?(self), begin > 0.0 {
+            time = begin
+        }
+        seek(seconds: time) { [weak self] _ in
             guard let self = self else { return }
             self.player.play()
             self.status = .playing
@@ -399,19 +439,19 @@ extension MNPlayer {
     
     /// 删除所有播放内容
     public func removeAll() {
-        guard urls.count > 0 else { return }
+        guard urls.isEmpty == false else { return }
         replaceCurrentItemWithNil()
         urls.removeAll()
         items.removeAll()
         playIndex = 0
-        status = .unknown
+        status = .idle
     }
     
     /// 判断是否包含某个播放链接
     /// - Parameter url: 指定链接
     /// - Returns: 是否包含
     public func contains(_ url: URL) -> Bool {
-        return self.urls.filter { $0.path == url.path || $0.absoluteString == url.absoluteString }.count > 0
+        urls.contains { $0.path == url.path || $0.absoluteString == url.absoluteString }
     }
     
     /// 添加内容
@@ -473,22 +513,23 @@ private extension MNPlayer {
     @objc func playToEndTime(notify: Notification) {
         guard let object = notify.object as? AVPlayerItem, let currentItem = player.currentItem else { return }
         guard object == currentItem else { return }
-        let next: Bool = delegate?.playerShouldPlayNextItem?(self) ?? false
-        if next {
-            let begin = delegate?.playerShouldPlayToBeginTime?(self) ?? 0.0
+        var play = false
+        if let delegate = delegate, let flag = delegate.playerShouldPlayNextItem?(self) {
+            play = flag
+        }
+        if play {
             if playIndex >= (urls.count - 1) {
-                // 不支持播放下一曲
-                seek(seconds: begin) { [weak self] finish in
-                    guard let self = self else { return }
-                    self.player.play()
-                }
+                // 最后一曲, 从第一曲开始
+                self.play(index: 0)
             } else {
-                // 进度调整为开始部分, 避免播放上一曲时直接就是结束位置
+                // 下一曲
                 playNext()
             }
         } else {
             status = .finished
-            delegate?.playerDidPlayToEndTime?(self)
+            if let delegate = delegate {
+                delegate.playerDidPlayToEndTime?(self)
+            }
         }
     }
     
@@ -504,11 +545,11 @@ private extension MNPlayer {
     @objc func errorLogEntry(notify: Notification) {
         guard let object = notify.object as? AVPlayerItem, let currentItem = player.currentItem else { return }
         guard object == currentItem else { return }
-        #if DEBUG
+#if DEBUG
         if let error = currentItem.error {
             print(error)
         }
-        #endif
+#endif
     }
     
     // 其他App独占事件
@@ -595,8 +636,10 @@ extension MNPlayer {
         if currentItem.status == .readyToPlay { player.pause() }
         removeObserver(with: currentItem)
         player.replaceCurrentItem(with: nil)
-        status = .unknown
-        delegate?.playerDidChangeStatus?(self)
+        status = .idle
+        if let delegate = delegate {
+            delegate.playerDidChangeStatus?(self)
+        }
     }
     
     private func addObserver(with playerItem: AVPlayerItem?) {
