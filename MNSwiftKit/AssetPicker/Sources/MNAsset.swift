@@ -37,11 +37,10 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
     /// 来源
     @objc public var source: ResourceSource = .unknown
     
-    /**
-     图片: 调整后的图片
-     视频: 路径
-     LivePhoto : PHLivePhoto
-     */
+    /// 资源内容
+    /// photo, gif: UIImage
+    /// livePhoto: PHLivePhoto
+    /// video: String路径
     @objc public var contents: Any?
     
     /// 显示大小
@@ -245,8 +244,10 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
     
     public override func isEqual(_ object: Any?) -> Bool {
         if super.isEqual(object) { return true }
-        guard let asset = object as? MNAsset else { return false }
-        return identifier == asset.identifier
+        guard let other = object as? MNAsset else { return false }
+        if identifier == other.identifier { return true }
+        if let phAsset = phAsset, let otherAsset = other.phAsset, phAsset.localIdentifier == otherAsset.localIdentifier { return true }
+        return false
     }
 }
 

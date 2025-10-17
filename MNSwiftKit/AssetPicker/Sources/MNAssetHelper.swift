@@ -8,9 +8,6 @@
 import UIKit
 import Photos
 import Foundation
-//#if canImport(MNSwiftKitAnimatedImage)
-//import MNSwiftKitAnimatedImage
-//#endif
 
 class MNAssetHelper {
     
@@ -57,16 +54,14 @@ extension MNAssetHelper {
     /// - Parameters:
     ///   - options: 选择器配置模型
     ///   - completionHandler: 相簿集合结果回调
-    class func fetchAlbum(_ options: MNAssetPickerOptions, completion completionHandler: @escaping ([MNAssetAlbum])->Void) {
-        DispatchQueue.global().async {
+    public class func fetchAlbum(_ options: MNAssetPickerOptions, completion completionHandler: @escaping ([MNAssetAlbum])->Void) {
+        DispatchQueue.global(qos: .userInitiated).async {
             var albums: [MNAssetAlbum] = [MNAssetAlbum]()
-            let smartResult = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
+            let smartResult = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: nil)
             smartResult.enumerateObjects { collection, _, stop in
-                if collection.mn.isCameraRoll {
-                    let album = MNAssetAlbum(collection: collection, options: options)
-                    albums.append(album)
-                    stop.pointee = true
-                }
+                let album = MNAssetAlbum(collection: collection, options: options)
+                albums.append(album)
+                stop.pointee = true
             }
             if options.allowsPickingAlbum {
                 let fetchResult = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .albumRegular, options: nil)
@@ -87,7 +82,7 @@ extension MNAssetHelper {
     ///   - options: 选择器配置模型
     ///   - startHandler: 开始加载回调
     ///   - completionHandler: 结束回调
-    class func fetchAsset(in album: MNAssetAlbum, options: MNAssetPickerOptions, start startHandler: (()->Void)? = nil, completion completionHandler: @escaping ()->Void) {
+    public class func fetchAsset(in album: MNAssetAlbum, options: MNAssetPickerOptions, start startHandler: (()->Void)? = nil, completion completionHandler: @escaping ()->Void) {
         DispatchQueue.global().async {
             // 循环拉取直到满足分页数量
             var assets = [MNAsset]()
@@ -581,7 +576,11 @@ extension MNAssetHelper {
 // MARK: - 相册操作
 extension MNAssetHelper {
     
-    public class func deleteAssets(_ assets: [PHAsset], completion: ((Error?)->Void)?) {
+    /// 删除相册内资源
+    /// - Parameters:
+    ///   - assets: 相册资源集合
+    ///   - completion: 结束回调
+    public class func deleteAssets(_ assets: [PHAsset], completion: ((_ error: Error?)->Void)?) {
         DispatchQueue.global(qos: .userInitiated).async {
             guard assets.isEmpty == false else {
                 DispatchQueue.main.async {
@@ -603,26 +602,43 @@ extension MNAssetHelper {
         }
     }
     
-    public class func writeImage(toAlbum image: Any, completion: ((String?, Error?)->Void)?) {
+    /// 保存图片到系统相册
+    /// - Parameters:
+    ///   - image: 图片
+    ///   - completion: 结束回调
+    public class func writeImage(toAlbum image: Any, completion: ((_ identifier: String?, _ error: Error?)->Void)?) {
         writeAssets([image], toAlbum: nil) { identifiers, error in
             completion?(identifiers?.first, error)
         }
     }
     
-    public class func writeVideo(toAlbum video: Any, completion: ((String?, Error?)->Void)?) {
+    /// 保存视频到系统相册
+    /// - Parameters:
+    ///   - video: 视频路径
+    ///   - completion: 结束回调
+    public class func writeVideo(toAlbum video: Any, completion: ((_ identifier: String?, _ error: Error?)->Void)?) {
         writeAssets([video], toAlbum: nil) { identifiers, error in
             completion?(identifiers?.first, error)
         }
     }
     
+    /// 保存LivePhoto到系统相册
+    /// - Parameters:
+    ///   - livePhoto: LivePhoto
+    ///   - completion: 结束回调
     @available(iOS 9.1, *)
-    public class func writeLivePhoto(toAlbum livePhoto: PHLivePhoto, completion: ((String?, Error?)->Void)?) {
+    public class func writeLivePhoto(toAlbum livePhoto: PHLivePhoto, completion: ((_ identifier: String?, _ error: Error?)->Void)?) {
         writeAssets([livePhoto], toAlbum: nil) { identifiers, error in
             completion?(identifiers?.first, error)
         }
     }
     
-    public class func writeAssets(_ assets: [Any], toAlbum title: String? = nil, completion: (([String]?, Error?)->Void)?) {
+    /// 保存本地资源到系统相册
+    /// - Parameters:
+    ///   - assets: 资源集合
+    ///   - name: 相册名称
+    ///   - completion: 结束回调
+    public class func writeAssets(_ assets: [Any], toAlbum name: String? = nil, completion: ((_ identifiers: [String]?, _ error: Error?)->Void)?) {
         DispatchQueue.global(qos: .userInitiated).async {
             var identifiers: [String] = [String]()
             var placeholders: [PHObjectPlaceholder] = [PHObjectPlaceholder]()
@@ -712,7 +728,7 @@ extension MNAssetHelper {
                     identifiers.append(placeholder.localIdentifier)
                 }
                 if placeholders.isEmpty == false {
-                    MNAssetHelper.creationRequestForAssetCollection(with: title)?.addAssets(placeholders as NSFastEnumeration)
+                    MNAssetHelper.creationRequestForAssetCollection(with: name)?.addAssets(placeholders as NSFastEnumeration)
                 }
             } completionHandler: { result, error in
                 DispatchQueue.main.async {
@@ -749,7 +765,10 @@ extension MNAssetHelper {
 @available(iOS 9.1, *)
 extension MNAssetHelper {
     
-    // 合成
+    /// 请求LivePhoto
+    /// - Parameters:
+    ///   - urls: LivePhoto的视频和图片资源地址
+    ///   - completion: 结束回调
     public class func requestLivePhoto(resourceFileURLs urls: [URL], completion: ((PHLivePhoto?, Error?)->Void)?) {
         DispatchQueue.global(qos: .userInitiated).async {
             var videoURL: URL?
@@ -788,7 +807,11 @@ extension MNAssetHelper {
         }
     }
     
-    // 导出
+    
+    /// 导出LivePhoto视频和图片资源
+    /// - Parameters:
+    ///   - livePhoto: livePhoto对象
+    ///   - completion: 结束回调
     public class func exportLivePhoto(_ livePhoto: PHLivePhoto, completion: ((_ imageUrl: URL?, _ videoUrl: URL?)->Void)?) {
         let videoUrl = URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!).appendingPathComponent("\(Int(Date().timeIntervalSince1970*1000.0))").appendingPathExtension("MOV")
         let imageUrl = URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!).appendingPathComponent("\(Int(Date().timeIntervalSince1970*1000.0))").appendingPathExtension("JPG")
@@ -801,6 +824,12 @@ extension MNAssetHelper {
         }
     }
     
+    /// 导出LivePhoto视频和图片资源到指定位置
+    /// - Parameters:
+    ///   - livePhoto: livePhoto对象
+    ///   - imageUrl: 图片资源保存位置
+    ///   - videoUrl: 视频资源保存位置
+    ///   - completion: 结束回调
     public class func exportLivePhoto(_ livePhoto: PHLivePhoto, imageUrl: URL, videoUrl: URL, completion: ((_ isSuccess: Bool)->Void)?) {
         for url in [imageUrl, videoUrl] {
             try? FileManager.default.removeItem(at: url)

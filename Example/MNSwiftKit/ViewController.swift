@@ -49,6 +49,7 @@ class ViewController: UIViewController {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
         guard let touche = touches.first else { return }
         let location = touche.location(in: view)
         if imageView.frame.contains(location) {

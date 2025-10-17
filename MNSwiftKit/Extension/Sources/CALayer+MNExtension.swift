@@ -49,19 +49,18 @@ extension NameSpaceWrapper where Base: CALayer {
     /// 截图
     public var snapshotImage: UIImage? {
         if #available(iOS 10.0, *) {
-            let renderer = UIGraphicsImageRenderer(bounds: base.bounds)
+            let renderer = UIGraphicsImageRenderer(size: base.frame.size)
             return renderer.image { context in
                 base.render(in: context.cgContext)
             }
-        } else {
-            UIGraphicsBeginImageContextWithOptions(base.bounds.size, false, base.contentsScale)
-            if let context = UIGraphicsGetCurrentContext() {
-                base.render(in: context)
-            }
-            let image = UIGraphicsGetImageFromCurrentImageContext()
-            UIGraphicsEndImageContext()
-            return image
         }
+        UIGraphicsBeginImageContextWithOptions(base.bounds.size, false, base.contentsScale)
+        defer {
+            UIGraphicsEndImageContext()
+        }
+        guard let context = UIGraphicsGetCurrentContext() else { return nil }
+        base.render(in: context)
+        return UIGraphicsGetImageFromCurrentImageContext()
     }
     
     /// 设置圆角效果

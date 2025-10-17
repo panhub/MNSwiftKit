@@ -62,6 +62,17 @@ extension NameSpaceWrapper where Base: UIView {
             return nil
         }
     }
+    
+    /// 截图
+    public var snapshotImage: UIImage? {
+        if #available(iOS 10.0, *) {
+            let renderer = UIGraphicsImageRenderer(size: base.frame.size)
+            return renderer.image { context in
+                base.drawHierarchy(in: base.bounds, afterScreenUpdates: true)
+            }
+        }
+        return base.layer.mn.snapshotImage
+    }
 }
 
 extension NameSpaceWrapper where Base == UIView.ContentMode {

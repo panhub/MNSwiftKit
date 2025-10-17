@@ -30,11 +30,11 @@ public enum MNPHError: Swift.Error {
         case underlyingError(Error)
     }
     
-    //  LivePhoto导出/合成失败
+    ///  LivePhoto导出/合成失败
     case livePhotoError(LivePhotoErrorReason)
-    // 删除系统媒体时错误
+    /// 删除系统媒体时错误
     case deleteError(AssetDeleteErrorReason)
-    // 保存媒体文件时错误
+    /// 保存媒体文件时错误
     case writeError(AssetWriteErrorReason)
 }
 

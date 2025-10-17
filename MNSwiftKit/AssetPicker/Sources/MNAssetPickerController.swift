@@ -7,15 +7,6 @@
 
 import UIKit
 import Photos
-//#if canImport(MNSwiftKitToast)
-//import MNSwiftKitToast
-//#endif
-//#if canImport(MNSwiftKitDefinition)
-//import MNSwiftKitDefinition
-//#endif
-//#if canImport(MNSwiftKitEmptyView)
-//import MNSwiftKitEmptyView
-//#endif
 
 class MNAssetPickerController: UIViewController {
     /// 配置信息
@@ -41,7 +32,7 @@ class MNAssetPickerController: UIViewController {
     /// 底部工具栏
     private lazy var toolBar: MNAssetPickerToolBar = MNAssetPickerToolBar(options: options)
     /// 资源展示
-    private lazy var collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
+    private lazy var collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
     override var prefersStatusBarHidden: Bool { statusBarHidden }
     override var preferredStatusBarStyle: UIStatusBarStyle { statusBarStyle }
@@ -76,7 +67,7 @@ class MNAssetPickerController: UIViewController {
         
         let numberOfColumns: Int = max(options.numberOfColumns, 3)
         let itemWidth = floor((view.frame.width - CGFloat(numberOfColumns - 1)*options.minimumInteritemSpacing)/CGFloat(numberOfColumns))
-        let layout = UICollectionViewFlowLayout()
+        let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
         layout.scrollDirection = .vertical
         layout.minimumLineSpacing = options.minimumLineSpacing
         layout.minimumInteritemSpacing = options.minimumInteritemSpacing
@@ -90,7 +81,6 @@ class MNAssetPickerController: UIViewController {
         collectionView.mn.emptySource = self
         collectionView.mn.emptyDelegate = self
         collectionView.alwaysBounceVertical = true
-        collectionView.collectionViewLayout = layout
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.backgroundColor = options.backgroundColor
@@ -100,49 +90,49 @@ class MNAssetPickerController: UIViewController {
             collectionView.contentInsetAdjustmentBehavior = .never
         }
         view.addSubview(collectionView)
-        view.addConstraints([
-            NSLayoutConstraint(item: collectionView, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: collectionView, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: collectionView, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: collectionView, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0.0)
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            collectionView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            collectionView.rightAnchor.constraint(equalTo: view.rightAnchor)
         ])
         
         navBar.delegate = self
         navBar.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(navBar)
-        navBar.addConstraint(NSLayoutConstraint(item: navBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: options.contentInset.top))
-        view.addConstraints([
-            NSLayoutConstraint(item: navBar, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: navBar, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: navBar, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0.0)
+        NSLayoutConstraint.activate([
+            navBar.topAnchor.constraint(equalTo: view.topAnchor),
+            navBar.leftAnchor.constraint(equalTo: view.leftAnchor),
+            navBar.rightAnchor.constraint(equalTo: view.rightAnchor),
+            navBar.heightAnchor.constraint(equalToConstant: options.contentInset.top)
         ])
         
         albumView.delegate = self
         albumView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(albumView)
-        view.addConstraints([
-            NSLayoutConstraint(item: albumView, attribute: .top, relatedBy: .equal, toItem: navBar, attribute: .bottom, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: albumView, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: albumView, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1.0, constant: options.contentInset.bottom),
-            NSLayoutConstraint(item: albumView, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0.0)
+        NSLayoutConstraint.activate([
+            albumView.topAnchor.constraint(equalTo: navBar.bottomAnchor),
+            albumView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            albumView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -options.contentInset.bottom),
+            albumView.rightAnchor.constraint(equalTo: view.rightAnchor)
         ])
         
         toolBar.delegate = self
         toolBar.isHidden = options.maxPickingCount <= 1
         toolBar.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(toolBar)
-        toolBar.addConstraint(NSLayoutConstraint(item: toolBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: options.bottomBarHeight))
-        view.addConstraints([
-            NSLayoutConstraint(item: toolBar, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: toolBar, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: toolBar, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0.0)
+        NSLayoutConstraint.activate([
+            toolBar.leftAnchor.constraint(equalTo: view.leftAnchor),
+            toolBar.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            toolBar.rightAnchor.constraint(equalTo: view.rightAnchor),
+            toolBar.heightAnchor.constraint(equalToConstant: options.bottomBarHeight)
         ])
         
         // 分页支持
         if options.sortAscending {
             // 升序则上拉加载更多
             let footer = MNAssetPickerFooter(target: self, action: #selector(loadMore))
-            footer.mn.height = MN_TAB_BAR_HEIGHT
+            footer.mn.height = options.bottomBarHeight
             footer.color = options.mode == .light ? .black : .gray
             footer.offset = UIOffset(horizontal: 0.0, vertical: -options.contentInset.bottom)
             collectionView.mn.footer = footer
