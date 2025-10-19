@@ -56,7 +56,12 @@ class ViewController: UIViewController {
             MNAssetBrowser.present(container: imageView, in: view)
         } else {
             //slider.setValue(0.0, animated: true)
-            let picker = MNAssetPicker()
+            let options: MNAssetPickerOptions = MNAssetPickerOptions()
+            options.allowsPreview = true
+            options.allowsPickingAlbum = true
+            options.showFileSize = true
+            options.maxPickingCount = 10
+            let picker = MNAssetPicker(options: options)
             picker.present { picker, assets in
                 
             }

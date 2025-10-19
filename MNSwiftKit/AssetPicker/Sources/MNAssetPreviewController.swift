@@ -6,153 +6,41 @@
 //  资源预览控制器
 
 import UIKit
-//#if canImport(MNSwiftKitLayout)
-//import MNSwiftKitLayout
-//#endif
-//#if canImport(MNSwiftKitDefinition)
-//import MNSwiftKitDefinition
-//#endif
 
 /// 资源浏览控制器代理
 @objc protocol MNAssetPreviewControllerDelegate: NSObjectProtocol {
+    
     /// 告知更新资源状态
     /// - Parameter asset: 资源模型
-    @objc optional func previewControllerUpdateAsset(_ asset: MNAsset) -> Void
-    /// 资源浏览控制器滑动告知
-    /// - Parameter controller: 资源浏览控制器
-    @objc optional func previewController(didScroll controller: MNAssetPreviewController) -> Void
-    /// 资源浏览控制器事件
-    /// - Parameters:
-    ///   - controller: 资源浏览控制器
-    ///   - sender: 按钮
-    @objc optional func previewController(_ controller: MNAssetPreviewController, buttonTouchUpInside sender: UIControl) -> Void
+    @objc func previewControllerUpdateAsset(_ asset: MNAsset)
 }
 
 /// 资源预览控制器
 class MNAssetPreviewController: UIViewController {
-    /// 事件
-    struct Event: OptionSet {
-        /// 选择
-        static let select = Event(rawValue: 1 << 1)
-        /// 确定
-        static let done = Event(rawValue: 1 << 2)
-        
-        let rawValue: Int
-        init(rawValue: Int) {
-            self.rawValue = rawValue
-        }
-    }
     /// 间隔
     private let itemInterSpacing: CGFloat = 15.0
     /// 媒体数组
-    private var assets: [MNAsset] = [MNAsset]()
+    private var assets: [MNAsset] = []
     /// 配置信息
     private let options: MNAssetPickerOptions
     /// 是否在销毁时删除本地资源文件
-    var cleanWhenExit: Bool = false
-    /// 外界定制功能
-    var events: Event = []
+    var clearWhenExit: Bool = false
     /// 事件代理
     weak var delegate: MNAssetPreviewControllerDelegate?
     /// 是否允许自动播放
     var isAllowsAutoPlaying: Bool = true
     /// 当前展示的索引
-    private(set) var displayIndex: Int = .min
+    private var displayIndex: Int = .min
     /// 状态栏
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
-    /// 底部选择栏
-    private lazy var selectView: MNAssetSelectView = {
-        let selectView = MNAssetSelectView(frame: CGRect(x: 0.0, y: 0.0, width: view.bounds.width, height: 100.0), assets: assets, options: options)
-        selectView.mn.maxY = view.bounds.height - MNAssetBrowserCell.ToolBarHeight
-        selectView.delegate = self
-        return selectView
-    }()
     /// 顶部导航栏
-    private lazy var navView: UIView = {
-        let navView = UIImageView(frame: CGRect(x: 0.0, y: 0.0, width: view.bounds.width, height: MN_TOP_BAR_HEIGHT))
-        navView.backgroundColor = .clear
-        navView.contentMode = .scaleToFill
-        navView.isUserInteractionEnabled = true
-        navView.image = AssetPickerResource.image(named: "top")
-        let back = UIButton(type: .custom)
-        back.frame = CGRect(x: 15.0, y: 0.0, width: 25.0, height: 25.0)
-        back.mn.midY = (navView.frame.height - MN_STATUS_BAR_HEIGHT)/2.0 + MN_STATUS_BAR_HEIGHT
-        back.setBackgroundImage(AssetPickerResource.image(named: "back"), for: .normal)
-        back.addTarget(self, action: #selector(back(_:)), for: .touchUpInside)
-        navView.addSubview(back)
-        var maxX: CGFloat = navView.frame.width - back.frame.minX
-        if events.contains(.done) {
-            let done = UIButton(type: .custom)
-            done.frame = back.frame
-            done.mn.maxX = maxX
-            done.tag = Event.done.rawValue
-            done.setBackgroundImage(AssetPickerResource.image(named: "done"), for: .normal)
-            done.addTarget(self, action: #selector(buttonTouchUpInside(_:)), for: .touchUpInside)
-            navView.addSubview(done)
-            maxX = done.frame.minX - 18.0
-        }
-        if events.contains(.select) {
-            let select = UIButton(type: .custom)
-            select.frame = back.frame
-            select.mn.maxX = maxX
-            select.isSelected = true
-            select.tag = Event.select.rawValue
-            select.clipsToBounds = true
-            select.layer.cornerRadius = min(select.frame.width, select.frame.height)/2.0
-            select.addTarget(self, action: #selector(selectButtonTouchUpInside(_:)), for: .touchUpInside)
-            let normalImage = AssetPickerResource.image(named: "selectbox")
-            let selectedImage = AssetPickerResource.image(named: "checkbox_fill")?.mn.rendering(to: options.themeColor)
-            if #available(iOS 15.0, *) {
-                var configuration = UIButton.Configuration.plain()
-                configuration.background.backgroundColor = .clear
-                select.configuration = configuration
-                select.configurationUpdateHandler = { button in
-                    switch button.state {
-                    case .normal:
-                        button.configuration?.background.image = normalImage
-                        button.configuration?.background.backgroundColor = .clear
-                    case .selected:
-                        button.configuration?.background.image = selectedImage
-                        button.configuration?.background.backgroundColor = .white
-                    default: break
-                    }
-                }
-            } else {
-                select.adjustsImageWhenHighlighted = false
-                select.setBackgroundImage(normalImage, for: .normal)
-                select.setBackgroundImage(selectedImage, for: .selected)
-            }
-            navView.addSubview(select)
-        }
-        return navView
-    }()
+    private let navView = UIImageView()
+    /// 导航右侧选择按钮
+    private let rightBarButton = UIButton(type: .custom)
+    /// 底部选择栏
+    private lazy var selectView = MNAssetSelectView(assets: assets, options: options)
     /// 集合视图
-    private lazy var collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = itemInterSpacing
-        layout.minimumInteritemSpacing = 0.0
-        layout.headerReferenceSize = .zero
-        layout.footerReferenceSize = .zero
-        layout.itemSize = view.bounds.size
-        layout.sectionInset = UIEdgeInsets(top: 0.0, left: itemInterSpacing/2.0, bottom: 0.0, right: itemInterSpacing/2.0)
-        let collectionView = UICollectionView(frame: view.bounds.inset(by: UIEdgeInsets(top: 0.0, left: -itemInterSpacing/2.0, bottom: 0.0, right: -itemInterSpacing/2.0)), collectionViewLayout: layout)
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        collectionView.scrollsToTop = false
-        collectionView.isPagingEnabled = true
-        collectionView.backgroundColor = .clear
-        collectionView.delaysContentTouches = false
-        collectionView.alwaysBounceHorizontal = true
-        collectionView.canCancelContentTouches = true
-        collectionView.showsVerticalScrollIndicator = false
-        collectionView.showsHorizontalScrollIndicator = false
-        collectionView.register(MNAssetBrowserCell.self, forCellWithReuseIdentifier: "com.mn.asset.preview.cell")
-        if #available(iOS 11.0, *) {
-            collectionView.contentInsetAdjustmentBehavior = .never;
-        }
-        return collectionView
-    }()
+    private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
     /// 构造资源浏览器
     /// - Parameters:
@@ -169,15 +57,13 @@ class MNAssetPreviewController: UIViewController {
     }
     
     deinit {
-        if cleanWhenExit {
+        if clearWhenExit {
             assets.forEach { $0.contents = nil }
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
         
         view.backgroundColor = .black
         
@@ -190,17 +76,115 @@ class MNAssetPreviewController: UIViewController {
         }
         
         // 集合视图
+        let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
+        layout.scrollDirection = .horizontal
+        layout.headerReferenceSize = .zero
+        layout.footerReferenceSize = .zero
+        layout.itemSize = view.bounds.size
+        layout.minimumInteritemSpacing = 0.0
+        layout.minimumLineSpacing = itemInterSpacing
+        layout.sectionInset = UIEdgeInsets(top: 0.0, left: itemInterSpacing/2.0, bottom: 0.0, right: itemInterSpacing/2.0)
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.scrollsToTop = false
+        collectionView.isPagingEnabled = true
+        collectionView.backgroundColor = .clear
+        collectionView.delaysContentTouches = false
+        collectionView.alwaysBounceHorizontal = true
+        collectionView.canCancelContentTouches = true
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.register(MNAssetBrowserCell.self, forCellWithReuseIdentifier: "com.mn.asset.preview.cell")
+        if #available(iOS 11.0, *) {
+            collectionView.contentInsetAdjustmentBehavior = .never;
+        }
         view.addSubview(collectionView)
-        collectionView.reloadData()
-        collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .centeredHorizontally, animated: false)
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            collectionView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: -itemInterSpacing/2.0),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            collectionView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: itemInterSpacing/2.0)
+        ])
+        
         // 底部选择视图
+        selectView.delegate = self
+        selectView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(selectView)
+        NSLayoutConstraint.activate([
+            selectView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            selectView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            selectView.heightAnchor.constraint(equalToConstant: 100.0),
+            selectView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -MNAssetBrowserCell.ToolBarHeight),
+        ])
+        
         // 导航
+        navView.contentMode = .scaleToFill
+        navView.isUserInteractionEnabled = true
+        navView.image = AssetPickerResource.image(named: "top")
+        navView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(navView)
-        // 事件
+        NSLayoutConstraint.activate([
+            navView.topAnchor.constraint(equalTo: view.topAnchor),
+            navView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            navView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            navView.heightAnchor.constraint(equalToConstant: options.topBarHeight)
+        ])
+        
+        // 返回
+        let back = UIButton(type: .custom)
+        back.setBackgroundImage(AssetPickerResource.image(named: "back"), for: .normal)
+        back.addTarget(self, action: #selector(back(_:)), for: .touchUpInside)
+        back.translatesAutoresizingMaskIntoConstraints = false
+        navView.addSubview(back)
+        NSLayoutConstraint.activate([
+            back.widthAnchor.constraint(equalToConstant: 24.0),
+            back.heightAnchor.constraint(equalToConstant: 24.0),
+            back.leftAnchor.constraint(equalTo: navView.leftAnchor, constant: 16.0),
+            back.topAnchor.constraint(equalTo: navView.topAnchor, constant: options.statusBarHeight + (options.navBarHeight - 24.0)/2.0)
+        ])
+        
+        // 选择
+        rightBarButton.isSelected = true
+        rightBarButton.clipsToBounds = true
+        rightBarButton.layer.cornerRadius = 12.0
+        rightBarButton.addTarget(self, action: #selector(rightBarButtonTouchUpInside(_:)), for: .touchUpInside)
+        let normalImage = AssetPickerResource.image(named: "selectbox")
+        let selectedImage = AssetPickerResource.image(named: "checkbox_fill")?.mn.rendering(to: options.themeColor)
+        if #available(iOS 15.0, *) {
+            var configuration = UIButton.Configuration.plain()
+            configuration.background.backgroundColor = .clear
+            rightBarButton.configuration = configuration
+            rightBarButton.configurationUpdateHandler = { button in
+                switch button.state {
+                case .normal:
+                    button.configuration?.background.image = normalImage
+                    button.configuration?.background.backgroundColor = .clear
+                case .selected:
+                    button.configuration?.background.image = selectedImage
+                    button.configuration?.background.backgroundColor = .white
+                default: break
+                }
+            }
+        } else {
+            rightBarButton.adjustsImageWhenHighlighted = false
+            rightBarButton.setBackgroundImage(normalImage, for: .normal)
+            rightBarButton.setBackgroundImage(selectedImage, for: .selected)
+        }
+        navView.addSubview(rightBarButton)
+        NSLayoutConstraint.activate([
+            rightBarButton.widthAnchor.constraint(equalTo: back.widthAnchor),
+            rightBarButton.heightAnchor.constraint(equalTo: back.heightAnchor),
+            rightBarButton.rightAnchor.constraint(equalTo: navView.leftAnchor, constant: -16.0),
+            rightBarButton.centerYAnchor.constraint(equalTo: back.centerYAnchor)
+        ])
+        
+        // 放大
         let doubleTap = UITapGestureRecognizer(target: self, action: #selector(double(recognizer:)))
         doubleTap.numberOfTapsRequired = 2
         view.addGestureRecognizer(doubleTap)
+        
+        // 清屏
         let singleTap = UITapGestureRecognizer(target: self, action: #selector(single(recognizer:)))
         singleTap.numberOfTapsRequired = 1
         singleTap.require(toFail: doubleTap)
@@ -261,7 +245,7 @@ extension MNAssetPreviewController: UICollectionViewDataSource, UICollectionView
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         guard decelerate == false, scrollView.isDragging == false, scrollView.isDecelerating == false else { return }
-        updateDisplayIndex()
+        scrollViewDidEndDecelerating(scrollView)
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
@@ -288,8 +272,7 @@ private extension MNAssetPreviewController {
     
     /// 获取当前表格
     private var currentDisplayCell: MNAssetBrowserCell? {
-        if displayIndex == .min { return nil }
-        return collectionView.cellForItem(at: IndexPath(item: displayIndex, section: 0)) as? MNAssetBrowserCell
+        collectionView.cellForItem(at: IndexPath(item: displayIndex, section: 0)) as? MNAssetBrowserCell
     }
     
     /// 更新索引
@@ -300,7 +283,7 @@ private extension MNAssetPreviewController {
         let asset = assets[currentIndex]
         if let index = assets.firstIndex(where: { $0.isSelected == false }) {
             // 删除无效资源
-            if cleanWhenExit {
+            if clearWhenExit {
                 // 清空资源 释放内存
                 assets[index].contents = nil
             }
@@ -312,17 +295,12 @@ private extension MNAssetPreviewController {
             }
         }
         displayIndex = currentIndex
-        if let button = navView.viewWithTag(Event.select.rawValue) as? UIButton {
-            button.isSelected = asset.isSelected
-        }
+        rightBarButton.isSelected = asset.isSelected
         if asset.isSelected {
             selectView.selection(index: currentIndex)
         }
         if let cell = currentDisplayCell {
             cell.prepareDisplay()
-        }
-        if let delegate = delegate {
-            delegate.previewController?(didScroll: self)
         }
     }
 }
@@ -378,10 +356,12 @@ extension MNAssetPreviewController {
     
     /// 更新资源
     /// - Parameter sender: 选择按钮
-    @objc private func selectButtonTouchUpInside(_ sender: UIButton) {
+    @objc private func rightBarButtonTouchUpInside(_ sender: UIButton) {
         guard displayIndex < assets.count else { return }
         let asset = assets[displayIndex]
-        delegate?.previewControllerUpdateAsset?(asset)
+        if let delegate = delegate {
+            delegate.previewControllerUpdateAsset(asset)
+        }
         if sender.isSelected {
             // 取消选中
             guard asset.isSelected == false else { return }
@@ -405,13 +385,6 @@ extension MNAssetPreviewController {
             }
             selectView.appendAsset(asset)
         }
-    }
-    
-    /// 自定义按钮点击事件
-    /// - Parameter sender: 自定义按钮
-    @objc private func buttonTouchUpInside(_ sender: UIControl) {
-        guard let delegate = delegate else { return }
-        delegate.previewController?(self, buttonTouchUpInside: sender)
     }
 }
 

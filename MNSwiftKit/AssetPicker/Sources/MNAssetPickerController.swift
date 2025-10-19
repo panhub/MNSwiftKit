@@ -12,13 +12,13 @@ class MNAssetPickerController: UIViewController {
     /// 配置信息
     private let options: MNAssetPickerOptions
     /// 是否进入相册
-    private var isEnterLibrary: Bool = false
+    private var isEnterLibrary = false
     /// 是否加载了资源
-    private var isAssetLoaded: Bool = false
+    private var isAssetLoaded = false
     /// 当前资源集合
-    private var assets: [MNAsset] = [MNAsset]()
+    private var assets: [MNAsset] = []
     /// 选中的资源集合
-    private var selections: [MNAsset] = [MNAsset]()
+    private var selections: [MNAsset] = []
     /// 上一次交互索引
     private var lastTouchIndex: Int = .min
     /// 是否需要隐藏状态栏
@@ -26,13 +26,13 @@ class MNAssetPickerController: UIViewController {
     /// 状态栏修改
     private lazy var statusBarStyle: UIStatusBarStyle = options.mode == .dark ? .lightContent : .default
     /// 顶部栏
-    private lazy var navBar: MNAssetPickerNavBar = MNAssetPickerNavBar(options: options)
+    private lazy var navBar = MNAssetPickerNavBar(options: options)
     /// 相册视图
-    private lazy var albumView: MNAssetAlbumView = MNAssetAlbumView(options: options)
+    private lazy var albumView = MNAssetAlbumView(options: options)
     /// 底部工具栏
-    private lazy var toolBar: MNAssetPickerToolBar = MNAssetPickerToolBar(options: options)
+    private lazy var toolBar = MNAssetPickerToolBar(options: options)
     /// 资源展示
-    private lazy var collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
     override var prefersStatusBarHidden: Bool { statusBarHidden }
     override var preferredStatusBarStyle: UIStatusBarStyle { statusBarStyle }
@@ -147,7 +147,7 @@ class MNAssetPickerController: UIViewController {
         if options.maxPickingCount > 1, options.allowsSlidePicking, options.allowsMultiplePickingPhoto, options.allowsMultiplePickingGif, options.allowsMultiplePickingVideo, options.allowsMultiplePickingLivePhoto {
             // 滑动选择
             // collectionView.bounces = false
-            let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(recognizer:)))
+            let pan = UIPanGestureRecognizer(target: self, action: #selector(pan(recognizer:)))
             pan.maximumNumberOfTouches = 1
             view.addGestureRecognizer(pan)
         }
@@ -159,7 +159,7 @@ class MNAssetPickerController: UIViewController {
         // 请求相册
         if isAssetLoaded == false {
             isAssetLoaded = true
-            applyPermission()
+            apply()
         }
     }
 }
@@ -219,7 +219,7 @@ extension MNAssetPickerController {
 extension MNAssetPickerController {
     
     /// 请求权限
-    private func applyPermission() {
+    private func apply() {
         var availables: [PHAuthorizationStatus] = [.authorized]
         if #available(iOS 14, *) {
             availables.append(.limited)
@@ -424,7 +424,7 @@ extension MNAssetPickerController {
     
     /// 滑动手势事件
     /// - Parameter recognizer: 滑动手势
-    @objc func handlePan(recognizer: UIPanGestureRecognizer) {
+    @objc private func pan(recognizer: UIPanGestureRecognizer) {
         switch recognizer.state {
         case .changed:
             guard assets.count > 0 else { return }
@@ -509,6 +509,56 @@ extension MNAssetPickerController: UICollectionViewDelegate, UICollectionViewDat
                 self.view.showMsgToast("导出视频失败")
             }
         }
+    }
+}
+
+// MARK: - MNAssetCellEventHandler
+extension MNAssetPickerController: MNAssetCellEventHandler {
+    
+    func assetCellShouldPreview(_ cell: MNAssetCell) {
+        guard let asset = cell.asset, let _ = asset.cover else {
+            view.showMsgToast("暂无法预览")
+            return
+        }
+        let browser = MNAssetBrowser(assets: [asset])
+        browser.delegate = self
+        browser.leftBarEvent = .back
+        browser.clearWhenExit = true
+        browser.exitWhenPulled = true
+        browser.backgroundColor = .black
+        browser.present(in: view) { [weak self] state in
+            guard let self = self else { return }
+            switch state {
+            case .willAppear:
+                self.statusBarStyle = .lightContent
+                self.setNeedsStatusBarAppearanceUpdate()
+            case .willDisappear:
+                self.statusBarStyle = self.options.mode == .dark ? .lightContent : .default
+                self.setNeedsStatusBarAppearanceUpdate()
+            default: break
+            }
+        }
+    }
+}
+
+// MARK: - MNAssetBrowseDelegate
+extension MNAssetPickerController: MNAssetBrowseDelegate {
+    
+    func assetBrowser(_ browser: MNAssetBrowser, fetchCover asset: any MNAssetBrowseSupported, completion completionHandler: @escaping MNAssetBrowserCell.CoverUpdateHandler) {
+        
+        MNAssetHelper.fetchCover(asset as! MNAsset, completion: completionHandler)
+    }
+    
+    func assetBrowser(_ browser: MNAssetBrowser, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: @escaping MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: @escaping MNAssetBrowserCell.ContentUpdateHandler) {
+        
+        MNAssetHelper.fetchContents(asset as! MNAsset, progress: progressHandler, completion: completionHandler)
+    }
+    
+    func assetBrowser(_ browser: MNAssetBrowser, didEndDisplaying asset: any MNAssetBrowseSupported) {
+        
+        let asset = asset as! MNAsset
+        asset.cancelRequest()
+        asset.cancelDownload()
     }
 }
 
@@ -604,34 +654,6 @@ extension MNAssetPickerController: MNTailorViewControllerDelegate {
     }
 }
 
-// MARK: - MNAssetCellDelegate
-extension MNAssetPickerController: MNAssetCellDelegate {
-    
-    func assetCellShouldPreviewAsset(_ cell: MNAssetCell) {
-        guard let asset = cell.asset, let _ = asset.cover else {
-            view.showMsgToast("暂无法预览")
-            return
-        }
-        let browser = MNAssetBrowser(assets: [asset])
-        browser.leftBarEvent = .back
-        browser.clearWhenExit = true
-        browser.exitWhenPulled = true
-        browser.backgroundColor = .black
-        browser.present(in: view) { [weak self] state in
-            guard let self = self else { return }
-            switch state {
-            case .willAppear:
-                self.statusBarStyle = .lightContent
-                self.setNeedsStatusBarAppearanceUpdate()
-            case .willDisappear:
-                self.statusBarStyle = self.options.mode == .dark ? .lightContent : .default
-                self.setNeedsStatusBarAppearanceUpdate()
-            default: break
-            }
-        }
-    }
-}
-
 // MARK: - MNAssetPickerNavDelegate
 extension MNAssetPickerController: MNAssetPickerNavDelegate {
     
@@ -661,8 +683,7 @@ extension MNAssetPickerController: MNAssetPickerToolDelegate {
     func previewButtonTouchUpInside(_ toolBar: MNAssetPickerToolBar) {
         let previewController = MNAssetPreviewController(assets: selections, options: options)
         previewController.delegate = self
-        previewController.events = [.select]
-        previewController.cleanWhenExit = true
+        previewController.clearWhenExit = true
         navigationController?.pushViewController(previewController, animated: true)
     }
     

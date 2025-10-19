@@ -47,7 +47,7 @@ class MNAssetHelper {
     private init() {}
 }
 
-// MARK: - Get Collection
+// MARK: - Collection
 extension MNAssetHelper {
     
     /// 获取相簿
@@ -134,7 +134,7 @@ extension MNAssetHelper {
     }
 }
 
-// MARK: - Get Thumbnail
+// MARK: - Profile & Cover
 extension MNAssetHelper {
     
     /// 请求描述信息(触发多次回调, 更新资源)
@@ -573,7 +573,7 @@ extension MNAssetHelper {
     }
 }
 
-// MARK: - 相册操作
+// MARK: - Delete & Write to system album
 extension MNAssetHelper {
     
     /// 删除相册内资源

@@ -18,9 +18,9 @@ class MNAssetAlbumBadge: UIControl {
     /// 箭头
     private let imageView: UIImageView = UIImageView()
     /// 可点击状态下宽度约束
-    private lazy var abledLayout: NSLayoutConstraint = NSLayoutConstraint(item: arrowView, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1.0, constant: -5.0)
+    private lazy var ableConstraint: NSLayoutConstraint = arrowView.rightAnchor.constraint(equalTo: rightAnchor, constant: -5.0)
     /// 可点击状态下宽度约束
-    private lazy var unableLayout: NSLayoutConstraint = NSLayoutConstraint(item: label, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1.0, constant: -10.0)
+    private lazy var unableConstraint: NSLayoutConstraint = label.rightAnchor.constraint(equalTo: rightAnchor, constant: -10.0)
     /// 是否可选择相册
     override var isEnabled: Bool {
         get { super.isEnabled }
@@ -28,8 +28,8 @@ class MNAssetAlbumBadge: UIControl {
             super.isEnabled = newValue
             backgroundColor = newValue ? (options.mode == .light ? UIColor(white: 0.0, alpha: 0.12) : UIColor(red: 74.0/255.0, green: 74.0/255.0, blue: 74.0/255.0, alpha: 1.0)) : .clear
             arrowView.isHidden = newValue == false
-            abledLayout.isActive = newValue
-            unableLayout.isActive = newValue == false
+            ableConstraint.isActive = newValue
+            unableConstraint.isActive = newValue == false
             setNeedsLayout()
         }
     }
@@ -62,9 +62,9 @@ class MNAssetAlbumBadge: UIControl {
         label.font = UIFont.systemFont(ofSize: 16.0, weight: .medium)
         label.textColor = options.mode == .light ? .black : UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)
         addSubview(label)
-        addConstraints([
-            NSLayoutConstraint(item: label, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1.0, constant: 10.0),
-            NSLayoutConstraint(item: label, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1.0, constant: 0.0)
+        NSLayoutConstraint.activate([
+            label.leftAnchor.constraint(equalTo: leftAnchor, constant: 10.0),
+            label.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
         
         arrowView.isHidden = true
@@ -74,33 +74,29 @@ class MNAssetAlbumBadge: UIControl {
         arrowView.translatesAutoresizingMaskIntoConstraints = false
         arrowView.backgroundColor = options.mode == .light ? .white : UIColor(red: 166.0/255.0, green: 166.0/255.0, blue: 166.0/255.0, alpha: 1.0)
         addSubview(arrowView)
-        arrowView.addConstraints([
-            NSLayoutConstraint(item: arrowView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 20.0),
-            NSLayoutConstraint(item: arrowView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 20.0)
-        ])
-        addConstraints([
-            NSLayoutConstraint(item: arrowView, attribute: .left, relatedBy: .equal, toItem: label, attribute: .right, multiplier: 1.0, constant: 7.0),
-            NSLayoutConstraint(item: arrowView, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1.0, constant: 0.0)
+        NSLayoutConstraint.activate([
+            arrowView.leftAnchor.constraint(equalTo: label.rightAnchor, constant: 7.0),
+            arrowView.widthAnchor.constraint(equalToConstant: 20.0),
+            arrowView.heightAnchor.constraint(equalToConstant: 20.0),
+            arrowView.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
         
-        imageView.image = AssetPickerResource.image(named: "down")
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
         imageView.isUserInteractionEnabled = false
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = AssetPickerResource.image(named: "down")
         arrowView.addSubview(imageView)
-        imageView.addConstraints([
-            NSLayoutConstraint(item: imageView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 11.0),
-            NSLayoutConstraint(item: imageView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 11.0)
-        ])
-        arrowView.addConstraints([
-            NSLayoutConstraint(item: imageView, attribute: .centerX, relatedBy: .equal, toItem: arrowView, attribute: .centerX, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: imageView, attribute: .centerY, relatedBy: .equal, toItem: arrowView, attribute: .centerY, multiplier: 1.0, constant: 1.0)
+        NSLayoutConstraint.activate([
+            imageView.widthAnchor.constraint(equalToConstant: 11.0),
+            imageView.heightAnchor.constraint(equalToConstant: 11.0),
+            imageView.centerXAnchor.constraint(equalTo: arrowView.centerXAnchor),
+            imageView.centerYAnchor.constraint(equalTo: arrowView.centerYAnchor)
         ])
         
-        addConstraints([abledLayout, unableLayout])
-        abledLayout.isActive = false
-        unableLayout.isActive = true
+        addConstraints([ableConstraint, unableConstraint])
+        ableConstraint.isActive = false
+        unableConstraint.isActive = true
     }
     
     required init?(coder: NSCoder) {
@@ -113,14 +109,23 @@ class MNAssetAlbumBadge: UIControl {
     ///   - animated: 是否动态展示过程
     ///   - completion: 结束回调
     func updateTitle(_ title: String?, animated: Bool = false, completion: (()->Void)? = nil) {
-        label.text = title
-        UIView.animate(withDuration: animated ? 0.3 : 0.0, delay: 0.0, options: .curveEaseInOut) { [weak self] in
+        let animations: ()->Void = { [weak self] in
             guard let self = self else { return }
-            self.label.text = title
             self.setNeedsLayout()
             self.layoutIfNeeded()
-        } completion: { _ in
-            completion?()
+        }
+        label.text = title
+        if animated {
+            UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseInOut, animations: animations) { _ in
+                if let completion = completion {
+                    completion()
+                }
+            }
+        } else {
+            animations()
+            if let completion = completion {
+                completion()
+            }
         }
     }
 }

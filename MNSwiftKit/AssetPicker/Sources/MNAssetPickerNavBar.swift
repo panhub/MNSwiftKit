@@ -38,11 +38,22 @@ class MNAssetPickerNavBar: UIView {
         let effectView = UIVisualEffectView(effect: UIBlurEffect(style: options.mode == .light ? .extraLight : .dark))
         effectView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(effectView)
-        addConstraints([
-            NSLayoutConstraint(item: effectView, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: effectView, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: effectView, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: effectView, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1.0, constant: 0.0)
+        NSLayoutConstraint.activate([
+            effectView.topAnchor.constraint(equalTo: topAnchor),
+            effectView.leftAnchor.constraint(equalTo: leftAnchor),
+            effectView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            effectView.rightAnchor.constraint(equalTo: rightAnchor)
+        ])
+        
+        let separator = UIView()
+        separator.translatesAutoresizingMaskIntoConstraints = false
+        separator.backgroundColor = options.mode == .light ? .gray.withAlphaComponent(0.15) : .black.withAlphaComponent(0.85)
+        addSubview(separator)
+        NSLayoutConstraint.activate([
+            separator.leftAnchor.constraint(equalTo: leftAnchor),
+            separator.bottomAnchor.constraint(equalTo: bottomAnchor),
+            separator.rightAnchor.constraint(equalTo: rightAnchor),
+            separator.heightAnchor.constraint(equalToConstant: 0.7)
         ])
         
         let closeButton = UIButton(type: .custom)
@@ -65,13 +76,11 @@ class MNAssetPickerNavBar: UIView {
         }
         closeButton.addTarget(self, action: #selector(closeButton(touchUpInside:)), for: .touchUpInside)
         addSubview(closeButton)
-        closeButton.addConstraints([
-            NSLayoutConstraint(item: closeButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 24.0),
-            NSLayoutConstraint(item: closeButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 24.0)
-        ])
-        addConstraints([
-            NSLayoutConstraint(item: closeButton, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1.0, constant: 16.0),
-            NSLayoutConstraint(item: closeButton, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1.0, constant: (options.navBarHeight - 24.0)/2.0 + options.statusBarHeight)
+        NSLayoutConstraint.activate([
+            closeButton.topAnchor.constraint(equalTo: topAnchor, constant: options.statusBarHeight + (options.navBarHeight - 24.0)/2.0),
+            closeButton.leftAnchor.constraint(equalTo: leftAnchor, constant: 16.0),
+            closeButton.widthAnchor.constraint(equalToConstant: 24.0),
+            closeButton.heightAnchor.constraint(equalToConstant: 24.0)
         ])
         
         badge.clipsToBounds = true
@@ -79,21 +88,10 @@ class MNAssetPickerNavBar: UIView {
         badge.translatesAutoresizingMaskIntoConstraints = false
         badge.addTarget(self, action: #selector(badge(touchUpInside:)), for: .touchUpInside)
         addSubview(badge)
-        badge.addConstraint(NSLayoutConstraint(item: badge, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 30.0))
-        addConstraints([
-            NSLayoutConstraint(item: badge, attribute: .centerX, relatedBy: .equal, toItem: self, attribute: .centerX, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: badge, attribute: .centerY, relatedBy: .equal, toItem: closeButton, attribute: .centerY, multiplier: 1.0, constant: 0.0)
-        ])
-        
-        let separator = UIView()
-        separator.translatesAutoresizingMaskIntoConstraints = false
-        separator.backgroundColor = options.mode == .light ? .gray.withAlphaComponent(0.15) : .black.withAlphaComponent(0.85)
-        addSubview(separator)
-        separator.addConstraint(NSLayoutConstraint(item: separator, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 0.7))
-        addConstraints([
-            NSLayoutConstraint(item: separator, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: separator, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: separator, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1.0, constant: 0.0)
+        NSLayoutConstraint.activate([
+            badge.heightAnchor.constraint(equalToConstant: 30.0),
+            badge.centerXAnchor.constraint(equalTo: centerXAnchor),
+            badge.centerYAnchor.constraint(equalTo: closeButton.centerYAnchor)
         ])
     }
     

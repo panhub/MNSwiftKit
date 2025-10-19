@@ -10,27 +10,36 @@ import UIKit
 /// 资源预览-选择表格
 class MNAssetSelectCell: UICollectionViewCell {
     /// 边框
-    let borderView: UIView = UIView()
+    let borderView = UIView()
     /// 显示截图
-    private let imageView: UIImageView = UIImageView()
+    private let imageView = UIImageView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        imageView.frame = bounds
-        imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-        imageView.isUserInteractionEnabled = false
-        imageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        imageView.contentMode = .scaleAspectFill
+        imageView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(imageView)
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            imageView.leftAnchor.constraint(equalTo: contentView.leftAnchor),
+            imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            imageView.rightAnchor.constraint(equalTo: contentView.rightAnchor)
+        ])
         
-        borderView.frame = contentView.bounds
         borderView.clipsToBounds = true
         borderView.layer.borderWidth = 3.0
         borderView.backgroundColor = .clear
         borderView.isUserInteractionEnabled = false
-        borderView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        borderView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(borderView)
+        NSLayoutConstraint.activate([
+            borderView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            borderView.leftAnchor.constraint(equalTo: contentView.leftAnchor),
+            borderView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            borderView.rightAnchor.constraint(equalTo: contentView.rightAnchor)
+        ])
     }
     
     required init?(coder: NSCoder) {

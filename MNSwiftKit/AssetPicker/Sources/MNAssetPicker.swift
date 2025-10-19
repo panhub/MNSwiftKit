@@ -9,9 +9,11 @@ import UIKit
 
 /// 资源选择器代理事件
 @objc public protocol MNAssetPickerDelegate {
+    
     /// 资源选择器取消事件
     /// - Parameter picker: 资源选择器
     @objc optional func assetPickerDidCancel(_ picker: MNAssetPicker)
+    
     /// 资源选择器结束选择事件
     /// - Parameters:
     ///   - picker: 资源选择器
@@ -37,6 +39,8 @@ public class MNAssetPicker: UINavigationController {
     /// 配置信息
     public let options: MNAssetPickerOptions
     
+    /// 构造资源选择器
+    /// - Parameter options: 配置选项
     public init(options: MNAssetPickerOptions = .init()) {
         self.options = options
         super.init(rootViewController: MNAssetPickerController(options: options))

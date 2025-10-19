@@ -8,11 +8,11 @@
 import UIKit
 
 /// 资源表格代理
-protocol MNAssetCellDelegate: NSObjectProtocol {
+protocol MNAssetCellEventHandler: NSObjectProtocol {
     
     /// 预览资源回调
     /// - Parameter cell: 资源表格
-    func assetCellShouldPreviewAsset(_ cell: MNAssetCell) -> Void
+    func assetCellShouldPreview(_ cell: MNAssetCell)
 }
 
 /// 资源展示表格
@@ -22,7 +22,7 @@ class MNAssetCell: UICollectionViewCell {
     /// 媒体资源模型
     private(set) var asset: MNAsset!
     /// 事件代理
-    weak var delegate: MNAssetCellDelegate?
+    weak var delegate: MNAssetCellEventHandler?
     /// 配置信息
     var options: MNAssetPickerOptions! {
         didSet {
@@ -312,6 +312,6 @@ private extension MNAssetCell {
     /// 预览按钮事件
     @objc func preview() {
         guard let delegate = delegate else { return }
-        delegate.assetCellShouldPreviewAsset(self)
+        delegate.assetCellShouldPreview(self)
     }
 }

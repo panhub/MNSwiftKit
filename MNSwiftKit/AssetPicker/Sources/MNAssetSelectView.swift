@@ -13,30 +13,40 @@ protocol MNAssetSelectViewDelegate: NSObjectProtocol {
     /// - Parameters:
     ///   - selectView: 资源选择视图
     ///   - asset: 选中的资源模型
-    func selectView(_ selectView: MNAssetSelectView, didSelect asset: MNAsset) -> Void
+    func selectView(_ selectView: MNAssetSelectView, didSelect asset: MNAsset)
 }
 
 /// 资源选择视图
 class MNAssetSelectView: UIView {
     /// 选择索引
     private var selectedIndex: Int = 0
+    /// 资源集合
+    private var assets: [MNAsset] = []
     /// 配置信息
     private let options: MNAssetPickerOptions
-    /// 资源集合
-    private var assets: [MNAsset] = [MNAsset]()
     /// 事件代理
     weak var delegate: MNAssetSelectViewDelegate?
     /// 集合视图
-    private lazy var collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
+    private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    
+    /// 构造资源选择视图
+    /// - Parameters:
+    ///   - assets: 资源集合
+    ///   - options: 配置选项
+    init(assets: [MNAsset], options: MNAssetPickerOptions) {
+        self.options = options
+        super.init(frame: .zero)
+        self.assets.append(contentsOf: assets)
+        
+        backgroundColor = UIColor(red: 32.0/255.0, green: 32.0/255.0, blue: 35.0/255.0, alpha: 0.45)
+        
+        let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
         layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 13.0
-        layout.minimumInteritemSpacing = 0.0
         layout.headerReferenceSize = .zero
         layout.footerReferenceSize = .zero
-        layout.itemSize = CGSize(width: frame.height - 26.0, height: frame.height - 26.0)
+        layout.minimumLineSpacing = 13.0
+        layout.minimumInteritemSpacing = 0.0
         layout.sectionInset = UIEdgeInsets(top: 13.0, left: 13.0, bottom: 13.0, right: 13.0)
-        let collectionView = UICollectionView(frame: bounds, collectionViewLayout: layout)
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.scrollsToTop = false
@@ -44,21 +54,18 @@ class MNAssetSelectView: UIView {
         collectionView.alwaysBounceHorizontal = false
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.register(MNAssetSelectCell.self, forCellWithReuseIdentifier: "com.mn.asset.select.cell")
         if #available(iOS 11.0, *) {
-            collectionView.contentInsetAdjustmentBehavior = .never;
+            collectionView.contentInsetAdjustmentBehavior = .never
         }
-        return collectionView
-    }()
-    
-    init(frame: CGRect, assets: [MNAsset], options: MNAssetPickerOptions) {
-        self.options = options
-        super.init(frame: frame)
-        self.assets.append(contentsOf: assets)
-        
-        backgroundColor = UIColor(red: 32.0/255.0, green: 32.0/255.0, blue: 35.0/255.0, alpha: 0.45)
-        
         addSubview(collectionView)
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: topAnchor),
+            collectionView.leftAnchor.constraint(equalTo: leftAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            collectionView.rightAnchor.constraint(equalTo: rightAnchor)
+        ])
     }
     
     required init?(coder: NSCoder) {
@@ -135,5 +142,15 @@ extension MNAssetSelectView: UICollectionViewDataSource, UICollectionViewDelegat
         guard let delegate = delegate else { return }
         let asset = assets[indexPath.item]
         delegate.selectView(self, didSelect: asset)
+    }
+}
+
+// MARK: - UICollectionViewDelegateFlowLayout
+extension MNAssetSelectView: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        guard let layout = collectionViewLayout as? UICollectionViewFlowLayout else { return .zero }
+        let height = collectionView.frame.height - layout.sectionInset.top - layout.sectionInset.bottom
+        return .init(width: height, height: height)
     }
 }
