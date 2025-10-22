@@ -56,14 +56,15 @@ class MNAssetPickerNavBar: UIView {
             separator.heightAnchor.constraint(equalToConstant: 0.7)
         ])
         
-        let closeButton = UIButton(type: .custom)
-        closeButton.translatesAutoresizingMaskIntoConstraints = false
+        let back = UIButton(type: .custom)
+        back.translatesAutoresizingMaskIntoConstraints = false
+        back.addTarget(self, action: #selector(backButtonTouchUpInside(_:)), for: .touchUpInside)
         let backgroundImage = AssetPickerResource.image(named: "back")?.mn.rendering(to: options.mode == .light ? .black : UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0))
         if #available(iOS 15.0, *) {
             var configuration = UIButton.Configuration.plain()
             configuration.background.backgroundColor = .clear
-            closeButton.configuration = configuration
-            closeButton.configurationUpdateHandler = { button in
+            back.configuration = configuration
+            back.configurationUpdateHandler = { button in
                 switch button.state {
                 case .normal, .highlighted:
                     button.configuration?.background.image = backgroundImage
@@ -71,27 +72,26 @@ class MNAssetPickerNavBar: UIView {
                 }
             }
         } else {
-            closeButton.adjustsImageWhenHighlighted = false
-            closeButton.setBackgroundImage(backgroundImage, for: .normal)
+            back.adjustsImageWhenHighlighted = false
+            back.setBackgroundImage(backgroundImage, for: .normal)
         }
-        closeButton.addTarget(self, action: #selector(closeButton(touchUpInside:)), for: .touchUpInside)
-        addSubview(closeButton)
+        addSubview(back)
         NSLayoutConstraint.activate([
-            closeButton.topAnchor.constraint(equalTo: topAnchor, constant: options.statusBarHeight + (options.navBarHeight - 24.0)/2.0),
-            closeButton.leftAnchor.constraint(equalTo: leftAnchor, constant: 16.0),
-            closeButton.widthAnchor.constraint(equalToConstant: 24.0),
-            closeButton.heightAnchor.constraint(equalToConstant: 24.0)
+            back.topAnchor.constraint(equalTo: topAnchor, constant: options.statusBarHeight + (options.navBarHeight - 24.0)/2.0),
+            back.leftAnchor.constraint(equalTo: leftAnchor, constant: 16.0),
+            back.widthAnchor.constraint(equalToConstant: 24.0),
+            back.heightAnchor.constraint(equalToConstant: 24.0)
         ])
         
         badge.clipsToBounds = true
         badge.layer.cornerRadius = 15.0
         badge.translatesAutoresizingMaskIntoConstraints = false
-        badge.addTarget(self, action: #selector(badge(touchUpInside:)), for: .touchUpInside)
+        badge.addTarget(self, action: #selector(badgeTouchUpInside(_:)), for: .touchUpInside)
         addSubview(badge)
         NSLayoutConstraint.activate([
             badge.heightAnchor.constraint(equalToConstant: 30.0),
             badge.centerXAnchor.constraint(equalTo: centerXAnchor),
-            badge.centerYAnchor.constraint(equalTo: closeButton.centerYAnchor)
+            badge.centerYAnchor.constraint(equalTo: back.centerYAnchor)
         ])
     }
     
@@ -103,12 +103,12 @@ class MNAssetPickerNavBar: UIView {
 // MARK: - Events
 extension MNAssetPickerNavBar {
     
-    @objc private func closeButton(touchUpInside sender: UIButton) {
+    @objc private func backButtonTouchUpInside(_ sender: UIButton) {
         guard let delegate = delegate else { return }
         delegate.navBarCloseButtonTouchUpInside()
     }
     
-    @objc private func badge(touchUpInside sender: MNAssetAlbumBadge) {
+    @objc private func badgeTouchUpInside(_ sender: MNAssetAlbumBadge) {
         guard let delegate = delegate else { return }
         delegate.navBarAlbumButtonTouchUpInside(sender)
     }

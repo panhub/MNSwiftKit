@@ -753,7 +753,7 @@ extension MNAssetBrowser: UICollectionViewDelegate, UICollectionViewDataSource {
     
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         guard decelerate == false, scrollView.isDragging == false, scrollView.isDecelerating == false else { return }
-        updateDisplayIndex()
+        scrollViewDidEndDecelerating(scrollView)
     }
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {

@@ -23,20 +23,16 @@ class MNAssetPickerController: UIViewController {
     private var lastTouchIndex: Int = .min
     /// 是否需要隐藏状态栏
     private var statusBarHidden: Bool = false
-    /// 状态栏修改
-    private lazy var statusBarStyle: UIStatusBarStyle = options.mode == .dark ? .lightContent : .default
     /// 顶部栏
     private lazy var navBar = MNAssetPickerNavBar(options: options)
     /// 相册视图
     private lazy var albumView = MNAssetAlbumView(options: options)
     /// 底部工具栏
     private lazy var toolBar = MNAssetPickerToolBar(options: options)
+    /// 状态栏修改
+    private lazy var statusBarStyle: UIStatusBarStyle = options.mode == .dark ? .lightContent : .default
     /// 资源展示
     private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-    
-    override var prefersStatusBarHidden: Bool { statusBarHidden }
-    override var preferredStatusBarStyle: UIStatusBarStyle { statusBarStyle }
-    override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation { .fade }
     
     init(options: MNAssetPickerOptions) {
         self.options = options
@@ -161,6 +157,18 @@ class MNAssetPickerController: UIViewController {
             isAssetLoaded = true
             apply()
         }
+    }
+    
+    override var prefersStatusBarHidden: Bool {
+        statusBarHidden
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        statusBarStyle
+    }
+    
+    override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+        .fade
     }
 }
 

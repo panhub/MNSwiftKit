@@ -229,27 +229,19 @@ extension MNAssetHelper {
     ///   - completionHandler: 结果回调
     public class func fetchContents(_ asset: MNAsset, progress progressHandler: ((MNAsset, Double, Error?)->Void)?, completion completionHandler: ((MNAsset)->Void)?) {
         if let _ = asset.contents {
-            if let completionHandler = completionHandler {
-                completionHandler(asset)
-            }
+            completionHandler?(asset)
             return
         }
         guard let phAsset = asset.phAsset else {
-            if let progressHandler = progressHandler {
-                progressHandler(asset, 0.0, nil)
-            }
-            if let completionHandler = completionHandler {
-                completionHandler(asset)
-            }
+            progressHandler?(asset, 0.0, nil)
+            completionHandler?(asset)
             return
         }
         // 进度回调
         let progressHandler: PHAssetVideoProgressHandler = { progress, error, _, _ in
             DispatchQueue.main.async {
                 asset.progress = progress
-                if let progressHandler = progressHandler {
-                    progressHandler(asset, progress, error)
-                }
+                progressHandler?(asset, progress, error)
             }
         }
         switch asset.type {

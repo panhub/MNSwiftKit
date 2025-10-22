@@ -21,18 +21,16 @@ class MNAssetPreviewController: UIViewController {
     private let itemInterSpacing: CGFloat = 15.0
     /// 媒体数组
     private var assets: [MNAsset] = []
+    /// 当前展示的索引
+    private var displayIndex: Int = .min
     /// 配置信息
     private let options: MNAssetPickerOptions
     /// 是否在销毁时删除本地资源文件
     var clearWhenExit: Bool = false
-    /// 事件代理
-    weak var delegate: MNAssetPreviewControllerDelegate?
     /// 是否允许自动播放
     var isAllowsAutoPlaying: Bool = true
-    /// 当前展示的索引
-    private var displayIndex: Int = .min
-    /// 状态栏
-    override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
+    /// 事件代理
+    weak var delegate: MNAssetPreviewControllerDelegate?
     /// 顶部导航栏
     private let navView = UIImageView()
     /// 导航右侧选择按钮
@@ -133,9 +131,24 @@ class MNAssetPreviewController: UIViewController {
         
         // 返回
         let back = UIButton(type: .custom)
-        back.setBackgroundImage(AssetPickerResource.image(named: "back"), for: .normal)
-        back.addTarget(self, action: #selector(back(_:)), for: .touchUpInside)
         back.translatesAutoresizingMaskIntoConstraints = false
+        back.addTarget(self, action: #selector(back(_:)), for: .touchUpInside)
+        let backgroundImage = AssetPickerResource.image(named: "back")
+        if #available(iOS 15.0, *) {
+            var configuration = UIButton.Configuration.plain()
+            configuration.background.backgroundColor = .clear
+            back.configuration = configuration
+            back.configurationUpdateHandler = { button in
+                switch button.state {
+                case .normal, .highlighted:
+                    button.configuration?.background.image = backgroundImage
+                default: break
+                }
+            }
+        } else {
+            back.adjustsImageWhenHighlighted = false
+            back.setBackgroundImage(backgroundImage, for: .normal)
+        }
         navView.addSubview(back)
         NSLayoutConstraint.activate([
             back.widthAnchor.constraint(equalToConstant: 24.0),
@@ -148,6 +161,7 @@ class MNAssetPreviewController: UIViewController {
         rightBarButton.isSelected = true
         rightBarButton.clipsToBounds = true
         rightBarButton.layer.cornerRadius = 12.0
+        rightBarButton.translatesAutoresizingMaskIntoConstraints = false
         rightBarButton.addTarget(self, action: #selector(rightBarButtonTouchUpInside(_:)), for: .touchUpInside)
         let normalImage = AssetPickerResource.image(named: "selectbox")
         let selectedImage = AssetPickerResource.image(named: "checkbox_fill")?.mn.rendering(to: options.themeColor)
@@ -175,7 +189,7 @@ class MNAssetPreviewController: UIViewController {
         NSLayoutConstraint.activate([
             rightBarButton.widthAnchor.constraint(equalTo: back.widthAnchor),
             rightBarButton.heightAnchor.constraint(equalTo: back.heightAnchor),
-            rightBarButton.rightAnchor.constraint(equalTo: navView.leftAnchor, constant: -16.0),
+            rightBarButton.rightAnchor.constraint(equalTo: navView.rightAnchor, constant: -16.0),
             rightBarButton.centerYAnchor.constraint(equalTo: back.centerYAnchor)
         ])
         
@@ -208,6 +222,11 @@ class MNAssetPreviewController: UIViewController {
         if let cell = currentDisplayCell {
             cell.pauseDisplaying()
         }
+    }
+    
+    /// 状态栏
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        .lightContent
     }
 }
 
@@ -257,13 +276,19 @@ extension MNAssetPreviewController: UICollectionViewDataSource, UICollectionView
 extension MNAssetPreviewController: MNAssetBrowseResourceHandler {
     
     func browserCell(_ cell: MNAssetBrowserCell, fetchCover asset: any MNAssetBrowseSupported, completion completionHandler: @escaping (any MNAssetBrowseSupported, UIImage?) -> Void) {
-        
-        MNAssetHelper.fetchCover(asset as! MNAsset, completion: completionHandler)
+        if let cover = asset.cover {
+            completionHandler(asset, cover)
+        } else {
+            MNAssetHelper.fetchCover(asset as! MNAsset, completion: completionHandler)
+        }
     }
     
     func browserCell(_ cell: MNAssetBrowserCell, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: @escaping (any MNAssetBrowseSupported, Double, (any Error)?) -> Void, completion completionHandler: @escaping (any MNAssetBrowseSupported) -> Void) {
-        
-        MNAssetHelper.fetchContents(asset as! MNAsset, progress: progressHandler, completion: completionHandler)
+        if let _ = asset.contents {
+            completionHandler(asset)
+        } else {
+            MNAssetHelper.fetchContents(asset as! MNAsset, progress: progressHandler, completion: completionHandler)
+        }
     }
 }
 
