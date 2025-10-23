@@ -44,9 +44,9 @@ class MNAssetSelectView: UIView {
         layout.scrollDirection = .horizontal
         layout.headerReferenceSize = .zero
         layout.footerReferenceSize = .zero
-        layout.minimumLineSpacing = 13.0
+        layout.minimumLineSpacing = 10.0
         layout.minimumInteritemSpacing = 0.0
-        layout.sectionInset = UIEdgeInsets(top: 13.0, left: 13.0, bottom: 13.0, right: 13.0)
+        layout.sectionInset = UIEdgeInsets(top: 13.0, left: 10.0, bottom: 13.0, right: 10.0)
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.scrollsToTop = false
@@ -98,7 +98,7 @@ class MNAssetSelectView: UIView {
         assets.remove(at: index)
         isHidden = assets.isEmpty
         UIView.performWithoutAnimation {
-            collectionView.deleteItems(at: [IndexPath(item: index, section: 0)])
+            self.collectionView.deleteItems(at: [IndexPath(item: index, section: 0)])
         }
     }
     
@@ -109,8 +109,8 @@ class MNAssetSelectView: UIView {
         assets.append(asset)
         selectedIndex = assets.count - 1
         UIView.performWithoutAnimation {
-            collectionView.insertItems(at: [IndexPath(item: selectedIndex, section: 0)])
-            collectionView.scrollToItem(at: IndexPath(item: selectedIndex, section: 0), at: .right, animated: false)
+            self.collectionView.insertItems(at: [IndexPath(item: self.selectedIndex, section: 0)])
+            self.collectionView.scrollToItem(at: IndexPath(item: self.selectedIndex, section: 0), at: .right, animated: false)
         }
     }
 }

@@ -251,7 +251,7 @@ public class MNPlayer: NSObject {
                 if let delegate = delegate {
                     delegate.playerDidEndDecode?(self)
                 }
-                var play = false
+                var play = true
                 if let delegate = delegate, let flag = delegate.playerShouldStartPlaying?(self) {
                     play = flag
                 }

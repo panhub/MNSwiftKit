@@ -44,7 +44,7 @@ import CoreMedia
     ///   - asset: 资源模型
     ///   - progressHandler: 进度回调
     ///   - completionHandler: 结束回调
-    @objc optional func assetBrowser(_ browser: MNAssetBrowser, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: @escaping MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: @escaping MNAssetBrowserCell.ContentUpdateHandler)
+    @objc optional func assetBrowser(_ browser: MNAssetBrowser, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: @escaping MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: @escaping MNAssetBrowserCell.ContentsUpdateHandler)
     
     /// 展示结束
     /// - Parameters:

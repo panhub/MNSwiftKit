@@ -22,20 +22,20 @@ protocol MNAssetBrowseResourceHandler: NSObjectProtocol {
     /// - Parameter asset: 资源模型
     /// - Parameter progressHandler: 进度回调
     /// - Parameter completionHandler: 结束回调
-    func browserCell(_ cell: MNAssetBrowserCell, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: @escaping MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: @escaping MNAssetBrowserCell.ContentUpdateHandler)
+    func browserCell(_ cell: MNAssetBrowserCell, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: @escaping MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: @escaping MNAssetBrowserCell.ContentsUpdateHandler)
 }
 
 /// 资源浏览器表格
 public class MNAssetBrowserCell: UICollectionViewCell {
+    
+    /// 内容更新回调
+    public typealias ContentsUpdateHandler = (any MNAssetBrowseSupported)->Void
     
     /// 封面更新回调
     public typealias CoverUpdateHandler = (any MNAssetBrowseSupported, UIImage?)->Void
     
     /// 进度更新回调
     public typealias ProgressUpdateHandler = (any MNAssetBrowseSupported, Double, Error?)->Void
-    
-    /// 内容更新回调
-    public typealias ContentUpdateHandler = (any MNAssetBrowseSupported)->Void
     
     /// 当前状态
     private enum State {
@@ -45,14 +45,14 @@ public class MNAssetBrowserCell: UICollectionViewCell {
     /// 视频控制栏高度
     static let ToolBarHeight: CGFloat = MN_BOTTOM_SAFE_HEIGHT + 60.0
     
-    /// 资源模型
-    private(set) var asset: (any MNAssetBrowseSupported)!
-    /// 事件代理
-    weak var delegate: MNAssetBrowseResourceHandler!
     /// 当前状态
     private var state: State = .idle
     /// 是否允许自动播放
     var isAllowsAutoPlaying: Bool = false
+    /// 资源模型
+    private(set) var asset: (any MNAssetBrowseSupported)!
+    /// 事件代理
+    weak var delegate: MNAssetBrowseResourceHandler!
     /// 缩放比例
     var maximumZoomScale: CGFloat {
         get { scrollView.maximumZoomScale }
@@ -60,23 +60,8 @@ public class MNAssetBrowserCell: UICollectionViewCell {
             scrollView.maximumZoomScale = max(1.0, newValue)
         }
     }
-    /// LivePhoto标记
-    private var liveBadgeView: UIImageView!
     /// 滑动支持
     let scrollView = MNAssetScrollView()
-    /// 播放视频
-    private let playView = MNPlayView()
-    /// 展示LivePhoto
-    private lazy var livePhotoView: UIView? = {
-        guard #available(iOS 9.1, *) else { return nil }
-        let livePhotoView = PHLivePhotoView()
-        livePhotoView.clipsToBounds = true
-        livePhotoView.contentMode = .scaleAspectFit
-        livePhotoView.delegate = self
-        return livePhotoView
-    }()
-    /// 展示图片
-    private let imageView = UIImageView()
     /// 加载进度条
     private let progressView = MNAssetProgressView()
     /// 播放器控制栏
@@ -93,7 +78,7 @@ public class MNAssetBrowserCell: UICollectionViewCell {
     private lazy var player: MNPlayer = {
         let player = MNPlayer()
         player.delegate = self
-        player.layer = playView.layer
+        player.layer = scrollView.playView.layer
         player.periodicFrequency = 40
         return player
     }()
@@ -110,12 +95,12 @@ public class MNAssetBrowserCell: UICollectionViewCell {
                 if let images = image.images, images.count > 1, let first = images.first {
                     image = first
                 }
-                self.updateImage(image)
+                self.scrollView.adapt(with: image)
                 if asset.type == .video {
-                    self.playView.coverView.image = image
-                    self.playView.coverView.isHidden = false
+                    self.scrollView.playView.coverView.image = image
+                    self.scrollView.playView.coverView.isHidden = false
                 } else {
-                    self.imageView.image = image
+                    self.scrollView.imageView.image = image
                 }
                 if asset.progress > 0.0, asset.progress < 1.0 {
                     self.progressView.isHidden = false
@@ -126,7 +111,7 @@ public class MNAssetBrowserCell: UICollectionViewCell {
                     self.state = .downloading
                 }
                 if let delegate = self.delegate {
-                    delegate.browserCell(self, fetchContent: asset, progress: self.progressUpdateHandler, completion: self.contentUpdateHandler)
+                    delegate.browserCell(self, fetchContent: asset, progress: self.progressUpdateHandler, completion: self.contentsUpdateHandler)
                 }
             default: break
             }
@@ -139,7 +124,7 @@ public class MNAssetBrowserCell: UICollectionViewCell {
             guard let self = self, let item = self.asset, asset.identifier == item.identifier else { return }
             switch self.state {
             case .downloading, .prepared:
-                if error != nil || progress <= 0.0 {
+                if progress <= 0.0 || error != nil {
                     self.progressView.isHidden = true
                     self.progressView.setProgress(0.0)
                 } else {
@@ -154,8 +139,8 @@ public class MNAssetBrowserCell: UICollectionViewCell {
         return progressUpdateHandler
     }()
     /// 内容更新回调
-    private lazy var contentUpdateHandler: ContentUpdateHandler = {
-        let contentUpdateHandler: ContentUpdateHandler = { [weak self] asset in
+    private lazy var contentsUpdateHandler: ContentsUpdateHandler = {
+        let contentsUpdateHandler: ContentsUpdateHandler = { [weak self] asset in
             guard let self = self, let item = self.asset, asset.identifier == item.identifier else { return }
             self.progressView.isHidden = true
             switch self.state {
@@ -166,7 +151,7 @@ public class MNAssetBrowserCell: UICollectionViewCell {
             default: break
             }
         }
-        return contentUpdateHandler
+        return contentsUpdateHandler
     }()
     
     /// 构造资源浏览器表格
@@ -190,50 +175,6 @@ public class MNAssetBrowserCell: UICollectionViewCell {
             scrollView.rightAnchor.constraint(equalTo: contentView.rightAnchor)
         ])
         
-        playView.backgroundColor = .clear
-        playView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.contentView.addSubview(playView)
-        NSLayoutConstraint.activate([
-            playView.topAnchor.constraint(equalTo: scrollView.contentView.topAnchor),
-            playView.leftAnchor.constraint(equalTo: scrollView.contentView.leftAnchor),
-            playView.bottomAnchor.constraint(equalTo: scrollView.contentView.bottomAnchor),
-            playView.rightAnchor.constraint(equalTo: scrollView.contentView.rightAnchor)
-        ])
-        
-        if #available(iOS 9.1, *), let livePhotoView = livePhotoView {
-            livePhotoView.translatesAutoresizingMaskIntoConstraints = false
-            scrollView.contentView.addSubview(livePhotoView)
-            NSLayoutConstraint.activate([
-                livePhotoView.topAnchor.constraint(equalTo: scrollView.contentView.topAnchor),
-                livePhotoView.leftAnchor.constraint(equalTo: scrollView.contentView.leftAnchor),
-                livePhotoView.bottomAnchor.constraint(equalTo: scrollView.contentView.bottomAnchor),
-                livePhotoView.rightAnchor.constraint(equalTo: scrollView.contentView.rightAnchor)
-            ])
-            liveBadgeView = UIImageView()
-            liveBadgeView.contentMode = .scaleToFill
-            //liveBadgeView.image = PHLivePhotoView.livePhotoBadgeImage(options: [.liveOff])
-            liveBadgeView.image = PHLivePhotoView.livePhotoBadgeImage(options: .overContent)
-            liveBadgeView.translatesAutoresizingMaskIntoConstraints = false
-            livePhotoView.addSubview(liveBadgeView)
-            NSLayoutConstraint.activate([
-                liveBadgeView.topAnchor.constraint(equalTo: livePhotoView.topAnchor, constant: 11.0),
-                liveBadgeView.leftAnchor.constraint(equalTo: livePhotoView.leftAnchor, constant: 11.0),
-                liveBadgeView.widthAnchor.constraint(equalToConstant: 27.0),
-                liveBadgeView.heightAnchor.constraint(equalTo: liveBadgeView.widthAnchor, multiplier: 1.0)
-            ])
-        }
-        
-        imageView.clipsToBounds = true
-        imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.contentView.addSubview(imageView)
-        NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: scrollView.contentView.topAnchor),
-            imageView.leftAnchor.constraint(equalTo: scrollView.contentView.leftAnchor),
-            imageView.bottomAnchor.constraint(equalTo: scrollView.contentView.bottomAnchor),
-            imageView.rightAnchor.constraint(equalTo: scrollView.contentView.rightAnchor)
-        ])
-        
         progressView.isHidden = true
         progressView.clipsToBounds = true
         progressView.layer.cornerRadius = progressView.bounds.width/2.0
@@ -246,7 +187,6 @@ public class MNAssetBrowserCell: UICollectionViewCell {
             progressView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
         
-        // MNAssetBrowserCell.ToolBarHeight
         toolBar.contentMode = .scaleToFill
         toolBar.isUserInteractionEnabled = true
         toolBar.image = AssetBrowserResource.image(named: "mask")
@@ -259,13 +199,30 @@ public class MNAssetBrowserCell: UICollectionViewCell {
             toolBar.heightAnchor.constraint(equalToConstant: MNAssetBrowserCell.ToolBarHeight)
         ])
         
-        if #unavailable(iOS 15.0) {
-            playButton.adjustsImageWhenHighlighted = false
-        }
-        playButton.setBackgroundImage(AssetBrowserResource.image(named: "play"), for: .normal)
-        playButton.setBackgroundImage(AssetBrowserResource.image(named: "pause"), for: .selected)
-        playButton.addTarget(self, action: #selector(playButtonTouchUpInside), for: .touchUpInside)
+        let playImage = AssetBrowserResource.image(named: "play")
+        let pauseImage = AssetBrowserResource.image(named: "pause")
         playButton.translatesAutoresizingMaskIntoConstraints = false
+        playButton.addTarget(self, action: #selector(playButtonTouchUpInside), for: .touchUpInside)
+        if #available(iOS 15.0, *) {
+            var configuration = UIButton.Configuration.plain()
+            configuration.background.backgroundColor = .clear
+            playButton.configuration = configuration
+            playButton.configurationUpdateHandler = { button in
+                switch button.state {
+                case .normal:
+                    button.configuration?.background.image = playImage
+                case .selected:
+                    button.configuration?.background.image = pauseImage
+                case .highlighted:
+                    button.configuration?.background.image = button.isSelected ? pauseImage : playImage
+                default: break
+                }
+            }
+        } else {
+            playButton.adjustsImageWhenHighlighted = false
+            playButton.setBackgroundImage(playImage, for: .normal)
+            playButton.setBackgroundImage(pauseImage, for: .selected)
+        }
         toolBar.addSubview(playButton)
         NSLayoutConstraint.activate([
             playButton.leftAnchor.constraint(equalTo: toolBar.leftAnchor, constant: 10.0),
@@ -302,8 +259,14 @@ public class MNAssetBrowserCell: UICollectionViewCell {
         ])
         
         slider.delegate = self
-        slider.trackHeight = 3.0
+        slider.trackRadius = 2.0
+        slider.trackHeight = 4.0
         slider.progressColor = .white
+        slider.thumbImageInset = .init(top: 5.0, left: 5.0, bottom: 5.0, right: 5.0)
+        slider.thumbImageRadius = 2.5
+        slider.thumbImageColor = .white
+        slider.thumbSize = .init(width: 15.0, height: 15.0)
+        slider.thumbRadius = 7.5
         slider.trackColor = .white.withAlphaComponent(0.35)
         slider.translatesAutoresizingMaskIntoConstraints = false
         toolBar.addSubview(slider)
@@ -327,22 +290,22 @@ extension MNAssetBrowserCell {
     /// - Parameter asset: 资源模型
     func update(asset: any MNAssetBrowseSupported) {
         self.asset = asset
-        imageView.image = nil
-        imageView.isHidden = asset.type == .video
-        playView.isHidden = imageView.isHidden == false
+        scrollView.imageView.image = nil
+        scrollView.imageView.isHidden = asset.type == .video
+        scrollView.playView.isHidden = scrollView.imageView.isHidden == false
         progressView.isHidden = true
         playButton.isSelected = false
-        toolBar.isHidden = playView.isHidden
-        if let livePhotoView = livePhotoView {
+        toolBar.isHidden = scrollView.playView.isHidden
+        if let livePhotoView = scrollView.livePhotoView {
             livePhotoView.isHidden = true
         }
         if toolBar.isHidden {
             toolBar.transform = .init(translationX: 0.0, y: MNAssetBrowserCell.ToolBarHeight)
         } else {
-            slider.setValue(0.0, animated: false)
+            toolBar.transform = .identity
             timeLabel.text = "00:00"
             durationLabel.text = "00:00"
-            toolBar.transform = .identity
+            slider.setValue(0.0, animated: false)
         }
         // 获取缩略图
         state = .loading
@@ -367,26 +330,28 @@ extension MNAssetBrowserCell {
         guard let asset = asset else { return }
         guard let contents = asset.contents else { return }
         state = .displaying
-        if asset.type == .video {
-            player.add([URL(fileURLWithPath: contents as! String)])
+        switch asset.type {
+        case .photo, .gif:
+            // 图片
+            guard let image = contents as? UIImage else { break }
+            scrollView.adapt(with: image)
+            scrollView.imageView.image = image
+        case .livePhoto:
+            //
+            guard #available(iOS 9.1, *), let livePhotoView = scrollView.livePhotoView as? PHLivePhotoView, let livePhoto = contents as? PHLivePhoto else { break }
+            livePhotoView.livePhoto = livePhoto
+            scrollView.imageView.isHidden = true
+            livePhotoView.isHidden = false
+            if isAllowsAutoPlaying {
+                livePhotoView.startPlayback(with: .full)
+            }
+        case .video:
+            // 视频
+            guard let videoPath = contents as? String else { break }
+            player.add([URL(fileAtPath: videoPath)])
             if isAllowsAutoPlaying {
                 player.play()
             }
-        } else if asset.type == .livePhoto {
-            if #available(iOS 9.1, *), let livePhotoView = livePhotoView as? PHLivePhotoView {
-                livePhotoView.livePhoto = contents as? PHLivePhoto
-                if let _ = livePhotoView.livePhoto {
-                    imageView.isHidden = true
-                    livePhotoView.isHidden = false
-                    if isAllowsAutoPlaying {
-                        livePhotoView.startPlayback(with: .full)
-                    }
-                }
-            }
-        } else {
-            guard let image = contents as? UIImage else { return }
-            updateImage(image)
-            imageView.image = image
         }
     }
     
@@ -394,45 +359,34 @@ extension MNAssetBrowserCell {
     func endDisplaying() {
         state = .idle
         guard let asset = asset else { return }
-        if asset.type == .video {
+        switch asset.type {
+        case .photo, .gif:
+            // 图片
+            scrollView.imageView.image = nil
+        case .livePhoto:
+            guard #available(iOS 9.1, *), let livePhotoView = scrollView.livePhotoView as? PHLivePhotoView, let _ = livePhotoView.livePhoto else { break }
+            livePhotoView.stopPlayback()
+            livePhotoView.livePhoto = nil
+        case .video:
             player.removeAll()
-            playView.coverView.image = nil
-        } else if asset.type == .livePhoto {
-            if #available(iOS 9.1, *), let livePhotoView = livePhotoView as? PHLivePhotoView, let _ = livePhotoView.livePhoto {
-                livePhotoView.stopPlayback()
-                livePhotoView.livePhoto = nil
-            }
+            scrollView.playView.coverView.image = nil
         }
     }
     
     /// 暂停展示
     func pauseDisplaying() {
         guard let asset = asset else { return }
-        if asset.type == .video {
-            if player.status == .playing {
-                player.pause()
-            }
-        } else if asset.type == .livePhoto {
-            if #available(iOS 9.1, *), let livePhotoView = livePhotoView as? PHLivePhotoView, let _ = livePhotoView.livePhoto {
-                livePhotoView.stopPlayback()
-                // 解决滑动过程中播放的问题
-                livePhotoView.playbackGestureRecognizer.isEnabled = false
-                livePhotoView.playbackGestureRecognizer.isEnabled = true
-            }
-        }
-    }
-    
-    /// 更新图片
-    /// - Parameter image: 图片
-    private func updateImage(_ image: UIImage) {
-        scrollView.zoomScale = 1.0
-        scrollView.contentOffset = .zero
-        scrollView.contentView.mn.size = image.size.mn.scaleFit(in: CGSize(width: scrollView.frame.width, height: scrollView.frame.height - 1.0))
-        scrollView.contentSize = CGSize(width: scrollView.bounds.width, height: max(scrollView.contentView.bounds.height, scrollView.bounds.height))
-        scrollView.contentView.center = CGPoint(x: scrollView.bounds.maxX/2.0, y: scrollView.bounds.maxY/2.0)
-        if (scrollView.contentView.bounds.height > scrollView.bounds.height) {
-            scrollView.contentView.mn.minY = 0.0
-            scrollView.contentOffset = CGPoint(x: 0.0, y: (scrollView.contentView.bounds.height - scrollView.bounds.height)/2.0)
+        switch asset.type {
+        case .livePhoto:
+            guard #available(iOS 9.1, *), let livePhotoView = scrollView.livePhotoView as? PHLivePhotoView, let _ = livePhotoView.livePhoto else { break }
+            livePhotoView.stopPlayback()
+            // 解决滑动过程中播放的问题
+            livePhotoView.playbackGestureRecognizer.isEnabled = false
+            livePhotoView.playbackGestureRecognizer.isEnabled = true
+        case .video:
+            guard player.status == .playing else { break }
+            player.pause()
+        default: break
         }
     }
     
@@ -440,9 +394,9 @@ extension MNAssetBrowserCell {
     /// - Parameters:
     ///   - visible: 是否可见
     ///   - animated: 是否动态展示
-    func updateToolBar(_ visible: Bool, animated: Bool) {
+    func updateToolBar(visible: Bool, animated: Bool) {
         guard toolBar.isHidden == false else { return }
-        makePlayToolBarVisible(visible, animated: animated)
+        updateToolBarVisible(visible, animated: animated)
     }
 }
 
@@ -453,7 +407,7 @@ extension MNAssetBrowserCell {
     /// - Parameters:
     ///   - visible: 是否可见
     ///   - animated: 是否动态展示
-    func makePlayToolBarVisible(_ visible: Bool, animated: Bool) {
+    private func updateToolBarVisible(_ visible: Bool, animated: Bool) {
         let animations: ()->Void = { [weak self] in
             guard let self = self else { return }
             self.toolBar.transform = visible ? .identity : .init(translationX: 0.0, y: MNAssetBrowserCell.ToolBarHeight)
@@ -501,14 +455,14 @@ extension MNAssetBrowserCell: MNPlayerDelegate {
     public func playerDidChangeStatus(_ player: MNPlayer) {
         playButton.isSelected = player.status == .playing
         if player.status.rawValue > MNPlayer.Status.failed.rawValue {
-            if playView.coverView.isHidden == false {
+            if scrollView.playView.coverView.isHidden == false {
                 DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) { [weak self] in
                     guard let self = self else { return }
-                    self.playView.coverView.isHidden = true
+                    self.scrollView.playView.coverView.isHidden = true
                 }
             }
         } else {
-            playView.coverView.isHidden = false
+            scrollView.playView.coverView.isHidden = false
         }
     }
     
@@ -549,29 +503,6 @@ extension MNAssetBrowserCell: MNSliderDelegate {
         player.seek(progress: slider.value) { [weak self] finish in
             guard finish, let self = self else { return }
             self.player.play()
-        }
-    }
-}
-
-@available(iOS 9.1, *)
-extension MNAssetBrowserCell: PHLivePhotoViewDelegate {
-    
-    public func livePhotoView(_ livePhotoView: PHLivePhotoView, canBeginPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) -> Bool {
-        liveBadgeView.alpha == 1.0
-    }
-    
-    
-    public func livePhotoView(_ livePhotoView: PHLivePhotoView, willBeginPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) {
-        UIView.animate(withDuration: 0.2) { [weak self] in
-            guard let self = self else { return }
-            self.liveBadgeView.alpha = 0.0
-        }
-    }
-    
-    public func livePhotoView(_ livePhotoView: PHLivePhotoView, didEndPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) {
-        UIView.animate(withDuration: 0.2) { [weak self] in
-            guard let self = self else { return }
-            self.liveBadgeView.alpha = 1.0
         }
     }
 }

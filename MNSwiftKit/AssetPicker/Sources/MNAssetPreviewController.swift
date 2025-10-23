@@ -78,7 +78,6 @@ class MNAssetPreviewController: UIViewController {
         layout.scrollDirection = .horizontal
         layout.headerReferenceSize = .zero
         layout.footerReferenceSize = .zero
-        layout.itemSize = view.bounds.size
         layout.minimumInteritemSpacing = 0.0
         layout.minimumLineSpacing = itemInterSpacing
         layout.sectionInset = UIEdgeInsets(top: 0.0, left: itemInterSpacing/2.0, bottom: 0.0, right: itemInterSpacing/2.0)
@@ -105,17 +104,6 @@ class MNAssetPreviewController: UIViewController {
             collectionView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: itemInterSpacing/2.0)
         ])
         
-        // 底部选择视图
-        selectView.delegate = self
-        selectView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(selectView)
-        NSLayoutConstraint.activate([
-            selectView.leftAnchor.constraint(equalTo: view.leftAnchor),
-            selectView.rightAnchor.constraint(equalTo: view.rightAnchor),
-            selectView.heightAnchor.constraint(equalToConstant: 100.0),
-            selectView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -MNAssetBrowserCell.ToolBarHeight),
-        ])
-        
         // 导航
         navView.contentMode = .scaleToFill
         navView.isUserInteractionEnabled = true
@@ -132,7 +120,7 @@ class MNAssetPreviewController: UIViewController {
         // 返回
         let back = UIButton(type: .custom)
         back.translatesAutoresizingMaskIntoConstraints = false
-        back.addTarget(self, action: #selector(back(_:)), for: .touchUpInside)
+        back.addTarget(self, action: #selector(self.back), for: .touchUpInside)
         let backgroundImage = AssetPickerResource.image(named: "back")
         if #available(iOS 15.0, *) {
             var configuration = UIButton.Configuration.plain()
@@ -193,6 +181,17 @@ class MNAssetPreviewController: UIViewController {
             rightBarButton.centerYAnchor.constraint(equalTo: back.centerYAnchor)
         ])
         
+        // 底部选择视图
+        selectView.delegate = self
+        selectView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(selectView)
+        NSLayoutConstraint.activate([
+            selectView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            selectView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            selectView.heightAnchor.constraint(equalToConstant: 100.0),
+            selectView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -MNAssetBrowserCell.ToolBarHeight),
+        ])
+        
         // 放大
         let doubleTap = UITapGestureRecognizer(target: self, action: #selector(double(recognizer:)))
         doubleTap.numberOfTapsRequired = 2
@@ -250,7 +249,7 @@ extension MNAssetPreviewController: UICollectionViewDataSource, UICollectionView
         guard let cell = cell as? MNAssetBrowserCell, indexPath.item < assets.count else { return }
         let asset = assets[indexPath.item]
         cell.update(asset: asset)
-        cell.updateToolBar(navView.frame.minY >= 0.0, animated: false)
+        cell.updateToolBar(visible: navView.transform == .identity, animated: false)
     }
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -269,6 +268,16 @@ extension MNAssetPreviewController: UICollectionViewDataSource, UICollectionView
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         updateDisplayIndex()
+    }
+}
+
+// MARK: - UICollectionViewDelegateFlowLayout
+extension MNAssetPreviewController: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        guard let layout = collectionViewLayout as? UICollectionViewFlowLayout else { return .zero }
+        let rect = collectionView.frame.inset(by: layout.sectionInset)
+        return rect.size
     }
 }
 
@@ -308,11 +317,10 @@ private extension MNAssetPreviewController {
         let asset = assets[currentIndex]
         if let index = assets.firstIndex(where: { $0.isSelected == false }) {
             // 删除无效资源
+            let model = assets.remove(at: index)
             if clearWhenExit {
-                // 清空资源 释放内存
-                assets[index].contents = nil
+                model.contents = nil
             }
-            assets.remove(at: index)
             currentIndex = assets.firstIndex(of: asset)!
             UIView.performWithoutAnimation {
                 collectionView.deleteItems(at: [IndexPath(item: index, section: 0)])
@@ -352,21 +360,23 @@ extension MNAssetPreviewController {
     /// 单击事件
     /// - Parameter recognizer: 手势
     @objc func single(recognizer: UITapGestureRecognizer) {
-        if navView.frame.minY >= 0 {
+        let visible = navView.transform == .identity
+        if visible {
             let location = recognizer.location(in: view)
+            if selectView.isHidden == false {
+                guard selectView.frame.contains(location) == false else { return }
+            }
             guard view.bounds.inset(by: UIEdgeInsets(top: navView.frame.maxY, left: 0.0, bottom: 0.0, right: 0.0)).contains(location) else { return }
-            guard view.bounds.inset(by: UIEdgeInsets(top: selectView.frame.minY, left: 0.0, bottom: view.bounds.height - selectView.frame.maxY, right: 0.0)).contains(location) == false else { return }
         }
         guard let cell = currentDisplayCell else { return }
         let location = recognizer.location(in: cell.scrollView.contentView)
         guard cell.scrollView.contentView.bounds.contains(location) else { return }
-        let isHidden = navView.frame.maxY <= 0.0
-        UIView.animate(withDuration: 0.25, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
+        cell.updateToolBar(visible: visible == false, animated: true)
+        UIView.animate(withDuration: 0.25, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
             guard let self = self else { return }
-            self.navView.mn.minY = isHidden ? 0.0 : -self.navView.bounds.height
-            self.selectView.alpha = isHidden ? 1.0 : 0.0
-        }, completion: nil)
-        cell.updateToolBar(isHidden, animated: true)
+            self.navView.transform = visible ? .init(translationX: 0.0, y: -self.navView.frame.maxY) : .identity
+            self.selectView.alpha = visible ? 0.0 : 1.0
+        }
     }
 }
 
@@ -375,7 +385,7 @@ extension MNAssetPreviewController {
     
     /// 返回事件
     /// - Parameter sender: 返回按钮
-    @objc private func back(_ sender: UIControl) {
+    @objc private func back() {
         navigationController?.popViewController(animated: true)
     }
     
