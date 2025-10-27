@@ -71,10 +71,29 @@ public class MNSlider: UIView {
             updateValue()
         }
     }
+    /// 是否使track与两侧持平
+    public var trackOnSides: Bool = true {
+        didSet {
+            let constraints = constraints.filter { constraint in
+                guard let firstItem = constraint.firstItem as? UIView, firstItem == trackView else { return false }
+                guard let secondItem = constraint.secondItem as? UIView, secondItem == self else { return false }
+                return true
+            }
+            for constraint in constraints {
+                if constraint.firstAttribute == .left, constraint.secondAttribute == .left {
+                    constraint.constant = trackOnSides ? 0.0 : thumbWidthConstraint.constant/2.0
+                } else if constraint.firstAttribute == .right, constraint.secondAttribute == .right {
+                    constraint.constant = trackOnSides ? 0.0 : -thumbWidthConstraint.constant/2.0
+                } else { continue }
+            }
+            setNeedsLayout()
+        }
+    }
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
         
+        // 轨迹, 左右各留半个滑块宽度
         trackView.clipsToBounds = true
         trackView.layer.cornerRadius = 2.0
         trackView.backgroundColor = .lightGray.withAlphaComponent(0.3)
@@ -99,7 +118,7 @@ public class MNSlider: UIView {
             progressWidthConstraint
         ])
         
-        thumbView.layer.cornerRadius = 7.0
+        thumbView.layer.cornerRadius = 7.5
         thumbView.layer.shadowRadius = 2.5
         thumbView.layer.shadowOpacity = 1.0
         thumbView.layer.shadowOffset = .zero
@@ -108,16 +127,17 @@ public class MNSlider: UIView {
         thumbView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(thumbView)
         thumbLeftConstraint = thumbView.leftAnchor.constraint(equalTo: leftAnchor)
-        thumbWidthConstraint = thumbView.widthAnchor.constraint(equalToConstant: 14.0)
+        thumbWidthConstraint = thumbView.widthAnchor.constraint(equalToConstant: 15.0)
         NSLayoutConstraint.activate([
             thumbLeftConstraint,
             thumbWidthConstraint,
-            thumbView.heightAnchor.constraint(equalToConstant: 14.0),
+            thumbView.heightAnchor.constraint(equalToConstant: 15.0),
             thumbView.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
         
         thumbImageView.clipsToBounds = true
-        thumbImageView.layer.cornerRadius = 7.0
+        thumbImageView.layer.cornerRadius = 7.5
+        thumbImageView.backgroundColor = .clear
         thumbImageView.contentMode = .scaleAspectFit
         thumbImageView.translatesAutoresizingMaskIntoConstraints = false
         thumbView.addSubview(thumbImageView)
@@ -151,9 +171,16 @@ public class MNSlider: UIView {
     
     public override func updateConstraints() {
         super.updateConstraints()
-        let width = frame.width - thumbWidthConstraint.constant
-        thumbLeftConstraint.constant = width*progress
-        progressWidthConstraint.constant = thumbLeftConstraint.constant + thumbWidthConstraint.constant/2.0
+        if trackOnSides {
+            // 两侧齐平
+            let width = frame.width - thumbWidthConstraint.constant
+            thumbLeftConstraint.constant = width*progress
+            progressWidthConstraint.constant = thumbLeftConstraint.constant + thumbWidthConstraint.constant/2.0
+        } else {
+            // 两侧保留
+            progressWidthConstraint.constant = trackView.frame.width*progress
+            thumbLeftConstraint.constant = progressWidthConstraint.constant
+        }
     }
     
     /// 添加进度值变化闭包
@@ -164,10 +191,17 @@ public class MNSlider: UIView {
     
     /// 更新进度
     private func updateProgress() {
-        let width = frame.width - thumbWidthConstraint.constant
-        guard width > 0.0 else { return }
-        let proportion = thumbLeftConstraint.constant/width
-        progress = Swift.max(0.0, Swift.min(1.0, proportion))
+        if trackOnSides {
+            let width = frame.width - thumbWidthConstraint.constant
+            guard width.isNaN == false, width > 0.0 else { return }
+            let proportion = thumbLeftConstraint.constant/width
+            progress = Swift.max(0.0, Swift.min(1.0, proportion))
+        } else {
+            let width = trackView.frame.width
+            guard width.isNaN == false, width > 0.0 else { return }
+            let proportion = progressWidthConstraint.constant/width
+            progress = Swift.max(0.0, Swift.min(1.0, proportion))
+        }
         updateValue()
     }
     
@@ -206,10 +240,17 @@ private extension MNSlider {
         case .changed:
             let translation = recognizer.translation(in: recognizer.view)
             recognizer.setTranslation(.zero, in: recognizer.view)
-            var constant = thumbLeftConstraint.constant
-            constant += translation.x
-            thumbLeftConstraint.constant = Swift.max(0.0, Swift.min(constant, frame.width - thumbWidthConstraint.constant))
-            progressWidthConstraint.constant = thumbLeftConstraint.constant + thumbWidthConstraint.constant/2.0
+            if trackOnSides {
+                var constant = thumbLeftConstraint.constant
+                constant += translation.x
+                thumbLeftConstraint.constant = Swift.max(0.0, Swift.min(constant, frame.width - thumbWidthConstraint.constant))
+                progressWidthConstraint.constant = thumbLeftConstraint.constant + thumbWidthConstraint.constant/2.0
+            } else {
+                var constant = progressWidthConstraint.constant
+                constant += translation.x
+                progressWidthConstraint.constant = Swift.max(0.0, Swift.min(constant, trackView.frame.width))
+                thumbLeftConstraint.constant = progressWidthConstraint.constant
+            }
             updateProgress()
             if let valueChangeHandler = valueChangeHandler {
                 valueChangeHandler(self)
@@ -231,9 +272,15 @@ private extension MNSlider {
         if let delegate = delegate {
             delegate.sliderWillBeginTouching?(self)
         }
-        let location = recognizer.location(in: self)
-        thumbLeftConstraint.constant = Swift.max(0.0, Swift.min(location.x, frame.width - thumbWidthConstraint.constant))
-        progressWidthConstraint.constant = thumbLeftConstraint.constant + thumbWidthConstraint.constant/2.0
+        if trackOnSides {
+            let location = recognizer.location(in: self)
+            thumbLeftConstraint.constant = Swift.max(0.0, Swift.min(location.x - thumbWidthConstraint.constant/2.0, frame.width - thumbWidthConstraint.constant))
+            progressWidthConstraint.constant = thumbLeftConstraint.constant + thumbWidthConstraint.constant/2.0
+        } else {
+            let location = recognizer.location(in: trackView)
+            progressWidthConstraint.constant = Swift.max(0.0, Swift.min(location.x, trackView.frame.width))
+            thumbLeftConstraint.constant = progressWidthConstraint.constant
+        }
         updateProgress()
         if let valueChangeHandler = valueChangeHandler {
             valueChangeHandler(self)
@@ -249,7 +296,7 @@ extension MNSlider {
     
     public func setValue<T>(_ value: T, animated: Bool) where T: BinaryFloatingPoint {
         let difference = maximumValue - minimumValue
-        guard difference > 0.0 else { return }
+        guard difference.isNaN == false, difference > 0.0 else { return }
         let current = CGFloat(value) - minimumValue
         guard current >= 0.0, current <= difference else { return }
         updateProgress(current/difference, animated: animated)
@@ -260,11 +307,11 @@ extension MNSlider {
     ///   - value: 进度值
     ///   - animated: 是否动态
     public func setProgress<T>(_ value: T, animated: Bool = false) where T: BinaryFloatingPoint {
+        guard isDragging == false else { return }
         updateProgress(Double(value), animated: animated)
     }
     
-    private func updateProgress(_ value: CGFloat, animated: Bool = false) {
-        guard isDragging == false else { return }
+    private func updateProgress(_ value: CGFloat, animated: Bool) {
         progress = Swift.max(0.0, Swift.min(value, 1.0))
         updateValue()
         let animations: ()->Void = { [weak self] in
@@ -354,6 +401,20 @@ extension MNSlider {
             if let constraint = thumbView.constraints.first(where: { $0.firstAttribute == .height }) {
                 constraint.constant = newValue.height
             }
+            if trackOnSides == false {
+                let constraints = constraints.filter { constraint in
+                    guard let firstItem = constraint.firstItem as? UIView, firstItem == trackView else { return false }
+                    guard let secondItem = constraint.secondItem as? UIView, secondItem == self else { return false }
+                    return false
+                }
+                for constraint in constraints {
+                    if constraint.firstAttribute == .left, constraint.secondAttribute == .left {
+                        constraint.constant = newValue.width/2.0
+                    } else if constraint.firstAttribute == .right, constraint.secondAttribute == .right {
+                        constraint.constant = -newValue.width/2.0
+                    } else { continue }
+                }
+            }
             setNeedsLayout()
         }
     }
@@ -395,15 +456,20 @@ extension MNSlider {
     public var thumbImageInset: UIEdgeInsets {
         get {
             var inset: UIEdgeInsets = .zero
-            thumbImageView.constraints.forEach { constraint in
+            let constraints = thumbView.constraints.filter { constraint in
+                guard let firstItem = constraint.firstItem as? UIView, firstItem == thumbImageView else { return false }
+                guard let secondItem = constraint.secondItem as? UIView, secondItem == thumbView else { return false }
+                return true
+            }
+            for constraint in constraints {
                 switch constraint.firstAttribute {
                 case .top:
                     inset.top = constraint.constant
-                case .left, .leading:
+                case .left:
                     inset.left = constraint.constant
                 case .bottom:
                     inset.bottom = -constraint.constant
-                case .right, .trailing:
+                case .right:
                     inset.right = -constraint.constant
                 default: break
                 }
@@ -411,15 +477,20 @@ extension MNSlider {
             return inset
         }
         set {
-            thumbImageView.constraints.forEach { constraint in
+            let constraints = thumbView.constraints.filter { constraint in
+                guard let firstItem = constraint.firstItem as? UIView, firstItem == thumbImageView else { return false }
+                guard let secondItem = constraint.secondItem as? UIView, secondItem == thumbView else { return false }
+                return true
+            }
+            for constraint in constraints {
                 switch constraint.firstAttribute {
                 case .top:
                     constraint.constant = newValue.top
-                case .left, .leading:
+                case .left:
                     constraint.constant = newValue.left
                 case .bottom:
                     constraint.constant = -newValue.bottom
-                case .right, .trailing:
+                case .right:
                     constraint.constant = -newValue.right
                 default: break
                 }

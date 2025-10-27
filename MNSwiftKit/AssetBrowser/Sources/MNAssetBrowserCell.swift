@@ -79,7 +79,7 @@ public class MNAssetBrowserCell: UICollectionViewCell {
         let player = MNPlayer()
         player.delegate = self
         player.layer = scrollView.playView.layer
-        player.periodicFrequency = 40
+        player.periodicFrequency = 30
         return player
     }()
     /// 封面图更新回调
@@ -262,17 +262,19 @@ public class MNAssetBrowserCell: UICollectionViewCell {
         slider.trackRadius = 2.0
         slider.trackHeight = 4.0
         slider.progressColor = .white
-        slider.thumbImageInset = .init(top: 5.0, left: 5.0, bottom: 5.0, right: 5.0)
-        slider.thumbImageRadius = 2.5
-        slider.thumbImageColor = .white
-        slider.thumbSize = .init(width: 15.0, height: 15.0)
+        slider.trackColor = .white.withAlphaComponent(0.3)
         slider.thumbRadius = 7.5
-        slider.trackColor = .white.withAlphaComponent(0.35)
+        slider.thumbSize = .init(width: 15.0, height: 15.0)
+        slider.thumbColor = .white.withAlphaComponent(0.5)
+        slider.thumbImageRadius = 3.5
+        slider.thumbImageColor = .white
+        slider.thumbImageInset = .init(top: 4.0, left: 4.0, bottom: 4.0, right: 4.0)
+        slider.trackOnSides = false
         slider.translatesAutoresizingMaskIntoConstraints = false
         toolBar.addSubview(slider)
         NSLayoutConstraint.activate([
-            slider.leftAnchor.constraint(equalTo: timeLabel.rightAnchor, constant: 5.0),
-            slider.rightAnchor.constraint(equalTo: durationLabel.leftAnchor, constant: -5.0),
+            slider.leftAnchor.constraint(equalTo: timeLabel.rightAnchor, constant: 4.0),
+            slider.rightAnchor.constraint(equalTo: durationLabel.leftAnchor, constant: -4.0),
             slider.heightAnchor.constraint(equalToConstant: 15.0),
             slider.centerYAnchor.constraint(equalTo: playButton.centerYAnchor)
         ])
