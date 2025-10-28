@@ -64,8 +64,8 @@ import ObjectiveC.runtime
     /// 播放失败
     /// - Parameters:
     ///   - player: 播放器
-    ///   - msg: 错误信息
-    @objc optional func player(_ player: MNPlayer, didPlayFail msg: String)
+    ///   - error: 错误信息
+    @objc optional func player(_ player: MNPlayer, didPlayFail error: Error)
 }
 
 /// 音视频播放器
@@ -257,7 +257,7 @@ public class MNPlayer: NSObject {
                 }
                 if play {
                     guard sessionActive() else {
-                        fail(reason: "设置会话类别失败")
+                        failed(.setCategoryFailed(sessionCategory))
                         return
                     }
                     var time = 0.0
@@ -271,7 +271,7 @@ public class MNPlayer: NSObject {
                             self.status = .playing
                         } else {
                             self.player.pause()
-                            self.fail(reason: "播放失败")
+                            self.failed(.seekFailed)
                         }
                     }
                 } else {
@@ -280,9 +280,12 @@ public class MNPlayer: NSObject {
                 }
             case .failed:
                 player.pause()
-                fail(reason: "媒体文件解析错误")
-            default:
-                break
+                if let error = player.error {
+                    failed(.underlyingError(error))
+                } else {
+                    failed(.playFailed)
+                }
+            default: break
             }
         case #keyPath(AVPlayerItem.loadedTimeRanges):
             if let delegate = delegate {
@@ -349,7 +352,7 @@ extension MNPlayer {
     public func play() {
         guard isPlaying == false else { return }
         guard sessionActive() else {
-            fail(reason: "会话类别设置失败")
+            failed(.setCategoryFailed(sessionCategory))
             return
         }
         guard let currentItem = player.currentItem else {
@@ -363,8 +366,8 @@ extension MNPlayer {
             if let delegate = delegate, let begin = delegate.playerShouldPlayToBeginTime?(self), begin > 0.0 {
                 time = begin
             }
-            seek(seconds: time) { [weak self] finish in
-                guard finish, let self = self else { return }
+            seek(seconds: time) { [weak self] _ in
+                guard let self = self else { return }
                 self.player.play()
                 self.status = .playing
             }
@@ -403,7 +406,7 @@ extension MNPlayer {
             return
         }
         guard sessionActive() else {
-            fail(reason: "会话类别设置失败")
+            failed(.setCategoryFailed(sessionCategory))
             return
         }
         if status == .playing {
@@ -538,8 +541,11 @@ private extension MNPlayer {
         guard object == currentItem else { return }
         player.pause()
         status = .failed
-        guard let error = notify.userInfo?[AVPlayerItemFailedToPlayToEndTimeErrorKey] as? Error else { return }
-        fail(reason: error.localizedDescription)
+        if let userInfo = notify.userInfo, let error = userInfo[AVPlayerItemFailedToPlayToEndTimeErrorKey] as? Error {
+            failed(.underlyingError(error))
+        } else {
+            failed(.playFailed)
+        }
     }
     
     @objc func errorLogEntry(notify: Notification) {
@@ -624,10 +630,10 @@ private extension MNPlayer {
 // MARK: - Private
 extension MNPlayer {
     
-    private func fail(reason: String) {
+    private func failed(_ error: MNPlayError) {
         status = .failed
         if let delegate = delegate {
-            delegate.player?(self, didPlayFail: reason)
+            delegate.player?(self, didPlayFail: error)
         }
     }
     

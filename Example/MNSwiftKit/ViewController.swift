@@ -28,6 +28,8 @@ class ViewController: UIViewController {
         imageView.frame = .init(x: 150.0, y: 150.0, width: 150.0, height: 150.0)
         view.addSubview(imageView)
         
+        let error = MNPlayError.playFailed
+        
         slider.minimumValue = -1.0
         slider.maximumValue = 1.0
         slider.setValueChange(handler: valueChanged(_:))

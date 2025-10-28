@@ -525,8 +525,8 @@ extension MNTailorViewController: MNPlayerDelegate {
         timeLabel.text = "\(Date(timeIntervalSince1970: ceil(player.timeInterval)).mn.playTime)/\(components.last!)"
     }
     
-    func player(_ player: MNPlayer, didPlayFail msg: String) {
+    func player(_ player: MNPlayer, didPlayFail error: Error) {
         indicatorView.stopAnimating()
-        failure(msg)
+        failure(error.playerError!.errMsg)
     }
 }

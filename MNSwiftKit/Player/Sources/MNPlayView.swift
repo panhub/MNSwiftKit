@@ -6,18 +6,21 @@
 //  播放器画布
 
 import UIKit
+import CoreGraphics
 import AVFoundation
 
 /// 播放视图代理
 @objc public protocol MNPlayViewDelegate: NSObjectProtocol {
     
     /// 询问是否响应点击手势
-    /// - Parameter playView: 播放视图
+    /// - Parameters:
+    ///   - playView: 播放器画布
+    ///   - location: 点击位置
     /// - Returns: 是否响应点击
-    @objc optional func playViewShouldReceiveTouch(_ playView: MNPlayView) -> Bool
+    @objc optional func playView(_ playView: MNPlayView, shouldReceiveTouchAt location: CGPoint) -> Bool
     
     /// 点击事件告知
-    /// - Parameter playView: 播放视图
+    /// - Parameter playView: 播放器画布
     @objc optional func playViewTouchUpInside(_ playView: MNPlayView)
 }
 
@@ -45,16 +48,20 @@ public class MNPlayView: UIView {
     
     /// 画面渲染方式
     @objc public var videoGravity: AVLayerVideoGravity {
-        get { (layer as? AVPlayerLayer)?.videoGravity ?? .resize }
+        get {
+            let layer = layer as! AVPlayerLayer
+            return layer.videoGravity
+        }
         set {
             coverView.contentMode = newValue.asContentMode
-            (layer as? AVPlayerLayer)?.videoGravity = newValue
+            let layer = layer as! AVPlayerLayer
+            layer.videoGravity = newValue
         }
     }
     
     /// 点击手势
     private lazy var tap: UITapGestureRecognizer = {
-        let tap = UITapGestureRecognizer(target: self, action: #selector(clicked(_:)))
+        let tap = UITapGestureRecognizer(target: self, action: #selector(touchUpInside))
         tap.isEnabled = false
         tap.numberOfTapsRequired = 1
         return tap
@@ -67,20 +74,24 @@ public class MNPlayView: UIView {
     }
     
     /// 封面视图
-    public private(set) lazy var coverView: UIImageView = {
-        let coverView = UIImageView(frame: bounds)
-        coverView.clipsToBounds = true
-        coverView.backgroundColor = .clear
-        coverView.contentMode = .scaleAspectFit
-        coverView.isUserInteractionEnabled = false
-        coverView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        return coverView
-    }()
+    public let coverView = UIImageView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        videoGravity = .resizeAspect
+        
+        coverView.clipsToBounds = true
+        coverView.backgroundColor = .clear
+        coverView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(coverView)
+        NSLayoutConstraint.activate([
+            coverView.topAnchor.constraint(equalTo: topAnchor),
+            coverView.leftAnchor.constraint(equalTo: leftAnchor),
+            coverView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            coverView.rightAnchor.constraint(equalTo: rightAnchor)
+        ])
+        
+        videoGravity = .resizeAspect
+        
         addGestureRecognizer(tap)
     }
     
@@ -92,8 +103,10 @@ public class MNPlayView: UIView {
 // MARK: - Event
 extension MNPlayView {
     
-    @objc private func clicked(_ recognizer: UITapGestureRecognizer) {
-        delegate?.playViewTouchUpInside?(self)
+    /// 点击事件
+    @objc private func touchUpInside() {
+        guard let delegate = delegate else { return }
+        delegate.playViewTouchUpInside?(self)
     }
 }
 
@@ -101,6 +114,9 @@ extension MNPlayView {
 extension MNPlayView: UIGestureRecognizerDelegate {
     
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        return delegate?.playViewShouldReceiveTouch?(self) ?? true
+        let location = touch.location(in: self)
+        guard let delegate = delegate else { return true }
+        guard let allows = delegate.playView?(self, shouldReceiveTouchAt: location) else { return true }
+        return allows
     }
 }

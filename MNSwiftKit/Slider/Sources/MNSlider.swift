@@ -39,18 +39,20 @@ public class MNSlider: UIView {
     public weak var delegate: MNSliderDelegate?
     /// 数值变化回调
     private var valueChangeHandler: ((MNSlider)->Void)?
-    /// 当前数值
-    public private(set) var value: CGFloat = 0.0
     /// 当前进度
     public private(set) var progress: CGFloat = 0.0
     /// 是否在拖拽
     public private(set) var isDragging: Bool = false
-    /// 轨迹
-    private let trackView = UIView()
-    /// 进度条
-    private let progressView = UIView()
+    /// 最小值
+    public var minimumValue: CGFloat = 0.0
+    /// 最大值
+    public var maximumValue: CGFloat = 1.0
     /// 滑块
     private let thumbView = UIView()
+    /// 轨迹
+    private let trackView = UIImageView()
+    /// 进度条
+    private let progressView = UIImageView()
     /// 滑块圆点
     private let thumbImageView = UIImageView()
     /// 滑块左侧约束
@@ -59,17 +61,11 @@ public class MNSlider: UIView {
     private var thumbWidthConstraint: NSLayoutConstraint!
     /// 进度条宽度约束
     private var progressWidthConstraint: NSLayoutConstraint!
-    /// 最小值
-    public var minimumValue: CGFloat = 0.0 {
-        didSet {
-            updateValue()
-        }
-    }
-    /// 最大值
-    public var maximumValue: CGFloat = 1.0 {
-        didSet {
-            updateValue()
-        }
+    /// 当前值
+    public var value: CGFloat {
+        let difference = maximumValue - minimumValue
+        guard difference.isNaN == false, difference > 0.0 else { return minimumValue }
+        return difference*progress + minimumValue
     }
     /// 是否使track与两侧持平
     public var trackOnSides: Bool = true {
@@ -96,6 +92,7 @@ public class MNSlider: UIView {
         // 轨迹, 左右各留半个滑块宽度
         trackView.clipsToBounds = true
         trackView.layer.cornerRadius = 2.0
+        trackView.contentMode = .scaleToFill
         trackView.backgroundColor = .lightGray.withAlphaComponent(0.3)
         trackView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(trackView)
@@ -106,6 +103,7 @@ public class MNSlider: UIView {
             trackView.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
         
+        progressView.contentMode = .scaleToFill
         progressView.backgroundColor = .lightGray
         progressView.isUserInteractionEnabled = false
         progressView.translatesAutoresizingMaskIntoConstraints = false
@@ -202,13 +200,6 @@ public class MNSlider: UIView {
             let proportion = progressWidthConstraint.constant/width
             progress = Swift.max(0.0, Swift.min(1.0, proportion))
         }
-        updateValue()
-    }
-    
-    /// 更新数值
-    private func updateValue() {
-        let difference = maximumValue - minimumValue
-        value = difference > 0.0 ? (difference*progress + minimumValue) : minimumValue
     }
 }
 
@@ -313,7 +304,6 @@ extension MNSlider {
     
     private func updateProgress(_ value: CGFloat, animated: Bool) {
         progress = Swift.max(0.0, Swift.min(value, 1.0))
-        updateValue()
         let animations: ()->Void = { [weak self] in
             guard let self = self else { return }
             self.setNeedsLayout()
@@ -354,8 +344,14 @@ extension MNSlider {
         set { trackView.layer.cornerRadius = newValue }
     }
     
+    /// 轨迹图片
+    public var trackImage: UIImage? {
+        get { trackView.image }
+        set { trackView.image = newValue }
+    }
+    
     /// 边框颜色
-    public var borderColor: UIColor? {
+    public var trackBorderColor: UIColor? {
         get {
             guard let color = trackView.layer.borderColor else { return nil }
             return UIColor(cgColor: color)
@@ -364,7 +360,7 @@ extension MNSlider {
     }
     
     /// 边框宽度
-    public var borderWidth: CGFloat {
+    public var trackBorderWidth: CGFloat {
         get { trackView.layer.borderWidth }
         set { trackView.layer.borderWidth = newValue }
     }
@@ -373,6 +369,12 @@ extension MNSlider {
     public var progressColor: UIColor? {
         get { progressView.backgroundColor }
         set { progressView.backgroundColor = newValue }
+    }
+    
+    /// 进度图片
+    public var progressImage: UIImage? {
+        get { progressView.image }
+        set { progressView.image = newValue }
     }
     
     /// 滑块颜色
