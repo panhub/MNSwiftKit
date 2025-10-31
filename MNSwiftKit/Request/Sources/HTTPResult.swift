@@ -37,18 +37,10 @@ extension Result where Success == Any, Failure == HTTPError {
         }
     }
     
-    /// 测试输出
-    public var debugMsg: String {
-        switch self {
-        case .failure(let error): return error.debugMsg
-        default: return "success"
-        }
-    }
-    
     /// 请求数据
     public var data: Any? {
         switch self {
-        case .success(let object): return object
+        case .success(let data): return data
         default: return nil
         }
     }
@@ -70,11 +62,26 @@ extension Result where Success == Any, Failure == HTTPError {
     }
 }
 
+extension Result: @retroactive CustomDebugStringConvertible where Success == Any, Failure == HTTPError {
+    
+    public var debugDescription: String {
+        switch self {
+        case .success(let success):
+            if let debuger = success as? CustomDebugStringConvertible {
+                return debuger.debugDescription
+            }
+            return "请求成功"
+        case .failure(let failure):
+            return failure.debugDescription
+        }
+    }
+}
+
 /// HTTP请求结果码
 @objc public enum HTTPResultCode: Int {
+    case succeed = 1
     case failed = 0
     case unknown = -1
-    case succeed = 1
     case cancelled = -999
     case badUrl = -1000
     case timedOut = -1001
@@ -89,19 +96,18 @@ extension Result where Success == Any, Failure == HTTPError {
     case cannotRemoveFile = -3004
     case cannotMoveFile = -3005
     case cannotEncodeUrl = -1813770
-    case cannotEncodeBody = -1813780
-    case missingMimeType = -1813790
-    case unacceptedContentType = -1813800
-    case unacceptedStatusCode = -1813810
-    case zeroByteData = -1813820
-    case bodyEmpty = -1813840
-    case fileExists = -1813850
-    case cannotReadFile = -1813860
-    // 项目定义
-    case notLogin = 401 // 没有登录
-    case offline = 402 // 设备掉线
+    case cannotEncodeBody = -1813771
+    case missingContentType = -1813772
+    case unacceptedContentType = -1813773
+    case unacceptedStatusCode = -1813774
+    case zeroByteData = -1813775
+    case cannotParseData = -1813776
+    case bodyIsEmpty = -1813777
+    case fileExist = -1813778
+    case cannotReadFile = -1813779
 }
 
+/// 请求结果
 @objc public class HTTPResult: NSObject {
     
     /// Swift数据结果
@@ -127,8 +133,8 @@ extension Result where Success == Any, Failure == HTTPError {
         set { result = .failure(.custom(code: result.code, msg: newValue)) }
     }
     
-    /// 请求的数据
-    @objc public var data: Any? {
+    /// 响应数据
+    @objc public var data: Any! {
         get { result.data }
         set {
             if let responseObject = newValue {
@@ -142,28 +148,25 @@ extension Result where Success == Any, Failure == HTTPError {
     /// HTTP响应码
     @objc public var responseCode: Int { result.responseCode }
     
-    /// 直接获取数据<确定有值时再使用>
-    @objc public var object: Any { data ?? NSNull() }
-    
     /// 请求是否成功
     @objc public var isSuccess: Bool { code == .succeed }
-    
-    /// 测试信息
-    @objc public var debugMsg: String { result.debugMsg }
     
     /// 记录请求
     @objc public weak var request: HTTPRequest!
     
+    /// 调试信息
+    public override var debugDescription: String { result.debugDescription }
+    
     /// 构造请求结果
-    /// - Parameter result: 数据内容
+    /// - Parameter result: 请求结果
     public convenience init(result: Result<Any, HTTPError>) {
         self.init()
         self.result = result
     }
     
     /// 构造请求结果
-    /// - Parameter responseObject: 数据内容
-    @objc public convenience init(responseObject: Any) {
-        self.init(result: .success(responseObject))
+    /// - Parameter data: 响应数据
+    @objc public convenience init(data: Any) {
+        self.init(result: .success(data))
     }
 }

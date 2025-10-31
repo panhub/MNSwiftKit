@@ -117,16 +117,15 @@ import Foundation
         if httpResult.isSuccess {
             didFinish(result: httpResult)
             // 依据结果回调
-            if httpResult.isSuccess {
+            if let data = httpResult.data {
                 // 判断是否缓存结果
-                let responseObject = httpResult.object
-                if method == .get, source == .network, cachePolicy != .never, HTTPDatabase.default.setCache(responseObject, forKey: cacheForKey) {
+                if method == .get, source == .network, cachePolicy != .never, HTTPDatabase.default.setCache(data, forKey: cacheForKey) {
 #if DEBUG
                     print("已缓存数据")
 #endif
                 }
                 // 回调成功函数
-                didSuccess(responseObject: responseObject)
+                didSuccess(responseData: data)
             }
         } else {
             didFail(httpResult)

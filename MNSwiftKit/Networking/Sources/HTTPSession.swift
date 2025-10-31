@@ -117,7 +117,7 @@ extension HTTPSession {
         do {
             request = try serializer.request(with: url, method: method.uppercased())
         } catch {
-            let httpError: HTTPError = error.httpError ?? .custom(code: error._code, msg: error.localizedDescription)
+            let httpError: HTTPError = error.asHttpError ?? .custom(code: error._code, msg: error.localizedDescription)
             (completionQueue ?? .main).async {
                 completion?(.failure(httpError))
             }
@@ -148,7 +148,7 @@ extension HTTPSession {
             do {
                 try FileManager.default.removeItem(at: fileURL)
             } catch {
-                let httpError = HTTPError.downloadFailure(.fileExists(path: fileURL.path, error: error))
+                let httpError = HTTPError.downloadFailure(.fileExist(fileURL, error: error))
                 (completionQueue ?? .main).async {
                     completion?(.failure(httpError))
                 }
@@ -159,7 +159,7 @@ extension HTTPSession {
             do {
                 try FileManager.default.createDirectory(at: fileURL.deletingLastPathComponent(), withIntermediateDirectories: true)
             } catch {
-                let httpError = HTTPError.downloadFailure(.cannotCreateFile(path: fileURL.path, error: error))
+                let httpError = HTTPError.downloadFailure(.cannotCreateFile(fileURL, error: error))
                 (completionQueue ?? .main).async {
                     completion?(.failure(httpError))
                 }
@@ -169,7 +169,7 @@ extension HTTPSession {
         if FileManager.default.fileExists(atPath: fileURL.path) == false, FileManager.default.createFile(atPath: fileURL.path, contents: nil) == false {
             let msg: String = "创建文件失败, 文件路径可能不可用\n-\(#file)-\(#function)-\(#line)"
             let error = NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotCreateFile, userInfo: [NSLocalizedDescriptionKey:"创建文件失败", NSLocalizedFailureReasonErrorKey:msg,NSDebugDescriptionErrorKey:msg])
-            let httpError = HTTPError.downloadFailure(.cannotCreateFile(path: fileURL.path, error: error as Error))
+            let httpError = HTTPError.downloadFailure(.cannotCreateFile(fileURL, error: error as Error))
             (completionQueue ?? .main).async {
                 completion?(.failure(httpError))
             }
@@ -183,7 +183,7 @@ extension HTTPSession {
         } catch {
             let msg: String = "无法确定Range, 无法开始下载\n-\(#file)-\(#function)-\(#line)"
             let nsError = NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotWriteToFile, userInfo: [NSLocalizedDescriptionKey:"读取本地文件失败", NSLocalizedFailureReasonErrorKey:msg,NSDebugDescriptionErrorKey:msg,NSUnderlyingErrorKey:error])
-            let httpError = HTTPError.downloadFailure(.cannotReadFile(path: fileURL.path, error: nsError as Error))
+            let httpError = HTTPError.downloadFailure(.cannotReadFile(fileURL, error: nsError as Error))
             (completionQueue ?? .main).async {
                 completion?(.failure(httpError))
             }
@@ -194,7 +194,7 @@ extension HTTPSession {
         do {
             request = try serializer.request(with: url, method: "GET")
         } catch {
-            let httpError: HTTPError = error.httpError ?? .custom(code: error._code, msg: error.localizedDescription)
+            let httpError: HTTPError = error.asHttpError ?? .custom(code: error._code, msg: error.localizedDescription)
             (completionQueue ?? .main).async {
                 completion?(.failure(httpError))
             }
@@ -246,7 +246,7 @@ extension HTTPSession {
         do {
             request = try serializer.request(with: url, method: "GET")
         } catch {
-            let httpError: HTTPError = error.httpError ?? .custom(code: (error as NSError).code, msg: error.localizedDescription)
+            let httpError: HTTPError = error.asHttpError ?? .custom(code: error._code, msg: error.localizedDescription)
             (completionQueue ?? .main).async {
                 completion?(.failure(httpError))
             }
@@ -299,7 +299,7 @@ extension HTTPSession {
         do {
             request = try serializer.request(with: url, method: method)
         } catch {
-            let httpError: HTTPError = error.httpError ?? .custom(code: error._code, msg: error.localizedDescription)
+            let httpError: HTTPError = error.asHttpError ?? .custom(code: error._code, msg: error.localizedDescription)
             (completionQueue ?? .main).async {
                 completion?(.failure(httpError))
             }

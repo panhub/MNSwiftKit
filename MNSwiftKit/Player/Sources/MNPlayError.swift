@@ -8,6 +8,7 @@
 
 import Foundation
 import AVFoundation
+import AVFAudio.AVAudioSessionTypes
 
 /// 播放器错误
 public enum MNPlayError: Swift.Error {
@@ -19,10 +20,10 @@ public enum MNPlayError: Swift.Error {
     case seekFailed
     
     /// 设置Category失败
-    case setCategoryFailed(_ category: AVAudioSession.Category)
+    case setCategoryFailed(AVAudioSession.Category)
     
     /// 内部错误
-    case underlyingError(_ error: Swift.Error)
+    case underlyingError(Swift.Error)
 }
 
 extension MNPlayError {
@@ -38,7 +39,7 @@ extension MNPlayError {
     }
     
     /// 错误信息
-    var errMsg: String {
+    public var errMsg: String {
         switch self {
         case .playFailed: return "播放失败"
         case .seekFailed: return "寻找播放进度失败"
@@ -81,5 +82,5 @@ extension MNPlayError: CustomDebugStringConvertible {
 extension Swift.Error {
     
     /// 转换为播放器错误
-    public var playerError: MNPlayError? { self as? MNPlayError }
+    public var asPlayError: MNPlayError? { self as? MNPlayError }
 }

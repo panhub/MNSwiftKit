@@ -175,7 +175,7 @@ public extension HTTPProxy {
                     try? FileManager.default.removeItem(at: fileURL)
                 }
                 (self.completionQueue ?? .main).async {
-                    self.completionHandler?(.failure(error.httpError!))
+                    self.completionHandler?(.failure(error.asHttpError!))
                 }
                 return
             }
@@ -201,7 +201,7 @@ public extension HTTPProxy {
         if let fileURL = fileURL {
             // 转换响应者
             guard let response = response as? HTTPURLResponse else {
-                let httpError = HTTPError.responseParseFailure(.cannotParseResponse(response: response))
+                let httpError = HTTPError.responseParseFailure(.cannotParseResponse(response))
                 dataTask.downloadError = httpError
                 completionHandler(.cancel)
                 return
@@ -213,7 +213,7 @@ public extension HTTPProxy {
             } catch {
                 let msg: String = "已接收到响应, 读取本地文件失败, 主动取消请求\n-\(#file)-\(#function)-\(#line)"
                 let nsError = NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotWriteToFile, userInfo: [NSLocalizedDescriptionKey:"读取本地文件失败", NSLocalizedFailureReasonErrorKey:msg,NSDebugDescriptionErrorKey:msg,NSUnderlyingErrorKey:error])
-                let httpError = HTTPError.downloadFailure(.cannotReadFile(path: fileURL.path, error: nsError as Error))
+                let httpError = HTTPError.downloadFailure(.cannotReadFile(fileURL, error: nsError as Error))
                 dataTask.downloadError = httpError
                 completionHandler(.cancel)
                 return
@@ -226,7 +226,7 @@ public extension HTTPProxy {
                 } catch {
                     let msg: String = "已接收到响应, 读取本地文件失败, 主动取消请求\n-\(#file)-\(#function)-\(#line)"
                     let nsError = NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotWriteToFile, userInfo: [NSLocalizedDescriptionKey:"读取本地文件失败", NSLocalizedFailureReasonErrorKey:msg,NSDebugDescriptionErrorKey:msg,NSUnderlyingErrorKey:error])
-                    let httpError = HTTPError.downloadFailure(.cannotReadFile(path: fileURL.path, error: nsError as Error))
+                    let httpError = HTTPError.downloadFailure(.cannotReadFile(fileURL, error: nsError as Error))
                     dataTask.downloadError = httpError
                     completionHandler(.cancel)
                     return
@@ -244,7 +244,7 @@ public extension HTTPProxy {
                     // 失败处理
                     let msg: String = "主动取消请求, 响应码不合法: \(response.statusCode)\n- 可能是文件变化导致Range超出边界;\n- 服务端不支持分片下载;\n-\(#file)-\(#function)-\(#line)"
                     let error = NSError(domain: NSURLErrorDomain, code: NSURLErrorDataLengthExceedsMaximum, userInfo: [NSLocalizedDescriptionKey:"无法下载文件", NSLocalizedFailureReasonErrorKey:msg,NSDebugDescriptionErrorKey:msg])
-                    let httpError = HTTPError.downloadFailure(.cannotWriteToFile(path: fileURL.path, error: error as Error))
+                    let httpError = HTTPError.downloadFailure(.cannotWriteToFile(fileURL, error: error as Error))
                     dataTask.downloadError = httpError
                 }
                 completionHandler(.cancel)
@@ -270,7 +270,7 @@ public extension HTTPProxy {
                 } catch {
                     let msg: String = "主动终止请求, 写入数据失败, 已写入: \(downloadProgress.completedUnitCount)\n-\(#file)-\(#function)-\(#line)"
                     let nsError = NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotWriteToFile, userInfo: [NSLocalizedDescriptionKey:"写入数据失败", NSLocalizedFailureReasonErrorKey:msg,NSDebugDescriptionErrorKey:msg,NSUnderlyingErrorKey:error])
-                    let httpError = HTTPError.downloadFailure(.cannotWriteToFile(path: "", error: nsError as Error))
+                    let httpError = HTTPError.downloadFailure(.cannotWriteToFile(nil, error: nsError as Error))
                     dataTask.downloadError = httpError
                     dataTask.cancel()
                     return
@@ -307,7 +307,7 @@ public extension HTTPProxy {
         let fileURL: URL? = locationHandler?(downloadTask.response, location)
         guard let fileURL = fileURL, fileURL.isFileURL else {
             let error = NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotMoveFile, userInfo: [NSLocalizedDescriptionKey:"文件路径不合法", NSLocalizedFailureReasonErrorKey:"文件路径回调可能未实现或返回的路径不可用",NSDebugDescriptionErrorKey:"文件路径不合法, 文件路径回调可能未实现或返回的路径不可用"])
-            let httpError = HTTPError.downloadFailure(.cannotMoveFile(path: fileURL?.path ?? "", error: error as Error))
+            let httpError = HTTPError.downloadFailure(.cannotMoveFile(fileURL, error: error as Error))
             downloadTask.downloadError = httpError
             return
         }
@@ -320,7 +320,7 @@ public extension HTTPProxy {
                 do {
                     try FileManager.default.removeItem(at: fileURL)
                 } catch {
-                    let httpError = HTTPError.downloadFailure(.cannotRemoveFile(path: fileURL.path, error: error))
+                    let httpError = HTTPError.downloadFailure(.cannotRemoveFile(fileURL, error: error))
                     downloadTask.downloadError = httpError
                     return
                 }
@@ -339,7 +339,7 @@ public extension HTTPProxy {
             do {
                 try FileManager.default.createDirectory(at: fileURL.deletingLastPathComponent(), withIntermediateDirectories: true)
             } catch {
-                let httpError = HTTPError.downloadFailure(.cannotCreateFile(path: fileURL.path, error: error))
+                let httpError = HTTPError.downloadFailure(.cannotCreateFile(fileURL, error: error))
                 downloadTask.downloadError = httpError
                 return
             }
@@ -349,7 +349,7 @@ public extension HTTPProxy {
         do {
             try FileManager.default.moveItem(at: location, to: fileURL)
         } catch {
-            let httpError = HTTPError.downloadFailure(.cannotMoveFile(path: fileURL.path, error: error))
+            let httpError = HTTPError.downloadFailure(.cannotMoveFile(fileURL, error: error))
             downloadTask.downloadError = httpError
             return
         }

@@ -75,7 +75,7 @@ Pod::Spec.new do |s|
   
   # Player <播放器>
   s.subspec 'Player' do |p|
-    p.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'AudioToolbox'
+    p.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'AudioToolbox', 'AVFAudio'
     p.source_files = 'MNSwiftKit/Player/Sources/**/*.swift'
   end
   

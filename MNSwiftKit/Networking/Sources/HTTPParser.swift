@@ -130,7 +130,7 @@ public class HTTPParser {
         }
 
         // 响应是否合法
-        guard let httpResponse = response as? HTTPURLResponse else { throw HTTPError.responseParseFailure(.cannotParseResponse(response: response)) }
+        guard let httpResponse = response as? HTTPURLResponse else { throw HTTPError.responseParseFailure(.cannotParseResponse(response)) }
         
         // 检查状态码
         let statusCode = httpResponse.statusCode
@@ -146,7 +146,7 @@ public class HTTPParser {
             }
             // 判断是否接受响应类型
             guard acceptTypes.contains(mimeType) else {
-                throw HTTPError.responseParseFailure(.unacceptedContentType(mimeType: mimeType, accept: acceptTypes))
+                throw HTTPError.responseParseFailure(.unacceptedContentType(mimeType, accepts: acceptTypes))
             }
         }
     }

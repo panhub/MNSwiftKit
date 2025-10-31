@@ -102,11 +102,9 @@ public typealias HTTPRequestProgressHandler = HTTPSessionProgressHandler
     open func loadFinish(result: Result<Any, HTTPError>) {
         let httpResult = HTTPResult(result: result)
         httpResult.request = self
-        if httpResult.isSuccess {
+        if let data = httpResult.data {
             didFinish(result: httpResult)
-            if httpResult.isSuccess {
-                didSuccess(responseObject: httpResult.object)
-            }
+            didSuccess(responseData: data)
         } else {
             didFail(httpResult)
         }
@@ -123,7 +121,7 @@ public typealias HTTPRequestProgressHandler = HTTPSessionProgressHandler
     
     /// 请求成功
     /// - Parameter responseObject: 请求数据
-    @objc open func didSuccess(responseObject: Any) {}
+    @objc open func didSuccess(responseData: Any) {}
     
     /// 请求失败
     /// - Parameter result: 请求结果

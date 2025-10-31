@@ -93,7 +93,8 @@
         "UIKit",
         "Foundation",
         "AVFoundation",
-        "AudioToolbox"
+        "AudioToolbox",
+        "AVFAudio"
       ],
       "source_files": "MNSwiftKit/Player/Sources/**/*.swift"
     },
