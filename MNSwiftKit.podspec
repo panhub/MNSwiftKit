@@ -75,7 +75,7 @@ Pod::Spec.new do |s|
   
   # Player <播放器>
   s.subspec 'Player' do |p|
-    p.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'AudioToolbox', 'AVFAudio'
+    p.frameworks = 'UIKit', 'Foundation', 'AVFAudio', 'AVFoundation', 'AudioToolbox'
     p.source_files = 'MNSwiftKit/Player/Sources/**/*.swift'
   end
   
@@ -87,10 +87,10 @@ Pod::Spec.new do |s|
   end
   
   # Layout <UI布局快速获取>
-  s.subspec 'Layout' do |l|
-    l.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
-    l.source_files = 'MNSwiftKit/Layout/Sources/**/*.swift'
-    l.dependency 'MNSwiftKit/NameSpace'
+  s.subspec 'Layout' do |a|
+    a.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    a.source_files = 'MNSwiftKit/Layout/Sources/**/*.swift'
+    a.dependency 'MNSwiftKit/NameSpace'
   end
   
   # Refresh <刷新控件>

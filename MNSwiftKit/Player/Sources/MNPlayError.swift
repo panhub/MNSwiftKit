@@ -19,68 +19,68 @@ public enum MNPlayError: Swift.Error {
     /// 寻找进度失败
     case seekFailed
     
-    /// 设置Category失败
-    case setCategoryFailed(AVAudioSession.Category)
+//    /// 设置Category失败
+//    case setCategoryFailed(AVAudioSession.Category)
     
     /// 内部错误
     case underlyingError(Swift.Error)
 }
 
-extension MNPlayError {
-    
-    /// 错误码
-    public var errCode: Int {
-        switch self {
-        case .playFailed: return -101
-        case .seekFailed: return -102
-        case .setCategoryFailed: return -103
-        case .underlyingError(let error): return error._code
-        }
-    }
-    
-    /// 错误信息
-    public var errMsg: String {
-        switch self {
-        case .playFailed: return "播放失败"
-        case .seekFailed: return "寻找播放进度失败"
-        case .setCategoryFailed: return "设置媒体类别失败"
-        case .underlyingError(let error): return error.localizedDescription
-        }
-    }
-}
-
-extension MNPlayError: CustomNSError {
-    
-    public static var errorDomain: String {
-        
-        "com.MNSwiftKit.player.error.domain"
-    }
-    
-    public var errorCode: Int {
-        
-        errCode
-    }
-    
-    public var errorUserInfo: [String : Any] {
-        var userInfo: [String : Any] = [NSLocalizedDescriptionKey:errMsg]
-        switch self {
-        case .underlyingError(let error):
-            userInfo[NSUnderlyingErrorKey] = error
-        default: break
-        }
-        return userInfo
-    }
-}
-
-extension MNPlayError: CustomDebugStringConvertible {
-    
-    public var debugDescription: String {
-        errMsg
-    }
-}
-
-extension Swift.Error {
-    
-    /// 转换为播放器错误
-    public var asPlayError: MNPlayError? { self as? MNPlayError }
-}
+//extension MNPlayError {
+//    
+//    /// 错误码
+//    public var errCode: Int {
+//        switch self {
+//        case .playFailed: return -101
+//        case .seekFailed: return -102
+//        case .setCategoryFailed: return -103
+//        case .underlyingError(let error): return error._code
+//        }
+//    }
+//    
+//    /// 错误信息
+//    public var errMsg: String {
+//        switch self {
+//        case .playFailed: return "播放失败"
+//        case .seekFailed: return "寻找播放进度失败"
+//        case .setCategoryFailed: return "设置媒体类别失败"
+//        case .underlyingError(let error): return error.localizedDescription
+//        }
+//    }
+//}
+//
+//extension MNPlayError: CustomNSError {
+//    
+//    public static var errorDomain: String {
+//        
+//        "com.MNSwiftKit.player.error.domain"
+//    }
+//    
+//    public var errorCode: Int {
+//        
+//        errCode
+//    }
+//    
+//    public var errorUserInfo: [String : Any] {
+//        var userInfo: [String : Any] = [NSLocalizedDescriptionKey:errMsg]
+//        switch self {
+//        case .underlyingError(let error):
+//            userInfo[NSUnderlyingErrorKey] = error
+//        default: break
+//        }
+//        return userInfo
+//    }
+//}
+//
+//extension MNPlayError: CustomDebugStringConvertible {
+//    
+//    public var debugDescription: String {
+//        errMsg
+//    }
+//}
+//
+//extension Swift.Error {
+//    
+//    /// 转换为播放器错误
+//    public var asPlayError: MNPlayError? { self as? MNPlayError }
+//}
