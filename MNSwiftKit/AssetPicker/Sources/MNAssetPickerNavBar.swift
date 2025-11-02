@@ -77,10 +77,10 @@ class MNAssetPickerNavBar: UIView {
         }
         addSubview(back)
         NSLayoutConstraint.activate([
-            back.topAnchor.constraint(equalTo: topAnchor, constant: options.statusBarHeight + (options.navBarHeight - 24.0)/2.0),
-            back.leftAnchor.constraint(equalTo: leftAnchor, constant: 16.0),
             back.widthAnchor.constraint(equalToConstant: 24.0),
-            back.heightAnchor.constraint(equalToConstant: 24.0)
+            back.heightAnchor.constraint(equalToConstant: 24.0),
+            back.leftAnchor.constraint(equalTo: leftAnchor, constant: 16.0),
+            back.topAnchor.constraint(equalTo: topAnchor, constant: options.statusBarHeight + (options.navBarHeight - 24.0)/2.0)
         ])
         
         badge.clipsToBounds = true

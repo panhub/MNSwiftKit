@@ -22,13 +22,13 @@ class ViewController: UIViewController {
         
         view.backgroundColor = .red
         
+        
+        
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 10.0
         imageView.image = UIImage(named: "image_1")
         imageView.frame = .init(x: 150.0, y: 150.0, width: 150.0, height: 150.0)
         view.addSubview(imageView)
-        
-        let err = MNPlayError.playFailed
         
 //        slider.minimumValue = -1.0
 //        slider.maximumValue = 1.0
@@ -55,18 +55,18 @@ class ViewController: UIViewController {
         guard let touche = touches.first else { return }
         let location = touche.location(in: view)
         if imageView.frame.contains(location) {
-            //MNAssetBrowser.present(container: imageView, in: view)
+            MNAssetBrowser.present(container: imageView, in: view)
         } else {
             //slider.setValue(0.0, animated: true)
-//            let options: MNAssetPickerOptions = MNAssetPickerOptions()
-//            options.allowsPreview = true
-//            options.allowsPickingAlbum = true
-//            options.showFileSize = true
-//            options.maxPickingCount = 10
-//            let picker = MNAssetPicker(options: options)
-//            picker.present { picker, assets in
-//                
-//            }
+            let options: MNAssetPickerOptions = MNAssetPickerOptions()
+            options.allowsPreview = true
+            options.allowsPickingAlbum = true
+            options.showFileSize = true
+            options.maxPickingCount = 10
+            let picker = MNAssetPicker(options: options)
+            picker.present { picker, assets in
+                
+            }
         }
     }
     

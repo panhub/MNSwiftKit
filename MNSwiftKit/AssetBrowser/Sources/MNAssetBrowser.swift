@@ -280,38 +280,71 @@ public class MNAssetBrowser: UIView {
             navigationView.heightAnchor.constraint(equalToConstant: MN_TOP_BAR_HEIGHT)
         ])
         
+        // 导航左按钮
         let leftBarItemImg = leftBarEvent.img
         if leftBarItemImg.isEmpty == false {
+            let leftBarItemImage = AssetPickerResource.image(named: leftBarItemImg)
             let button = UIButton(type: .custom)
             button.tag = leftBarEvent.rawValue
-            button.setBackgroundImage(AssetBrowserResource.image(named: leftBarItemImg), for: .normal)
-            button.addTarget(self, action: #selector(navigationBarItemTouchUpInside(_:)), for: .touchUpInside)
             button.translatesAutoresizingMaskIntoConstraints = false
+            button.addTarget(self, action: #selector(self.navigationBarItemTouchUpInside(_:)), for: .touchUpInside)
+            if #available(iOS 15.0, *) {
+                var configuration = UIButton.Configuration.plain()
+                configuration.background.backgroundColor = .clear
+                button.configuration = configuration
+                button.configurationUpdateHandler = { button in
+                    switch button.state {
+                    case .normal, .highlighted:
+                        button.configuration?.background.image = leftBarItemImage
+                    default: break
+                    }
+                }
+            } else {
+                button.adjustsImageWhenHighlighted = false
+                button.setBackgroundImage(leftBarItemImage, for: .normal)
+            }
             navigationView.addSubview(button)
             NSLayoutConstraint.activate([
-                button.topAnchor.constraint(equalTo: navigationView.topAnchor, constant: (MN_NAV_BAR_HEIGHT - 25.0)/2.0 + MN_STATUS_BAR_HEIGHT),
-                button.leftAnchor.constraint(equalTo: navigationView.leftAnchor, constant: 18.0),
-                button.widthAnchor.constraint(equalToConstant: 25.0),
-                button.heightAnchor.constraint(equalTo: button.widthAnchor, multiplier: 1.0)
+                button.widthAnchor.constraint(equalToConstant: 24.0),
+                button.heightAnchor.constraint(equalToConstant: 24.0),
+                button.leftAnchor.constraint(equalTo: navigationView.leftAnchor, constant: 16.0),
+                button.topAnchor.constraint(equalTo: navigationView.topAnchor, constant: MN_STATUS_BAR_HEIGHT + (MN_NAV_BAR_HEIGHT - 24.0)/2.0)
             ])
         }
         
+        // 导航右按钮
         let rightBarItemImg = rightBarEvent.img
         if rightBarItemImg.isEmpty == false {
+            let rightBarItemImage = AssetPickerResource.image(named: rightBarItemImg)
             let button = UIButton(type: .custom)
             button.tag = rightBarEvent.rawValue
-            button.setBackgroundImage(AssetBrowserResource.image(named: rightBarItemImg), for: .normal)
-            button.addTarget(self, action: #selector(navigationBarItemTouchUpInside(_:)), for: .touchUpInside)
             button.translatesAutoresizingMaskIntoConstraints = false
+            button.addTarget(self, action: #selector(navigationBarItemTouchUpInside(_:)), for: .touchUpInside)
+            if #available(iOS 15.0, *) {
+                var configuration = UIButton.Configuration.plain()
+                configuration.background.backgroundColor = .clear
+                button.configuration = configuration
+                button.configurationUpdateHandler = { button in
+                    switch button.state {
+                    case .normal, .highlighted:
+                        button.configuration?.background.image = rightBarItemImage
+                    default: break
+                    }
+                }
+            } else {
+                button.adjustsImageWhenHighlighted = false
+                button.setBackgroundImage(rightBarItemImage, for: .normal)
+            }
             navigationView.addSubview(button)
             NSLayoutConstraint.activate([
-                button.topAnchor.constraint(equalTo: navigationView.topAnchor, constant: (MN_NAV_BAR_HEIGHT - 25.0)/2.0 + MN_STATUS_BAR_HEIGHT),
-                button.rightAnchor.constraint(equalTo: navigationView.rightAnchor, constant: -18.0),
-                button.widthAnchor.constraint(equalToConstant: 25.0),
-                button.heightAnchor.constraint(equalTo: button.widthAnchor, multiplier: 1.0)
+                button.widthAnchor.constraint(equalToConstant: 24.0),
+                button.heightAnchor.constraint(equalToConstant: 24.0),
+                button.rightAnchor.constraint(equalTo: navigationView.rightAnchor, constant: -16.0),
+                button.topAnchor.constraint(equalTo: navigationView.topAnchor, constant:  MN_STATUS_BAR_HEIGHT + (MN_NAV_BAR_HEIGHT - 24.0)/2.0)
             ])
         }
         
+        // 导航栏阴影
         if navigationView.subviews.isEmpty == false {
             navigationView.contentMode = .scaleToFill
             navigationView.isUserInteractionEnabled = true

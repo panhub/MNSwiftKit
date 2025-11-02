@@ -98,8 +98,8 @@ extension MNAssetHelper {
                 result.enumerateObjects { element, _, _ in
                     var type = element.mn.contentType
                     if type == .video {
-                        let duration: TimeInterval = floor(element.duration)
-                        if (options.minExportDuration > 0.0 && duration < options.minExportDuration) || (options.maxExportDuration > 0.0 && duration > options.maxExportDuration && (options.allowsEditing == false || options.maxPickingCount > 1 || options.allowsMultiplePickingVideo == false)) { return }
+                        let duration: TimeInterval = floor(element.duration*10.0)/10.0
+                        if (options.minExportDuration > 0.0 && duration < options.minExportDuration) || (options.maxExportDuration > 0.0 && duration > options.maxExportDuration && (options.maxPickingCount > 1 || options.allowsMultiplePickingVideo == false)) { return }
                     } else if type == .gif {
                         guard options.allowsPickingGif else { return }
                         if options.usingPhotoPolicyPickingGif {

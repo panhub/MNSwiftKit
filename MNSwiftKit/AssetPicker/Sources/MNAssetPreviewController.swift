@@ -121,7 +121,7 @@ class MNAssetPreviewController: UIViewController {
         let back = UIButton(type: .custom)
         back.translatesAutoresizingMaskIntoConstraints = false
         back.addTarget(self, action: #selector(self.back), for: .touchUpInside)
-        let backgroundImage = AssetPickerResource.image(named: "back")
+        let backImage = AssetPickerResource.image(named: "back")
         if #available(iOS 15.0, *) {
             var configuration = UIButton.Configuration.plain()
             configuration.background.backgroundColor = .clear
@@ -129,13 +129,13 @@ class MNAssetPreviewController: UIViewController {
             back.configurationUpdateHandler = { button in
                 switch button.state {
                 case .normal, .highlighted:
-                    button.configuration?.background.image = backgroundImage
+                    button.configuration?.background.image = backImage
                 default: break
                 }
             }
         } else {
             back.adjustsImageWhenHighlighted = false
-            back.setBackgroundImage(backgroundImage, for: .normal)
+            back.setBackgroundImage(backImage, for: .normal)
         }
         navView.addSubview(back)
         NSLayoutConstraint.activate([

@@ -3,7 +3,7 @@
 //  MNSwiftKit
 //
 //  Created by panhub on 2021/9/27.
-//  资源选择器配置信息 allowsMultipleSelection
+//  资源选择器配置信息
 
 import UIKit
 import Foundation
@@ -26,10 +26,6 @@ public class MNAssetPickerOptions: NSObject {
      至少选择数量 <default 0 不限制>
      */
     @objc public var minPickingCount: Int = 0
-    /**
-     是否允许编辑<"maxPickingCount==1"有效>
-     */
-    @objc public var allowsEditing: Bool = false
     /**
      是否允许预览
      */
@@ -71,9 +67,9 @@ public class MNAssetPickerOptions: NSObject {
      */
     @objc public var allowsMultiplePickingLivePhoto: Bool = true
     /**
-     是否允许混合选择<'allowsMixPicking == false'时根据首选资源类型限制>
+     是否允许混合选择, 如果设置'false'根据首选资源类型限制
      */
-    @objc public var allowsMixPicking: Bool = true
+    @objc public var allowsMixedPicking: Bool = true
     /**
      #available(iOS 10.0, *)
      是否允许输出heif/heic格式图片
@@ -136,11 +132,11 @@ public class MNAssetPickerOptions: NSObject {
      */
     @objc public var cropScale: CGFloat = 1.0
     /**
-     导出视频的最小时长<仅视频有效 不符合时长要求的视频裁剪或隐藏处理>
+     导出视频的最小时长, 仅视频有效, 不符合时长要求的视频裁剪或隐藏处理
      */
     @objc public var minExportDuration: TimeInterval = 0.0
     /**
-     导出视频的最大时长<仅视频有效 不符合时长要求的视频裁剪或隐藏处理>
+     导出视频的最大时长, 仅视频有效, 不符合时长要求的视频裁剪或隐藏处理
      */
     @objc public var maxExportDuration: TimeInterval = 0.0
     /**
@@ -178,7 +174,7 @@ public class MNAssetPickerOptions: NSObject {
     /**
      分析文件位置及大小的队列
      */
-    @objc public let queue: DispatchQueue = DispatchQueue(label: "com.mn.asset.picker.queue", attributes: .concurrent)
+    @objc public let queue: DispatchQueue = DispatchQueue(label: "com.mn.asset.picker.queue", qos: .userInitiated, attributes: .concurrent)
 }
 
 // MARK: - 辅助

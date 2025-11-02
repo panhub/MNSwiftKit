@@ -397,9 +397,9 @@ extension MNAssetPickerController {
                 asset.isEnabled = true
             }
             // 类型限制
-            if selections.count > 0 {
+            if selections.isEmpty == false {
                 let type = selections.first!.type
-                if options.allowsMixPicking == false {
+                if options.allowsMixedPicking == false {
                     for asset in assets.filter({ $0.isSelected == false && $0.type != type }) {
                         asset.isEnabled = false
                     }
@@ -483,9 +483,7 @@ extension MNAssetPickerController: UICollectionViewDelegate, UICollectionViewDat
         let asset = assets[indexPath.item]
         guard asset.isEnabled else { return }
         if options.maxPickingCount <= 1 || (asset.type == .photo && options.allowsMultiplePickingPhoto == false) || (asset.type == .gif && options.allowsMultiplePickingGif == false) || (asset.type == .video && options.allowsMultiplePickingVideo == false) || (asset.type == .livePhoto && options.allowsMultiplePickingLivePhoto == false) {
-            if asset.type == .photo, options.allowsEditing {
-                // TODO 图片裁剪
-            } else if asset.type == .video, options.allowsEditing {
+            if asset.type == .video, options.maxExportDuration > 0.0, asset.duration > options.maxExportDuration {
                 // 视频裁剪
                 tailorVideo(asset)
             } else {

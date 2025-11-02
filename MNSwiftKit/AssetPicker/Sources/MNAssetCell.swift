@@ -40,7 +40,7 @@ class MNAssetCell: UICollectionViewCell {
     /// 云端标识
     private let cloudView = UIImageView(frame: .zero)
     /// 预览按钮
-    private let previewButton = UIControl(frame: .zero)
+    private let previewControl = UIControl(frame: .zero)
     /// 资源类型
     private let badgeView = MNStateView(frame: .zero)
     /// 视频时长
@@ -63,24 +63,59 @@ class MNAssetCell: UICollectionViewCell {
         imageView.isUserInteractionEnabled = false
         imageView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(imageView)
-        contentView.addConstraints([
-            NSLayoutConstraint(item: imageView, attribute: .top, relatedBy: .equal, toItem: contentView, attribute: .top, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: imageView, attribute: .left, relatedBy: .equal, toItem: contentView, attribute: .left, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: imageView, attribute: .bottom, relatedBy: .equal, toItem: contentView, attribute: .bottom, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: imageView, attribute: .right, relatedBy: .equal, toItem: contentView, attribute: .right, multiplier: 1.0, constant: 0.0)
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            imageView.leftAnchor.constraint(equalTo: contentView.leftAnchor),
+            imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            imageView.rightAnchor.constraint(equalTo: contentView.rightAnchor)
         ])
         
         // 顶部阴影
-        topShadow.image = AssetPickerResource.image(named: "top_shadow")
         topShadow.contentMode = .scaleToFill
         topShadow.isUserInteractionEnabled = false
         topShadow.translatesAutoresizingMaskIntoConstraints = false
+        topShadow.image = AssetPickerResource.image(named: "top_shadow")
         contentView.addSubview(topShadow)
-        topShadow.addConstraint(NSLayoutConstraint(item: topShadow, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 30.0))
-        contentView.addConstraints([
-            NSLayoutConstraint(item: topShadow, attribute: .top, relatedBy: .equal, toItem: contentView, attribute: .top, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: topShadow, attribute: .left, relatedBy: .equal, toItem: contentView, attribute: .left, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: topShadow, attribute: .right, relatedBy: .equal, toItem: contentView, attribute: .right, multiplier: 1.0, constant: 0.0)
+        NSLayoutConstraint.activate([
+            topShadow.heightAnchor.constraint(equalToConstant: 30.0),
+            topShadow.topAnchor.constraint(equalTo: contentView.topAnchor),
+            topShadow.leftAnchor.constraint(equalTo: contentView.leftAnchor),
+            topShadow.rightAnchor.constraint(equalTo: contentView.rightAnchor)
+        ])
+        
+        // 云端标记
+        cloudView.contentMode = .scaleAspectFit
+        cloudView.translatesAutoresizingMaskIntoConstraints = false
+        cloudView.image = AssetPickerResource.image(named: "cloud")?.mn.rendering(to: .white.withAlphaComponent(0.85))
+        contentView.addSubview(cloudView)
+        NSLayoutConstraint.activate([
+            cloudView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6.0),
+            cloudView.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 6.0),
+            cloudView.widthAnchor.constraint(equalToConstant: 17.0),
+            cloudView.heightAnchor.constraint(equalToConstant: 17.0)
+        ])
+        
+        // 预览
+        previewControl.translatesAutoresizingMaskIntoConstraints = false
+        previewControl.addTarget(self, action: #selector(preview), for: .touchUpInside)
+        contentView.addSubview(previewControl)
+        NSLayoutConstraint.activate([
+            previewControl.topAnchor.constraint(equalTo: contentView.topAnchor),
+            previewControl.rightAnchor.constraint(equalTo: contentView.rightAnchor),
+            previewControl.widthAnchor.constraint(equalToConstant: 25.0),
+            previewControl.heightAnchor.constraint(equalToConstant: 25.0)
+        ])
+        
+        let previewImageView = UIImageView()
+        previewImageView.contentMode = .scaleAspectFit
+        previewImageView.translatesAutoresizingMaskIntoConstraints = false
+        previewImageView.image = AssetPickerResource.image(named: "preview")?.mn.rendering(to: .white.withAlphaComponent(0.85))
+        previewControl.addSubview(previewImageView)
+        NSLayoutConstraint.activate([
+            previewImageView.rightAnchor.constraint(equalTo: previewControl.rightAnchor, constant: -6.0),
+            previewImageView.centerYAnchor.constraint(equalTo: cloudView.centerYAnchor),
+            previewImageView.heightAnchor.constraint(equalToConstant: 13.0),
+            previewImageView.widthAnchor.constraint(equalTo: previewImageView.heightAnchor, multiplier: 180.0/121.0)
         ])
         
         // 底部阴影
@@ -90,88 +125,49 @@ class MNAssetCell: UICollectionViewCell {
         bottomShadow.isUserInteractionEnabled = false
         bottomShadow.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(bottomShadow)
-        bottomShadow.addConstraint(NSLayoutConstraint(item: bottomShadow, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 30.0))
-        contentView.addConstraints([
-            NSLayoutConstraint(item: bottomShadow, attribute: .left, relatedBy: .equal, toItem: contentView, attribute: .left, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: bottomShadow, attribute: .right, relatedBy: .equal, toItem: contentView, attribute: .right, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: bottomShadow, attribute: .bottom, relatedBy: .equal, toItem: contentView, attribute: .bottom, multiplier: 1.0, constant: 0.0)
+        NSLayoutConstraint.activate([
+            bottomShadow.heightAnchor.constraint(equalToConstant: 30.0),
+            bottomShadow.leftAnchor.constraint(equalTo: contentView.leftAnchor),
+            bottomShadow.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            bottomShadow.rightAnchor.constraint(equalTo: contentView.rightAnchor)
         ])
-        
-        // 云端标记
-        cloudView.isUserInteractionEnabled = false
-        cloudView.image = AssetPickerResource.image(named: "cloud")?.mn.rendering(to: .white.withAlphaComponent(0.85))
-        cloudView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(cloudView)
-        cloudView.addConstraints([
-            NSLayoutConstraint(item: cloudView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 17.0),
-            NSLayoutConstraint(item: cloudView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 17.0)
-        ])
-        contentView.addConstraints([
-            NSLayoutConstraint(item: cloudView, attribute: .top, relatedBy: .equal, toItem: contentView, attribute: .top, multiplier: 1.0, constant: 6.0),
-            NSLayoutConstraint(item: cloudView, attribute: .left, relatedBy: .equal, toItem: contentView, attribute: .left, multiplier: 1.0, constant: 6.0)
-        ])
-        
-        // 预览
-        previewButton.translatesAutoresizingMaskIntoConstraints = false
-        previewButton.addTarget(self, action: #selector(preview), for: .touchUpInside)
-        contentView.addSubview(previewButton)
-        previewButton.addConstraints([
-            NSLayoutConstraint(item: previewButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 25.0),
-            NSLayoutConstraint(item: previewButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 25.0)
-        ])
-        contentView.addConstraints([
-            NSLayoutConstraint(item: previewButton, attribute: .top, relatedBy: .equal, toItem: contentView, attribute: .top, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: previewButton, attribute: .right, relatedBy: .equal, toItem: contentView, attribute: .right, multiplier: 1.0, constant: 0.0)
-        ])
-        
-        let previewBadge = UIImageView(image: AssetPickerResource.image(named: "preview")?.mn.rendering(to: .white.withAlphaComponent(0.85)))
-        previewBadge.translatesAutoresizingMaskIntoConstraints = false
-        previewButton.addSubview(previewBadge)
-        previewBadge.addConstraints([
-            NSLayoutConstraint(item: previewBadge, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 13.0),
-            NSLayoutConstraint(item: previewBadge, attribute: .width, relatedBy: .equal, toItem: previewBadge, attribute: .height, multiplier: 180.0/121.0, constant: 0.0)
-        ])
-        previewButton.addConstraint(NSLayoutConstraint(item: previewBadge, attribute: .right, relatedBy: .equal, toItem: previewButton, attribute: .right, multiplier: 1.0, constant: -6.0))
-        contentView.addConstraint(NSLayoutConstraint(item: previewBadge, attribute: .centerY, relatedBy: .equal, toItem: cloudView, attribute: .centerY, multiplier: 1.0, constant: 0.0))
         
         // 资源类型
+        badgeView.contentMode = .scaleAspectFit
+        badgeView.translatesAutoresizingMaskIntoConstraints = false
         badgeView.setImage(AssetPickerResource.image(named: "video")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .normal)
         badgeView.setImage(AssetPickerResource.image(named: "livephoto")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .highlighted)
         badgeView.setImage(AssetPickerResource.image(named: "gif")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .selected)
-        badgeView.contentMode = .scaleAspectFit
-        badgeView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(badgeView)
-        contentView.addConstraints([
-            NSLayoutConstraint(item: badgeView, attribute: .width, relatedBy: .equal, toItem: cloudView, attribute: .width, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: badgeView, attribute: .height, relatedBy: .equal, toItem: cloudView, attribute: .height, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: badgeView, attribute: .left, relatedBy: .equal, toItem: cloudView, attribute: .left, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: badgeView, attribute: .bottom, relatedBy: .equal, toItem: contentView, attribute: .bottom, multiplier: 1.0, constant: -6.0)
+        NSLayoutConstraint.activate([
+            badgeView.widthAnchor.constraint(equalTo: cloudView.widthAnchor),
+            badgeView.heightAnchor.constraint(equalTo: cloudView.heightAnchor),
+            badgeView.leftAnchor.constraint(equalTo: cloudView.leftAnchor),
+            badgeView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6.0)
         ])
         
         // 时长
         durationLabel.numberOfLines = 1
-        durationLabel.textAlignment = .right
-        durationLabel.isUserInteractionEnabled = false
+        durationLabel.textAlignment = .left
         durationLabel.font = UIFont.systemFont(ofSize: 12.0)
         durationLabel.translatesAutoresizingMaskIntoConstraints = false
         durationLabel.textColor = UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)
         contentView.addSubview(durationLabel)
-        contentView.addConstraints([
-            NSLayoutConstraint(item: durationLabel, attribute: .left, relatedBy: .equal, toItem: badgeView, attribute: .right, multiplier: 1.0, constant: 5.0),
-            NSLayoutConstraint(item: durationLabel, attribute: .centerY, relatedBy: .equal, toItem: badgeView, attribute: .centerY, multiplier: 1.0, constant: 0.0)
+        NSLayoutConstraint.activate([
+            durationLabel.leftAnchor.constraint(equalTo: badgeView.rightAnchor, constant: 5.0),
+            durationLabel.centerYAnchor.constraint(equalTo: badgeView.centerYAnchor)
         ])
         
         // 文件大小
         fileSizeLabel.numberOfLines = 1
         fileSizeLabel.textAlignment = .right
-        fileSizeLabel.isUserInteractionEnabled = false
-        fileSizeLabel.font = UIFont.systemFont(ofSize: 12.0)
+        fileSizeLabel.font = durationLabel.font
+        fileSizeLabel.textColor = durationLabel.textColor
         fileSizeLabel.translatesAutoresizingMaskIntoConstraints = false
-        fileSizeLabel.textColor = UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)
         contentView.addSubview(fileSizeLabel)
-        contentView.addConstraints([
-            NSLayoutConstraint(item: fileSizeLabel, attribute: .right, relatedBy: .equal, toItem: previewBadge, attribute: .right, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: fileSizeLabel, attribute: .centerY, relatedBy: .equal, toItem: badgeView, attribute: .centerY, multiplier: 1.0, constant: 0.0)
+        NSLayoutConstraint.activate([
+            fileSizeLabel.rightAnchor.constraint(equalTo: previewImageView.rightAnchor),
+            fileSizeLabel.centerYAnchor.constraint(equalTo: badgeView.centerYAnchor)
         ])
         
         // 索引
@@ -179,15 +175,14 @@ class MNAssetCell: UICollectionViewCell {
         indexLabel.numberOfLines = 1
         indexLabel.textAlignment = .center
         indexLabel.backgroundColor = .clear
-        indexLabel.isUserInteractionEnabled = false
         indexLabel.translatesAutoresizingMaskIntoConstraints = false
         indexLabel.font = UIFont(name: "Trebuchet MS Bold", size: 30.0)
         contentView.addSubview(indexLabel)
-        contentView.addConstraints([
-            NSLayoutConstraint(item: indexLabel, attribute: .top, relatedBy: .equal, toItem: contentView, attribute: .top, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: indexLabel, attribute: .left, relatedBy: .equal, toItem: contentView, attribute: .left, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: indexLabel, attribute: .bottom, relatedBy: .equal, toItem: contentView, attribute: .bottom, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: indexLabel, attribute: .right, relatedBy: .equal, toItem: contentView, attribute: .right, multiplier: 1.0, constant: 0.0)
+        NSLayoutConstraint.activate([
+            indexLabel.topAnchor.constraint(equalTo: contentView.topAnchor),
+            indexLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor),
+            indexLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            indexLabel.rightAnchor.constraint(equalTo: contentView.rightAnchor)
         ])
         
         // 资源无效标记
@@ -196,11 +191,11 @@ class MNAssetCell: UICollectionViewCell {
         unableView.backgroundColor = .white.withAlphaComponent(0.8)
         unableView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(unableView)
-        contentView.addConstraints([
-            NSLayoutConstraint(item: unableView, attribute: .top, relatedBy: .equal, toItem: contentView, attribute: .top, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: unableView, attribute: .left, relatedBy: .equal, toItem: contentView, attribute: .left, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: unableView, attribute: .bottom, relatedBy: .equal, toItem: contentView, attribute: .bottom, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: unableView, attribute: .right, relatedBy: .equal, toItem: contentView, attribute: .right, multiplier: 1.0, constant: 0.0)
+        NSLayoutConstraint.activate([
+            unableView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            unableView.leftAnchor.constraint(equalTo: contentView.leftAnchor),
+            unableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            unableView.rightAnchor.constraint(equalTo: contentView.rightAnchor)
         ])
     }
     
@@ -221,7 +216,7 @@ class MNAssetCell: UICollectionViewCell {
         fileSizeLabel.isHidden = true
         durationLabel.isHidden = true
         cloudView.isHidden = asset.source != .cloud
-        previewButton.isHidden = options.allowsPreview == false
+        previewControl.isHidden = options.allowsPreview == false
         
         if options.showFileSize, asset.fileSize > 0 {
             updateFileSize()
@@ -232,7 +227,7 @@ class MNAssetCell: UICollectionViewCell {
             badgeView.state = .normal
             badgeView.isHidden = false
             if options.showFileSize == false || asset.fileSize <= 0 {
-                durationLabel.text = asset.durationValue
+                durationLabel.text = asset.durationString
                 durationLabel.isHidden = false
             }
         case .livePhoto:
@@ -253,7 +248,7 @@ class MNAssetCell: UICollectionViewCell {
             cloudView.isHidden = true
             badgeView.isHidden = true
             topShadow.isHidden = true
-            previewButton.isHidden = true
+            previewControl.isHidden = true
             fileSizeLabel.isHidden = true
             durationLabel.isHidden = true
             bottomShadow.isHidden = true
@@ -266,7 +261,7 @@ class MNAssetCell: UICollectionViewCell {
             cloudView.isHidden = true
             badgeView.isHidden = true
             topShadow.isHidden = true
-            previewButton.isHidden = true
+            previewControl.isHidden = true
             fileSizeLabel.isHidden = true
             durationLabel.isHidden = true
             bottomShadow.isHidden = true
@@ -294,9 +289,9 @@ class MNAssetCell: UICollectionViewCell {
     
     /// 更新文件大小
     func updateFileSize() {
-        fileSizeLabel.text = asset.fileSizeString
-        fileSizeLabel.isHidden = false
         durationLabel.isHidden = true
+        fileSizeLabel.isHidden = false
+        fileSizeLabel.text = asset.fileSizeString
     }
     
     /// 结束展示

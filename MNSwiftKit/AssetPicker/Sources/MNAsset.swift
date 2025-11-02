@@ -50,7 +50,7 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
     @objc public var duration: TimeInterval = 0.0
     
     /// 时长(duration的字符串表现形式)
-    @objc public lazy var durationValue: String = {
+    @objc public lazy var durationString: String = {
         Date(timeIntervalSince1970: duration).mn.playTime
     }()
     

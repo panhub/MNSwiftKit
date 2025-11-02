@@ -257,21 +257,21 @@ public class MNPlayer: NSObject {
                 }
                 if play {
                     guard sessionActive() else {
-                        failed(.setCategoryFailed(sessionCategory))
+                        failed(.setCategoryFailed(sessionCategory.rawValue))
                         return
                     }
-                    var time = 0.0
-                    if let delegate = delegate, let begin = delegate.playerShouldPlayToBeginTime?(self), begin > 0.0 {
-                        time = begin
+                    var seconds = 0.0
+                    if let delegate = delegate, let time = delegate.playerShouldPlayToBeginTime?(self), time > 0.0 {
+                        seconds = time
                     }
-                    seek(seconds: time) { [weak self] finish in
+                    seek(seconds: seconds) { [weak self] finish in
                         guard let self = self else { return }
                         if finish {
                             self.player.play()
                             self.status = .playing
                         } else {
                             self.player.pause()
-                            self.failed(.seekFailed)
+                            self.failed(.seekFailed("\(seconds)s"))
                         }
                     }
                 } else {
@@ -352,7 +352,7 @@ extension MNPlayer {
     public func play() {
         guard isPlaying == false else { return }
         guard sessionActive() else {
-            failed(.setCategoryFailed(sessionCategory))
+            failed(.setCategoryFailed(sessionCategory.rawValue))
             return
         }
         guard let currentItem = player.currentItem else {
@@ -406,7 +406,7 @@ extension MNPlayer {
             return
         }
         guard sessionActive() else {
-            failed(.setCategoryFailed(sessionCategory))
+            failed(.setCategoryFailed(sessionCategory.rawValue))
             return
         }
         if status == .playing {

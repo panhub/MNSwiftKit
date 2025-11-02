@@ -14,7 +14,6 @@
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		CD670549A4B91C374612AE13 /* Pods_MNSwiftKit_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E874295FCAA74BC1B328F42B /* Pods_MNSwiftKit_Example.framework */; };
-		E9F4F5792EB46DDA00B52798 /* AVFAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9F4F5782EB46DDA00B52798 /* AVFAudio.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,7 +53,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E9F4F5792EB46DDA00B52798 /* AVFAudio.framework in Frameworks */,
 				CD670549A4B91C374612AE13 /* Pods_MNSwiftKit_Example.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
