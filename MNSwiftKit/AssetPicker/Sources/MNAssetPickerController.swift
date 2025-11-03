@@ -218,7 +218,7 @@ extension MNAssetPickerController {
     /// - Parameter assets: 已导出的资源集合
     private func finishPicking(_ assets: [MNAsset]) {
         guard let picker = navigationController as? MNAssetPicker else { return }
-        guard let delegate = options.delegate else { return }
+        guard let delegate = picker.delegate as? MNAssetPickerDelegate else { return }
         delegate.assetPicker(picker, didFinishPicking: assets)
     }
 }
@@ -397,8 +397,8 @@ extension MNAssetPickerController {
                 asset.isEnabled = true
             }
             // 类型限制
-            if selections.isEmpty == false {
-                let type = selections.first!.type
+            if let first = selections.first {
+                let type = first.type
                 if options.allowsMixedPicking == false {
                     for asset in assets.filter({ $0.isSelected == false && $0.type != type }) {
                         asset.isEnabled = false
@@ -507,7 +507,7 @@ extension MNAssetPickerController: UICollectionViewDelegate, UICollectionViewDat
                 self.view.closeToast()
                 let vc = MNTailorViewController(videoPath: videoPath)
                 vc.delegate = self
-                vc.exportingPath = self.options.outputURL?.path
+                vc.exportingPath = self.options.videoExportURL?.mn.path
                 vc.minTailorDuration = self.options.minExportDuration
                 vc.maxTailorDuration = self.options.maxExportDuration
                 self.navigationController?.pushViewController(vc, animated: true)
@@ -665,7 +665,8 @@ extension MNAssetPickerController: MNAssetPickerNavDelegate {
     
     func navBarCloseButtonTouchUpInside() {
         guard let picker = navigationController as? MNAssetPicker else { return }
-        options.delegate?.assetPickerDidCancel?(picker)
+        guard let delegate = picker.delegate as? MNAssetPickerDelegate else { return }
+        delegate.assetPickerDidCancel?(picker)
     }
     
     func navBarAlbumButtonTouchUpInside(_ badge: MNAssetAlbumBadge) {

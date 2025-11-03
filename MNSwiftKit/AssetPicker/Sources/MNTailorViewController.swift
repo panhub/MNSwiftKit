@@ -306,7 +306,9 @@ extension MNTailorViewController {
     /// 确定按钮点击事件
     /// - Parameter sender: 按钮
     @objc func doneButtonTouchUpInside(_ sender: UIButton) {
-        if player.isPlaying { player.pause() }
+        if player.isPlaying {
+            player.pause()
+        }
         let begin = tailorView.begin
         let end = tailorView.end
         let videoPath = videoPath

@@ -98,8 +98,8 @@ extension MNAssetHelper {
                 result.enumerateObjects { element, _, _ in
                     var type = element.mn.contentType
                     if type == .video {
-                        let duration: TimeInterval = floor(element.duration*10.0)/10.0
-                        if (options.minExportDuration > 0.0 && duration < options.minExportDuration) || (options.maxExportDuration > 0.0 && duration > options.maxExportDuration && (options.maxPickingCount > 1 || options.allowsMultiplePickingVideo == false)) { return }
+                        let duration = element.duration
+                        if (options.minExportDuration > 0.0 && duration < options.minExportDuration) || (options.maxExportDuration > 0.0 && duration > options.maxExportDuration && options.maxPickingCount > 1 && options.allowsMultiplePickingVideo) { return }
                     } else if type == .gif {
                         guard options.allowsPickingGif else { return }
                         if options.usingPhotoPolicyPickingGif {
@@ -399,10 +399,10 @@ extension MNAssetHelper {
             videoOptions.deliveryMode = .highQualityFormat
             PHImageManager.default().requestAVAsset(forVideo: phAsset, options: videoOptions) { result, _, _ in
                 if let avAsset = result as? AVURLAsset {
-                    let outputURL: URL = MNAssetHelper.exportURL(preset: options.outputURL, ext: options.allowsExportVideo ? "mp4" : avAsset.url.pathExtension.lowercased())
+                    let outputURL: URL = MNAssetHelper.exportURL(preset: options.videoExportURL, ext: options.allowsExportVideo ? "mp4" : avAsset.url.pathExtension.lowercased())
                     try? FileManager.default.createDirectory(at: outputURL.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
                     if options.allowsExportVideo {
-                        if let exportSession = AVAssetExportSession(asset: avAsset, presetName: options.exportPreset ?? AVAssetExportPresetHighestQuality) {
+                        if let exportSession = AVAssetExportSession(asset: avAsset, presetName: options.videoExportPreset ?? AVAssetExportPresetHighestQuality) {
                             exportSession.outputURL = outputURL
                             exportSession.outputFileType = .mp4
                             exportSession.shouldOptimizeForNetworkUse = true

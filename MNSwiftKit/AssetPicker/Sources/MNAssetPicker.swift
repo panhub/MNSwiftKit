@@ -8,7 +8,7 @@
 import UIKit
 
 /// 资源选择器代理事件
-@objc public protocol MNAssetPickerDelegate {
+@objc public protocol MNAssetPickerDelegate: UINavigationControllerDelegate {
     
     /// 资源选择器取消事件
     /// - Parameter picker: 资源选择器
@@ -38,6 +38,13 @@ public class MNAssetPicker: UINavigationController {
     private var pickingHandler: ResultHandler!
     /// 配置信息
     public let options: MNAssetPickerOptions
+    /// 选择器代理
+    private weak var _delegate:  MNAssetPickerDelegate?
+    /// 事件代理入口
+    public override var delegate: (any UINavigationControllerDelegate)? {
+        get { _delegate }
+        set { _delegate = newValue as? MNAssetPickerDelegate }
+    }
     
     /// 构造资源选择器
     /// - Parameter options: 配置选项
@@ -113,8 +120,8 @@ extension MNAssetPicker {
     @objc public func present(in parent: UIViewController? = nil, animated: Bool = true, completion: (() -> Void)? = nil) {
         let parentViewController: UIViewController? = parent ?? .mn.current
         guard let parentViewController = parentViewController else { return }
+        delegate = self
         isAnimated = animated
-        options.delegate = self
         modalPresentationStyle = options.presentationStyle
         parentViewController.present(self, animated: (animated && UIApplication.shared.applicationState == .active), completion: completion)
     }
@@ -124,27 +131,27 @@ extension MNAssetPicker {
 extension MNAssetPicker: MNAssetPickerDelegate {
     
     public func assetPickerDidCancel(_ picker: MNAssetPicker) {
-        let executeHandler: ()->Void = { [weak self] in
+        dismiss(animated: (isAnimated && UIApplication.shared.applicationState == .active)) { [weak self] in
             guard let self = self else { return }
             self.cancelHandler?(self)
-        }
-        if options.allowsAutoDismiss {
-            dismiss(animated: (isAnimated && UIApplication.shared.applicationState == .active), completion: executeHandler)
-        } else {
-            executeHandler()
         }
     }
     
     public func assetPicker(_ picker: MNAssetPicker, didFinishPicking assets: [MNAsset]) {
-        let executeHandler: ()->Void = { [weak self] in
+        dismiss(animated: (isAnimated && UIApplication.shared.applicationState == .active)) { [weak self] in
             guard let self = self else { return }
             self.pickingHandler?(self, assets)
         }
-        if options.allowsAutoDismiss {
-            dismiss(animated: (isAnimated && UIApplication.shared.applicationState == .active), completion: executeHandler)
-        } else {
-            executeHandler()
-        }
+    }
+    
+    public func navigationControllerSupportedInterfaceOrientations(_ navigationController: UINavigationController) -> UIInterfaceOrientationMask {
+        
+        .portrait
+    }
+    
+    public func navigationControllerPreferredInterfaceOrientationForPresentation(_ navigationController: UINavigationController) -> UIInterfaceOrientation {
+        
+        .portrait
     }
 }
 
@@ -152,14 +159,12 @@ extension MNAssetPicker: MNAssetPickerDelegate {
 extension MNAssetPicker {
     
     public override var shouldAutorotate: Bool { false }
-    
-    func navigationControllerSupportedInterfaceOrientations(_ navigationController: UINavigationController) -> UIInterfaceOrientationMask { .portrait }
-    
-    func navigationControllerPreferredInterfaceOrientationForPresentation(_ navigationController: UINavigationController) -> UIInterfaceOrientation { .portrait }
 }
 
 // MARK: - 状态栏
 extension MNAssetPicker {
+    
     public override var childForStatusBarStyle: UIViewController? { topViewController }
+    
     public override var childForStatusBarHidden: UIViewController? { topViewController }
 }

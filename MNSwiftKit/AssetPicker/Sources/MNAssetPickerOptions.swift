@@ -23,7 +23,7 @@ public class MNAssetPickerOptions: NSObject {
      */
     @objc public var maxPickingCount: Int = 1
     /**
-     至少选择数量 <default 0 不限制>
+     至少选择数量
      */
     @objc public var minPickingCount: Int = 0
     /**
@@ -39,7 +39,7 @@ public class MNAssetPickerOptions: NSObject {
      */
     @objc public var allowsPickingPhoto: Bool = true
     /**
-     是否允许挑选多张图片
+     是否允许挑选多张图片, 如果`false`, 选中一个则禁用其它图片
      */
     @objc public var allowsMultiplePickingPhoto: Bool = true
     /**
@@ -47,11 +47,11 @@ public class MNAssetPickerOptions: NSObject {
      */
     @objc public var allowsPickingVideo: Bool = true
     /**
-     是否允许挑选多个视频
+     是否允许挑选多个视频, 如果`false`, 选中一个则禁用其它视频
      */
     @objc public var allowsMultiplePickingVideo: Bool = true
     /**
-     是否允许挑选GIF
+     是否允许挑选GIF, 如果`false`, 选中一个则禁用其它GIF
      */
     @objc public var allowsPickingGif: Bool = true
     /**
@@ -59,7 +59,7 @@ public class MNAssetPickerOptions: NSObject {
      */
     @objc public var allowsMultiplePickingGif: Bool = true
     /**
-     是否允许挑选LivePhoto
+     是否允许挑选LivePhoto, 如果`false`, 选中一个则禁用其它LivePhoto
      */
     @objc public var allowsPickingLivePhoto: Bool = true
     /**
@@ -91,10 +91,6 @@ public class MNAssetPickerOptions: NSObject {
      把LivePhoto当做Image使用
      */
     @objc public var usingPhotoPolicyPickingLivePhoto: Bool = false
-    /**
-     当未响应退出代理方法时是否允许内部自行退出
-     */
-    @objc public var allowsAutoDismiss: Bool = true
     /**
      是否允许滑动选择
      */
@@ -128,11 +124,7 @@ public class MNAssetPickerOptions: NSObject {
      */
     @objc public var sortAscending: Bool = false
     /**
-     图片调整比例
-     */
-    @objc public var cropScale: CGFloat = 1.0
-    /**
-     导出视频的最小时长, 仅视频有效, 不符合时长要求的视频裁剪或隐藏处理
+     导出视频的最小时长, 仅视频有效, 不符合时长要求的视频将不显示
      */
     @objc public var minExportDuration: TimeInterval = 0.0
     /**
@@ -140,15 +132,15 @@ public class MNAssetPickerOptions: NSObject {
      */
     @objc public var maxExportDuration: TimeInterval = 0.0
     /**
-     视频导出路径
+     视频导出位置
      */
-    @objc public var outputURL: URL?
+    @objc public var videoExportURL: URL?
     /**
-     视频导出质量<default 'AVAssetExportPresetMediumQuality'>
+     视频导出质量, 默认'AVAssetExportPresetMediumQuality'
      */
-    @objc public var exportPreset: String?
+    @objc public var videoExportPreset: String?
     /**
-     预览图大小<太大会影响性能>
+     预览图大小, 太大会影响性能
      */
     @objc public var renderSize: CGSize = CGSize(width: 250.0, height: 250.0)
     /**
@@ -168,10 +160,6 @@ public class MNAssetPickerOptions: NSObject {
      */
     @objc public var presentationStyle: UIModalPresentationStyle = .fullScreen
     /**
-     交互事件代理
-     */
-    @objc public weak var delegate: MNAssetPickerDelegate?
-    /**
      分析文件位置及大小的队列
      */
     @objc public let queue: DispatchQueue = DispatchQueue(label: "com.mn.asset.picker.queue", qos: .userInitiated, attributes: .concurrent)
@@ -179,18 +167,34 @@ public class MNAssetPickerOptions: NSObject {
 
 // MARK: - 辅助
 extension MNAssetPickerOptions {
+    
     /// 状态栏栏高度
-    internal var statusBarHeight: CGFloat { presentationStyle == .fullScreen ? MN_STATUS_BAR_HEIGHT : 0.0 }
+    internal var statusBarHeight: CGFloat {
+        presentationStyle == .fullScreen ? MN_STATUS_BAR_HEIGHT : 0.0
+    }
+    
     /// 导航栏高度
-    internal var navBarHeight: CGFloat { MN_NAV_BAR_HEIGHT }
+    internal var navBarHeight: CGFloat {
+        MN_NAV_BAR_HEIGHT
+    }
+    
     /// 顶部栏总高度
-    internal var topBarHeight: CGFloat { statusBarHeight +  navBarHeight}
+    internal var topBarHeight: CGFloat {
+        statusBarHeight +  navBarHeight
+    }
+    
     /// 底部栏高度
-    internal var bottomBarHeight: CGFloat { max(MN_BOTTOM_BAR_HEIGHT, 55.0) }
+    internal var bottomBarHeight: CGFloat {
+        max(MN_BOTTOM_BAR_HEIGHT, 55.0)
+    }
+    
     /// 内容布局
     internal var contentInset: UIEdgeInsets {
         UIEdgeInsets(top: topBarHeight, left: 0.0, bottom: maxPickingCount > 1 ? bottomBarHeight : 0.0, right: 0.0)
     }
+    
     /// 背景颜色
-    internal var backgroundColor: UIColor { mode == .light ? .white : UIColor(red: 51.0/255.0, green: 51.0/255.0, blue: 51.0/255.0, alpha: 1.0) }
+    internal var backgroundColor: UIColor {
+        mode == .light ? .white : UIColor(red: 51.0/255.0, green: 51.0/255.0, blue: 51.0/255.0, alpha: 1.0)
+    }
 }
