@@ -85,21 +85,19 @@ extension MNAssetHelper {
     public class func fetchAsset(in album: MNAssetAlbum, options: MNAssetPickerOptions, start startHandler: (()->Void)? = nil, completion completionHandler: @escaping ()->Void) {
         DispatchQueue.global().async {
             // 循环拉取直到满足分页数量
-            var assets = [MNAsset]()
-            let pageCount = options.pageCount
-            let fetchOptions = album.fetchOptions
+            var assets: [MNAsset] = []
             repeat {
-                if album.offset > 0 {
-                    fetchOptions.setValue(album.offset, forKey: "fetchOffset")
-                }
-                album.offset += pageCount
-                fetchOptions.fetchLimit = pageCount
+                var offset = 0
+                let fetchOptions = album.fetchOptions
+                fetchOptions.setValue(album.offset, forKey: "fetchOffset")
+                fetchOptions.fetchLimit = options.pageCount
                 let result = PHAsset.fetchAssets(in: album.collection, options: fetchOptions)
-                result.enumerateObjects { element, _, _ in
+                result.enumerateObjects { element, index, stop in
+                    offset = index + 1
                     var type = element.mn.contentType
                     if type == .video {
                         let duration = element.duration
-                        if (options.minExportDuration > 0.0 && duration < options.minExportDuration) || (options.maxExportDuration > 0.0 && duration > options.maxExportDuration && options.maxPickingCount > 1 && options.allowsMultiplePickingVideo) { return }
+                        if (options.minExportDuration > 0.0 && duration < options.minExportDuration) || (options.maxExportDuration > 0.0 && duration > options.maxExportDuration && options.maxPickingCount > 1) { return }
                     } else if type == .gif {
                         guard options.allowsPickingGif else { return }
                         if options.usingPhotoPolicyPickingGif {
@@ -118,16 +116,20 @@ extension MNAssetHelper {
                     asset.identifier = element.localIdentifier
                     asset.renderSize = options.renderSize
                     assets.append(asset)
+                    // 如果超过每页数量就终止
+                    if assets.count >= options.pageCount {
+                        stop.pointee = true
+                    }
                 }
-            } while (assets.count < pageCount && album.offset < album.count)
-            // 更新页码后回调
-            album.page += 1
-            if options.sortAscending {
-                album.assets.append(contentsOf: assets)
-            } else {
-                album.assets.insert(contentsOf: assets.reversed(), at: 0)
-            }
+                album.offset += offset
+            } while (assets.count < options.pageCount && album.offset < album.count)
             DispatchQueue.main.async {
+                album.page += 1
+                if options.sortAscending {
+                    album.assets.append(contentsOf: assets)
+                } else {
+                    album.assets.insert(contentsOf: assets.reversed(), at: 0)
+                }
                 completionHandler()
             }
         }
@@ -153,34 +155,33 @@ extension MNAssetHelper {
             imageOptions.isNetworkAccessAllowed = true
             asset.requestId = PHImageManager.default().requestImage(for: phAsset, targetSize: asset.renderSize, contentMode: .aspectFill, options: imageOptions) { [weak asset] result, info in
                 // 可能调用多次
-                guard let asset = asset else { return }
-                let isCancelled: Bool = (info?[PHImageCancelledKey] as? NSNumber)?.boolValue ?? false
-                guard isCancelled == false else { return }
-                guard let result = result else { return }
+                if let info = info, let cancelled = info[PHImageCancelledKey] as? Bool, cancelled { return }
+                guard let asset = asset, let result = result else { return }
                 let image = result.mn.resized
-                let isDegraded: Bool = (info?[PHImageResultIsDegradedKey] as? NSNumber)?.boolValue ?? false
                 asset.update(cover: image)
-                if isDegraded == false {
-                    // 衰减图片
-                    asset.requestId = PHInvalidImageRequestID
-                }
+                if let info = info, let degraded = info[PHImageResultIsDegradedKey] as? Bool, degraded { return }
+                asset.requestId = PHInvalidImageRequestID
             }
         }
         // 源文件是否是云端/文件大小
         if asset.source == .unknown {
-            options.queue.async { [weak options] in
+            options.queue.async { [weak asset, weak options] in
+                guard let asset = asset, let phAsset = asset.phAsset else { return }
                 var isClould: Bool = false
-                guard let phAsset = asset.phAsset else { return }
                 let resources = PHAssetResource.assetResources(for: phAsset)
                 if let resource = resources.first {
-                    isClould = (resource.value(forKey: "locallyAvailable") as? Bool ?? true) == false
+                    if let locallyAvailable = resource.value(forKey: "locallyAvailable") as? Bool, locallyAvailable == false {
+                        isClould = true
+                    }
                 }
                 asset.update(source: isClould ? .cloud : .local)
                 if let options = options, options.showFileSize, asset.fileSize <= 0, isClould == false {
                     // 获取大小
                     var fileSize: Int64 = 0
                     for resource in resources {
-                        fileSize += (resource.value(forKey: "fileSize") as? Int64 ?? 0)
+                        if let size = resource.value(forKey: "fileSize") as? Int64 {
+                            fileSize += size
+                        }
                     }
                     asset.update(fileSize: fileSize)
                 }
@@ -207,8 +208,7 @@ extension MNAssetHelper {
         options.isNetworkAccessAllowed = true
         asset.requestId = PHImageManager.default().requestImage(for: phAsset, targetSize: asset.renderSize, contentMode: .aspectFill, options: options) { [weak asset] result, info in
             guard let asset = asset else { return }
-            let isCancelled: Bool = (info?[PHImageCancelledKey] as? NSNumber)?.boolValue ?? false
-            guard isCancelled == false else { return }
+            if let info = info, let cancelled = info[PHImageCancelledKey] as? Bool, cancelled { return }
             asset.requestId = PHInvalidImageRequestID
             guard let result = result else { return }
             let image = result.mn.resized
@@ -255,15 +255,12 @@ extension MNAssetHelper {
                 guard let asset = asset else { return }
                 asset.progress = 0.0
                 asset.downloadId = PHInvalidImageRequestID
-                let isCancelled: Bool = info?[PHImageCancelledKey] as? Bool ?? false
-                guard isCancelled == false else { return }
+                if let info = info, let cancelled = info[PHImageCancelledKey] as? Bool, cancelled { return }
                 if let avAsset = result as? AVURLAsset {
                     asset.contents = avAsset.url.mn.path
                 }
                 DispatchQueue.main.async {
-                    if let completionHandler = completionHandler {
-                        completionHandler(asset)
-                    }
+                    completionHandler?(asset)
                 }
             }
         case .livePhoto:
@@ -276,15 +273,12 @@ extension MNAssetHelper {
                 guard let asset = asset else { return }
                 asset.progress = 0.0
                 asset.downloadId = PHInvalidImageRequestID
-                let isCancelled: Bool = info?[PHImageCancelledKey] as? Bool ?? false
-                guard isCancelled == false else { return }
+                if let info = info, let cancelled = info[PHImageCancelledKey] as? Bool, cancelled { return }
                 if let livePhoto = result {
                     asset.contents = livePhoto
                 }
                 DispatchQueue.main.async {
-                    if let completionHandler = completionHandler {
-                        completionHandler(asset)
-                    }
+                    completionHandler?(asset)
                 }
             }
         default:
@@ -296,8 +290,7 @@ extension MNAssetHelper {
                 guard let asset = asset else { return }
                 asset.progress = 0.0
                 asset.downloadId = PHInvalidImageRequestID
-                let isCancelled: Bool = info?[PHImageCancelledKey] as? Bool ?? false
-                guard isCancelled == false else { return }
+                if let info = info, let cancelled = info[PHImageCancelledKey] as? Bool, cancelled { return }
                 let result: UIImage? = asset.type == .gif ? UIImage.mn.image(contentsOfData: imageData) : (imageData == nil ? nil : UIImage(data: imageData!))
                 if let image = result {
                     if image.mn.isAnimatedImage {
@@ -307,9 +300,7 @@ extension MNAssetHelper {
                     }
                 }
                 DispatchQueue.main.async {
-                    if let completionHandler = completionHandler {
-                        completionHandler(asset)
-                    }
+                    completionHandler?(asset)
                 }
             }
             if #available(iOS 13.0, *) {
@@ -361,9 +352,7 @@ extension MNAssetHelper {
             }
             // 回调进度
             DispatchQueue.main.async {
-                if let progressHandler = progressHandler {
-                    progressHandler(index + 1, assets.count)
-                }
+                progressHandler?(index + 1, assets.count)
             }
             // 获取内容
             let asset: MNAsset = assets[index]
@@ -384,8 +373,8 @@ extension MNAssetHelper {
     ///   - completionHandler: 结束回调
     private class func exportContents(_ asset: MNAsset, options: MNAssetPickerOptions, completion completionHandler: ((MNAsset)->Void)?) {
         guard let phAsset = asset.phAsset else {
-            if let completionHandler = completionHandler {
-                completionHandler(asset)
+            DispatchQueue.main.async {
+                completionHandler?(asset)
             }
             return
         }
@@ -549,19 +538,33 @@ extension MNAssetHelper {
     /// 取消资源请求
     /// - Parameter asset: 资源模型
     public class func cancelRequest(_ asset: MNAsset) {
-        let requestId = asset.requestId
-        if requestId == PHInvalidImageRequestID { return }
-        asset.requestId = PHInvalidImageRequestID
-        PHImageManager.default().cancelImageRequest(requestId)
+        let executeHandler: ()->Void = {
+            let requestId = asset.requestId
+            if requestId == PHInvalidImageRequestID { return }
+            asset.requestId = PHInvalidImageRequestID
+            PHImageManager.default().cancelImageRequest(requestId)
+        }
+        if Thread.isMainThread {
+            executeHandler()
+        } else {
+            DispatchQueue.main.async(execute: executeHandler)
+        }
     }
     
     /// 取消资源下载
     /// - Parameter asset: 资源模型
     public class func cancelDownload(_ asset: MNAsset) {
-        let downloadId = asset.downloadId
-        if downloadId == PHInvalidImageRequestID { return }
-        asset.downloadId = PHInvalidImageRequestID
-        PHImageManager.default().cancelImageRequest(downloadId)
+        let executeHandler: ()->Void = {
+            let downloadId = asset.downloadId
+            if downloadId == PHInvalidImageRequestID { return }
+            asset.downloadId = PHInvalidImageRequestID
+            PHImageManager.default().cancelImageRequest(downloadId)
+        }
+        if Thread.isMainThread {
+            executeHandler()
+        } else {
+            DispatchQueue.main.async(execute: executeHandler)
+        }
     }
 }
 

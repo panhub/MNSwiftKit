@@ -108,9 +108,9 @@ public class MNAssetPickerOptions: NSObject {
      */
     @objc public var numberOfColumns: Int = 4
     /**
-     分页数量 (循环查询至满足分页数量, 只多不少)
+     分页数量 (循环查询至满足分页数量)
      */
-    @objc public var pageCount: Int = 300
+    @objc public var pageCount: Int = 150
     /**
      资源项行间隔
      */
@@ -128,7 +128,7 @@ public class MNAssetPickerOptions: NSObject {
      */
     @objc public var minExportDuration: TimeInterval = 0.0
     /**
-     导出视频的最大时长, 仅视频有效, 不符合时长要求的视频裁剪或隐藏处理
+     导出视频的最大时长, 仅视频有效, 不符合时长要求的视频依据情况裁剪或隐藏处理
      */
     @objc public var maxExportDuration: TimeInterval = 0.0
     /**

@@ -140,7 +140,7 @@ class MNAssetPickerController: UIViewController {
             collectionView.mn.header = header
         }
         
-        if options.maxPickingCount > 1, options.allowsSlidePicking, options.allowsMultiplePickingPhoto, options.allowsMultiplePickingGif, options.allowsMultiplePickingVideo, options.allowsMultiplePickingLivePhoto {
+        if options.maxPickingCount > 1, options.allowsSlidePicking {
             // 滑动选择
             // collectionView.bounces = false
             let pan = UIPanGestureRecognizer(target: self, action: #selector(pan(recognizer:)))
@@ -291,8 +291,6 @@ extension MNAssetPickerController {
         let completionHandler: ()->Void = { [weak self] in
             guard let self = self else { return }
             self.updateAlbum(album)
-            self.collectionView.mn.endRefreshing()
-            self.collectionView.mn.endLoadMore()
             let hasMore: Bool = album.offset < album.count
             if let header = self.collectionView.mn.header {
                 if hasMore {
@@ -311,7 +309,7 @@ extension MNAssetPickerController {
             self.navBar.badge.isUserInteractionEnabled = true
             self.collectionView.closeToast()
         }
-        if (album.assets.count > 0 || album.page > 1) && collectionView.mn.isLoading == false {
+        if album.assets.isEmpty == false, collectionView.mn.isLoading == false {
             completionHandler()
         } else {
             if collectionView.mn.isLoading == false {
@@ -371,7 +369,7 @@ extension MNAssetPickerController {
             asset.isSelected = true
             selections.append(asset)
         }
-        // 更新标记
+        // 更新索引
         for (index, asset) in selections.enumerated() {
             asset.index = index + 1
         }
@@ -388,38 +386,32 @@ extension MNAssetPickerController {
         // 判断是否超过限制
         if selections.count >= options.maxPickingCount {
             // 标记不能再选择
-            for asset in assets.filter({ $0.isSelected == false && $0.isEnabled }) {
-                asset.isEnabled = false
-            }
+            assets.filter { $0.isSelected == false && $0.isEnabled }.forEach { $0.isEnabled = false }
         } else {
             // 结束限制
-            for asset in assets {
-                asset.isEnabled = true
-            }
+            assets.forEach { $0.isEnabled = true }
             // 类型限制
             if let first = selections.first {
                 let type = first.type
                 if options.allowsMixedPicking == false {
-                    for asset in assets.filter({ $0.isSelected == false && $0.type != type }) {
-                        asset.isEnabled = false
-                    }
+                    assets.filter { $0.type != type }.forEach { $0.isEnabled = false }
                 }
-                // 检查限制(可不加)
-                if type == .photo, options.allowsMultiplePickingPhoto == false {
-                    for asset in assets.filter({ $0.isSelected == false && $0.type == .photo }) {
-                        asset.isEnabled = false
+                switch type {
+                case .photo:
+                    if options.allowsMultiplePickingPhoto == false {
+                        assets.filter { $0.isSelected == false && $0.type == .photo }.forEach { $0.isEnabled = false }
                     }
-                } else if type == .gif, options.allowsMultiplePickingGif == false {
-                    for asset in assets.filter({ $0.isSelected == false && $0.type == .gif }) {
-                        asset.isEnabled = false
+                case .gif:
+                    if options.allowsMultiplePickingGif == false {
+                        assets.filter { $0.isSelected == false && $0.type == .gif }.forEach { $0.isEnabled = false }
                     }
-                } else if type == .video, options.allowsMultiplePickingVideo == false {
-                    for asset in assets.filter({ $0.isSelected == false && $0.type == .video }) {
-                        asset.isEnabled = false
+                case .livePhoto:
+                    if options.allowsMultiplePickingLivePhoto == false {
+                        assets.filter { $0.isSelected == false && $0.type == .livePhoto }.forEach { $0.isEnabled = false }
                     }
-                } else if type == .livePhoto, options.allowsMultiplePickingLivePhoto == false {
-                    for asset in assets.filter({ $0.isSelected == false && $0.type == .livePhoto }) {
-                        asset.isEnabled = false
+                case .video:
+                    if options.allowsMultiplePickingVideo == false {
+                        assets.filter { $0.isSelected == false && $0.type == .video }.forEach { $0.isEnabled = false }
                     }
                 }
             }
@@ -482,16 +474,16 @@ extension MNAssetPickerController: UICollectionViewDelegate, UICollectionViewDat
         guard indexPath.item < assets.count else { return }
         let asset = assets[indexPath.item]
         guard asset.isEnabled else { return }
-        if options.maxPickingCount <= 1 || (asset.type == .photo && options.allowsMultiplePickingPhoto == false) || (asset.type == .gif && options.allowsMultiplePickingGif == false) || (asset.type == .video && options.allowsMultiplePickingVideo == false) || (asset.type == .livePhoto && options.allowsMultiplePickingLivePhoto == false) {
+        if options.maxPickingCount <= 1 {
             if asset.type == .video, options.maxExportDuration > 0.0, asset.duration > options.maxExportDuration {
-                // 视频裁剪
+                // 视频裁剪后导出
                 tailorVideo(asset)
             } else {
-                // 导出
+                // 导出资源
                 didPicking([asset])
             }
         } else {
-            // 更新资源状态
+            // 更新选择状态
             updateAsset(asset)
         }
     }
