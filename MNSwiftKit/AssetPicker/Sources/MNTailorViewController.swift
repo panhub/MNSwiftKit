@@ -527,6 +527,6 @@ extension MNTailorViewController: MNPlayerDelegate {
     
     func player(_ player: MNPlayer, didPlayFail error: Error) {
         indicatorView.stopAnimating()
-        failure(error.asPlayError!.errMsg)
+        failure(error.asPlayError.msg)
     }
 }

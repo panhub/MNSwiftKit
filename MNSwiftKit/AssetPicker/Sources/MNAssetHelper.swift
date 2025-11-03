@@ -454,7 +454,7 @@ extension MNAssetHelper {
             PHImageManager.default().requestLivePhoto(for: phAsset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: livePhotoOptions) { result, _ in
                 if let livePhoto = result {
                     if options.allowsExportLiveResource {
-                        MNAssetHelper.exportLivePhoto(livePhoto) { imageUrl, videoUrl in
+                        MNAssetHelper.exportLivePhoto(livePhoto) { imageUrl, videoUrl, _ in
                             if let video = videoUrl, let image = imageUrl {
                                 livePhoto.mn.videoFileURL = video
                                 livePhoto.mn.imageFileURL = image
@@ -576,7 +576,7 @@ extension MNAssetHelper {
         DispatchQueue.global(qos: .userInitiated).async {
             guard assets.isEmpty == false else {
                 DispatchQueue.main.async {
-                    completion?(MNPHError.deleteError(.isEmpty))
+                    completion?(MNPickError.deleteError(.fileIsEmpty))
                 }
                 return
             }
@@ -586,8 +586,10 @@ extension MNAssetHelper {
                 DispatchQueue.main.async {
                     if isSuccess {
                         completion?(nil)
+                    } else if let error = error {
+                        completion?(MNPickError.deleteError(.underlyingError(error)))
                     } else {
-                        completion?(error == nil ? MNPHError.deleteError(.unknown) : MNPHError.deleteError(.underlyingError(error!)))
+                        completion?(MNPickError.deleteError(.unknown))
                     }
                 }
             }
@@ -722,12 +724,14 @@ extension MNAssetHelper {
                 if placeholders.isEmpty == false {
                     MNAssetHelper.creationRequestForAssetCollection(with: name)?.addAssets(placeholders as NSFastEnumeration)
                 }
-            } completionHandler: { result, error in
+            } completionHandler: { isSuccess, error in
                 DispatchQueue.main.async {
-                    if result {
+                    if isSuccess {
                         completion?(identifiers, nil)
+                    } else if let error = error {
+                        completion?(nil, MNPickError.writeError(.underlyingError(error)))
                     } else {
-                        completion?(nil, (error == nil ? MNPHError.writeError(.unknown) : MNPHError.writeError(.underlyingError(error!))))
+                        completion?(nil, MNPickError.writeError(.unknown))
                     }
                 }
             }
@@ -777,22 +781,22 @@ extension MNAssetHelper {
             }
             guard let video = videoURL, let image = imageURL else {
                 DispatchQueue.main.async {
-                    completion?(nil, MNPHError.livePhotoError(.fileNotExist))
+                    completion?(nil, MNPickError.exportError(.fileNotExist))
                 }
                 return
             }
-            PHLivePhoto.request(withResourceFileURLs: [video, image], placeholderImage: nil, targetSize: .zero, contentMode: .aspectFit) { photo, info in
-                if let livePhoto = photo {
-                    guard (info[PHLivePhotoInfoIsDegradedKey] as? Bool ?? false) == false else { return }
-                    livePhoto.mn.videoFileURL = video
-                    livePhoto.mn.imageFileURL = image
-                    DispatchQueue.main.async {
+            PHLivePhoto.request(withResourceFileURLs: [video, image], placeholderImage: nil, targetSize: .zero, contentMode: .aspectFit) { livePhoto, info in
+                DispatchQueue.main.async {
+                    if let livePhoto = livePhoto {
+                        // 可能会多次调用, 返回衰退LivePhoto
+                        if let degraded = info[PHLivePhotoInfoIsDegradedKey] as? Bool, degraded { return }
+                        livePhoto.mn.videoFileURL = video
+                        livePhoto.mn.imageFileURL = image
                         completion?(livePhoto, nil)
-                    }
-                } else {
-                    let error = info[PHLivePhotoInfoErrorKey] as? Error
-                    DispatchQueue.main.async {
-                        completion?(nil, (error == nil ? MNPHError.livePhotoError(.requestFailed) : MNPHError.livePhotoError(.underlyingError(error!))))
+                    } else if let error = info[PHLivePhotoInfoErrorKey] as? Error {
+                        completion?(nil, MNPickError.exportError(.underlyingError(error)))
+                    } else {
+                        completion?(nil, MNPickError.exportError(.requestFailed))
                     }
                 }
             }
@@ -804,14 +808,14 @@ extension MNAssetHelper {
     /// - Parameters:
     ///   - livePhoto: livePhoto对象
     ///   - completion: 结束回调
-    public class func exportLivePhoto(_ livePhoto: PHLivePhoto, completion: ((_ imageUrl: URL?, _ videoUrl: URL?)->Void)?) {
-        let videoUrl = URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!).appendingPathComponent("\(Int(Date().timeIntervalSince1970*1000.0))").appendingPathExtension("MOV")
-        let imageUrl = URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!).appendingPathComponent("\(Int(Date().timeIntervalSince1970*1000.0))").appendingPathExtension("JPG")
-        exportLivePhoto(livePhoto, imageUrl: imageUrl, videoUrl: videoUrl) { isSuccess in
+    public class func exportLivePhoto(_ livePhoto: PHLivePhoto, completion: ((_ imageUrl: URL?, _ videoUrl: URL?, _ error: Error?)->Void)?) {
+        let videoUrl = URL(fileAtPath: NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!).appendingPathComponent("\(Int(Date().timeIntervalSince1970*1000.0))").appendingPathExtension("MOV")
+        let imageUrl = URL(fileAtPath: NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!).appendingPathComponent("\(Int(Date().timeIntervalSince1970*1000.0))").appendingPathExtension("JPG")
+        exportLivePhoto(livePhoto, imageUrl: imageUrl, videoUrl: videoUrl) { isSuccess, error in
             if isSuccess {
-                completion?(imageUrl, videoUrl)
+                completion?(imageUrl, videoUrl, nil)
             } else {
-                completion?(nil, nil)
+                completion?(nil, nil, error!.asPickError)
             }
         }
     }
@@ -822,7 +826,7 @@ extension MNAssetHelper {
     ///   - imageUrl: 图片资源保存位置
     ///   - videoUrl: 视频资源保存位置
     ///   - completion: 结束回调
-    public class func exportLivePhoto(_ livePhoto: PHLivePhoto, imageUrl: URL, videoUrl: URL, completion: ((_ isSuccess: Bool)->Void)?) {
+    public class func exportLivePhoto(_ livePhoto: PHLivePhoto, imageUrl: URL, videoUrl: URL, completion: ((_ isSuccess: Bool, _ error: Error?)->Void)?) {
         for url in [imageUrl, videoUrl] {
             try? FileManager.default.removeItem(at: url)
             try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
@@ -850,13 +854,13 @@ extension MNAssetHelper {
                 group.leave()
             }
         }
-        group.notify(queue: DispatchQueue.main) {
+        group.notify(queue: .main) {
             if FileManager.default.fileExists(atPath: imageUrl.mn.path), FileManager.default.fileExists(atPath: videoUrl.mn.path) {
-                completion?(true)
+                completion?(true, nil)
             } else {
                 try? FileManager.default.removeItem(at: videoUrl)
                 try? FileManager.default.removeItem(at: imageUrl)
-                completion?(false)
+                completion?(false, MNPickError.exportError(.requestFailed))
             }
         }
     }

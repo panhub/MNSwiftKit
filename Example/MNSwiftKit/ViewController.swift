@@ -22,8 +22,6 @@ class ViewController: UIViewController {
         
         view.backgroundColor = .red
         
-        
-        
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 10.0
         imageView.image = UIImage(named: "image_1")
