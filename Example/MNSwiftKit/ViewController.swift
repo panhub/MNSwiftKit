@@ -57,6 +57,7 @@ class ViewController: UIViewController {
         } else {
             //slider.setValue(0.0, animated: true)
             let options: MNAssetPickerOptions = MNAssetPickerOptions()
+            options.pageCount = 4
             options.allowsPreview = true
             options.allowsPickingAlbum = true
             options.showFileSize = true

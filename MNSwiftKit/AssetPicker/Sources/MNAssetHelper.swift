@@ -124,7 +124,6 @@ extension MNAssetHelper {
                 album.offset += offset
             } while (assets.count < options.pageCount && album.offset < album.count)
             DispatchQueue.main.async {
-                album.page += 1
                 if options.sortAscending {
                     album.assets.append(contentsOf: assets)
                 } else {
@@ -155,8 +154,15 @@ extension MNAssetHelper {
             imageOptions.isNetworkAccessAllowed = true
             asset.requestId = PHImageManager.default().requestImage(for: phAsset, targetSize: asset.renderSize, contentMode: .aspectFill, options: imageOptions) { [weak asset] result, info in
                 // 可能调用多次
-                if let info = info, let cancelled = info[PHImageCancelledKey] as? Bool, cancelled { return }
-                guard let asset = asset, let result = result else { return }
+                guard let asset = asset else { return }
+                if let info = info, let cancelled = info[PHImageCancelledKey] as? Bool, cancelled {
+                    // 已取消, 很大可能是因为在云端
+                    DispatchQueue.main.async {
+                        asset.requestId = PHInvalidImageRequestID
+                    }
+                    return
+                }
+                guard let result = result else { return }
                 let image = result.mn.resized
                 asset.update(cover: image)
                 if let info = info, let degraded = info[PHImageResultIsDegradedKey] as? Bool, degraded { return }

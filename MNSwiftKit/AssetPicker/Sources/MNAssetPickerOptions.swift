@@ -110,7 +110,7 @@ public class MNAssetPickerOptions: NSObject {
     /**
      分页数量 (循环查询至满足分页数量)
      */
-    @objc public var pageCount: Int = 150
+    @objc public var pageCount: Int = 100
     /**
      资源项行间隔
      */

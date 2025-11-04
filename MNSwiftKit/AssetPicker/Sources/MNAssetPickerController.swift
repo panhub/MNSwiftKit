@@ -12,7 +12,7 @@ class MNAssetPickerController: UIViewController {
     /// 配置信息
     private let options: MNAssetPickerOptions
     /// 是否进入相册
-    private var isEnterLibrary = false
+    private var isEnteredLibrary = false
     /// 是否加载了资源
     private var isAssetLoaded = false
     /// 当前资源集合
@@ -128,7 +128,6 @@ class MNAssetPickerController: UIViewController {
         if options.sortAscending {
             // 升序则上拉加载更多
             let footer = MNAssetPickerFooter(target: self, action: #selector(loadMore))
-            footer.mn.height = options.bottomBarHeight
             footer.color = options.mode == .light ? .black : .gray
             footer.offset = UIOffset(horizontal: 0.0, vertical: -options.contentInset.bottom)
             collectionView.mn.footer = footer
@@ -240,9 +239,8 @@ extension MNAssetPickerController {
                     self.fetchAlbums()
                 } else {
                     // 确保显示占位图
-                    self.isEnterLibrary = true
+                    self.isEnteredLibrary = true
                     self.collectionView.reloadData()
-                    self.collectionView.closeToast()
                 }
             }
         }
@@ -273,7 +271,7 @@ extension MNAssetPickerController {
         collectionView.showActivityToast("请稍后")
         MNAssetHelper.fetchAlbum(options) { [weak self] albums in
             guard let self = self else { return }
-            self.isEnterLibrary = true
+            self.isEnteredLibrary = true
             if let first = albums.first {
                 first.isSelected = true
                 self.albumView.update(albums: albums)
@@ -342,17 +340,18 @@ extension MNAssetPickerController {
     /// - Parameter album: 相簿模型
     private func updateAlbum(_ album: MNAssetAlbum) {
         // 处理不可选
-        if album.assets.count > 0 {
-            for asset in album.assets.filter({ $0.isEnabled == false }) {
-                asset.isEnabled = true
-            }
+        if album.assets.isEmpty == false {
+            album.assets.filter { $0.isEnabled == false }.forEach { $0.isEnabled = true }
             reloadAssets(album.assets)
         }
         assets.removeAll()
         assets.append(contentsOf: album.assets)
-        collectionView.reloadData()
         navBar.badge.updateTitle(album.name, animated: navBar.badge.isEnabled)
-        if assets.count > 0, album.page == 1, options.sortAscending == false {
+        UIView.performWithoutAnimation {
+            self.collectionView.reloadData()
+        }
+        if assets.count > 0, assets.count <= options.pageCount, options.sortAscending == false {
+            // 第一页数据且降序
             let indexPath = IndexPath(item: assets.count - 1, section: 0)
             collectionView.scrollToItem(at: indexPath, at: .top, animated: false)
         }
@@ -564,7 +563,7 @@ extension MNAssetPickerController: MNAssetBrowseDelegate {
 extension MNAssetPickerController: MNDataEmptySource {
     
     func dataEmptyViewShouldDisplay(_ superview: UIView) -> Bool {
-        isEnterLibrary && assets.isEmpty
+        isEnteredLibrary && assets.isEmpty
     }
     
     func imageForDataEmptyView(_ superview: UIView) -> UIImage? {

@@ -90,9 +90,11 @@ import CoreGraphics
         super.didMoveToSuperview()
         guard let scrollView = superview as? UIScrollView else { return }
         // 保持同宽度
+        autoresizingMask = []
         var rect = frame
-        rect.size.width = scrollView.frame.width
-        frame = frame
+        frame.origin.x = -scrollView.contentInset.left
+        frame.size.width = scrollView.frame.width
+        frame = rect
         autoresizingMask = .flexibleWidth
         // 记录UIScrollView最开始的contentInset
         referenceInset = scrollView.mn.contentInset
@@ -186,26 +188,41 @@ extension MNRefreshComponent {
     
     /// 结束刷新
     @objc open func endRefreshing() {
-        DispatchQueue.main.async { [weak self] in
+        let executeHandler: ()->Void = { [weak self] in
             guard let self = self else { return }
             self.state = .normal
+        }
+        if Thread.isMainThread {
+            executeHandler()
+        } else {
+            DispatchQueue.main.async(execute: executeHandler)
         }
     }
     
     /// 结束刷新而且无刷新能力
     @objc open func endRefreshingAndNoMoreData() {
-        DispatchQueue.main.async { [weak self] in
+        let executeHandler: ()->Void = { [weak self] in
             guard let self = self else { return }
             self.state = .noMoreData
+        }
+        if Thread.isMainThread {
+            executeHandler()
+        } else {
+            DispatchQueue.main.async(execute: executeHandler)
         }
     }
     
     /// 结束限制恢复刷新能力
     @objc open func relieveNoMoreData() {
-        guard state == .noMoreData else { return }
-        DispatchQueue.main.async { [weak self] in
+        let executeHandler: ()->Void = { [weak self] in
             guard let self = self else { return }
+            guard self.state == .noMoreData else { return }
             self.state = .normal
+        }
+        if Thread.isMainThread {
+            executeHandler()
+        } else {
+            DispatchQueue.main.async(execute: executeHandler)
         }
     }
 }

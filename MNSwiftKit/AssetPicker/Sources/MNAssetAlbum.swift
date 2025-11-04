@@ -16,9 +16,6 @@ class MNAssetAlbum: NSObject {
     /// 当前已查询个数
     var offset: Int = 0
     
-    /// 当前页码
-    var page: Int = 0
-    
     /// 相簿展示名称
     let name: String
     

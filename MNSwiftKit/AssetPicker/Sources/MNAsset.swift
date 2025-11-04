@@ -18,14 +18,15 @@ public typealias MNAssetUpdateHandler = (_ asset: MNAsset)->Void
 /// 资源模型
 public class MNAsset: NSObject, MNAssetBrowseSupported {
     
-    /**
-     文件来源
-     - unknown: 未知
-     - cloud: iCloud
-     - local: 本地
-     */
-    @objc public enum ResourceSource: Int {
-        case unknown, local, cloud
+    /// 文件来源
+    @objc(MNAssetSource)
+    public enum Source: Int {
+        /// 未知, 默认状态
+        case unknown
+        /// 本地文件
+        case local
+        /// 云端文件
+        case cloud
     }
     
     /// 本地标识
@@ -35,7 +36,7 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
     @objc public var type: MNAssetType = .photo
     
     /// 来源
-    @objc public var source: ResourceSource = .unknown
+    @objc public var source: Source = .unknown
     
     /// 资源内容
     /// photo, gif: UIImage
@@ -143,7 +144,7 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
     
     /// 更新来源
     /// - Parameter source: 来源
-    public func update(source: ResourceSource) {
+    public func update(source: MNAsset.Source) {
         let executeHandler: ()->Void = { [weak self] in
             guard let self = self else { return }
             self.source = source
