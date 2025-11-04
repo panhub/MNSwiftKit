@@ -111,7 +111,7 @@ extension MNAssetHelper {
                     }
                     let asset = MNAsset()
                     asset.type = type
-                    asset.phAsset = element
+                    asset.rawAsset = element
                     asset.duration = element.duration
                     asset.identifier = element.localIdentifier
                     asset.renderSize = options.renderSize
@@ -138,28 +138,28 @@ extension MNAssetHelper {
 // MARK: - Profile & Cover
 extension MNAssetHelper {
     
-    /// 请求描述信息(触发多次回调, 更新资源)
+    /// 请求资源元数据(触发多次回调, 更新资源)
     /// - Parameters:
     ///   - asset: 资源模型
     ///   - options: 选择器配置
-    public class func fetchProfile(_ asset: MNAsset, options: MNAssetPickerOptions) {
+    public class func fetchMetadata(_ asset: MNAsset, options: MNAssetPickerOptions) {
         // 缩略图
         if let _ = asset.cover {
-            asset.coverUpdateHandler?(asset)
+            DispatchQueue.main.async {
+                asset.coverUpdateHandler?(asset)
+            }
         } else {
-            guard let phAsset = asset.phAsset else { return }
+            guard let rawAsset = asset.rawAsset else { return }
             let imageOptions = MNAssetHelper.helper.imageOptions
             imageOptions.resizeMode = .fast
             imageOptions.deliveryMode = .opportunistic
             imageOptions.isNetworkAccessAllowed = true
-            asset.requestId = PHImageManager.default().requestImage(for: phAsset, targetSize: asset.renderSize, contentMode: .aspectFill, options: imageOptions) { [weak asset] result, info in
+            asset.requestId = PHImageManager.default().requestImage(for: rawAsset, targetSize: asset.renderSize, contentMode: .aspectFit, options: imageOptions) { [weak asset] result, info in
                 // 可能调用多次
                 guard let asset = asset else { return }
                 if let info = info, let cancelled = info[PHImageCancelledKey] as? Bool, cancelled {
                     // 已取消, 很大可能是因为在云端
-                    DispatchQueue.main.async {
-                        asset.requestId = PHInvalidImageRequestID
-                    }
+                    asset.requestId = PHInvalidImageRequestID
                     return
                 }
                 guard let result = result else { return }
@@ -169,28 +169,19 @@ extension MNAssetHelper {
                 asset.requestId = PHInvalidImageRequestID
             }
         }
-        // 源文件是否是云端/文件大小
-        if asset.source == .unknown {
-            options.queue.async { [weak asset, weak options] in
-                guard let asset = asset, let phAsset = asset.phAsset else { return }
-                var isClould: Bool = false
-                let resources = PHAssetResource.assetResources(for: phAsset)
-                if let resource = resources.first {
-                    if let locallyAvailable = resource.value(forKey: "locallyAvailable") as? Bool, locallyAvailable == false {
-                        isClould = true
+        // 文件大小
+        if asset.fileSize <= 0, options.showFileSize {
+            options.queue.async { [weak asset] in
+                guard let asset = asset else { return }
+                guard let rawAsset = asset.rawAsset else { return }
+                let resources = PHAssetResource.assetResources(for: rawAsset)
+                var fileSize: Int64 = 0
+                for resource in resources {
+                    if let value = resource.value(forKey: "fileSize") as? Int64 {
+                        fileSize += value
                     }
                 }
-                asset.update(source: isClould ? .cloud : .local)
-                if let options = options, options.showFileSize, asset.fileSize <= 0, isClould == false {
-                    // 获取大小
-                    var fileSize: Int64 = 0
-                    for resource in resources {
-                        if let size = resource.value(forKey: "fileSize") as? Int64 {
-                            fileSize += size
-                        }
-                    }
-                    asset.update(fileSize: fileSize)
-                }
+                asset.update(fileSize: fileSize)
             }
         }
     }
@@ -200,22 +191,26 @@ extension MNAssetHelper {
     ///   - asset: 资源模型
     ///   - completionHandler: 结束后回调
     public class func fetchCover(_ asset: MNAsset, completion completionHandler: ((MNAsset, UIImage?)->Void)?) {
-        if let image = asset.cover {
-            completionHandler?(asset, image)
+        if let cover = asset.cover {
+            DispatchQueue.main.async {
+                completionHandler?(asset, cover)
+            }
             return
         }
-        guard let phAsset = asset.phAsset else {
-            completionHandler?(asset, nil)
+        guard let rawAsset = asset.rawAsset else {
+            DispatchQueue.main.async {
+                completionHandler?(asset, nil)
+            }
             return
         }
         let options = MNAssetHelper.helper.imageOptions
         options.resizeMode = .fast
         options.deliveryMode = .fastFormat
         options.isNetworkAccessAllowed = true
-        asset.requestId = PHImageManager.default().requestImage(for: phAsset, targetSize: asset.renderSize, contentMode: .aspectFill, options: options) { [weak asset] result, info in
+        asset.requestId = PHImageManager.default().requestImage(for: rawAsset, targetSize: asset.renderSize, contentMode: .aspectFit, options: options) { [weak asset] result, info in
             guard let asset = asset else { return }
-            if let info = info, let cancelled = info[PHImageCancelledKey] as? Bool, cancelled { return }
             asset.requestId = PHInvalidImageRequestID
+            if let info = info, let cancelled = info[PHImageCancelledKey] as? Bool, cancelled { return }
             guard let result = result else { return }
             let image = result.mn.resized
             DispatchQueue.main.async {
@@ -235,12 +230,15 @@ extension MNAssetHelper {
     ///   - completionHandler: 结果回调
     public class func fetchContents(_ asset: MNAsset, progress progressHandler: ((MNAsset, Double, Error?)->Void)?, completion completionHandler: ((MNAsset)->Void)?) {
         if let _ = asset.contents {
-            completionHandler?(asset)
+            DispatchQueue.main.async {
+                completionHandler?(asset)
+            }
             return
         }
-        guard let phAsset = asset.phAsset else {
-            progressHandler?(asset, 0.0, nil)
-            completionHandler?(asset)
+        guard let rawAsset = asset.rawAsset else {
+            DispatchQueue.main.async {
+                completionHandler?(asset)
+            }
             return
         }
         // 进度回调
@@ -257,7 +255,7 @@ extension MNAssetHelper {
             options.deliveryMode = .automatic
             options.isNetworkAccessAllowed = true
             options.progressHandler = progressHandler
-            asset.downloadId = PHImageManager.default().requestAVAsset(forVideo: phAsset, options: options) { [weak asset] result, _, info in
+            asset.downloadId = PHImageManager.default().requestAVAsset(forVideo: rawAsset, options: options) { [weak asset] result, _, info in
                 guard let asset = asset else { return }
                 asset.progress = 0.0
                 asset.downloadId = PHInvalidImageRequestID
@@ -275,7 +273,7 @@ extension MNAssetHelper {
             options.isNetworkAccessAllowed = true
             options.deliveryMode = .highQualityFormat
             options.progressHandler = progressHandler
-            asset.downloadId = PHImageManager.default().requestLivePhoto(for: phAsset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: options) { [weak asset] result, info in
+            asset.downloadId = PHImageManager.default().requestLivePhoto(for: rawAsset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: options) { [weak asset] result, info in
                 guard let asset = asset else { return }
                 asset.progress = 0.0
                 asset.downloadId = PHInvalidImageRequestID
@@ -310,9 +308,9 @@ extension MNAssetHelper {
                 }
             }
             if #available(iOS 13.0, *) {
-                asset.downloadId = PHImageManager.default().requestImageDataAndOrientation(for: phAsset, options: options, resultHandler: resultHandler)
+                asset.downloadId = PHImageManager.default().requestImageDataAndOrientation(for: rawAsset, options: options, resultHandler: resultHandler)
             } else {
-                asset.downloadId = PHImageManager.default().requestImageData(for: phAsset, options: options, resultHandler: resultHandler)
+                asset.downloadId = PHImageManager.default().requestImageData(for: rawAsset, options: options, resultHandler: resultHandler)
             }
         }
     }
@@ -328,15 +326,8 @@ extension MNAssetHelper {
     ///   - progressHandler: 进度回调
     ///   - completionHandler: 结束回调
     public class func exportAsynchronously(_ assets: [MNAsset], options: MNAssetPickerOptions, progress progressHandler: ((Int, Int)->Void)?, completion completionHandler: @escaping ([MNAsset])->Void) {
-        DispatchQueue.global().async {
-            guard assets.count > 0 else {
-                DispatchQueue.main.async {
-                    completionHandler([])
-                }
-                return
-            }
-            MNAssetHelper.exportRecursively(assets, index: 0, options: options, succeed: [MNAsset](), progress: progressHandler, completion: completionHandler)
-        }
+        
+        MNAssetHelper.exportRecursively(assets, index: 0, options: options, container: [], progress: progressHandler, completion: completionHandler)
     }
     
     /// 递归导出资源内容
@@ -344,15 +335,15 @@ extension MNAssetHelper {
     ///   - assets: 资源集合
     ///   - index: 需要导出的资源索引
     ///   - options: 选择器配置模型
-    ///   - succeed: 已导出成功的资源模型
+    ///   - container: 已成功导出的资源集合
     ///   - progressHandler: 进度回调
     ///   - completionHandler: 结束回调
-    private class func exportRecursively(_ assets: [MNAsset], index: Int, options: MNAssetPickerOptions, succeed: [MNAsset], progress progressHandler: ((_ current: Int, _ count: Int)->Void)?, completion completionHandler: @escaping ([MNAsset])->Void) {
+    private class func exportRecursively(_ assets: [MNAsset], index: Int, options: MNAssetPickerOptions, container: [MNAsset], progress progressHandler: ((_ current: Int, _ count: Int)->Void)?, completion completionHandler: @escaping ([MNAsset])->Void) {
         DispatchQueue.global(qos: .userInitiated).async {
             // 超出则结束
             guard index < assets.count else {
                 DispatchQueue.main.async {
-                    completionHandler(succeed)
+                    completionHandler(container)
                 }
                 return
             }
@@ -363,11 +354,11 @@ extension MNAssetHelper {
             // 获取内容
             let asset: MNAsset = assets[index]
             MNAssetHelper.exportContents( asset, options: options) { asset in
-                var elements: [MNAsset] = succeed
+                var elements: [MNAsset] = container
                 if let _ = asset.contents {
                     elements.append(asset)
                 }
-                MNAssetHelper.exportRecursively(assets, index: index + 1, options: options, succeed: elements, progress: progressHandler, completion: completionHandler)
+                MNAssetHelper.exportRecursively(assets, index: index + 1, options: options, container: elements, progress: progressHandler, completion: completionHandler)
             }
         }
     }
@@ -378,7 +369,7 @@ extension MNAssetHelper {
     ///   - options: 选择器配置模型
     ///   - completionHandler: 结束回调
     private class func exportContents(_ asset: MNAsset, options: MNAssetPickerOptions, completion completionHandler: ((MNAsset)->Void)?) {
-        guard let phAsset = asset.phAsset else {
+        guard let rawAsset = asset.rawAsset else {
             DispatchQueue.main.async {
                 completionHandler?(asset)
             }
@@ -392,7 +383,7 @@ extension MNAssetHelper {
             videoOptions.version = .current
             videoOptions.isNetworkAccessAllowed = true
             videoOptions.deliveryMode = .highQualityFormat
-            PHImageManager.default().requestAVAsset(forVideo: phAsset, options: videoOptions) { result, _, _ in
+            PHImageManager.default().requestAVAsset(forVideo: rawAsset, options: videoOptions) { result, _, _ in
                 if let avAsset = result as? AVURLAsset {
                     let outputURL: URL = MNAssetHelper.exportURL(preset: options.videoExportURL, ext: options.allowsExportVideo ? "mp4" : avAsset.url.pathExtension.lowercased())
                     try? FileManager.default.createDirectory(at: outputURL.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
@@ -446,7 +437,7 @@ extension MNAssetHelper {
             }
             livePhotoOptions.isNetworkAccessAllowed = true
             livePhotoOptions.deliveryMode = .highQualityFormat
-            PHImageManager.default().requestLivePhoto(for: phAsset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: livePhotoOptions) { result, _ in
+            PHImageManager.default().requestLivePhoto(for: rawAsset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: livePhotoOptions) { result, _ in
                 if let livePhoto = result {
                     if options.allowsExportLiveResource {
                         MNAssetHelper.exportLivePhoto(livePhoto) { imageUrl, videoUrl, _ in
@@ -488,7 +479,7 @@ extension MNAssetHelper {
                     if result.mn.isAnimatedImage {
                         image = result
                         fileSize = Int64(imageData!.count)
-                    } else if #available(iOS 10.0, *), options.allowsExportHeifc == false, phAsset.mn.isHeifc {
+                    } else if #available(iOS 10.0, *), options.allowsExportHeifc == false, rawAsset.mn.isHeifc {
                         // 判断是否需要转化heif/heic格式图片
                         if let ciImage = CIImage(data: imageData!), let colorSpace = ciImage.colorSpace, let jpgData = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace, options: [CIImageRepresentationOption(rawValue: kCGImageDestinationLossyCompressionQuality as String):max(min(options.compressionQuality, 1.0), 0.1)]) {
                             image = UIImage(data: jpgData)?.mn.resized
@@ -515,9 +506,9 @@ extension MNAssetHelper {
                 }
             }
             if #available(iOS 13.0, *) {
-                PHImageManager.default().requestImageDataAndOrientation(for: phAsset, options: imageOptions, resultHandler: resultHandler)
+                PHImageManager.default().requestImageDataAndOrientation(for: rawAsset, options: imageOptions, resultHandler: resultHandler)
             } else {
-                PHImageManager.default().requestImageData(for: phAsset, options: imageOptions, resultHandler: resultHandler)
+                PHImageManager.default().requestImageData(for: rawAsset, options: imageOptions, resultHandler: resultHandler)
             }
         }
     }

@@ -464,11 +464,6 @@ extension MNAssetPickerController: UICollectionViewDelegate, UICollectionViewDat
         cell.updateAsset(asset)
     }
     
-    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let cell = cell as? MNAssetCell else { return }
-        cell.endDisplaying()
-    }
-    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard indexPath.item < assets.count else { return }
         let asset = assets[indexPath.item]

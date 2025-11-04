@@ -114,10 +114,10 @@ class MNAssetAlbum: NSObject {
     /// - Parameter assets: 相册资源集合
     func removeAssets(with assets: [PHAsset]) {
         objc_sync_enter(self)
-        let localIdentifiers: [String] = assets.compactMap { $0.localIdentifier }
+        let localIdentifiers = assets.compactMap { $0.localIdentifier }
         self.assets.removeAll { asset in
-            guard let phAsset = asset.phAsset else { return false }
-            return localIdentifiers.contains(phAsset.localIdentifier)
+            guard let rawAsset = asset.rawAsset else { return false }
+            return localIdentifiers.contains(rawAsset.localIdentifier)
         }
         objc_sync_exit(self)
     }

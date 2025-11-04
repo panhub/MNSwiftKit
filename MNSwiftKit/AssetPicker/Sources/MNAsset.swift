@@ -18,25 +18,11 @@ public typealias MNAssetUpdateHandler = (_ asset: MNAsset)->Void
 /// 资源模型
 public class MNAsset: NSObject, MNAssetBrowseSupported {
     
-    /// 文件来源
-    @objc(MNAssetSource)
-    public enum Source: Int {
-        /// 未知, 默认状态
-        case unknown
-        /// 本地文件
-        case local
-        /// 云端文件
-        case cloud
-    }
-    
     /// 本地标识
     @objc public var identifier: String = ""
     
     /// 文件类型
     @objc public var type: MNAssetType = .photo
-    
-    /// 来源
-    @objc public var source: Source = .unknown
     
     /// 资源内容
     /// photo, gif: UIImage
@@ -73,8 +59,8 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
     /// 是否是有效资源
     @objc public var isEnabled: Bool = true
     
-    /// 系统资源, 与'PHPhoto'交互时使用
-    @objc public var phAsset: PHAsset?
+    /// 资源元数据, 与'PHPhoto'交互时使用
+    @objc public var rawAsset: PHAsset?
     
     /// PHImageRequestID, 缩略图请求id
     @objc public var requestId: Int32 = PHInvalidImageRequestID
@@ -94,9 +80,6 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
     /// 缩略图变化回调
     @objc internal var coverUpdateHandler: MNAssetUpdateHandler?
     
-    /// 来源变化回调
-    @objc internal var sourceUpdateHandler: MNAssetUpdateHandler?
-    
     /// 文件大小变化回调
     @objc internal var fileSizeUpdateHandler: MNAssetUpdateHandler?
     
@@ -109,7 +92,7 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
     /// - Parameter asset: 相册资源
     public convenience init(asset: PHAsset) {
         self.init()
-        phAsset = asset
+        rawAsset = asset
         type = asset.mn.contentType
         duration = asset.duration
         identifier = asset.localIdentifier
@@ -142,23 +125,6 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
         }
     }
     
-    /// 更新来源
-    /// - Parameter source: 来源
-    public func update(source: MNAsset.Source) {
-        let executeHandler: ()->Void = { [weak self] in
-            guard let self = self else { return }
-            self.source = source
-            if let sourceUpdateHandler = self.sourceUpdateHandler {
-                sourceUpdateHandler(self)
-            }
-        }
-        if Thread.isMainThread {
-            executeHandler()
-        } else {
-            DispatchQueue.main.async(execute: executeHandler)
-        }
-    }
-    
     /// 更新文件大小
     /// - Parameter fileSize: 文件大小
     public func update(fileSize: Int64) {
@@ -180,7 +146,6 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
     deinit {
         contents = nil
         coverUpdateHandler = nil
-        sourceUpdateHandler = nil
         fileSizeUpdateHandler = nil
         cancelRequest()
         cancelDownload()
@@ -192,7 +157,6 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
     ///   - options: 资源选项
     public convenience init?(contents: Any, options: MNAssetPickerOptions? = nil) {
         self.init()
-        source = .local
         if let options = options {
             renderSize = options.renderSize
         }
@@ -247,7 +211,7 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
         if super.isEqual(object) { return true }
         guard let other = object as? MNAsset else { return false }
         if identifier == other.identifier { return true }
-        if let phAsset = phAsset, let otherAsset = other.phAsset, phAsset.localIdentifier == otherAsset.localIdentifier { return true }
+        if let rawAsset = rawAsset, let otherAsset = other.rawAsset, rawAsset.localIdentifier == otherAsset.localIdentifier { return true }
         return false
     }
 }

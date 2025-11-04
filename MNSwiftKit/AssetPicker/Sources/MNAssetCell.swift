@@ -34,11 +34,9 @@ class MNAssetCell: UICollectionViewCell {
     /// 资源展示
     private let imageView = UIImageView(frame: .zero)
     /// 顶部阴影
-    private let topShadow = UIImageView(frame: .zero)
+    private let topMask = UIImageView(frame: .zero)
     /// 底部阴影
-    private let bottomShadow = UIImageView(frame: .zero)
-    /// 云端标识
-    private let cloudView = UIImageView(frame: .zero)
+    private let bottomMask = UIImageView(frame: .zero)
     /// 预览按钮
     private let previewControl = UIControl(frame: .zero)
     /// 资源类型
@@ -71,28 +69,16 @@ class MNAssetCell: UICollectionViewCell {
         ])
         
         // 顶部阴影
-        topShadow.contentMode = .scaleToFill
-        topShadow.isUserInteractionEnabled = false
-        topShadow.translatesAutoresizingMaskIntoConstraints = false
-        topShadow.image = AssetPickerResource.image(named: "top_shadow")
-        contentView.addSubview(topShadow)
+        topMask.contentMode = .scaleToFill
+        topMask.isUserInteractionEnabled = false
+        topMask.translatesAutoresizingMaskIntoConstraints = false
+        topMask.image = AssetPickerResource.image(named: "top_shadow")
+        contentView.addSubview(topMask)
         NSLayoutConstraint.activate([
-            topShadow.heightAnchor.constraint(equalToConstant: 30.0),
-            topShadow.topAnchor.constraint(equalTo: contentView.topAnchor),
-            topShadow.leftAnchor.constraint(equalTo: contentView.leftAnchor),
-            topShadow.rightAnchor.constraint(equalTo: contentView.rightAnchor)
-        ])
-        
-        // 云端标记
-        cloudView.contentMode = .scaleAspectFit
-        cloudView.translatesAutoresizingMaskIntoConstraints = false
-        cloudView.image = AssetPickerResource.image(named: "cloud")?.mn.rendering(to: .white.withAlphaComponent(0.85))
-        contentView.addSubview(cloudView)
-        NSLayoutConstraint.activate([
-            cloudView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6.0),
-            cloudView.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 6.0),
-            cloudView.widthAnchor.constraint(equalToConstant: 17.0),
-            cloudView.heightAnchor.constraint(equalToConstant: 17.0)
+            topMask.heightAnchor.constraint(equalToConstant: 30.0),
+            topMask.topAnchor.constraint(equalTo: contentView.topAnchor),
+            topMask.leftAnchor.constraint(equalTo: contentView.leftAnchor),
+            topMask.rightAnchor.constraint(equalTo: contentView.rightAnchor)
         ])
         
         // 预览
@@ -112,24 +98,24 @@ class MNAssetCell: UICollectionViewCell {
         previewImageView.image = AssetPickerResource.image(named: "preview")?.mn.rendering(to: .white.withAlphaComponent(0.85))
         previewControl.addSubview(previewImageView)
         NSLayoutConstraint.activate([
+            previewImageView.topAnchor.constraint(equalTo: previewControl.topAnchor, constant: 8.0),
             previewImageView.rightAnchor.constraint(equalTo: previewControl.rightAnchor, constant: -6.0),
-            previewImageView.centerYAnchor.constraint(equalTo: cloudView.centerYAnchor),
             previewImageView.heightAnchor.constraint(equalToConstant: 13.0),
             previewImageView.widthAnchor.constraint(equalTo: previewImageView.heightAnchor, multiplier: 180.0/121.0)
         ])
         
         // 底部阴影
-        bottomShadow.image = AssetPickerResource.image(named: "bottom_shadow")
-        bottomShadow.contentMode = .scaleToFill
-        bottomShadow.backgroundColor = .clear
-        bottomShadow.isUserInteractionEnabled = false
-        bottomShadow.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(bottomShadow)
+        bottomMask.image = AssetPickerResource.image(named: "bottom_shadow")
+        bottomMask.contentMode = .scaleToFill
+        bottomMask.backgroundColor = .clear
+        bottomMask.isUserInteractionEnabled = false
+        bottomMask.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(bottomMask)
         NSLayoutConstraint.activate([
-            bottomShadow.heightAnchor.constraint(equalToConstant: 30.0),
-            bottomShadow.leftAnchor.constraint(equalTo: contentView.leftAnchor),
-            bottomShadow.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            bottomShadow.rightAnchor.constraint(equalTo: contentView.rightAnchor)
+            bottomMask.heightAnchor.constraint(equalToConstant: 30.0),
+            bottomMask.leftAnchor.constraint(equalTo: contentView.leftAnchor),
+            bottomMask.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            bottomMask.rightAnchor.constraint(equalTo: contentView.rightAnchor)
         ])
         
         // 资源类型
@@ -140,10 +126,10 @@ class MNAssetCell: UICollectionViewCell {
         badgeView.setImage(AssetPickerResource.image(named: "gif")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .selected)
         contentView.addSubview(badgeView)
         NSLayoutConstraint.activate([
-            badgeView.widthAnchor.constraint(equalTo: cloudView.widthAnchor),
-            badgeView.heightAnchor.constraint(equalTo: cloudView.heightAnchor),
-            badgeView.leftAnchor.constraint(equalTo: cloudView.leftAnchor),
-            badgeView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6.0)
+            badgeView.widthAnchor.constraint(equalToConstant: 17.0),
+            badgeView.heightAnchor.constraint(equalToConstant: 17.0),
+            badgeView.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 6.0),
+            badgeView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -3.0)
         ])
         
         // 时长
@@ -211,33 +197,33 @@ class MNAssetCell: UICollectionViewCell {
         
         imageView.image = asset.cover
         
-        topShadow.isHidden = false
-        bottomShadow.isHidden = false
-        fileSizeLabel.isHidden = true
+        topMask.isHidden = false
+        badgeView.isHidden = false
+        bottomMask.isHidden = false
         durationLabel.isHidden = true
-        cloudView.isHidden = asset.source != .cloud
         previewControl.isHidden = options.allowsPreview == false
         
         if options.showFileSize, asset.fileSize > 0 {
-            updateFileSize()
+            fileSizeLabel.text = asset.fileSizeString
+            fileSizeLabel.isHidden = false
+        } else {
+            fileSizeLabel.isHidden = true
         }
         
         switch asset.type {
+        case .photo:
+            badgeView.isHidden = true
+        case .gif:
+            badgeView.state = .selected
+        case .livePhoto:
+            badgeView.state = .highlighted
         case .video:
             badgeView.state = .normal
-            badgeView.isHidden = false
-            if options.showFileSize == false || asset.fileSize <= 0 {
+            if asset.duration > 0.0, fileSizeLabel.isHidden {
+                // 两者容易重叠
                 durationLabel.text = asset.durationString
                 durationLabel.isHidden = false
             }
-        case .livePhoto:
-            badgeView.state = .highlighted
-            badgeView.isHidden = false
-        case .gif:
-            badgeView.state = .selected
-            badgeView.isHidden = false
-        default:
-            badgeView.isHidden = true
         }
         
         if asset.isEnabled {
@@ -245,26 +231,24 @@ class MNAssetCell: UICollectionViewCell {
         } else {
             unableView.isHidden = false
             indexLabel.isHidden = true
-            cloudView.isHidden = true
             badgeView.isHidden = true
-            topShadow.isHidden = true
+            topMask.isHidden = true
             previewControl.isHidden = true
             fileSizeLabel.isHidden = true
             durationLabel.isHidden = true
-            bottomShadow.isHidden = true
+            bottomMask.isHidden = true
         }
         
         if asset.isSelected {
             indexLabel.text = "\(asset.index)"
             indexLabel.isHidden = false
             unableView.isHidden = true
-            cloudView.isHidden = true
             badgeView.isHidden = true
-            topShadow.isHidden = true
+            topMask.isHidden = true
             previewControl.isHidden = true
             fileSizeLabel.isHidden = true
             durationLabel.isHidden = true
-            bottomShadow.isHidden = true
+            bottomMask.isHidden = true
         } else {
             indexLabel.isHidden = true
         }
@@ -274,30 +258,14 @@ class MNAssetCell: UICollectionViewCell {
             self.imageView.image = asset.cover
         }
         
-        asset.sourceUpdateHandler = { [weak self] asset in
-            guard let self = self, let _ = self.asset, asset == self.asset else { return }
-            self.cloudView.isHidden = asset.source != .cloud
-        }
-        
         asset.fileSizeUpdateHandler = { [weak self] asset in
             guard let self = self, self.options.showFileSize, let _ = self.asset, asset == self.asset, asset.fileSize > 0 else { return }
-            self.updateFileSize()
+            self.durationLabel.isHidden = true
+            self.fileSizeLabel.isHidden = false
+            self.fileSizeLabel.text = asset.fileSizeString
         }
         
-        MNAssetHelper.fetchProfile(asset, options: options)
-    }
-    
-    /// 更新文件大小
-    func updateFileSize() {
-        durationLabel.isHidden = true
-        fileSizeLabel.isHidden = false
-        fileSizeLabel.text = asset.fileSizeString
-    }
-    
-    /// 结束展示
-    func endDisplaying() {
-        guard let asset = asset else { return }
-        asset.cancelRequest()
+        MNAssetHelper.fetchMetadata(asset, options: options)
     }
 }
 
