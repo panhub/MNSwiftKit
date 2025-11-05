@@ -252,28 +252,59 @@ extension MNAssetHelper {
     ///   - size: 目标尺寸大小
     ///   - completionHandler: 封面回调 主线程
     @discardableResult
-    public func exportCover(_ asset: PHAsset, target size: CGSize, completion completionHandler: ((_ cover: UIImage?)->Void)?) -> PHImageRequestID {
+    public func exportCover(_ asset: PHAsset, target size: CGSize, completion completionHandler: ((_ cover: UIImage?, _ error: Error?)->Void)?) -> PHImageRequestID {
         let requestOptions = PHImageRequestOptions()
         requestOptions.version = .current
         requestOptions.resizeMode = .fast
         requestOptions.deliveryMode = .fastFormat
         requestOptions.isNetworkAccessAllowed = true
         return PHImageManager.default().requestImage(for: asset, targetSize: size, contentMode: .aspectFit, options: requestOptions) { image, info in
+            var error: MNPickError?
             if let info = info {
                 if let cancelled = info[PHImageCancelledKey] as? Bool, cancelled {
+                    error = .exportError(.cancelled)
 #if DEBUG
                     print("已取消请求资源图片")
 #endif
                 }
-                if let error = info[PHImageErrorKey] as? Error {
+                if let underlyingError = info[PHImageErrorKey] as? Error {
+                    if error == nil {
+                        error = .exportError(.underlyingError(underlyingError))
+                    }
 #if DEBUG
-                    print("请求资源图片出错: \(error)")
+                    print("请求资源图片出错: \(underlyingError)")
 #endif
                 }
             }
-            DispatchQueue.main.async {
-                completionHandler?(image)
+            if image == nil, error == nil {
+                error = .exportError(.requestFailed)
             }
+            DispatchQueue.main.async {
+                completionHandler?(image, error)
+            }
+        }
+    }
+    
+    /// 获取资源大小
+    /// - Parameters:
+    ///   - asset: 相册资源模型
+    ///   - queue: 处理任务的队列
+    public class func fetchFileSize(_ asset: MNAsset, on queue: DispatchQueue = .global(qos: .userInitiated)) {
+        guard asset.fileSize <= 0 else {
+            DispatchQueue.main.async {
+                asset.fileSizeUpdateHandler?(asset)
+            }
+            return
+        }
+        guard let rawAsset = asset.rawAsset else {
+            DispatchQueue.main.async {
+                asset.fileSizeUpdateHandler?(asset)
+            }
+            return
+        }
+        exportFileSize(rawAsset, on: queue) { [weak asset] fileSize in
+            guard let asset = asset else { return }
+            asset.update(fileSize: fileSize)
         }
     }
     
@@ -296,9 +327,370 @@ extension MNAssetHelper {
         }
     }
     
-    public class func exportContents(_ asset: PHAsset, options: MNAssetPickerOptions, completion completionHandler: ((_ contents: Any?, _ fileSize: Int64)->Void)?) {
-        
-        
+    /// 获取资源内容
+    /// - Parameters:
+    ///   - asset: 相册资源
+    ///   - options: 相册配置选项
+    ///   - progressHandler: 进度回调
+    ///   - completionHandler: 结束回调 主线程
+    public class func fetchContents(_ asset: MNAsset, options: MNAssetPickerOptions, progress progressHandler: ((_ asset: MNAsset, _ value: Double, _ error: Error?)->Void)?, completion completionHandler: ((_ asset: MNAsset)->Void)?) {
+        if let _ = asset.contents {
+            DispatchQueue.main.async {
+                completionHandler?(asset)
+            }
+            return
+        }
+        guard let rawAsset = asset.rawAsset else {
+            DispatchQueue.main.async {
+                completionHandler?(asset)
+            }
+            return
+        }
+        var pickerOptions = options
+        if asset.type == .video, (options.allowsExportVideo || options.videoExportURL != nil) {
+            // 这里要重新制作
+            guard let copyOptions = options.copy() as? MNAssetPickerOptions else {
+                DispatchQueue.main.async {
+                    completionHandler?(asset)
+                }
+                return
+            }
+            copyOptions.videoExportURL = nil
+            copyOptions.allowsExportVideo = false
+            pickerOptions = copyOptions
+        }
+        exportContents(rawAsset, options: pickerOptions) { [weak asset] value, error in
+            guard let asset = asset else { return }
+            progressHandler?(asset, value, error)
+        } completion: { [weak asset] contents, fileSize, error in
+            guard let asset = asset else { return }
+            if let contents = contents {
+                asset.contents = contents
+            }
+            completionHandler?(asset)
+        }
+    }
+    
+    /// 导出资源内容
+    /// - Parameters:
+    ///   - asset: 相册资源
+    ///   - options: 相册配置选项
+    ///   - progressHandler: 进度回调 主线程
+    ///   - completionHandler: 结果回调 主线程
+    public class func exportContents(_ asset: PHAsset, options: MNAssetPickerOptions, progress progressHandler: ((_ value: Double, _ error: Error?)->Void)?, completion completionHandler: ((_ contents: Any?, _ fileSize: Int64, _ error: Error?)->Void)?) {
+        let contentType = asset.mn.contentType
+        switch contentType {
+        case .video:
+            let requestOptions = PHVideoRequestOptions()
+            requestOptions.version = .current
+            requestOptions.isNetworkAccessAllowed = true
+            requestOptions.deliveryMode = .highQualityFormat
+            requestOptions.progressHandler = { value, underlyingError, _, _ in
+                var error: MNPickError?
+                if let underlyingError = underlyingError {
+                    error = .exportError(.underlyingError(underlyingError))
+                }
+                var progress = value
+                if options.allowsExportVideo {
+                    progress = min(value, 0.9)
+                } else if let _ = options.videoExportURL {
+                    progress = min(value, 0.95)
+                }
+                DispatchQueue.main.async {
+                    progressHandler?(progress, error)
+                }
+            }
+            if options.allowsExportVideo {
+                PHImageManager.default().requestExportSession(forVideo: asset, options: requestOptions, exportPreset: options.videoExportPreset ?? AVAssetExportPresetMediumQuality) { exportSession, info in
+                    guard let session = exportSession else {
+                        var error: MNPickError = .exportError(.requestFailed)
+                        if let info = info {
+                            if let cancelled = info[PHImageCancelledKey] as? Bool, cancelled {
+                                error = .exportError(.cancelled)
+                            }
+                            if let underlyingError = info[PHImageErrorKey] as? Error {
+                                error = .exportError(.underlyingError(underlyingError))
+#if DEBUG
+                                print("导出视频内容失败: \(underlyingError)")
+#endif
+                            }
+                        }
+                        DispatchQueue.main.async {
+                            completionHandler?(nil, 0, error)
+                        }
+                        return
+                    }
+                    let outputURL = MNAssetHelper.exportURL(options.videoExportURL, ext: "mp4")
+                    let outputDirectory = outputURL.deletingLastPathComponent()
+                    if FileManager.default.fileExists(atPath: outputDirectory.mn.path) == false {
+                        do {
+                            try FileManager.default.createDirectory(at: outputDirectory, withIntermediateDirectories: true)
+                        } catch {
+#if DEBUG
+                            print("创建视频文件夹出错: \(error)")
+#endif
+                            DispatchQueue.main.async {
+                                completionHandler?(nil, 0, MNPickError.exportError(.cannotCreateDirectory))
+                            }
+                            return
+                        }
+                    }
+                    session.shouldOptimizeForNetworkUse = true
+                    if #available(iOS 18.0, *) {
+                        Task {
+                            do {
+                                try await session.export(to: outputURL, as: .mp4)
+                                let outputPath = outputURL.mn.path
+                                let fileSize = FileManager.default.mn.itemSize(atPath: outputPath)
+                                DispatchQueue.main.async {
+                                    progressHandler?(1.0, nil)
+                                    completionHandler?(outputPath, fileSize, nil)
+                                }
+                            } catch {
+                                DispatchQueue.main.async {
+                                    completionHandler?(nil, 0, MNPickError.exportError(.underlyingError(error)))
+                                }
+                            }
+                        }
+                    } else {
+                        session.outputURL = outputURL
+                        session.outputFileType = .mp4
+                        session.exportAsynchronously { [weak session] in
+                            guard let session = session else {
+                                DispatchQueue.main.async {
+                                    completionHandler?(nil, 0, MNPickError.exportError(.requestFailed))
+                                }
+                                return
+                            }
+                            switch session.status {
+                            case .completed:
+                                let outputPath = outputURL.mn.path
+                                let fileSize = FileManager.default.mn.itemSize(atPath: outputPath)
+                                DispatchQueue.main.async {
+                                    progressHandler?(1.0, nil)
+                                    completionHandler?(outputPath, fileSize, nil)
+                                }
+                            case .cancelled:
+                                DispatchQueue.main.async {
+                                    completionHandler?(nil, 0, MNPickError.exportError(.cancelled))
+                                }
+                            default:
+                                var error: MNPickError = .exportError(.requestFailed)
+                                if let underlyingError = session.error {
+                                    error = .exportError(.underlyingError(underlyingError))
+#if DEBUG
+                                    print("视频转码失败: \(underlyingError)")
+#endif
+                                }
+                                DispatchQueue.main.async {
+                                    completionHandler?(nil, 0, error)
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                PHImageManager.default().requestAVAsset(forVideo: asset, options: requestOptions) { videoAsset, _, info in
+                    guard let videoAsset = videoAsset as? AVURLAsset else {
+                        var error: MNPickError = .exportError(.requestFailed)
+                        if let info = info {
+                            if let cancelled = info[PHImageCancelledKey] as? Bool, cancelled {
+                                error = .exportError(.cancelled)
+                            }
+                            if let underlyingError = info[PHImageErrorKey] as? Error {
+                                error = .exportError(.underlyingError(underlyingError))
+#if DEBUG
+                                print("导出视频内容失败: \(underlyingError)")
+#endif
+                            }
+                        }
+                        DispatchQueue.main.async {
+                            completionHandler?(nil, 0, error)
+                        }
+                        return
+                    }
+                    let videoUrl = videoAsset.url
+                    guard let videoExportURL = options.videoExportURL else {
+                        let targetPath = videoUrl.mn.path
+                        let fileSize = FileManager.default.mn.itemSize(atPath: targetPath)
+                        DispatchQueue.main.async {
+                            completionHandler?(targetPath, fileSize, nil)
+                        }
+                        return
+                    }
+                    // 拷贝视频到指定位置
+                    let targetUrl = MNAssetHelper.exportURL(options.videoExportURL, ext: videoUrl.pathExtension.lowercased())
+                    let targetDirectory = targetUrl.deletingLastPathComponent()
+                    if FileManager.default.fileExists(atPath: targetDirectory.mn.path) == false {
+                        do {
+                            try FileManager.default.createDirectory(at: targetDirectory, withIntermediateDirectories: true)
+                        } catch {
+#if DEBUG
+                            print("创建视频文件夹出错: \(error)")
+#endif
+                            DispatchQueue.main.async {
+                                completionHandler?(nil, 0, MNPickError.exportError(.cannotCreateDirectory))
+                            }
+                            return
+                        }
+                    }
+                    do {
+                        try FileManager.default.copyItem(at: videoUrl, to: targetUrl)
+                    } catch {
+#if DEBUG
+                        print("拷贝视频失败: \(error)")
+#endif
+                        DispatchQueue.main.async {
+                            completionHandler?(nil, 0, MNPickError.exportError(.cannotCopyFile))
+                        }
+                        return
+                    }
+                    let targetPath = targetUrl.mn.path
+                    let fileSize = FileManager.default.mn.itemSize(atPath: targetPath)
+                    DispatchQueue.main.async {
+                        progressHandler?(1.0, nil)
+                        completionHandler?(targetPath, fileSize, nil)
+                    }
+                }
+            }
+        case .livePhoto:
+            guard #available(iOS 9.1, *) else {
+                DispatchQueue.main.async {
+                    completionHandler?(nil, 0, MNPickError.exportError(.notSupportedForAsset))
+                }
+                return
+            }
+            let requestOptions = PHLivePhotoRequestOptions()
+            requestOptions.version = .current
+            requestOptions.isNetworkAccessAllowed = true
+            requestOptions.deliveryMode = .highQualityFormat
+            requestOptions.progressHandler = { value, underlyingError, _, _ in
+                var error: MNPickError?
+                if let underlyingError = underlyingError {
+                    error = .exportError(.underlyingError(underlyingError))
+                }
+                var progress = value
+                if options.allowsExportLiveResource {
+                    progress = min(value, 0.9)
+                }
+                DispatchQueue.main.async {
+                    progressHandler?(progress, error)
+                }
+            }
+            PHImageManager.default().requestLivePhoto(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: requestOptions) { livePhoto, info in
+                guard let livePhoto = livePhoto else {
+                    var error: MNPickError = .exportError(.requestFailed)
+                    if let info = info {
+                        if let cancelled = info[PHImageCancelledKey] as? Bool, cancelled {
+                            error = .exportError(.cancelled)
+                        }
+                        if let underlyingError = info[PHImageErrorKey] as? Error {
+                            error = .exportError(.underlyingError(underlyingError))
+#if DEBUG
+                            print("导出LivePhoto失败: \(underlyingError)")
+#endif
+                        }
+                    }
+                    DispatchQueue.main.async {
+                        completionHandler?(nil, 0, error)
+                    }
+                    return
+                }
+                if options.allowsExportLiveResource {
+                    MNAssetHelper.exportLivePhoto(livePhoto) { imageUrl, videoUrl, error in
+                        if let imageUrl = imageUrl, let videoUrl = videoUrl {
+                            livePhoto.mn.videoFileURL = videoUrl
+                            livePhoto.mn.imageFileURL = imageUrl
+                            let videoFileSize = FileManager.default.mn.itemSize(at: videoUrl)
+                            let imageFileSize = FileManager.default.mn.itemSize(at: imageUrl)
+                            DispatchQueue.main.async {
+                                progressHandler?(1.0, nil)
+                                completionHandler?(livePhoto, videoFileSize + imageFileSize, nil)
+                            }
+                        } else {
+                            DispatchQueue.main.async {
+                                completionHandler?(nil, 0, error)
+                            }
+                        }
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        completionHandler?(livePhoto, 0, nil)
+                    }
+                }
+            }
+        case .gif, .photo:
+            let requestOptions = PHImageRequestOptions()
+            requestOptions.version = .current
+            requestOptions.isNetworkAccessAllowed = true
+            requestOptions.deliveryMode = .highQualityFormat
+            requestOptions.progressHandler = { value, underlyingError, _, _ in
+                var error: MNPickError?
+                if let underlyingError = underlyingError {
+                    error = .exportError(.underlyingError(underlyingError))
+                }
+                DispatchQueue.main.async {
+                    progressHandler?(value, error)
+                }
+            }
+            let resultHandler: (Data?, String?, Any, [AnyHashable : Any]?) -> Void = { imageData, _, _, info in
+                guard let imageData = imageData else {
+                    var error: MNPickError = .exportError(.requestFailed)
+                    if let info = info {
+                        if let cancelled = info[PHImageCancelledKey] as? Bool, cancelled {
+                            error = .exportError(.cancelled)
+                        }
+                        if let underlyingError = info[PHImageErrorKey] as? Error {
+                            error = .exportError(.underlyingError(underlyingError))
+#if DEBUG
+                            print("导出图片数据失败: \(underlyingError)")
+#endif
+                        }
+                    }
+                    DispatchQueue.main.async {
+                        completionHandler?(nil, 0, error)
+                    }
+                    return
+                }
+                var image: UIImage?
+                var fileSize: Int64 = 0
+                var error: MNPickError?
+                if let result = contentType == .gif ? UIImage.mn.image(contentsOfData: imageData) : UIImage(data: imageData) {
+                    var isAllowCompress: Bool = false
+                    if result.mn.isAnimatedImage {
+                        image = result
+                        fileSize = Int64(imageData.count)
+                    } else if #available(iOS 10.0, *), options.allowsExportHeifc == false, (asset.mn.isHeic || asset.mn.isHeif) {
+                        // 判断是否需要转化heif/heic格式图片
+                        if let ciImage = CIImage(data: imageData),
+                           let colorSpace = ciImage.colorSpace,
+                           let jpgData = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace, options: [CIImageRepresentationOption(rawValue: kCGImageDestinationLossyCompressionQuality as String):max(min(options.compressionQuality, 1.0), 0.1)]),
+                           let jpgImage = UIImage(data: jpgData)?.mn.resized {
+                            image = jpgImage
+                            fileSize = Int64(jpgData.count)
+                        }
+                    } else {
+                        isAllowCompress = true
+                        image = result.mn.resized
+                        fileSize = Int64(imageData.count)
+                    }
+                    if isAllowCompress, options.compressionQuality < 1.0, let compressionImage = image?.mn.resizing(to: 1280.0, quality: max(options.compressionQuality, 0.5), fileSize: &fileSize) {
+                        image = compressionImage
+                    }
+                }
+                if image == nil {
+                    error = .exportError(.requestFailed)
+                }
+                DispatchQueue.main.async {
+                    completionHandler?(image, fileSize, error)
+                }
+            }
+            if #available(iOS 13.0, *) {
+                PHImageManager.default().requestImageDataAndOrientation(for: asset, options: requestOptions, resultHandler: resultHandler)
+            } else {
+                PHImageManager.default().requestImageData(for: asset, options: requestOptions, resultHandler: resultHandler)
+            }
+        }
     }
 }
 
@@ -995,6 +1387,7 @@ extension MNAssetHelper {
             try? FileManager.default.removeItem(at: url)
             try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
         }
+        var underlyingError: MNPickError?
         let group = DispatchGroup()
         let resources = PHAssetResource.assetResources(for: livePhoto)
         for resource in resources {
@@ -1006,12 +1399,15 @@ extension MNAssetHelper {
             PHAssetResourceManager.default().requestData(for: resource, options: options) { data in
                 contents.append(data)
             } completionHandler: { error in
-                if error == nil {
+                if let error = error {
+                    underlyingError = .exportError(.underlyingError(error))
+                } else {
                     do {
                         try contents.write(to: type == .pairedVideo ? videoUrl : imageUrl, options: .atomic)
                     } catch {
+                        underlyingError = .exportError(.underlyingError(error))
 #if DEBUG
-                        print("写入LivePhoto文件失败: \(error)")
+                        print("写入LivePhoto组件文件失败: \(error)")
 #endif
                     }
                 }
@@ -1019,12 +1415,12 @@ extension MNAssetHelper {
             }
         }
         group.notify(queue: .main) {
-            if FileManager.default.fileExists(atPath: imageUrl.mn.path), FileManager.default.fileExists(atPath: videoUrl.mn.path) {
-                completion?(true, nil)
-            } else {
+            if let error = underlyingError {
                 try? FileManager.default.removeItem(at: videoUrl)
                 try? FileManager.default.removeItem(at: imageUrl)
-                completion?(false, MNPickError.exportError(.requestFailed))
+                completion?(false, error)
+            } else {
+                completion?(true, nil)
             }
         }
     }

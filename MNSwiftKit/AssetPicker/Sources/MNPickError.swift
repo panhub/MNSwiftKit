@@ -15,8 +15,12 @@ public enum MNPickError: Swift.Error {
     
     /// 导出相关错误
     public enum ExportFailureReason {
+        case cancelled
         case fileNotExist
         case requestFailed
+        case cannotCopyFile
+        case cannotCreateDirectory
+        case notSupportedForAsset
         case underlyingError(Swift.Error)
     }
     
@@ -102,6 +106,8 @@ extension MNPickError.ExportFailureReason {
     /// 错误码
     public var code: Int {
         switch self {
+        case .cancelled: return 3072
+        case .notSupportedForAsset: return 3306
         case .fileNotExist: return MNPickErrorFileDoesNotExist
         case .requestFailed: return -18130
         case .underlyingError(let error): return error._code
@@ -111,6 +117,7 @@ extension MNPickError.ExportFailureReason {
     /// 错误信息
     public var msg: String {
         switch self {
+        case .cancelled: return "已取消"
         case .fileNotExist: return "文件不存在"
         case .requestFailed: return "请求资源失败"
         case .underlyingError(let error): return error.localizedDescription
@@ -130,6 +137,7 @@ extension MNPickError.ExportFailureReason: CustomDebugStringConvertible {
     
     public var debugDescription: String {
         switch self {
+        case .cancelled: return "用户取消任务"
         case .fileNotExist: return "文件不存在"
         case .requestFailed: return "请求资源失败"
         case .underlyingError(let error): return "\(error)"

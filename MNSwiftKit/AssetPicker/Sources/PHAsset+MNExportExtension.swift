@@ -13,19 +13,17 @@ extension NameSpaceWrapper where Base: PHAsset {
     
     /// 资源类型
     public var contentType: MNAssetType {
-        var type: MNAssetType = .photo
         switch base.mediaType {
         case .image:
             if isGif {
-                type = .gif
+                return .gif
             } else if #available(iOS 9.1, *), base.mediaSubtypes.contains(.photoLive) {
-                type = .livePhoto
+                return .livePhoto
             }
-        case .video:
-            type = .video
-        default: break
+            return .photo
+        case .video: return .video
+        default: return .photo
         }
-        return type
     }
     
     /// 是否是gif动图资源

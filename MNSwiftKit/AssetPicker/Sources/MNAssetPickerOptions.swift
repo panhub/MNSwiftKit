@@ -17,7 +17,7 @@ import Foundation
 }
 
 /// 相册资源选择条件
-public class MNAssetPickerOptions: NSObject {
+public class MNAssetPickerOptions: NSObject, NSCopying {
     /**
      最多选择数量
      */
@@ -163,6 +163,47 @@ public class MNAssetPickerOptions: NSObject {
      分析文件位置及大小的队列
      */
     @objc public let queue: DispatchQueue = DispatchQueue(label: "com.mn.asset.picker.queue", qos: .userInitiated, attributes: .concurrent)
+    
+    /// 拷贝支持
+    public func copy(with zone: NSZone? = nil) -> Any {
+        let options = MNAssetPickerOptions()
+        options.minPickingCount = minPickingCount
+        options.maxPickingCount = maxPickingCount
+        options.allowsPreview = allowsPreview
+        options.showFileSize = showFileSize
+        options.allowsPickingPhoto = allowsPickingPhoto
+        options.allowsMultiplePickingPhoto = allowsMultiplePickingPhoto
+        options.allowsPickingGif = allowsPickingGif
+        options.allowsMultiplePickingGif = allowsMultiplePickingGif
+        options.allowsPickingVideo = allowsPickingVideo
+        options.allowsMultiplePickingVideo = allowsMultiplePickingVideo
+        options.allowsPickingLivePhoto = allowsPickingLivePhoto
+        options.allowsMultiplePickingLivePhoto = allowsMultiplePickingLivePhoto
+        options.allowsMixedPicking = allowsMixedPicking
+        options.allowsExportHeifc = allowsExportHeifc
+        options.allowsExportVideo = allowsExportVideo
+        options.compressionQuality = compressionQuality
+        options.usingPhotoPolicyPickingGif = usingPhotoPolicyPickingGif
+        options.usingPhotoPolicyPickingLivePhoto = usingPhotoPolicyPickingLivePhoto
+        options.allowsSlidePicking = allowsSlidePicking
+        options.allowsPickingAlbum = allowsPickingAlbum
+        options.allowsExportLiveResource = allowsExportLiveResource
+        options.numberOfColumns = numberOfColumns
+        options.pageCount = pageCount
+        options.minimumLineSpacing = minimumLineSpacing
+        options.minimumInteritemSpacing = minimumInteritemSpacing
+        options.sortAscending = sortAscending
+        options.minExportDuration = minExportDuration
+        options.maxExportDuration = maxExportDuration
+        options.videoExportURL = videoExportURL
+        options.videoExportPreset = videoExportPreset
+        options.renderSize = renderSize
+        options.tintColor = tintColor
+        options.themeColor = themeColor
+        options.mode = mode
+        options.presentationStyle = presentationStyle
+        return options
+    }
 }
 
 // MARK: - 辅助
