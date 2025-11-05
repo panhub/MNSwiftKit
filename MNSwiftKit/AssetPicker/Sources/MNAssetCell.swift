@@ -17,10 +17,26 @@ protocol MNAssetCellEventHandler: NSObjectProtocol {
 
 /// 资源展示表格
 class MNAssetCell: UICollectionViewCell {
-    /// 控件间隔
-    private let spacing: CGFloat = 6.0
     /// 媒体资源模型
     private(set) var asset: MNAsset!
+    /// 无效标记
+    private let unableView = UIView()
+    /// 选择索引
+    private let indexLabel = UILabel()
+    /// 文件大小
+    private let fileSizeLabel = UILabel()
+    /// 视频时长
+    private let durationLabel = UILabel()
+    /// 资源展示
+    private let imageView = UIImageView(frame: .zero)
+    /// 顶部阴影
+    private let topMask = UIImageView(frame: .zero)
+    /// 底部阴影
+    private let bottomMask = UIImageView(frame: .zero)
+    /// 预览按钮
+    private let previewControl = UIControl(frame: .zero)
+    /// 资源类型
+    private let typeView = MNAssetTypeView(frame: .zero)
     /// 事件代理
     weak var delegate: MNAssetCellEventHandler?
     /// 配置信息
@@ -31,24 +47,6 @@ class MNAssetCell: UICollectionViewCell {
             }
         }
     }
-    /// 资源展示
-    private let imageView = UIImageView(frame: .zero)
-    /// 顶部阴影
-    private let topMask = UIImageView(frame: .zero)
-    /// 底部阴影
-    private let bottomMask = UIImageView(frame: .zero)
-    /// 预览按钮
-    private let previewControl = UIControl(frame: .zero)
-    /// 资源类型
-    private let badgeView = MNStateView(frame: .zero)
-    /// 视频时长
-    private let durationLabel = UILabel()
-    /// 文件大小
-    private let fileSizeLabel = UILabel()
-    /// 选择索引
-    private let indexLabel = UILabel()
-    /// 无效标记
-    private let unableView = UIView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -119,17 +117,17 @@ class MNAssetCell: UICollectionViewCell {
         ])
         
         // 资源类型
-        badgeView.contentMode = .scaleAspectFit
-        badgeView.translatesAutoresizingMaskIntoConstraints = false
-        badgeView.setImage(AssetPickerResource.image(named: "video")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .normal)
-        badgeView.setImage(AssetPickerResource.image(named: "livephoto")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .highlighted)
-        badgeView.setImage(AssetPickerResource.image(named: "gif")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .selected)
-        contentView.addSubview(badgeView)
+        typeView.contentMode = .scaleAspectFit
+        typeView.translatesAutoresizingMaskIntoConstraints = false
+        typeView.setImage(AssetPickerResource.image(named: "video")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .video)
+        typeView.setImage(AssetPickerResource.image(named: "livephoto")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .livePhoto)
+        typeView.setImage(AssetPickerResource.image(named: "gif")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .gif)
+        contentView.addSubview(typeView)
         NSLayoutConstraint.activate([
-            badgeView.widthAnchor.constraint(equalToConstant: 17.0),
-            badgeView.heightAnchor.constraint(equalToConstant: 17.0),
-            badgeView.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 6.0),
-            badgeView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -3.0)
+            typeView.widthAnchor.constraint(equalToConstant: 17.0),
+            typeView.heightAnchor.constraint(equalToConstant: 17.0),
+            typeView.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 6.0),
+            typeView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -3.0)
         ])
         
         // 时长
@@ -140,8 +138,8 @@ class MNAssetCell: UICollectionViewCell {
         durationLabel.textColor = UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)
         contentView.addSubview(durationLabel)
         NSLayoutConstraint.activate([
-            durationLabel.leftAnchor.constraint(equalTo: badgeView.rightAnchor, constant: 5.0),
-            durationLabel.centerYAnchor.constraint(equalTo: badgeView.centerYAnchor)
+            durationLabel.leftAnchor.constraint(equalTo: typeView.rightAnchor, constant: 5.0),
+            durationLabel.centerYAnchor.constraint(equalTo: typeView.centerYAnchor)
         ])
         
         // 文件大小
@@ -153,7 +151,7 @@ class MNAssetCell: UICollectionViewCell {
         contentView.addSubview(fileSizeLabel)
         NSLayoutConstraint.activate([
             fileSizeLabel.rightAnchor.constraint(equalTo: previewImageView.rightAnchor),
-            fileSizeLabel.centerYAnchor.constraint(equalTo: badgeView.centerYAnchor)
+            fileSizeLabel.centerYAnchor.constraint(equalTo: typeView.centerYAnchor)
         ])
         
         // 索引
@@ -198,7 +196,7 @@ class MNAssetCell: UICollectionViewCell {
         imageView.image = asset.cover
         
         topMask.isHidden = false
-        badgeView.isHidden = false
+        typeView.isHidden = false
         bottomMask.isHidden = false
         durationLabel.isHidden = true
         previewControl.isHidden = options.allowsPreview == false
@@ -212,43 +210,41 @@ class MNAssetCell: UICollectionViewCell {
         
         switch asset.type {
         case .photo:
-            badgeView.isHidden = true
-        case .gif:
-            badgeView.state = .selected
-        case .livePhoto:
-            badgeView.state = .highlighted
+            typeView.isHidden = true
         case .video:
-            badgeView.state = .normal
+            typeView.type = .video
             if asset.duration > 0.0, fileSizeLabel.isHidden {
                 // 两者容易重叠
                 durationLabel.text = asset.durationString
                 durationLabel.isHidden = false
             }
+        default:
+            typeView.type = asset.type
         }
         
         if asset.isEnabled {
             unableView.isHidden = true
         } else {
             unableView.isHidden = false
-            indexLabel.isHidden = true
-            badgeView.isHidden = true
             topMask.isHidden = true
-            previewControl.isHidden = true
+            typeView.isHidden = true
+            indexLabel.isHidden = true
+            bottomMask.isHidden = true
             fileSizeLabel.isHidden = true
             durationLabel.isHidden = true
-            bottomMask.isHidden = true
+            previewControl.isHidden = true
         }
         
         if asset.isSelected {
             indexLabel.text = "\(asset.index)"
             indexLabel.isHidden = false
-            unableView.isHidden = true
-            badgeView.isHidden = true
             topMask.isHidden = true
-            previewControl.isHidden = true
+            typeView.isHidden = true
+            unableView.isHidden = true
+            bottomMask.isHidden = true
             fileSizeLabel.isHidden = true
             durationLabel.isHidden = true
-            bottomMask.isHidden = true
+            previewControl.isHidden = true
         } else {
             indexLabel.isHidden = true
         }

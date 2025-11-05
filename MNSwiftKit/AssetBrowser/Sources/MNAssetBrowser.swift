@@ -45,12 +45,6 @@ import CoreMedia
     ///   - progressHandler: 进度回调
     ///   - completionHandler: 结束回调
     @objc optional func assetBrowser(_ browser: MNAssetBrowser, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: @escaping MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: @escaping MNAssetBrowserCell.ContentsUpdateHandler)
-    
-    /// 展示结束
-    /// - Parameters:
-    ///   - browser: 资源浏览器
-    ///   - asset: 资源模型
-    @objc optional func assetBrowser(_ browser: MNAssetBrowser, didEndDisplaying asset: any MNAssetBrowseSupported)
 }
 
 /// 资源类型
@@ -779,9 +773,6 @@ extension MNAssetBrowser: UICollectionViewDelegate, UICollectionViewDataSource {
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? MNAssetBrowserCell else { return }
         cell.endDisplaying()
-        if let asset = cell.asset, let delegate = delegate {
-            delegate.assetBrowser?(self, didEndDisplaying: asset)
-        }
     }
     
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {

@@ -66,14 +66,14 @@ public class MNAssetBrowserCell: UICollectionViewCell {
     private let progressView = MNAssetProgressView()
     /// 播放器控制栏
     private let toolBar = UIImageView()
+    /// 进度控制
+    private let slider = MNSlider()
     /// 播放按钮
     private let playButton = UIButton(type: .custom)
     /// 时间
     private let timeLabel = UILabel()
     /// 时长
     private let durationLabel = UILabel()
-    /// 进度控制
-    private let slider = MNSlider()
     /// 视频播放器
     private lazy var player: MNPlayer = {
         let player = MNPlayer()

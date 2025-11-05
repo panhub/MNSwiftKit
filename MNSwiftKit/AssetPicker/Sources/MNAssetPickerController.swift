@@ -545,13 +545,6 @@ extension MNAssetPickerController: MNAssetBrowseDelegate {
         
         MNAssetHelper.fetchContents(asset as! MNAsset, progress: progressHandler, completion: completionHandler)
     }
-    
-    func assetBrowser(_ browser: MNAssetBrowser, didEndDisplaying asset: any MNAssetBrowseSupported) {
-        
-        let asset = asset as! MNAsset
-        asset.cancelRequest()
-        asset.cancelDownload()
-    }
 }
 
 // MARK: - MNDataEmptySource

@@ -57,14 +57,17 @@ class ViewController: UIViewController {
         } else {
             //slider.setValue(0.0, animated: true)
             let options: MNAssetPickerOptions = MNAssetPickerOptions()
-            options.pageCount = 4
+            options.pageCount = 140
+            options.maxPickingCount = 1
             options.allowsPreview = true
             options.allowsPickingAlbum = true
             options.showFileSize = true
-            options.maxPickingCount = 10
+            options.allowsExportVideo = true
             let picker = MNAssetPicker(options: options)
             picker.present { picker, assets in
-                
+                if let asset = assets.first {
+                    print(asset.contents!)
+                }
             }
         }
     }

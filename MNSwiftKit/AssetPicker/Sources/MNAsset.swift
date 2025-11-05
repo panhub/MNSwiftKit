@@ -56,13 +56,13 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
     /// 是否选中
     @objc public var isSelected: Bool = false
     
-    /// 是否是有效资源
+    /// 是否可选择
     @objc public var isEnabled: Bool = true
     
-    /// 资源元数据, 与'PHPhoto'交互时使用
-    @objc public var rawAsset: PHAsset?
+    /// 'Photos'框架下资源元数据
+    @objc public var rawAsset: PHAsset!
     
-    /// PHImageRequestID, 缩略图请求id
+    /// PHImageRequestID, 封面请求id
     @objc public var requestId: Int32 = PHInvalidImageRequestID
     
     /// PHImageRequestID, 内容下载id
@@ -221,7 +221,7 @@ extension MNAsset {
     /// 依据资源内容判定资源大小
     public func reloadFileSize() {
         guard let contents = contents else { return }
-        var paths: [String] = [String]()
+        var paths: [String] = []
         switch type {
         case .video:
             paths.append(contents as! String)

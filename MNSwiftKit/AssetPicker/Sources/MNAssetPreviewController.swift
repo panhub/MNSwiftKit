@@ -255,10 +255,6 @@ extension MNAssetPreviewController: UICollectionViewDataSource, UICollectionView
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? MNAssetBrowserCell else { return }
         cell.endDisplaying()
-        if let asset = cell.asset as? MNAsset {
-            asset.cancelRequest()
-            asset.cancelDownload()
-        }
     }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
@@ -285,19 +281,13 @@ extension MNAssetPreviewController: UICollectionViewDelegateFlowLayout {
 extension MNAssetPreviewController: MNAssetBrowseResourceHandler {
     
     func browserCell(_ cell: MNAssetBrowserCell, fetchCover asset: any MNAssetBrowseSupported, completion completionHandler: @escaping (any MNAssetBrowseSupported, UIImage?) -> Void) {
-        if let cover = asset.cover {
-            completionHandler(asset, cover)
-        } else {
-            MNAssetHelper.fetchCover(asset as! MNAsset, completion: completionHandler)
-        }
+        
+        MNAssetHelper.fetchCover(asset as! MNAsset, completion: completionHandler)
     }
     
     func browserCell(_ cell: MNAssetBrowserCell, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: @escaping (any MNAssetBrowseSupported, Double, (any Error)?) -> Void, completion completionHandler: @escaping (any MNAssetBrowseSupported) -> Void) {
-        if let _ = asset.contents {
-            completionHandler(asset)
-        } else {
-            MNAssetHelper.fetchContents(asset as! MNAsset, progress: progressHandler, completion: completionHandler)
-        }
+        
+        MNAssetHelper.fetchContents(asset as! MNAsset, progress: progressHandler, completion: completionHandler)
     }
 }
 

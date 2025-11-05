@@ -76,7 +76,7 @@ public class MNAssetPickerOptions: NSObject {
      */
     @objc public var allowsExportHeifc: Bool = false
     /**
-     是否允许`AVAssetExportSession`输出视频
+     是否允许`AVAssetExportSession`输出视频为MP4
      */
     @objc public var allowsExportVideo: Bool = false
     /**
@@ -110,7 +110,7 @@ public class MNAssetPickerOptions: NSObject {
     /**
      分页数量 (循环查询至满足分页数量)
      */
-    @objc public var pageCount: Int = 100
+    @objc public var pageCount: Int = 140
     /**
      资源项行间隔
      */

@@ -12,14 +12,14 @@ class MNAssetAlbumBadge: UIControl {
     /// 配置信息
     private let options: MNAssetPickerOptions
     /// 标题
-    private let label: UILabel = UILabel()
+    private let label = UILabel()
     /// 显示箭头
-    private let arrowView: UIView = UIView()
+    private let arrowView = UIView()
     /// 箭头
-    private let imageView: UIImageView = UIImageView()
+    private let imageView = UIImageView()
     /// 可点击状态下宽度约束
     private lazy var ableConstraint: NSLayoutConstraint = arrowView.rightAnchor.constraint(equalTo: rightAnchor, constant: -5.0)
-    /// 可点击状态下宽度约束
+    /// 不可点击状态下宽度约束
     private lazy var unableConstraint: NSLayoutConstraint = label.rightAnchor.constraint(equalTo: rightAnchor, constant: -10.0)
     /// 是否可选择相册
     override var isEnabled: Bool {
@@ -68,8 +68,8 @@ class MNAssetAlbumBadge: UIControl {
         ])
         
         arrowView.isHidden = true
-        arrowView.layer.cornerRadius = 10.0
         arrowView.clipsToBounds = true
+        arrowView.layer.cornerRadius = 10.0
         arrowView.isUserInteractionEnabled = false
         arrowView.translatesAutoresizingMaskIntoConstraints = false
         arrowView.backgroundColor = options.mode == .light ? .white : UIColor(red: 166.0/255.0, green: 166.0/255.0, blue: 166.0/255.0, alpha: 1.0)
@@ -94,9 +94,9 @@ class MNAssetAlbumBadge: UIControl {
             imageView.centerYAnchor.constraint(equalTo: arrowView.centerYAnchor)
         ])
         
-        addConstraints([ableConstraint, unableConstraint])
         ableConstraint.isActive = false
         unableConstraint.isActive = true
+        addConstraints([ableConstraint, unableConstraint])
     }
     
     required init?(coder: NSCoder) {

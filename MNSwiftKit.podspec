@@ -102,7 +102,7 @@ Pod::Spec.new do |s|
   
   # Request <网络请求封装>
   s.subspec 'Request' do |r|
-    r.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    r.frameworks = 'UIKit', 'Foundation', 'CoreGraphics', 'UniformTypeIdentifiers'
     r.source_files = 'MNSwiftKit/Request/Sources/**/*.swift'
     r.dependency 'MNSwiftKit/Networking'
   end
@@ -159,7 +159,7 @@ Pod::Spec.new do |s|
   
   # AssetPicker <资源选择器>
   s.subspec 'AssetPicker' do |p|
-    p.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'Photos', 'CoreFoundation', 'CoreGraphics'
+    p.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'Photos', 'CoreFoundation', 'CoreGraphics', 'UniformTypeIdentifiers'
     p.source_files = 'MNSwiftKit/AssetPicker/Sources/*'
     p.resource_bundles = {
         'MNSwiftKit_AssetPicker' => ['MNSwiftKit/AssetPicker/Resources/*']

@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import AVFoundation
+import UniformTypeIdentifiers
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
