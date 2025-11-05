@@ -8,37 +8,41 @@
 import UIKit
 import Photos
 
-class MNAssetAlbum: NSObject {
-    
-    /// 资源总数
-    var count: Int = 0
-    
-    /// 当前已查询个数
-    var offset: Int = 0
+public class MNAssetAlbum: NSObject {
     
     /// 相簿展示名称
-    let name: String
+    public let name: String
     
     /// 系统相簿
-    let collection: PHAssetCollection
+    public let collection: PHAssetCollection
     
     /// 查询选项
-    let fetchOptions = PHFetchOptions()
+    public let fetchOptions = PHFetchOptions()
+    
+    /// 资源总数
+    public private(set) var count: Int = 0
+    
+    /// 当前已查询个数
+    public internal(set) var offset: Int = 0
     
     /// 封面资源模型
-    var cover: MNAsset?
+    public var cover: MNAsset?
     
     /// 相簿资源集合
-    var assets: [MNAsset] = [MNAsset]()
+    public var assets: [MNAsset] = [MNAsset]()
     
     /// 是否选中
-    var isSelected: Bool = false
+    public var isSelected: Bool = false
+    
+    /// 是否还有更多资源未查询
+    public var hasMore: Bool { offset < count }
+    
     
     /// 构造相簿资源
     /// - Parameters:
     ///   - collection: 系统照片束
     ///   - options: 选择器选项
-    init(collection: PHAssetCollection, options: MNAssetPickerOptions) {
+    public init(collection: PHAssetCollection, options: MNAssetPickerOptions) {
         self.collection = collection
         self.name = collection.mn.localizedName
         super.init()
@@ -65,7 +69,7 @@ class MNAssetAlbum: NSObject {
     
     /// 添加资源
     /// - Parameter asset: 资源模型
-    func addAsset(_ asset: MNAsset) {
+    public func addAsset(_ asset: MNAsset) {
         objc_sync_enter(self)
         if assets.isEmpty {
             assets.append(asset)
@@ -77,7 +81,7 @@ class MNAssetAlbum: NSObject {
     
     /// 插入资源
     /// - Parameter asset: 资源模型
-    func insertAsset(atFront asset: MNAsset) {
+    public func insertAsset(atFront asset: MNAsset) {
         objc_sync_enter(self)
         if assets.isEmpty {
             assets[0] = asset
@@ -88,7 +92,7 @@ class MNAssetAlbum: NSObject {
     }
     
     /// 删除所有资源
-    func removeAllAssets() {
+    public func removeAllAssets() {
         objc_sync_enter(self)
         assets.removeAll()
         objc_sync_exit(self)
@@ -96,7 +100,7 @@ class MNAssetAlbum: NSObject {
     
     /// 删除指定资源
     /// - Parameter assets: 指定资源集合
-    func removeAssets(_ assets: [MNAsset]) {
+    public func removeAssets(_ assets: [MNAsset]) {
         objc_sync_enter(self)
         self.assets.removeAll { assets.contains($0) }
         objc_sync_exit(self)
@@ -104,7 +108,7 @@ class MNAssetAlbum: NSObject {
     
     /// 添加指定资源
     /// - Parameter assets: 指定资源集合
-    func addAssets(_ assets: [MNAsset]) {
+    public func addAssets(_ assets: [MNAsset]) {
         objc_sync_enter(self)
         self.assets.append(contentsOf: assets)
         objc_sync_exit(self)
@@ -112,7 +116,7 @@ class MNAssetAlbum: NSObject {
     
     /// 删除指定的相册资源
     /// - Parameter assets: 相册资源集合
-    func removeAssets(with assets: [PHAsset]) {
+    public func removeAssets(with assets: [PHAsset]) {
         objc_sync_enter(self)
         let localIdentifiers = assets.compactMap { $0.localIdentifier }
         self.assets.removeAll { asset in

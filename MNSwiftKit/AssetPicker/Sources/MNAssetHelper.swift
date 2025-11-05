@@ -9,42 +9,42 @@ import UIKit
 import Photos
 import Foundation
 
-class MNAssetHelper {
+public class MNAssetHelper {
     
-    /// 内部构造唯一入口
-    fileprivate static let helper: MNAssetHelper = MNAssetHelper()
-    
-    /// 视频请求配置
-    fileprivate lazy var videoOptions: PHVideoRequestOptions = {
-        let options = PHVideoRequestOptions()
-        options.version = .current
-        options.deliveryMode = .automatic
-        options.isNetworkAccessAllowed = true
-        return options
-    }()
-    
-    /// 图片请求配置
-    fileprivate lazy var imageOptions: PHImageRequestOptions = {
-        let options = PHImageRequestOptions()
-        options.version = .current
-        options.resizeMode = .fast
-        options.deliveryMode = .opportunistic
-        options.isNetworkAccessAllowed = true
-        return options
-    }()
-    
-    /// LivePhoto请求配置
-    fileprivate lazy var livePhotoOptions: NSObject? = {
-        guard #available(iOS 9.1, *) else { return nil }
-        let options = PHLivePhotoRequestOptions()
-        options.version = .current
-        options.isNetworkAccessAllowed = true
-        options.deliveryMode = .highQualityFormat
-        return options
-    }()
-    
-    /// 禁止外部直接构造
-    private init() {}
+//    /// 内部构造唯一入口
+//    public static let shared = MNAssetHelper()
+//    
+//    /// 视频请求配置
+//    fileprivate lazy var videoOptions: PHVideoRequestOptions = {
+//        let options = PHVideoRequestOptions()
+//        options.version = .current
+//        options.deliveryMode = .automatic
+//        options.isNetworkAccessAllowed = true
+//        return options
+//    }()
+//    
+//    /// 图片请求配置
+//    fileprivate lazy var imageOptions: PHImageRequestOptions = {
+//        let options = PHImageRequestOptions()
+//        options.version = .current
+//        options.resizeMode = .fast
+//        options.deliveryMode = .opportunistic
+//        options.isNetworkAccessAllowed = true
+//        return options
+//    }()
+//    
+//    /// LivePhoto请求配置
+//    fileprivate lazy var livePhotoOptions: NSObject? = {
+//        guard #available(iOS 9.1, *) else { return nil }
+//        let options = PHLivePhotoRequestOptions()
+//        options.version = .current
+//        options.isNetworkAccessAllowed = true
+//        options.deliveryMode = .highQualityFormat
+//        return options
+//    }()
+//    
+//    /// 禁止外部直接构造
+//    private init() {}
 }
 
 // MARK: - Collection
@@ -53,7 +53,7 @@ extension MNAssetHelper {
     /// 获取相簿
     /// - Parameters:
     ///   - options: 选择器配置模型
-    ///   - completionHandler: 相簿集合结果回调
+    ///   - completionHandler: 相簿集合 主线程调用
     public class func fetchAlbum(_ options: MNAssetPickerOptions, completion completionHandler: @escaping ([MNAssetAlbum])->Void) {
         DispatchQueue.global(qos: .userInitiated).async {
             var albums: [MNAssetAlbum] = [MNAssetAlbum]()
@@ -81,7 +81,7 @@ extension MNAssetHelper {
     ///   - album: 相簿模型
     ///   - options: 选择器配置模型
     ///   - startHandler: 开始加载回调
-    ///   - completionHandler: 结束回调
+    ///   - completionHandler: 结束回调 主线程调用
     public class func fetchAsset(in album: MNAssetAlbum, options: MNAssetPickerOptions, start startHandler: (()->Void)? = nil, completion completionHandler: @escaping ()->Void) {
         DispatchQueue.global().async {
             // 循环拉取直到满足分页数量
@@ -150,11 +150,12 @@ extension MNAssetHelper {
             }
         } else {
             guard let rawAsset = asset.rawAsset else { return }
-            let imageOptions = MNAssetHelper.helper.imageOptions
-            imageOptions.resizeMode = .fast
-            imageOptions.deliveryMode = .opportunistic
-            imageOptions.isNetworkAccessAllowed = true
-            asset.requestId = PHImageManager.default().requestImage(for: rawAsset, targetSize: asset.renderSize, contentMode: .aspectFit, options: imageOptions) { [weak asset] result, info in
+            let requestOptions = PHImageRequestOptions()
+            requestOptions.version = .current
+            requestOptions.resizeMode = .fast
+            requestOptions.deliveryMode = .opportunistic
+            requestOptions.isNetworkAccessAllowed = true
+            asset.requestId = PHImageManager.default().requestImage(for: rawAsset, targetSize: asset.renderSize, contentMode: .aspectFit, options: requestOptions) { [weak asset] result, info in
                 // 可能调用多次
                 guard let asset = asset else { return }
                 if let info = info {
@@ -201,7 +202,7 @@ extension MNAssetHelper {
     /// - Parameters:
     ///   - asset: 资源模型
     ///   - completionHandler: 结束后回调
-    public class func fetchCover(_ asset: MNAsset, completion completionHandler: ((MNAsset, UIImage?)->Void)?) {
+    public func fetchCover(_ asset: MNAsset, completion completionHandler: ((MNAsset, UIImage?)->Void)?) {
         if let cover = asset.cover {
             DispatchQueue.main.async {
                 completionHandler?(asset, cover)
@@ -214,11 +215,12 @@ extension MNAssetHelper {
             }
             return
         }
-        let options = MNAssetHelper.helper.imageOptions
-        options.resizeMode = .fast
-        options.deliveryMode = .fastFormat
-        options.isNetworkAccessAllowed = true
-        asset.requestId = PHImageManager.default().requestImage(for: rawAsset, targetSize: asset.renderSize, contentMode: .aspectFit, options: options) { [weak asset] result, info in
+        let requestOptions = PHImageRequestOptions()
+        requestOptions.version = .current
+        requestOptions.resizeMode = .fast
+        requestOptions.deliveryMode = .fastFormat
+        requestOptions.isNetworkAccessAllowed = true
+        asset.requestId = PHImageManager.default().requestImage(for: rawAsset, targetSize: asset.renderSize, contentMode: .aspectFit, options: requestOptions) { [weak asset] result, info in
             // 调用一次
             guard let asset = asset else { return }
             asset.requestId = PHInvalidImageRequestID
@@ -242,6 +244,61 @@ extension MNAssetHelper {
                 completionHandler?(asset, image)
             }
         }
+    }
+    
+    /// 输出封面图片
+    /// - Parameters:
+    ///   - asset: 相册资源
+    ///   - size: 目标尺寸大小
+    ///   - completionHandler: 封面回调 主线程
+    @discardableResult
+    public func exportCover(_ asset: PHAsset, target size: CGSize, completion completionHandler: ((_ cover: UIImage?)->Void)?) -> PHImageRequestID {
+        let requestOptions = PHImageRequestOptions()
+        requestOptions.version = .current
+        requestOptions.resizeMode = .fast
+        requestOptions.deliveryMode = .fastFormat
+        requestOptions.isNetworkAccessAllowed = true
+        return PHImageManager.default().requestImage(for: asset, targetSize: size, contentMode: .aspectFit, options: requestOptions) { image, info in
+            if let info = info {
+                if let cancelled = info[PHImageCancelledKey] as? Bool, cancelled {
+#if DEBUG
+                    print("已取消请求资源图片")
+#endif
+                }
+                if let error = info[PHImageErrorKey] as? Error {
+#if DEBUG
+                    print("请求资源图片出错: \(error)")
+#endif
+                }
+            }
+            DispatchQueue.main.async {
+                completionHandler?(image)
+            }
+        }
+    }
+    
+    /// 输出资源大小
+    /// - Parameters:
+    ///   - asset: 相册资源
+    ///   - queue: 处理任务的队列
+    ///   - completionHandler: 结果回调  主线程
+    public class func exportFileSize(_ asset: PHAsset, on queue: DispatchQueue = .global(qos: .userInitiated), completion completionHandler: ((_ fileSize: Int64)->Void)?) {
+        queue.async {
+            var fileSize: Int64 = 0
+            PHAssetResource.assetResources(for: asset).forEach { resource in
+                if let value = resource.value(forKey: "fileSize") as? Int64 {
+                    fileSize += value
+                }
+            }
+            DispatchQueue.main.async {
+                completionHandler?(fileSize)
+            }
+        }
+    }
+    
+    public class func exportContents(_ asset: PHAsset, options: MNAssetPickerOptions, completion completionHandler: ((_ contents: Any?, _ fileSize: Int64)->Void)?) {
+        
+        
     }
 }
 
