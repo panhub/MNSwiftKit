@@ -316,7 +316,8 @@ extension MNAssetHelper {
             }
             MNAssetHelper.exportContents(rawAsset, options: options, progress: nil) { contents, fileSize, error in
                 var elements: [MNAsset] = container
-                if let _ = contents {
+                if let contents = contents {
+                    asset.contents = contents
                     asset.update(fileSize: fileSize)
                     elements.append(asset)
                 }

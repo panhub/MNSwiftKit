@@ -16,11 +16,9 @@ class MNAssetAlbumBadge: UIControl {
     /// 显示箭头
     private let arrowView = UIView()
     /// 箭头
+    private let stackView = UIStackView()
+    /// 箭头
     private let imageView = UIImageView()
-    /// 可点击状态下宽度约束
-    private lazy var ableConstraint: NSLayoutConstraint = arrowView.rightAnchor.constraint(equalTo: rightAnchor, constant: -5.0)
-    /// 不可点击状态下宽度约束
-    private lazy var unableConstraint: NSLayoutConstraint = label.rightAnchor.constraint(equalTo: rightAnchor, constant: -10.0)
     /// 是否可选择相册
     override var isEnabled: Bool {
         get { super.isEnabled }
@@ -28,8 +26,13 @@ class MNAssetAlbumBadge: UIControl {
             super.isEnabled = newValue
             backgroundColor = newValue ? (options.mode == .light ? UIColor(white: 0.0, alpha: 0.12) : UIColor(red: 74.0/255.0, green: 74.0/255.0, blue: 74.0/255.0, alpha: 1.0)) : .clear
             arrowView.isHidden = newValue == false
-            ableConstraint.isActive = newValue
-            unableConstraint.isActive = newValue == false
+            if let constraint = constraints.first(where: { constraint in
+                guard let firstItem = constraint.firstItem, firstItem is UIStackView else { return false }
+                guard constraint.firstAttribute == .right, constraint.secondAttribute == .right else { return false }
+                return true
+            }) {
+                constraint.constant = newValue ? -7.0 : -11.0
+            }
             setNeedsLayout()
         }
     }
@@ -55,17 +58,26 @@ class MNAssetAlbumBadge: UIControl {
         
         backgroundColor = .clear
         
+        stackView.spacing = 7.0
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.isUserInteractionEnabled = false
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(stackView)
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: topAnchor),
+            stackView.leftAnchor.constraint(equalTo: leftAnchor, constant: 11.0),
+            stackView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            stackView.rightAnchor.constraint(equalTo: rightAnchor, constant: -7.0)
+        ])
+        
         label.numberOfLines = 1
         label.textAlignment = .center
         label.isUserInteractionEnabled = false
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.systemFont(ofSize: 16.0, weight: .medium)
         label.textColor = options.mode == .light ? .black : UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)
-        addSubview(label)
-        NSLayoutConstraint.activate([
-            label.leftAnchor.constraint(equalTo: leftAnchor, constant: 10.0),
-            label.centerYAnchor.constraint(equalTo: centerYAnchor)
-        ])
+        stackView.addArrangedSubview(label)
         
         arrowView.isHidden = true
         arrowView.clipsToBounds = true
@@ -73,12 +85,10 @@ class MNAssetAlbumBadge: UIControl {
         arrowView.isUserInteractionEnabled = false
         arrowView.translatesAutoresizingMaskIntoConstraints = false
         arrowView.backgroundColor = options.mode == .light ? .white : UIColor(red: 166.0/255.0, green: 166.0/255.0, blue: 166.0/255.0, alpha: 1.0)
-        addSubview(arrowView)
+        stackView.addArrangedSubview(arrowView)
         NSLayoutConstraint.activate([
-            arrowView.leftAnchor.constraint(equalTo: label.rightAnchor, constant: 7.0),
             arrowView.widthAnchor.constraint(equalToConstant: 20.0),
-            arrowView.heightAnchor.constraint(equalToConstant: 20.0),
-            arrowView.centerYAnchor.constraint(equalTo: centerYAnchor)
+            arrowView.heightAnchor.constraint(equalToConstant: 20.0)
         ])
         
         imageView.clipsToBounds = true
@@ -93,10 +103,6 @@ class MNAssetAlbumBadge: UIControl {
             imageView.centerXAnchor.constraint(equalTo: arrowView.centerXAnchor),
             imageView.centerYAnchor.constraint(equalTo: arrowView.centerYAnchor)
         ])
-        
-        ableConstraint.isActive = false
-        unableConstraint.isActive = true
-        addConstraints([ableConstraint, unableConstraint])
     }
     
     required init?(coder: NSCoder) {
@@ -107,8 +113,7 @@ class MNAssetAlbumBadge: UIControl {
     /// - Parameters:
     ///   - title: 标题
     ///   - animated: 是否动态展示过程
-    ///   - completion: 结束回调
-    func updateTitle(_ title: String?, animated: Bool = false, completion: (()->Void)? = nil) {
+    func updateTitle(_ title: String?, animated: Bool = false) {
         let animations: ()->Void = { [weak self] in
             guard let self = self else { return }
             self.setNeedsLayout()
@@ -116,16 +121,9 @@ class MNAssetAlbumBadge: UIControl {
         }
         label.text = title
         if animated {
-            UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseInOut, animations: animations) { _ in
-                if let completion = completion {
-                    completion()
-                }
-            }
+            UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseInOut, animations: animations)
         } else {
             animations()
-            if let completion = completion {
-                completion()
-            }
         }
     }
 }
