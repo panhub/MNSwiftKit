@@ -8,49 +8,75 @@
 import UIKit
 import Photos
 
+/// 相簿
 public class MNAssetAlbum: NSObject {
     
     /// 相簿展示名称
     public let name: String
     
+    /// 本地标识
+    public let identifier: String
+    
     /// 系统相簿
     public let collection: PHAssetCollection
     
     /// 查询选项
-    public let fetchOptions = PHFetchOptions()
-    
-    /// 资源总数
-    public private(set) var count: Int = 0
+    public let options = PHFetchOptions()
     
     /// 当前已查询个数
     public internal(set) var offset: Int = 0
     
-    /// 相簿资源集合
-    public var assets: [MNAsset] = [MNAsset]()
+    /// 资源总数
+    public internal(set) var count: Int = 0
     
     /// 是否选中
     public var isSelected: Bool = false
     
-    /// 是否还有更多资源未查询
-    public var hasMore: Bool { offset < count }
+    /// 已加载的资源集合
+    public var assets: [MNAsset] = []
+    
+    /// 封面图片
+    public var cover: UIImage?
+    
+    /// 封面变化回调
+    public var coverUpdateHandler: ((_ album: MNAssetAlbum)->Void)?
     
     
-    /// 构造相簿资源
+    
+    /// 构造相簿
     /// - Parameters:
-    ///   - collection: 系统照片束
+    ///   - collection: 系统资源束
     ///   - options: 选择器选项
     public init(collection: PHAssetCollection, options: MNAssetPickerOptions) {
         self.collection = collection
+        self.identifier = collection.localIdentifier
         self.name = collection.mn.localizedName
         super.init()
         if options.allowsPickingVideo == false {
-            fetchOptions.predicate = NSPredicate(format: "mediaType == %d", PHAssetMediaType.image.rawValue)
+            self.options.predicate = NSPredicate(format: "mediaType == %d", PHAssetMediaType.image.rawValue)
         } else if options.allowsPickingPhoto == false, options.allowsPickingGif == false, options.allowsPickingLivePhoto == false {
-            fetchOptions.predicate = NSPredicate(format: "mediaType == %d", PHAssetMediaType.video.rawValue)
+            self.options.predicate = NSPredicate(format: "mediaType == %d", PHAssetMediaType.video.rawValue)
         } else {
-            fetchOptions.predicate = NSPredicate(format: "mediaType == %d || mediaType == %d", PHAssetMediaType.image.rawValue, PHAssetMediaType.video.rawValue)
+            self.options.predicate = NSPredicate(format: "mediaType == %d || mediaType == %d", PHAssetMediaType.image.rawValue, PHAssetMediaType.video.rawValue)
         }
-        fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: options.sortAscending)]
-        count = PHAsset.fetchAssets(in: collection, options: fetchOptions).count
+        self.options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: options.sortAscending)]
+        let result = PHAsset.fetchAssets(in: collection, options: self.options)
+        self.count = result.count
+        if let first = result.firstObject {
+            updateCover(using: first, size: options.renderSize)
+        }
+    }
+    
+    /// 更新封面
+    /// - Parameters:
+    ///   - asset: 使用的相册资产
+    ///   - size: 目标尺寸
+    public func updateCover(using asset: PHAsset, size: CGSize) {
+        MNAssetHelper.exportCover(asset, mode: .opportunistic, size: size) { [weak self] cover, error in
+            guard let self = self else { return }
+            guard let cover = cover else { return }
+            self.cover = cover
+            self.coverUpdateHandler?(self)
+        }
     }
 }

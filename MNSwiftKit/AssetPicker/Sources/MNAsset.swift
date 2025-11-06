@@ -21,6 +21,9 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
     /// 本地标识
     @objc public var identifier: String = ""
     
+    /// 内部标记是哪个Collection加载的资源
+    @objc public var album: String = ""
+    
     /// 文件类型
     @objc public var type: MNAssetType = .photo
     
@@ -78,10 +81,10 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
     @objc public weak var container: UIView?
     
     /// 缩略图变化回调
-    @objc internal var coverUpdateHandler: MNAssetUpdateHandler?
+    @objc public var coverUpdateHandler: MNAssetUpdateHandler?
     
     /// 文件大小变化回调
-    @objc internal var fileSizeUpdateHandler: MNAssetUpdateHandler?
+    @objc public var fileSizeUpdateHandler: MNAssetUpdateHandler?
     
     /// 构造资源模型
     public override init() {
@@ -210,8 +213,7 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
     public override func isEqual(_ object: Any?) -> Bool {
         if super.isEqual(object) { return true }
         guard let other = object as? MNAsset else { return false }
-        if identifier == other.identifier { return true }
-        if let rawAsset = rawAsset, let otherAsset = other.rawAsset, rawAsset.localIdentifier == otherAsset.localIdentifier { return true }
+        if identifier == other.identifier, album == other.album { return true }
         return false
     }
 }

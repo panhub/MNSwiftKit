@@ -285,23 +285,18 @@ extension MNAssetPickerController {
         }
     }
     
+    /// 加载相册内资源
+    /// - Parameter album: 相册模型
     private func fetchAssets(in album: MNAssetAlbum) {
         let completionHandler: ()->Void = { [weak self] in
             guard let self = self else { return }
-            self.updateAlbum(album)
+            self.reload(with: album)
             let hasMore: Bool = album.offset < album.count
-            if let header = self.collectionView.mn.header {
+            if let component = self.collectionView.mn.header ?? self.collectionView.mn.footer {
                 if hasMore {
-                    header.endRefreshing()
+                    component.endRefreshing()
                 } else {
-                    header.endRefreshingAndNoMoreData()
-                }
-            }
-            if let footer = self.collectionView.mn.footer {
-                if hasMore {
-                    footer.endRefreshing()
-                } else {
-                    footer.endRefreshingAndNoMoreData()
+                    component.endRefreshingAndNoMoreData()
                 }
             }
             self.navBar.badge.isUserInteractionEnabled = true
@@ -336,9 +331,9 @@ extension MNAssetPickerController {
 // MARK: - Update
 extension MNAssetPickerController {
     
-    /// 更新相簿
+    /// 重载数据
     /// - Parameter album: 相簿模型
-    private func updateAlbum(_ album: MNAssetAlbum) {
+    private func reload(with album: MNAssetAlbum) {
         // 处理不可选
         if album.assets.isEmpty == false {
             album.assets.filter { $0.isEnabled == false }.forEach { $0.isEnabled = true }
@@ -350,8 +345,9 @@ extension MNAssetPickerController {
         UIView.performWithoutAnimation {
             self.collectionView.reloadData()
         }
-        if assets.count > 0, assets.count <= options.pageCount, options.sortAscending == false {
+        if assets.isEmpty == false, assets.count <= options.pageCount, options.sortAscending == false {
             // 第一页数据且降序
+            // TODO: 这里需要进一步优化, assets.count <= options.pageCount 并不准确
             let indexPath = IndexPath(item: assets.count - 1, section: 0)
             collectionView.scrollToItem(at: indexPath, at: .top, animated: false)
         }
@@ -711,16 +707,7 @@ extension MNAssetPickerController: MNAssetAlbumViewDelegate {
         albumView.dismiss()
         navBar.badge.isSelected = false
         guard let album = album else { return }
-        MNAssetHelper.fetchAsset(in: album, options: options) { [weak self] in
-            guard let self = self else { return }
-            self.collectionView.showActivityToast("请稍后")
-            self.navBar.badge.isUserInteractionEnabled = false
-        } completion: { [weak self] in
-            guard let self = self else { return }
-            self.collectionView.closeToast()
-            self.navBar.badge.isUserInteractionEnabled = true
-            self.updateAlbum(album)
-        }
+        fetchAssets(in: album)
     }
 }
 

@@ -13,11 +13,13 @@ class MNAssetAlbumCell: UITableViewCell {
     /// 相簿模型
     private(set) var album: MNAssetAlbum!
     /// 标题
-    private let nameLabel: UILabel = UILabel()
+    private let nameLabel = UILabel()
     /// 数量
-    private let countLabel: UILabel = UILabel()
+    private let countLabel = UILabel()
+    /// 封面
+    private let coverView = UIImageView()
     /// 数量
-    private let selectedView: UIImageView = UIImageView()
+    private let selectedView = UIImageView()
     
     /// 构造相册表格
     /// - Parameters:
@@ -31,22 +33,34 @@ class MNAssetAlbumCell: UITableViewCell {
         contentView.backgroundColor = .clear
         separatorInset = UIEdgeInsets(top: 0.0, left: 15.0, bottom: 0.0, right: 0.0)
         
+        // 封面
+        coverView.clipsToBounds = true
+        coverView.layer.cornerRadius = 4.0
+        coverView.contentMode = .scaleAspectFill
+        coverView.backgroundColor = UIColor(white: 0.0, alpha: 0.12)
+        coverView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(coverView)
+        NSLayoutConstraint.activate([
+            coverView.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 15.0),
+            coverView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 1.0, constant: -20.0),
+            coverView.widthAnchor.constraint(equalTo: coverView.heightAnchor, multiplier: 1.0),
+            coverView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+        ])
+
         // 标题
         nameLabel.numberOfLines = 1
-        nameLabel.isUserInteractionEnabled = false
         nameLabel.font = .systemFont(ofSize: 17.0, weight: .regular)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.textColor = options.mode == .light ? .darkText.withAlphaComponent(0.91) : .white.withAlphaComponent(0.86)
         //UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0)
         contentView.addSubview(nameLabel)
         NSLayoutConstraint.activate([
-            nameLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 15.0),
+            nameLabel.leftAnchor.constraint(equalTo: coverView.rightAnchor, constant: 15.0),
             nameLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
         
         // 数量
         countLabel.numberOfLines = 1
-        countLabel.isUserInteractionEnabled = false
         countLabel.font = .systemFont(ofSize: 15.0, weight: .regular)
         countLabel.translatesAutoresizingMaskIntoConstraints = false
         countLabel.textColor = nameLabel.textColor//UIColor(red: 74.0/255.0, green: 74.0/255.0, blue: 74.0/255.0, alpha: 1.0)
@@ -89,10 +103,17 @@ extension MNAssetAlbumCell {
     
     /// 更新相簿模型
     /// - Parameter album: 相簿模型
-    func updateAlbum(_ album: MNAssetAlbum) {
+    func update(album: MNAssetAlbum) {
         self.album = album
         nameLabel.text = album.name
-        //countLabel.text = "(\(selections.count)/\(album.count))"
+        let count = album.assets.filter { $0.isSelected }.count
+        countLabel.text = "(\(count)/\(album.count))"
         selectedView.isHidden = album.isSelected == false
+        coverView.image = album.cover ?? AssetPickerResource.image(named: "album")
+        album.coverUpdateHandler = { [weak self] album in
+            guard let self = self else { return }
+            guard let item = self.album, item.identifier == album.identifier else { return }
+            self.coverView.image = album.cover
+        }
     }
 }

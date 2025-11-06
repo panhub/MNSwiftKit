@@ -44,15 +44,14 @@ extension MNAssetHelper {
     /// - Parameters:
     ///   - album: 相簿模型
     ///   - options: 选择器配置模型
-    ///   - startHandler: 开始加载回调
     ///   - completionHandler: 结束回调 主线程调用
-    public class func fetchAsset(in album: MNAssetAlbum, options: MNAssetPickerOptions, start startHandler: (()->Void)? = nil, completion completionHandler: @escaping ()->Void) {
-        DispatchQueue.global().async {
+    public class func fetchAsset(in album: MNAssetAlbum, options: MNAssetPickerOptions, completion completionHandler: (()->Void)?) {
+        options.queue.async {
             // 循环拉取直到满足分页数量
             var assets: [MNAsset] = []
             repeat {
                 var offset = 0
-                let fetchOptions = album.fetchOptions
+                let fetchOptions = album.options
                 fetchOptions.setValue(album.offset, forKey: "fetchOffset")
                 fetchOptions.fetchLimit = options.pageCount
                 let result = PHAsset.fetchAssets(in: album.collection, options: fetchOptions)
@@ -76,6 +75,7 @@ extension MNAssetHelper {
                     let asset = MNAsset()
                     asset.type = type
                     asset.rawAsset = element
+                    asset.album = album.identifier
                     asset.duration = element.duration
                     asset.identifier = element.localIdentifier
                     asset.renderSize = options.renderSize
@@ -87,13 +87,20 @@ extension MNAssetHelper {
                 }
                 album.offset += offset
             } while (assets.count < options.pageCount && album.offset < album.count)
+            if options.sortAscending == false {
+                assets.reverse()
+            }
             DispatchQueue.main.async {
+                if album.offset <= options.pageCount {
+                    // 第一页, 删除之前的资源
+                    album.assets.removeAll()
+                }
                 if options.sortAscending {
                     album.assets.append(contentsOf: assets)
                 } else {
-                    album.assets.insert(contentsOf: assets.reversed(), at: 0)
+                    album.assets.insert(contentsOf: assets, at: 0)
                 }
-                completionHandler()
+                completionHandler?()
             }
         }
     }
@@ -120,16 +127,11 @@ extension MNAssetHelper {
             }
             return
         }
-        let requestOptions = PHImageRequestOptions()
-        requestOptions.version = .current
-        requestOptions.resizeMode = .fast
-        requestOptions.deliveryMode = .opportunistic
-        requestOptions.isNetworkAccessAllowed = true
-        PHImageManager.default().requestImage(for: rawAsset, targetSize: options.renderSize, contentMode: .aspectFit, options: requestOptions) { [weak asset] image, info in
+        exportCover(rawAsset, mode: .opportunistic, size: asset.renderSize) { [weak asset] cover, _ in
             // 可能调用多次
             guard let asset = asset else { return }
-            guard let image = image else { return }
-            asset.update(cover: image)
+            guard let cover = cover else { return }
+            asset.update(cover: cover)
         }
     }
     
@@ -150,14 +152,13 @@ extension MNAssetHelper {
             }
             return
         }
-        exportCover(rawAsset, target: asset.renderSize) { cover, _ in
+        exportCover(rawAsset, size: asset.renderSize) { cover, _ in
             if let cover = cover {
                 asset.cover = cover
             }
             completionHandler?(asset)
         }
     }
-    
     
     
     /// 获取资源大小
@@ -223,14 +224,15 @@ extension MNAssetHelper {
     /// 输出封面图片
     /// - Parameters:
     ///   - asset: 相册资源
+    ///   - mode: 处理模式 'fastFormat': 回调一次  'opportunistic': 陆续回调
     ///   - size: 目标尺寸大小
     ///   - completionHandler: 封面回调 主线程
     @discardableResult
-    public class func exportCover(_ asset: PHAsset, target size: CGSize, completion completionHandler: ((_ cover: UIImage?, _ error: Error?)->Void)?) -> PHImageRequestID {
+    public class func exportCover(_ asset: PHAsset, mode: PHImageRequestOptionsDeliveryMode = .fastFormat, size: CGSize, completion completionHandler: ((_ cover: UIImage?, _ error: Error?)->Void)?) -> PHImageRequestID {
         let requestOptions = PHImageRequestOptions()
         requestOptions.version = .current
         requestOptions.resizeMode = .fast
-        requestOptions.deliveryMode = .fastFormat
+        requestOptions.deliveryMode = mode
         requestOptions.isNetworkAccessAllowed = true
         return PHImageManager.default().requestImage(for: asset, targetSize: size, contentMode: .aspectFit, options: requestOptions) { image, info in
             guard let image = image else {

@@ -126,7 +126,7 @@ extension MNAssetAlbumView: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard indexPath.row < albums.count, let cell = cell as? MNAssetAlbumCell else { return }
         let album = albums[indexPath.row]
-        cell.updateAlbum(album)
+        cell.update(album: album)
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
