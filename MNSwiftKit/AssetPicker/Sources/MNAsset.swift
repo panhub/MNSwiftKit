@@ -30,7 +30,7 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
     /// video: String路径
     @objc public var contents: Any?
     
-    /// 显示大小
+    /// 封面渲染大小(不一定总是符合要求)
     @objc public var renderSize: CGSize = CGSize(width: 250.0, height: 250.0)
     
     /// 时长(仅视频资源有效)

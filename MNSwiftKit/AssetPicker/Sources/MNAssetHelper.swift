@@ -99,7 +99,7 @@ extension MNAssetHelper {
     }
 }
 
-// MARK: - Profile & Cover
+// MARK: - Fetch
 extension MNAssetHelper {
     
     /// 请求封面(可能多次回调, 利用模型内部回调更新, 针对于内部相册使用)
@@ -150,13 +150,75 @@ extension MNAssetHelper {
             }
             return
         }
-        exportCover(rawAsset, target: .init(width: 300.0, height: 300.0)) { cover, _ in
+        exportCover(rawAsset, target: asset.renderSize) { cover, _ in
             if let cover = cover {
                 asset.cover = cover
             }
             completionHandler?(asset)
         }
     }
+    
+    
+    
+    /// 获取资源大小
+    /// - Parameters:
+    ///   - asset: 相册资源模型
+    ///   - queue: 处理任务的队列
+    public class func fetchFileSize(_ asset: MNAsset, on queue: DispatchQueue = .global(qos: .userInitiated)) {
+        guard asset.fileSize <= 0 else {
+            DispatchQueue.main.async {
+                asset.fileSizeUpdateHandler?(asset)
+            }
+            return
+        }
+        guard let rawAsset = asset.rawAsset else {
+            DispatchQueue.main.async {
+                asset.fileSizeUpdateHandler?(asset)
+            }
+            return
+        }
+        exportFileSize(rawAsset, on: queue) { [weak asset] fileSize in
+            guard let asset = asset else { return }
+            asset.update(fileSize: fileSize)
+        }
+    }
+    
+    /// 获取资源内容
+    /// - Parameters:
+    ///   - asset: 相册资源
+    ///   - progressHandler: 进度回调
+    ///   - completionHandler: 结束回调 主线程
+    public class func fetchContents(_ asset: MNAsset, progress progressHandler: ((_ asset: MNAsset, _ value: Double, _ error: Error?)->Void)?, completion completionHandler: ((_ asset: MNAsset)->Void)?) {
+        if let _ = asset.contents {
+            DispatchQueue.main.async {
+                completionHandler?(asset)
+            }
+            return
+        }
+        guard let rawAsset = asset.rawAsset else {
+            DispatchQueue.main.async {
+                completionHandler?(asset)
+            }
+            return
+        }
+        let options = MNAssetPickerOptions()
+        options.allowsExportVideo = false
+        options.allowsExportLiveResource = false
+        exportContents(rawAsset, options: options) { [weak asset] value, error in
+            guard let asset = asset else { return }
+            progressHandler?(asset, value, error)
+        } completion: { [weak asset] contents, fileSize, error in
+            guard let asset = asset else { return }
+            if let contents = contents {
+                asset.contents = contents
+            }
+            completionHandler?(asset)
+        }
+    }
+}
+
+// MARK: - Export
+extension MNAssetHelper {
     
     /// 输出封面图片
     /// - Parameters:
@@ -198,29 +260,6 @@ extension MNAssetHelper {
         }
     }
     
-    /// 获取资源大小
-    /// - Parameters:
-    ///   - asset: 相册资源模型
-    ///   - queue: 处理任务的队列
-    public class func fetchFileSize(_ asset: MNAsset, on queue: DispatchQueue = .global(qos: .userInitiated)) {
-        guard asset.fileSize <= 0 else {
-            DispatchQueue.main.async {
-                asset.fileSizeUpdateHandler?(asset)
-            }
-            return
-        }
-        guard let rawAsset = asset.rawAsset else {
-            DispatchQueue.main.async {
-                asset.fileSizeUpdateHandler?(asset)
-            }
-            return
-        }
-        exportFileSize(rawAsset, on: queue) { [weak asset] fileSize in
-            guard let asset = asset else { return }
-            asset.update(fileSize: fileSize)
-        }
-    }
-    
     /// 输出资源大小
     /// - Parameters:
     ///   - asset: 相册资源
@@ -240,36 +279,43 @@ extension MNAssetHelper {
         }
     }
     
-    /// 获取资源内容
+    /// 异步导出一组资源内容
     /// - Parameters:
-    ///   - asset: 相册资源
+    ///   - assets: 资源模型
+    ///   - index: 开始的索引
+    ///   - options: 选择器配置模型
+    ///   - container: 导出成功的资源集合
     ///   - progressHandler: 进度回调
     ///   - completionHandler: 结束回调 主线程
-    public class func fetchContents(_ asset: MNAsset, progress progressHandler: ((_ asset: MNAsset, _ value: Double, _ error: Error?)->Void)?, completion completionHandler: ((_ asset: MNAsset)->Void)?) {
-        if let _ = asset.contents {
+    public class func exportAsynchronously(_ assets: [MNAsset], index: Int = 0, options: MNAssetPickerOptions, container: [MNAsset] = [], progress progressHandler: ((_ current: Int, _ count: Int)->Void)?, completion completionHandler: ((_ assets: [MNAsset])->Void)?) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            // 超出则结束
+            guard index < assets.count else {
+                DispatchQueue.main.async {
+                    completionHandler?(container)
+                }
+                return
+            }
+            // 回调进度
             DispatchQueue.main.async {
-                completionHandler?(asset)
+                progressHandler?(index + 1, assets.count)
             }
-            return
-        }
-        guard let rawAsset = asset.rawAsset else {
-            DispatchQueue.main.async {
-                completionHandler?(asset)
+            // 获取内容
+            let asset: MNAsset = assets[index]
+            guard let rawAsset = asset.rawAsset else {
+                DispatchQueue.main.async {
+                    MNAssetHelper.exportAsynchronously(assets, index: index + 1, options: options, container: container, progress: progressHandler, completion: completionHandler)
+                }
+                return
             }
-            return
-        }
-        let options = MNAssetPickerOptions()
-        options.allowsExportVideo = false
-        options.allowsExportLiveResource = false
-        exportContents(rawAsset, options: options) { [weak asset] value, error in
-            guard let asset = asset else { return }
-            progressHandler?(asset, value, error)
-        } completion: { [weak asset] contents, fileSize, error in
-            guard let asset = asset else { return }
-            if let contents = contents {
-                asset.contents = contents
+            MNAssetHelper.exportContents(rawAsset, options: options, progress: nil) { contents, fileSize, error in
+                var elements: [MNAsset] = container
+                if let _ = contents {
+                    asset.update(fileSize: fileSize)
+                    elements.append(asset)
+                }
+                MNAssetHelper.exportAsynchronously(assets, index: index + 1, options: options, container: elements, progress: progressHandler, completion: completionHandler)
             }
-            completionHandler?(asset)
         }
     }
     
@@ -589,61 +635,6 @@ extension MNAssetHelper {
                 PHImageManager.default().requestImageDataAndOrientation(for: asset, options: requestOptions, resultHandler: resultHandler)
             } else {
                 PHImageManager.default().requestImageData(for: asset, options: requestOptions, resultHandler: resultHandler)
-            }
-        }
-    }
-}
-
-// MARK: - Export
-extension MNAssetHelper {
-    
-    /// 异步导出一组资源内容
-    /// - Parameters:
-    ///   - assets: 资源模型集合
-    ///   - options: 选择器配置模型
-    ///   - progressHandler: 进度回调
-    ///   - completionHandler: 结束回调
-    public class func exportAsynchronously(_ assets: [MNAsset], options: MNAssetPickerOptions, progress progressHandler: ((Int, Int)->Void)?, completion completionHandler: @escaping ([MNAsset])->Void) {
-        
-        MNAssetHelper.exportRecursively(assets, index: 0, options: options, container: [], progress: progressHandler, completion: completionHandler)
-    }
-    
-    /// 递归导出资源内容
-    /// - Parameters:
-    ///   - assets: 资源集合
-    ///   - index: 需要导出的资源索引
-    ///   - options: 选择器配置模型
-    ///   - container: 已成功导出的资源集合
-    ///   - progressHandler: 进度回调
-    ///   - completionHandler: 结束回调
-    private class func exportRecursively(_ assets: [MNAsset], index: Int, options: MNAssetPickerOptions, container: [MNAsset], progress progressHandler: ((_ current: Int, _ count: Int)->Void)?, completion completionHandler: @escaping ([MNAsset])->Void) {
-        DispatchQueue.global(qos: .userInitiated).async {
-            // 超出则结束
-            guard index < assets.count else {
-                DispatchQueue.main.async {
-                    completionHandler(container)
-                }
-                return
-            }
-            // 回调进度
-            DispatchQueue.main.async {
-                progressHandler?(index + 1, assets.count)
-            }
-            // 获取内容
-            let asset: MNAsset = assets[index]
-            guard let rawAsset = asset.rawAsset else {
-                DispatchQueue.main.async {
-                    MNAssetHelper.exportRecursively(assets, index: index + 1, options: options, container: container, progress: progressHandler, completion: completionHandler)
-                }
-                return
-            }
-            MNAssetHelper.exportContents(rawAsset, options: options, progress: nil) { contents, fileSize, error in
-                var elements: [MNAsset] = container
-                if let _ = contents {
-                    asset.update(fileSize: fileSize)
-                    elements.append(asset)
-                }
-                MNAssetHelper.exportRecursively(assets, index: index + 1, options: options, container: elements, progress: progressHandler, completion: completionHandler)
             }
         }
     }

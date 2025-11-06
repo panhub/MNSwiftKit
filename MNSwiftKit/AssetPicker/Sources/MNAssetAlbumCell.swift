@@ -16,8 +16,6 @@ class MNAssetAlbumCell: UITableViewCell {
     private let nameLabel: UILabel = UILabel()
     /// 数量
     private let countLabel: UILabel = UILabel()
-    /// 封面
-    private let coverView: UIImageView = UIImageView()
     /// 数量
     private let selectedView: UIImageView = UIImageView()
     
@@ -33,20 +31,6 @@ class MNAssetAlbumCell: UITableViewCell {
         contentView.backgroundColor = .clear
         separatorInset = UIEdgeInsets(top: 0.0, left: 15.0, bottom: 0.0, right: 0.0)
         
-        // 封面
-        coverView.clipsToBounds = true
-        coverView.isUserInteractionEnabled = false
-        coverView.contentMode = .scaleAspectFill
-        coverView.backgroundColor = UIColor(white: 0.0, alpha: 0.12)
-        coverView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(coverView)
-        contentView.addConstraints([
-            NSLayoutConstraint(item: coverView, attribute: .left, relatedBy: .equal, toItem: contentView, attribute: .left, multiplier: 1.0, constant: 15.0),
-            NSLayoutConstraint(item: coverView, attribute: .height, relatedBy: .equal, toItem: contentView, attribute: .height, multiplier: 1.0, constant: -20.0),
-            NSLayoutConstraint(item: coverView, attribute: .centerY, relatedBy: .equal, toItem: contentView, attribute: .centerY, multiplier: 1.0, constant: 0.0)
-        ])
-        coverView.addConstraint(NSLayoutConstraint(item: coverView, attribute: .width, relatedBy: .equal, toItem: coverView, attribute: .height, multiplier: 1.0, constant: 0.0))
-        
         // 标题
         nameLabel.numberOfLines = 1
         nameLabel.isUserInteractionEnabled = false
@@ -55,9 +39,9 @@ class MNAssetAlbumCell: UITableViewCell {
         nameLabel.textColor = options.mode == .light ? .darkText.withAlphaComponent(0.91) : .white.withAlphaComponent(0.86)
         //UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0)
         contentView.addSubview(nameLabel)
-        contentView.addConstraints([
-            NSLayoutConstraint(item: nameLabel, attribute: .left, relatedBy: .equal, toItem: coverView, attribute: .right, multiplier: 1.0, constant: 15.0),
-            NSLayoutConstraint(item: nameLabel, attribute: .centerY, relatedBy: .equal, toItem: contentView, attribute: .centerY, multiplier: 1.0, constant: 0.0)
+        NSLayoutConstraint.activate([
+            nameLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 15.0),
+            nameLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
         
         // 数量
@@ -67,9 +51,9 @@ class MNAssetAlbumCell: UITableViewCell {
         countLabel.translatesAutoresizingMaskIntoConstraints = false
         countLabel.textColor = nameLabel.textColor//UIColor(red: 74.0/255.0, green: 74.0/255.0, blue: 74.0/255.0, alpha: 1.0)
         contentView.addSubview(countLabel)
-        contentView.addConstraints([
-            NSLayoutConstraint(item: countLabel, attribute: .left, relatedBy: .equal, toItem: nameLabel, attribute: .right, multiplier: 1.0, constant: 5.0),
-            NSLayoutConstraint(item: countLabel, attribute: .centerY, relatedBy: .equal, toItem: contentView, attribute: .centerY, multiplier: 1.0, constant: 0.0)
+        NSLayoutConstraint.activate([
+            countLabel.leftAnchor.constraint(equalTo: nameLabel.rightAnchor, constant: 5.0),
+            countLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
         
         // 选择标记
@@ -78,13 +62,11 @@ class MNAssetAlbumCell: UITableViewCell {
         selectedView.translatesAutoresizingMaskIntoConstraints = false
         selectedView.image = AssetPickerResource.image(named: "checkmark")?.mn.rendering(to: options.themeColor)
         contentView.addSubview(selectedView)
-        selectedView.addConstraints([
-            NSLayoutConstraint(item: selectedView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 23.0),
-            NSLayoutConstraint(item: selectedView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 23.0)
-        ])
-        contentView.addConstraints([
-            NSLayoutConstraint(item: selectedView, attribute: .right, relatedBy: .equal, toItem: contentView, attribute: .right, multiplier: 1.0, constant: -25.0),
-            NSLayoutConstraint(item: selectedView, attribute: .centerY, relatedBy: .equal, toItem: contentView, attribute: .centerY, multiplier: 1.0, constant: 0.0)
+        NSLayoutConstraint.activate([
+            selectedView.widthAnchor.constraint(equalToConstant: 23.0),
+            selectedView.heightAnchor.constraint(equalToConstant: 23.0),
+            selectedView.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -25.0),
+            selectedView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
     }
     
@@ -113,10 +95,5 @@ extension MNAssetAlbumCell {
         nameLabel.text = album.name
         countLabel.text = "(\(selections.count)/\(album.count))"
         selectedView.isHidden = album.isSelected == false
-        coverView.image = AssetPickerResource.image(named: "album")
-        if let asset = album.assets.first {
-            // 请求缩略图
-            
-        }
     }
 }
