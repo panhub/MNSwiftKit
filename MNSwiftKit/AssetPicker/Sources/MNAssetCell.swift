@@ -253,15 +253,17 @@ class MNAssetCell: UICollectionViewCell {
             guard let self = self, let _ = self.asset, asset == self.asset else { return }
             self.imageView.image = asset.cover
         }
+        MNAssetHelper.fetchCover(asset, options: options)
         
-        asset.fileSizeUpdateHandler = { [weak self] asset in
-            guard let self = self, self.options.showFileSize, let _ = self.asset, asset == self.asset, asset.fileSize > 0 else { return }
-            self.durationLabel.isHidden = true
-            self.fileSizeLabel.isHidden = false
-            self.fileSizeLabel.text = asset.fileSizeString
+        if options.showFileSize {
+            asset.fileSizeUpdateHandler = { [weak self] asset in
+                guard let self = self, let _ = self.asset, asset == self.asset, asset.fileSize > 0 else { return }
+                self.durationLabel.isHidden = true
+                self.fileSizeLabel.isHidden = false
+                self.fileSizeLabel.text = asset.fileSizeString
+            }
+            MNAssetHelper.fetchFileSize(asset, on: options.queue)
         }
-        
-        MNAssetHelper.fetchMetadata(asset, options: options)
     }
 }
 

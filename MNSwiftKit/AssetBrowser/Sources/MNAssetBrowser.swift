@@ -44,7 +44,7 @@ import CoreMedia
     ///   - asset: 资源模型
     ///   - progressHandler: 进度回调
     ///   - completionHandler: 结束回调
-    @objc optional func assetBrowser(_ browser: MNAssetBrowser, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: @escaping MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: @escaping MNAssetBrowserCell.ContentsUpdateHandler)
+    @objc optional func assetBrowser(_ browser: MNAssetBrowser, fetchContents asset: any MNAssetBrowseSupported, progress progressHandler: @escaping MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: @escaping MNAssetBrowserCell.ContentsUpdateHandler)
 }
 
 /// 资源类型
@@ -378,7 +378,7 @@ extension MNAssetBrowser {
         if currentIndex == displayIndex { return }
         displayIndex = currentIndex
         if let cell = currentDisplayCell {
-            cell.prepareDisplay()
+            cell.preparedDisplay()
         }
         if let delegate = delegate {
             delegate.assetBrowser?(self, didScrollToItemAt: displayIndex)
@@ -395,8 +395,8 @@ extension MNAssetBrowser {
             asset.container = old.container
         }
         assets.insert(asset, at: displayIndex)
-        cell.update(asset: asset)
-        cell.prepareDisplay()
+        cell.willDisplay(asset)
+        cell.preparedDisplay()
     }
 }
 
@@ -767,7 +767,7 @@ extension MNAssetBrowser: UICollectionViewDelegate, UICollectionViewDataSource {
         guard let cell = cell as? MNAssetBrowserCell else { return }
         guard indexPath.item < assets.count else { return }
         let asset = assets[indexPath.item]
-        cell.update(asset: asset)
+        cell.willDisplay(asset)
     }
     
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -788,19 +788,15 @@ extension MNAssetBrowser: UICollectionViewDelegate, UICollectionViewDataSource {
 // MARK: - MNAssetBrowseResourceHandler
 extension MNAssetBrowser: MNAssetBrowseResourceHandler {
     
-    func browserCell(_ cell: MNAssetBrowserCell, fetchCover asset: any MNAssetBrowseSupported, completion completionHandler: @escaping (any MNAssetBrowseSupported, UIImage?) -> Void) {
-        if let cover = asset.cover {
-            completionHandler(asset, cover)
-        } else if let delegate = delegate {
+    func browserCell(_ cell: MNAssetBrowserCell, fetchCover asset: any MNAssetBrowseSupported, completion completionHandler: @escaping (any MNAssetBrowseSupported) -> Void) {
+        if let delegate = delegate {
             delegate.assetBrowser?(self, fetchCover: asset, completion: completionHandler)
         }
     }
     
-    func browserCell(_ cell: MNAssetBrowserCell, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: @escaping (any MNAssetBrowseSupported, Double, (any Error)?) -> Void, completion completionHandler: @escaping (any MNAssetBrowseSupported) -> Void) {
-        if let _ = asset.contents {
-            completionHandler(asset)
-        } else if let delegate = delegate {
-            delegate.assetBrowser?(self, fetchContent: asset, progress: progressHandler, completion: completionHandler)
+    func browserCell(_ cell: MNAssetBrowserCell, fetchContents asset: any MNAssetBrowseSupported, progress progressHandler: @escaping (any MNAssetBrowseSupported, Double, (any Error)?) -> Void, completion completionHandler: @escaping (any MNAssetBrowseSupported) -> Void) {
+        if let delegate = delegate {
+            delegate.assetBrowser?(self, fetchContents: asset, progress: progressHandler, completion: completionHandler)
         }
     }
 }

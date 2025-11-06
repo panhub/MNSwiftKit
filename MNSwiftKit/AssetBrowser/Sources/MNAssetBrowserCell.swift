@@ -22,17 +22,17 @@ protocol MNAssetBrowseResourceHandler: NSObjectProtocol {
     /// - Parameter asset: 资源模型
     /// - Parameter progressHandler: 进度回调
     /// - Parameter completionHandler: 结束回调
-    func browserCell(_ cell: MNAssetBrowserCell, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: @escaping MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: @escaping MNAssetBrowserCell.ContentsUpdateHandler)
+    func browserCell(_ cell: MNAssetBrowserCell, fetchContents asset: any MNAssetBrowseSupported, progress progressHandler: @escaping MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: @escaping MNAssetBrowserCell.ContentsUpdateHandler)
 }
 
 /// 资源浏览器表格
 public class MNAssetBrowserCell: UICollectionViewCell {
     
+    /// 封面更新回调
+    public typealias CoverUpdateHandler = (any MNAssetBrowseSupported)->Void
+    
     /// 内容更新回调
     public typealias ContentsUpdateHandler = (any MNAssetBrowseSupported)->Void
-    
-    /// 封面更新回调
-    public typealias CoverUpdateHandler = (any MNAssetBrowseSupported, UIImage?)->Void
     
     /// 进度更新回调
     public typealias ProgressUpdateHandler = (any MNAssetBrowseSupported, Double, Error?)->Void
@@ -84,11 +84,11 @@ public class MNAssetBrowserCell: UICollectionViewCell {
     }()
     /// 封面图更新回调
     private lazy var coverUpdateHandler: CoverUpdateHandler = {
-        let coverUpdateHandler: CoverUpdateHandler = { [weak self] asset, cover in
+        let coverUpdateHandler: CoverUpdateHandler = { [weak self] asset in
             guard let self = self, let item = self.asset, asset.identifier == item.identifier else { return }
+            guard var image = asset.cover else { return }
             switch self.state {
             case .loading, .prepared:
-                guard var image = cover else { break }
                 if let contents = asset.contents, contents is UIImage {
                     image = contents as! UIImage
                 }
@@ -111,7 +111,7 @@ public class MNAssetBrowserCell: UICollectionViewCell {
                     self.state = .downloading
                 }
                 if let delegate = self.delegate {
-                    delegate.browserCell(self, fetchContent: asset, progress: self.progressUpdateHandler, completion: self.contentsUpdateHandler)
+                    delegate.browserCell(self, fetchContents: asset, progress: self.progressUpdateHandler, completion: self.contentsUpdateHandler)
                 }
             default: break
             }
@@ -124,13 +124,11 @@ public class MNAssetBrowserCell: UICollectionViewCell {
             guard let self = self, let item = self.asset, asset.identifier == item.identifier else { return }
             switch self.state {
             case .downloading, .prepared:
-                if progress <= 0.0 || error != nil {
+                if progress <= 0.0 || progress >= 1.0 || error != nil {
                     self.progressView.isHidden = true
                     self.progressView.setProgress(0.0)
                 } else {
-                    if progress < 1.0 {
-                        self.progressView.isHidden = false
-                    }
+                    self.progressView.isHidden = false
                     self.progressView.setProgress(progress)
                 }
             default: break
@@ -143,6 +141,7 @@ public class MNAssetBrowserCell: UICollectionViewCell {
         let contentsUpdateHandler: ContentsUpdateHandler = { [weak self] asset in
             guard let self = self, let item = self.asset, asset.identifier == item.identifier else { return }
             self.progressView.isHidden = true
+            guard let _ = asset.contents else { return }
             switch self.state {
             case .downloading:
                 self.state = .prepared
@@ -288,9 +287,9 @@ public class MNAssetBrowserCell: UICollectionViewCell {
 // MARK: - 更新
 extension MNAssetBrowserCell {
     
-    /// 更新资源
+    /// 即将预览资源
     /// - Parameter asset: 资源模型
-    func update(asset: any MNAssetBrowseSupported) {
+    func willDisplay(_ asset: any MNAssetBrowseSupported) {
         self.asset = asset
         scrollView.imageView.image = nil
         scrollView.imageView.isHidden = asset.type == .video
@@ -316,8 +315,8 @@ extension MNAssetBrowserCell {
         }
     }
     
-    /// 预备展示
-    func prepareDisplay() {
+    /// 已准备好预览
+    func preparedDisplay() {
         switch state {
         case .loading, .downloading:
             state = .prepared
@@ -327,7 +326,7 @@ extension MNAssetBrowserCell {
         }
     }
     
-    /// 开始展示
+    /// 开始预览
     private func beginDisplay() {
         guard let asset = asset else { return }
         guard let contents = asset.contents else { return }
@@ -357,10 +356,11 @@ extension MNAssetBrowserCell {
         }
     }
     
-    /// 结束展示
+    /// 结束预览
     func endDisplaying() {
         state = .idle
         guard let asset = asset else { return }
+        self.asset = nil
         switch asset.type {
         case .photo, .gif:
             // 图片
@@ -375,7 +375,7 @@ extension MNAssetBrowserCell {
         }
     }
     
-    /// 暂停展示
+    /// 暂停预览
     func pauseDisplaying() {
         guard let asset = asset else { return }
         switch asset.type {

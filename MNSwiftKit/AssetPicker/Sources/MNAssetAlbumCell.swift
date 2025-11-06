@@ -114,13 +114,9 @@ extension MNAssetAlbumCell {
         countLabel.text = "(\(selections.count)/\(album.count))"
         selectedView.isHidden = album.isSelected == false
         coverView.image = AssetPickerResource.image(named: "album")
-        if let asset = album.cover {
+        if let asset = album.assets.first {
             // 请求缩略图
-            MNAssetHelper.fetchCover(asset) { [weak self] asset, image in
-                guard let self = self else { return }
-                guard let image = image else { return }
-                self.coverView.image = image
-            }
+            
         }
     }
 }

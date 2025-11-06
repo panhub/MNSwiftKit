@@ -541,7 +541,7 @@ extension MNAssetPickerController: MNAssetBrowseDelegate {
         MNAssetHelper.fetchCover(asset as! MNAsset, completion: completionHandler)
     }
     
-    func assetBrowser(_ browser: MNAssetBrowser, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: @escaping MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: @escaping MNAssetBrowserCell.ContentsUpdateHandler) {
+    func assetBrowser(_ browser: MNAssetBrowser, fetchContents asset: any MNAssetBrowseSupported, progress progressHandler: @escaping MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: @escaping MNAssetBrowserCell.ContentsUpdateHandler) {
         
         MNAssetHelper.fetchContents(asset as! MNAsset, progress: progressHandler, completion: completionHandler)
     }

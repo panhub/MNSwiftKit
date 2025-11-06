@@ -107,6 +107,8 @@ extension MNPickError.ExportFailureReason {
     public var code: Int {
         switch self {
         case .cancelled: return 3072
+        case .cannotCopyFile: return -18134
+        case .cannotCreateDirectory: return -18135
         case .notSupportedForAsset: return 3306
         case .fileNotExist: return MNPickErrorFileDoesNotExist
         case .requestFailed: return -18130
@@ -118,6 +120,9 @@ extension MNPickError.ExportFailureReason {
     public var msg: String {
         switch self {
         case .cancelled: return "已取消"
+        case .cannotCopyFile: return "复制文件副本失败"
+        case .cannotCreateDirectory: return "创建输出文件夹失败"
+        case .notSupportedForAsset: return "不支持该类型文件"
         case .fileNotExist: return "文件不存在"
         case .requestFailed: return "请求资源失败"
         case .underlyingError(let error): return error.localizedDescription
@@ -138,6 +143,9 @@ extension MNPickError.ExportFailureReason: CustomDebugStringConvertible {
     public var debugDescription: String {
         switch self {
         case .cancelled: return "用户取消任务"
+        case .cannotCopyFile: return "通常输出视频时, 需要对原视频拷贝, 此操作失败"
+        case .cannotCreateDirectory: return "通常输出视频时, 需要创建视频目录, 此操作失败"
+        case .notSupportedForAsset: return "通常导出LivePhoto时, 该系统版本不支持"
         case .fileNotExist: return "文件不存在"
         case .requestFailed: return "请求资源失败"
         case .underlyingError(let error): return "\(error)"

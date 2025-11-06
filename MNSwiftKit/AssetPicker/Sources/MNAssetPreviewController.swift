@@ -248,7 +248,7 @@ extension MNAssetPreviewController: UICollectionViewDataSource, UICollectionView
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? MNAssetBrowserCell, indexPath.item < assets.count else { return }
         let asset = assets[indexPath.item]
-        cell.update(asset: asset)
+        cell.willDisplay(asset)
         cell.updateToolBar(visible: navView.transform == .identity, animated: false)
     }
     
@@ -280,12 +280,12 @@ extension MNAssetPreviewController: UICollectionViewDelegateFlowLayout {
 // MARK: - MNAssetBrowseResourceHandler
 extension MNAssetPreviewController: MNAssetBrowseResourceHandler {
     
-    func browserCell(_ cell: MNAssetBrowserCell, fetchCover asset: any MNAssetBrowseSupported, completion completionHandler: @escaping (any MNAssetBrowseSupported, UIImage?) -> Void) {
+    func browserCell(_ cell: MNAssetBrowserCell, fetchCover asset: any MNAssetBrowseSupported, completion completionHandler: @escaping (any MNAssetBrowseSupported) -> Void) {
         
         MNAssetHelper.fetchCover(asset as! MNAsset, completion: completionHandler)
     }
     
-    func browserCell(_ cell: MNAssetBrowserCell, fetchContent asset: any MNAssetBrowseSupported, progress progressHandler: @escaping (any MNAssetBrowseSupported, Double, (any Error)?) -> Void, completion completionHandler: @escaping (any MNAssetBrowseSupported) -> Void) {
+    func browserCell(_ cell: MNAssetBrowserCell, fetchContents asset: any MNAssetBrowseSupported, progress progressHandler: @escaping (any MNAssetBrowseSupported, Double, (any Error)?) -> Void, completion completionHandler: @escaping (any MNAssetBrowseSupported) -> Void) {
         
         MNAssetHelper.fetchContents(asset as! MNAsset, progress: progressHandler, completion: completionHandler)
     }
@@ -323,7 +323,7 @@ private extension MNAssetPreviewController {
             selectView.selection(index: currentIndex)
         }
         if let cell = currentDisplayCell {
-            cell.prepareDisplay()
+            cell.preparedDisplay()
         }
     }
 }
