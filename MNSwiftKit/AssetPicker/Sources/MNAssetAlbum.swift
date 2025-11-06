@@ -51,11 +51,6 @@ public class MNAssetAlbum: NSObject {
             fetchOptions.predicate = NSPredicate(format: "mediaType == %d || mediaType == %d", PHAssetMediaType.image.rawValue, PHAssetMediaType.video.rawValue)
         }
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: options.sortAscending)]
-        let result = PHAsset.fetchAssets(in: collection, options: fetchOptions)
-        count = result.count
-#if !targetEnvironment(simulator)
-        // 这里可以添加拍摄入口
-        // TODO:
-#endif
+        count = PHAsset.fetchAssets(in: collection, options: fetchOptions).count
     }
 }

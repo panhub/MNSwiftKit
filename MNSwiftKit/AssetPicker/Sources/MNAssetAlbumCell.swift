@@ -91,9 +91,8 @@ extension MNAssetAlbumCell {
     /// - Parameter album: 相簿模型
     func updateAlbum(_ album: MNAssetAlbum) {
         self.album = album
-        let selections = album.assets.filter { $0.isSelected }
         nameLabel.text = album.name
-        countLabel.text = "(\(selections.count)/\(album.count))"
+        //countLabel.text = "(\(selections.count)/\(album.count))"
         selectedView.isHidden = album.isSelected == false
     }
 }

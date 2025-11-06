@@ -243,7 +243,11 @@ extension MNAssetHelper {
 #endif
                     }
                     if let underlyingError = info[PHImageErrorKey] as? Error {
-                        error = .exportError(.underlyingError(underlyingError))
+                        if underlyingError._code == 1006 {
+                            error = .exportError(.accessCloudDenied)
+                        } else {
+                            error = .exportError(.underlyingError(underlyingError))
+                        }
 #if DEBUG
                         print("请求资源图片出错: \(underlyingError)")
 #endif
@@ -357,7 +361,11 @@ extension MNAssetHelper {
                                 error = .exportError(.cancelled)
                             }
                             if let underlyingError = info[PHImageErrorKey] as? Error {
-                                error = .exportError(.underlyingError(underlyingError))
+                                if underlyingError._code == 1006 {
+                                    error = .exportError(.accessCloudDenied)
+                                } else {
+                                    error = .exportError(.underlyingError(underlyingError))
+                                }
 #if DEBUG
                                 print("导出视频内容失败: \(underlyingError)")
 #endif
@@ -446,7 +454,11 @@ extension MNAssetHelper {
                                 error = .exportError(.cancelled)
                             }
                             if let underlyingError = info[PHImageErrorKey] as? Error {
-                                error = .exportError(.underlyingError(underlyingError))
+                                if underlyingError._code == 1006 {
+                                    error = .exportError(.accessCloudDenied)
+                                } else {
+                                    error = .exportError(.underlyingError(underlyingError))
+                                }
 #if DEBUG
                                 print("导出视频内容失败: \(underlyingError)")
 #endif
@@ -533,7 +545,11 @@ extension MNAssetHelper {
                             error = .exportError(.cancelled)
                         }
                         if let underlyingError = info[PHImageErrorKey] as? Error {
-                            error = .exportError(.underlyingError(underlyingError))
+                            if underlyingError._code == 1006 {
+                                error = .exportError(.accessCloudDenied)
+                            } else {
+                                error = .exportError(.underlyingError(underlyingError))
+                            }
 #if DEBUG
                             print("导出LivePhoto失败: \(underlyingError)")
 #endif
@@ -587,7 +603,11 @@ extension MNAssetHelper {
                             error = .exportError(.cancelled)
                         }
                         if let underlyingError = info[PHImageErrorKey] as? Error {
-                            error = .exportError(.underlyingError(underlyingError))
+                            if underlyingError._code == 1006 {
+                                error = .exportError(.accessCloudDenied)
+                            } else {
+                                error = .exportError(.underlyingError(underlyingError))
+                            }
 #if DEBUG
                             print("导出图片数据失败: \(underlyingError)")
 #endif

@@ -19,6 +19,7 @@ public enum MNPickError: Swift.Error {
         case fileNotExist
         case requestFailed
         case cannotCopyFile
+        case accessCloudDenied
         case cannotCreateDirectory
         case notSupportedForAsset
         case underlyingError(Swift.Error)
@@ -108,6 +109,7 @@ extension MNPickError.ExportFailureReason {
         switch self {
         case .cancelled: return 3072
         case .cannotCopyFile: return -18134
+        case .accessCloudDenied: return 1006
         case .cannotCreateDirectory: return -18135
         case .notSupportedForAsset: return 3306
         case .fileNotExist: return MNPickErrorFileDoesNotExist
@@ -121,6 +123,7 @@ extension MNPickError.ExportFailureReason {
         switch self {
         case .cancelled: return "已取消"
         case .cannotCopyFile: return "复制文件副本失败"
+        case .accessCloudDenied: return "访问云端失败"
         case .cannotCreateDirectory: return "创建输出文件夹失败"
         case .notSupportedForAsset: return "不支持该类型文件"
         case .fileNotExist: return "文件不存在"
@@ -143,9 +146,10 @@ extension MNPickError.ExportFailureReason: CustomDebugStringConvertible {
     public var debugDescription: String {
         switch self {
         case .cancelled: return "用户取消任务"
-        case .cannotCopyFile: return "通常输出视频时, 需要对原视频拷贝, 此操作失败"
-        case .cannotCreateDirectory: return "通常输出视频时, 需要创建视频目录, 此操作失败"
-        case .notSupportedForAsset: return "通常导出LivePhoto时, 该系统版本不支持"
+        case .cannotCopyFile: return "拷贝文件操作失败"
+        case .accessCloudDenied: return "访问云端文件失败, 一般为权限不足或账号异常"
+        case .cannotCreateDirectory: return "创建输出目录失败"
+        case .notSupportedForAsset: return "导出LivePhoto时, 该系统版本不支持"
         case .fileNotExist: return "文件不存在"
         case .requestFailed: return "请求资源失败"
         case .underlyingError(let error): return "\(error)"
