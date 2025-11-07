@@ -18,6 +18,17 @@ public typealias MNAssetUpdateHandler = (_ asset: MNAsset)->Void
 /// 资源模型
 public class MNAsset: NSObject, MNAssetBrowseSupported {
     
+    /// 文件来源, 主要针对内部PHAsset
+    @objc(MNAssetSource)
+    public enum Source: Int {
+        /// 未知
+        case unknown
+        /// 本地可用
+        case local
+        /// 云端
+        case cloud
+    }
+    
     /// 本地标识
     @objc public var identifier: String = ""
     
@@ -26,6 +37,9 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
     
     /// 文件类型
     @objc public var type: MNAssetType = .photo
+    
+    /// 来源
+    @objc public var source: Source = .unknown
     
     /// 资源内容
     /// photo, gif: UIImage
@@ -83,8 +97,12 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
     /// 缩略图变化回调
     @objc public var coverUpdateHandler: MNAssetUpdateHandler?
     
+    /// 来源变化回调
+    @objc public var sourceUpdateHandler: MNAssetUpdateHandler?
+    
     /// 文件大小变化回调
     @objc public var fileSizeUpdateHandler: MNAssetUpdateHandler?
+    
     
     /// 构造资源模型
     public override init() {
@@ -128,6 +146,23 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
         }
     }
     
+    /// 更新来源
+    /// - Parameter source: 来源
+    public func update(source: MNAsset.Source) {
+        let executeHandler: ()->Void = { [weak self] in
+            guard let self = self else { return }
+            self.source = source
+            if let sourceUpdateHandler = self.sourceUpdateHandler {
+                sourceUpdateHandler(self)
+            }
+        }
+        if Thread.isMainThread {
+            executeHandler()
+        } else {
+            DispatchQueue.main.async(execute: executeHandler)
+        }
+    }
+    
     /// 更新文件大小
     /// - Parameter fileSize: 文件大小
     public func update(fileSize: Int64) {
@@ -149,6 +184,7 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
     deinit {
         contents = nil
         coverUpdateHandler = nil
+        sourceUpdateHandler = nil
         fileSizeUpdateHandler = nil
         cancelRequest()
         cancelDownload()

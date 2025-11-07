@@ -72,7 +72,7 @@ public class MNAssetAlbum: NSObject {
     ///   - asset: 使用的相册资产
     ///   - size: 目标尺寸
     public func updateCover(using asset: PHAsset, size: CGSize) {
-        MNAssetHelper.exportCover(asset, mode: .opportunistic, size: size) { [weak self] cover, error in
+        MNAssetHelper.exportCover(for: asset, mode: .opportunistic, size: size) { [weak self] cover, error in
             guard let self = self else { return }
             guard let cover = cover else { return }
             self.cover = cover

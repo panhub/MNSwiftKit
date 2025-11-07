@@ -180,7 +180,7 @@ extension MNAssetPickerController {
         guard let view = navigationController?.view else { return }
         view.showActivityToast("请稍后")
         view.isUserInteractionEnabled = false
-        MNAssetHelper.exportAsynchronously(assets, options: options) { [weak view] index, count in
+        MNAssetHelper.exportAsynchronously(for: assets, options: options) { [weak view] index, count in
             guard let view = view else { return }
             view.updateToast(status: "正在导出\(index)/\(count)")
         } completion: { [weak view, weak self] result in
@@ -269,7 +269,7 @@ extension MNAssetPickerController {
     /// 获取相簿集合
     private func fetchAlbums() {
         collectionView.showActivityToast("请稍后")
-        MNAssetHelper.fetchAlbum(options) { [weak self] albums in
+        MNAssetHelper.fetchAlbum(using: options) { [weak self] albums in
             guard let self = self else { return }
             self.isEnteredLibrary = true
             if let first = albums.first {
@@ -482,7 +482,7 @@ extension MNAssetPickerController: UICollectionViewDelegate, UICollectionViewDat
     /// - Parameter asset: 视频资源模型
     private func tailorVideo(_ asset: MNAsset) {
         view.showActivityToast("请稍后")
-        MNAssetHelper.fetchContents(asset, progress: nil) { [weak self] asset in
+        MNAssetHelper.fetchContents(for: asset, progress: nil) { [weak self] asset in
             guard let self = self else { return }
             if let videoPath = asset.contents as? String {
                 asset.contents = nil
@@ -534,12 +534,12 @@ extension MNAssetPickerController: MNAssetBrowseDelegate {
     
     func assetBrowser(_ browser: MNAssetBrowser, fetchCover asset: any MNAssetBrowseSupported, completion completionHandler: @escaping MNAssetBrowserCell.CoverUpdateHandler) {
         
-        MNAssetHelper.fetchCover(asset as! MNAsset, completion: completionHandler)
+        MNAssetHelper.fetchCover(for: asset as! MNAsset, completion: completionHandler)
     }
     
     func assetBrowser(_ browser: MNAssetBrowser, fetchContents asset: any MNAssetBrowseSupported, progress progressHandler: @escaping MNAssetBrowserCell.ProgressUpdateHandler, completion completionHandler: @escaping MNAssetBrowserCell.ContentsUpdateHandler) {
         
-        MNAssetHelper.fetchContents(asset as! MNAsset, progress: progressHandler, completion: completionHandler)
+        MNAssetHelper.fetchContents(for: asset as! MNAsset, progress: progressHandler, completion: completionHandler)
     }
 }
 

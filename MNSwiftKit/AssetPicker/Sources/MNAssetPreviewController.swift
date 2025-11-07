@@ -282,12 +282,12 @@ extension MNAssetPreviewController: MNAssetBrowseResourceHandler {
     
     func browserCell(_ cell: MNAssetBrowserCell, fetchCover asset: any MNAssetBrowseSupported, completion completionHandler: @escaping (any MNAssetBrowseSupported) -> Void) {
         
-        MNAssetHelper.fetchCover(asset as! MNAsset, completion: completionHandler)
+        MNAssetHelper.fetchCover(for: asset as! MNAsset, completion: completionHandler)
     }
     
     func browserCell(_ cell: MNAssetBrowserCell, fetchContents asset: any MNAssetBrowseSupported, progress progressHandler: @escaping (any MNAssetBrowseSupported, Double, (any Error)?) -> Void, completion completionHandler: @escaping (any MNAssetBrowseSupported) -> Void) {
         
-        MNAssetHelper.fetchContents(asset as! MNAsset, progress: progressHandler, completion: completionHandler)
+        MNAssetHelper.fetchContents(for: asset as! MNAsset, progress: progressHandler, completion: completionHandler)
     }
 }
 

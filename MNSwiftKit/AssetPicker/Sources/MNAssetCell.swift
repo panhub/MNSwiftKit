@@ -253,7 +253,7 @@ class MNAssetCell: UICollectionViewCell {
             guard let self = self, let _ = self.asset, asset == self.asset else { return }
             self.imageView.image = asset.cover
         }
-        MNAssetHelper.fetchCover(asset, options: options)
+        MNAssetHelper.fetchCover(for: asset, options: options)
         
         if options.showFileSize {
             asset.fileSizeUpdateHandler = { [weak self] asset in
@@ -262,7 +262,7 @@ class MNAssetCell: UICollectionViewCell {
                 self.fileSizeLabel.isHidden = false
                 self.fileSizeLabel.text = asset.fileSizeString
             }
-            MNAssetHelper.fetchFileSize(asset, on: options.queue)
+            MNAssetHelper.fetchFileSize(for: asset, on: options.queue)
         }
     }
 }
