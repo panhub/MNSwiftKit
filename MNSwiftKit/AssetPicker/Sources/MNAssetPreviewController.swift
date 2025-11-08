@@ -151,8 +151,8 @@ class MNAssetPreviewController: UIViewController {
         rightBarButton.layer.cornerRadius = 12.0
         rightBarButton.translatesAutoresizingMaskIntoConstraints = false
         rightBarButton.addTarget(self, action: #selector(rightBarButtonTouchUpInside(_:)), for: .touchUpInside)
-        let normalImage = AssetPickerResource.image(named: "selectbox")
-        let selectedImage = AssetPickerResource.image(named: "checkbox_fill")?.mn.rendering(to: options.themeColor)
+        let normalImage = AssetPickerResource.image(named: "unselect")
+        let selectedImage = AssetPickerResource.image(named: "selected")
         if #available(iOS 15.0, *) {
             var configuration = UIButton.Configuration.plain()
             configuration.background.backgroundColor = .clear
@@ -161,10 +161,10 @@ class MNAssetPreviewController: UIViewController {
                 switch button.state {
                 case .normal:
                     button.configuration?.background.image = normalImage
-                    button.configuration?.background.backgroundColor = .clear
                 case .selected:
                     button.configuration?.background.image = selectedImage
-                    button.configuration?.background.backgroundColor = .white
+                case .highlighted:
+                    button.configuration?.background.image = button.isSelected ? selectedImage : normalImage
                 default: break
                 }
             }
@@ -175,8 +175,8 @@ class MNAssetPreviewController: UIViewController {
         }
         navView.addSubview(rightBarButton)
         NSLayoutConstraint.activate([
-            rightBarButton.widthAnchor.constraint(equalTo: back.widthAnchor),
-            rightBarButton.heightAnchor.constraint(equalTo: back.heightAnchor),
+            rightBarButton.widthAnchor.constraint(equalToConstant: 23.0),
+            rightBarButton.heightAnchor.constraint(equalToConstant: 23.0),
             rightBarButton.rightAnchor.constraint(equalTo: navView.rightAnchor, constant: -16.0),
             rightBarButton.centerYAnchor.constraint(equalTo: back.centerYAnchor)
         ])

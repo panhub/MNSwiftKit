@@ -188,7 +188,7 @@ public class MNAssetBrowserCell: UICollectionViewCell {
         
         toolBar.contentMode = .scaleToFill
         toolBar.isUserInteractionEnabled = true
-        toolBar.image = AssetBrowserResource.image(named: "mask")
+        toolBar.image = AssetBrowserResource.image(named: "bottom")
         toolBar.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(toolBar)
         NSLayoutConstraint.activate([

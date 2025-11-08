@@ -139,7 +139,8 @@
       "frameworks": [
         "UIKit",
         "Foundation",
-        "CoreGraphics"
+        "CoreGraphics",
+        "UniformTypeIdentifiers"
       ],
       "source_files": "MNSwiftKit/Request/Sources/**/*.swift",
       "dependencies": {
@@ -237,7 +238,8 @@
         "AVFoundation",
         "Photos",
         "CoreFoundation",
-        "CoreGraphics"
+        "CoreGraphics",
+        "UniformTypeIdentifiers"
       ],
       "source_files": "MNSwiftKit/AssetPicker/Sources/*",
       "resource_bundles": {

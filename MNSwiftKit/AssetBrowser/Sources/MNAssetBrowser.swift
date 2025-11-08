@@ -789,13 +789,17 @@ extension MNAssetBrowser: UICollectionViewDelegate, UICollectionViewDataSource {
 extension MNAssetBrowser: MNAssetBrowseResourceHandler {
     
     func browserCell(_ cell: MNAssetBrowserCell, fetchCover asset: any MNAssetBrowseSupported, completion completionHandler: @escaping (any MNAssetBrowseSupported) -> Void) {
-        if let delegate = delegate {
+        if let _ = asset.cover {
+            completionHandler(asset)
+        } else if let delegate = delegate {
             delegate.assetBrowser?(self, fetchCover: asset, completion: completionHandler)
         }
     }
     
     func browserCell(_ cell: MNAssetBrowserCell, fetchContents asset: any MNAssetBrowseSupported, progress progressHandler: @escaping (any MNAssetBrowseSupported, Double, (any Error)?) -> Void, completion completionHandler: @escaping (any MNAssetBrowseSupported) -> Void) {
-        if let delegate = delegate {
+        if let _ = asset.contents {
+            completionHandler(asset)
+        } else if let delegate = delegate {
             delegate.assetBrowser?(self, fetchContents: asset, progress: progressHandler, completion: completionHandler)
         }
     }

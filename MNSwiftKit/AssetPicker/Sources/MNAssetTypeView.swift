@@ -11,9 +11,26 @@ class MNAssetTypeView: UIImageView {
     
     private var attributes: [MNAssetType : UIImage] = [:]
     
+    private let hdrImage = AssetPickerResource.image(named: "hdr")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0))
+    
+    var isHDR: Bool = false {
+        didSet {
+            guard type == .photo else { return }
+            if isHDR {
+                image = hdrImage
+            } else {
+                image = attributes[.photo]
+            }
+        }
+    }
+    
     var type: MNAssetType = .photo {
         didSet {
-            image = attributes[type]
+            if type == .photo {
+                image = isHDR ? hdrImage : attributes[.photo]
+            } else {
+                image = attributes[type]
+            }
         }
     }
     
@@ -23,6 +40,10 @@ class MNAssetTypeView: UIImageView {
         } else {
             attributes.removeValue(forKey: type)
         }
-        self.image = attributes[self.type]
+        if self.type == .photo {
+            self.image = isHDR ? hdrImage : attributes[.photo]
+        } else {
+            self.image = attributes[self.type]
+        }
     }
 }

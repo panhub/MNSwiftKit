@@ -27,10 +27,12 @@ class MNAssetCell: UICollectionViewCell {
     private let fileSizeLabel = UILabel()
     /// 视频时长
     private let durationLabel = UILabel()
-    /// 资源展示
-    private let imageView = UIImageView(frame: .zero)
     /// 顶部阴影
     private let topMask = UIImageView(frame: .zero)
+    /// 云端标识
+    private let cloudView = UIImageView(frame: .zero)
+    /// 资源展示
+    private let imageView = UIImageView(frame: .zero)
     /// 底部阴影
     private let bottomMask = UIImageView(frame: .zero)
     /// 预览按钮
@@ -73,10 +75,22 @@ class MNAssetCell: UICollectionViewCell {
         topMask.image = AssetPickerResource.image(named: "top_shadow")
         contentView.addSubview(topMask)
         NSLayoutConstraint.activate([
-            topMask.heightAnchor.constraint(equalToConstant: 30.0),
+            topMask.heightAnchor.constraint(equalToConstant: 35.0),
             topMask.topAnchor.constraint(equalTo: contentView.topAnchor),
             topMask.leftAnchor.constraint(equalTo: contentView.leftAnchor),
             topMask.rightAnchor.constraint(equalTo: contentView.rightAnchor)
+        ])
+        
+        // 云端标记
+        cloudView.contentMode = .scaleAspectFit
+        cloudView.translatesAutoresizingMaskIntoConstraints = false
+        cloudView.image = AssetPickerResource.image(named: "cloud")?.mn.rendering(to: .white.withAlphaComponent(0.85))
+        contentView.addSubview(cloudView)
+        NSLayoutConstraint.activate([
+            cloudView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 3.0),
+            cloudView.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 6.0),
+            cloudView.widthAnchor.constraint(equalToConstant: 16.0),
+            cloudView.heightAnchor.constraint(equalToConstant: 16.0)
         ])
         
         // 预览
@@ -96,10 +110,10 @@ class MNAssetCell: UICollectionViewCell {
         previewImageView.image = AssetPickerResource.image(named: "preview")?.mn.rendering(to: .white.withAlphaComponent(0.85))
         previewControl.addSubview(previewImageView)
         NSLayoutConstraint.activate([
-            previewImageView.topAnchor.constraint(equalTo: previewControl.topAnchor, constant: 8.0),
+            previewImageView.heightAnchor.constraint(equalToConstant: 12.0),
+            previewImageView.widthAnchor.constraint(equalTo: previewImageView.heightAnchor, multiplier: 180.0/121.0),
             previewImageView.rightAnchor.constraint(equalTo: previewControl.rightAnchor, constant: -6.0),
-            previewImageView.heightAnchor.constraint(equalToConstant: 13.0),
-            previewImageView.widthAnchor.constraint(equalTo: previewImageView.heightAnchor, multiplier: 180.0/121.0)
+            previewImageView.centerYAnchor.constraint(equalTo: cloudView.centerYAnchor)
         ])
         
         // 底部阴影
@@ -110,7 +124,7 @@ class MNAssetCell: UICollectionViewCell {
         bottomMask.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(bottomMask)
         NSLayoutConstraint.activate([
-            bottomMask.heightAnchor.constraint(equalToConstant: 30.0),
+            bottomMask.heightAnchor.constraint(equalToConstant: 35.0),
             bottomMask.leftAnchor.constraint(equalTo: contentView.leftAnchor),
             bottomMask.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             bottomMask.rightAnchor.constraint(equalTo: contentView.rightAnchor)
@@ -119,13 +133,13 @@ class MNAssetCell: UICollectionViewCell {
         // 资源类型
         typeView.contentMode = .scaleAspectFit
         typeView.translatesAutoresizingMaskIntoConstraints = false
+        typeView.setImage(AssetPickerResource.image(named: "gif")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .gif)
         typeView.setImage(AssetPickerResource.image(named: "video")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .video)
         typeView.setImage(AssetPickerResource.image(named: "livephoto")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .livePhoto)
-        typeView.setImage(AssetPickerResource.image(named: "gif")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .gif)
         contentView.addSubview(typeView)
         NSLayoutConstraint.activate([
-            typeView.widthAnchor.constraint(equalToConstant: 17.0),
-            typeView.heightAnchor.constraint(equalToConstant: 17.0),
+            typeView.widthAnchor.constraint(equalToConstant: 16.0),
+            typeView.heightAnchor.constraint(equalToConstant: 16.0),
             typeView.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 6.0),
             typeView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -3.0)
         ])
@@ -197,6 +211,7 @@ class MNAssetCell: UICollectionViewCell {
         
         topMask.isHidden = false
         typeView.isHidden = false
+        cloudView.isHidden = true
         bottomMask.isHidden = false
         durationLabel.isHidden = true
         previewControl.isHidden = options.allowsPreview == false
@@ -208,18 +223,17 @@ class MNAssetCell: UICollectionViewCell {
             fileSizeLabel.isHidden = true
         }
         
+        typeView.type = asset.type
         switch asset.type {
         case .photo:
-            typeView.isHidden = true
+            typeView.isHDR = asset.isHDR
         case .video:
-            typeView.type = .video
             if asset.duration > 0.0, fileSizeLabel.isHidden {
                 // 两者容易重叠
                 durationLabel.text = asset.durationString
                 durationLabel.isHidden = false
             }
-        default:
-            typeView.type = asset.type
+        default: break
         }
         
         if asset.isEnabled {
@@ -254,6 +268,12 @@ class MNAssetCell: UICollectionViewCell {
             self.imageView.image = asset.cover
         }
         MNAssetHelper.fetchCover(for: asset, options: options)
+        
+        asset.sourceUpdateHandler = { [weak self] asset in
+            guard let self = self, let _ = self.asset, asset == self.asset else { return }
+            self.cloudView.isHidden = asset.source != .cloud
+        }
+        MNAssetHelper.fetchSource(for: asset, on: options.queue)
         
         if options.showFileSize {
             asset.fileSizeUpdateHandler = { [weak self] asset in

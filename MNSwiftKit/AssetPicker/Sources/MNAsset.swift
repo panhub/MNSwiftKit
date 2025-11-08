@@ -79,6 +79,9 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
     /// 'Photos'框架下资源元数据
     @objc public var rawAsset: PHAsset!
     
+    /// 是否是HDR资源
+    @objc public var isHDR: Bool = false
+    
     /// PHImageRequestID, 封面请求id
     @objc public var requestId: Int32 = PHInvalidImageRequestID
     
@@ -117,6 +120,7 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
         type = asset.mn.contentType
         duration = asset.duration
         identifier = asset.localIdentifier
+        isHDR = asset.mediaSubtypes.contains(.photoHDR)
     }
     
     /// 取消内容请求

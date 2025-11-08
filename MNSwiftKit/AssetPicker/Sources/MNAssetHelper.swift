@@ -72,12 +72,10 @@ extension MNAssetHelper {
                             type = .photo
                         }
                     }
-                    let asset = MNAsset()
+                    // 构造资源模型, 这里要修改type
+                    let asset = MNAsset(asset: element)
                     asset.type = type
-                    asset.rawAsset = element
                     asset.album = album.identifier
-                    asset.duration = element.duration
-                    asset.identifier = element.localIdentifier
                     asset.renderSize = options.renderSize
                     assets.append(asset)
                     // 如果超过每页数量就终止
@@ -160,6 +158,10 @@ extension MNAssetHelper {
         }
     }
     
+    /// 请求资源文件来源
+    /// - Parameters:
+    ///   - asset: 资源模型
+    ///   - queue: 处理任务的队列
     public class func fetchSource(for asset: MNAsset, on queue: DispatchQueue = .global(qos: .userInitiated)) {
         guard asset.source == .unknown else {
             DispatchQueue.main.async {
@@ -182,7 +184,7 @@ extension MNAssetHelper {
     
     /// 获取资源大小
     /// - Parameters:
-    ///   - asset: 相册资源模型
+    ///   - asset: 资源模型
     ///   - queue: 处理任务的队列
     public class func fetchFileSize(for asset: MNAsset, on queue: DispatchQueue = .global(qos: .userInitiated)) {
         guard asset.fileSize <= 0 else {
