@@ -8,9 +8,6 @@
 import UIKit
 import Foundation
 import ObjectiveC.runtime
-//#if canImport(MNSwiftKitNetworking)
-//import MNSwiftKitNetworking
-//#endif
 
 /// 请求管理者 以单例模式存在
 public class HTTPManager {
@@ -21,13 +18,13 @@ public class HTTPManager {
     
     /// 禁止外部实例化
     private init() {
-        session.completionQueue = DispatchQueue(label: "com.mn.http.session.completion.queue", qos: .default, attributes: .concurrent)
+        session.completionQueue = DispatchQueue(label: "com.mn.http.session.completion.queue", qos: .userInitiated, attributes: .concurrent)
     }
     
     /// 加载请求
     /// - Parameter request: 请求体
     public func resume(request: HTTPRequest) {
-        guard request.isLoading == false else { return }
+        guard request.isRunning == false else { return }
         if request is HTTPDataRequest {
             load(request as! HTTPDataRequest)
         } else if request is HTTPUploadRequest {
@@ -42,7 +39,7 @@ public class HTTPManager {
     /// 取消请求
     /// - Parameter request: 请求体
     public func cancel(request: HTTPRequest) {
-        guard request.isLoading else { return }
+        guard request.isRunning else { return }
         guard let task = request.task else { return }
         task.cancel()
     }
@@ -53,7 +50,7 @@ public class HTTPManager {
     ///   - result: 请求结果
     private func finish(request: HTTPRequest, result: Result<Any, HTTPError>) {
         // 标记已不是第一次请求
-        request.isFirstLoading = false
+        request.isFirstRunning = false
         // 判断是否需要重新请求并修改数据来源
         let code = result.code
         if request is HTTPDataRequest {
@@ -86,7 +83,7 @@ extension HTTPManager {
         // 判断是否需要读取缓存
         if request.method == .get, request.cachePolicy == .returnCacheDontLoad, request.retryEventCount <= 0, let cache = HTTPDatabase.default.cache(forKey: request.cacheForKey, timeInterval: request.cacheValidInterval) {
             request.source = .cache
-            request.isFirstLoading = false
+            request.isFirstRunning = false
             request.loadFinish(result: .success(cache))
 #if DEBUG
             print("读取缓存成功===\(request.url)")
@@ -140,7 +137,7 @@ extension HTTPManager {
     /// - Parameter request: 上传请求
     /// - Returns: 上传任务
     private func uploadTask(_ request: HTTPUploadRequest) -> URLSessionUploadTask? {
-        return session.uploadTask(url: request.url, method: request.method.rawString, serializer: serializer(request), parser: parser(request), body: request.bodyHandler ?? {""}, progress: request.progressHandler, completion: { [weak self] result in
+        return session.uploadTask(url: request.url, serializer: serializer(request), parser: parser(request), body: request.bodyHandler ?? {NSNull()}, progress: request.progressHandler, completion: { [weak self] result in
             guard let self = self else { return }
             self.finish(request: request, result: result)
         })
@@ -192,7 +189,9 @@ extension HTTPManager {
         }
         // 取消下载 会触发结束回调
         downloadTask.cancel { [weak request] data in
-            request?.resumeData = data
+            if let request = request {
+                request.resumeData = data
+            }
             completionHandler?(data)
         }
     }
@@ -203,7 +202,7 @@ extension HTTPManager {
     ///   - completionHandler: 结束回调
     public func resume(download request: HTTPDownloadRequest, completion completionHandler: ((Bool) -> Void)? = nil) -> Void {
         // 判断是否下载中
-        guard request.isLoading == false else {
+        guard request.isRunning == false else {
             completionHandler?(false)
             return
         }
@@ -277,11 +276,11 @@ private extension HTTPManager {
         serializer.serializationOptions = request.serializationOptions
         serializer.allowsCellularAccess = request.allowsCellularAccess
         if request is HTTPDataRequest {
-            serializer.body = (request as! HTTPDataRequest).body
+            let dataRequest = request as! HTTPDataRequest
+            serializer.body = dataRequest.body
         } else if request is HTTPUploadRequest {
             let uploadRequest = request as! HTTPUploadRequest
             serializer.boundary = uploadRequest.boundary
-            serializer.contentLength = uploadRequest.contentLength
         }
         return serializer
     }
@@ -298,9 +297,11 @@ private extension HTTPManager {
         parser.analyticHandler = request.analyticHandler
         parser.acceptableContentTypes = request.acceptableContentTypes
         if request is HTTPFileRequest {
-            parser.downloadOptions = (request as! HTTPFileRequest).downloadOptions
+            let fileRequest = request as! HTTPFileRequest
+            parser.downloadOptions = fileRequest.downloadOptions
         } else if request is HTTPDownloadRequest {
-            parser.downloadOptions = (request as! HTTPDownloadRequest).downloadOptions
+            let downloadRequest = request as! HTTPDownloadRequest
+            parser.downloadOptions = downloadRequest.downloadOptions
         }
         return parser
     }
@@ -308,12 +309,15 @@ private extension HTTPManager {
 
 // MARK: - 标记请求重试次数
 extension HTTPDataRequest {
-    fileprivate struct Associated {
-        static var retryCount = "com.mn.data.request.retry.count"
+    
+    fileprivate struct RetryAssociated {
+        
+        nonisolated(unsafe) static var retryCount = "com.mn.data.request.retry.count"
     }
+    
     /// 当前重试次数
     fileprivate var retryEventCount: Int {
-        get { return objc_getAssociatedObject(self, &Associated.retryCount) as? Int ?? 0 }
-        set { objc_setAssociatedObject(self, &Associated.retryCount, newValue, .OBJC_ASSOCIATION_ASSIGN) }
+        get { return objc_getAssociatedObject(self, &RetryAssociated.retryCount) as? Int ?? 0 }
+        set { objc_setAssociatedObject(self, &RetryAssociated.retryCount, newValue, .OBJC_ASSOCIATION_ASSIGN) }
     }
 }

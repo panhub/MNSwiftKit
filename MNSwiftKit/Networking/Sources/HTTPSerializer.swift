@@ -8,6 +8,7 @@
 import UIKit
 import Foundation
 
+/// 请求序列化
 public class HTTPSerializer {
     /** 是否允许使用蜂窝网络*/
     public var allowsCellularAccess: Bool = true
@@ -15,11 +16,9 @@ public class HTTPSerializer {
     public var timeoutInterval: TimeInterval = 10.0
     /** 字符串编码格式*/
     public var stringEncoding: String.Encoding = .utf8
-    /** 上传内容的分割标记*/
+    /** 上传请求体边界字符串*/
     public var boundary: String?
-    /** 上传内容的长度*/
-    public var contentLength: Int = 0
-    /**POST数据体 非上传数据*/
+    /**POST数据体*/
     public var body: Any?
     /**请求地址参数拼接 支持 String, [String: String]*/
     public var param: Any?
@@ -41,7 +40,7 @@ public class HTTPSerializer {
     /// - Returns: 请求实例
     public func request(with string: String, method: String) throws -> URLRequest {
         // 检查链接
-        guard string.count > 0 else { throw HTTPError.requestSerializationFailure(.badUrl(string)) }
+        guard string.isEmpty == false else { throw HTTPError.requestSerializationFailure(.badUrl(string)) }
         // 拼接参数并编码
         guard let url = percentEncod(string) else { throw HTTPError.requestSerializationFailure(.cannotEncodeUrl(string)) }
         // 拼接参数并编码
@@ -58,37 +57,39 @@ public class HTTPSerializer {
             request.setValue(data.base64EncodedString(), forHTTPHeaderField: "Authorization")
         }
         // 添加数据体
-        if method.uppercased() == "POST" {
-            if let body = body {
-                // POST数据
-                let data: Data? = body is Data ? (body as! Data) : HTTPExtractParam(body, options: serializationOptions)?.data(using: stringEncoding)
-                guard let httpBody = data, httpBody.isEmpty == false else { throw HTTPError.requestSerializationFailure(.cannotEncodeBody) }
-                request.httpBody = httpBody
-                if request.value(forHTTPHeaderField: "Content-Type") == nil {
-                    request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-                }
-            } else if let boundary = boundary {
-                // Upload数据
+        switch method.uppercased() {
+        case "PUT", "POST":
+            if let boundary = boundary {
+                // 上传请求
                 if request.value(forHTTPHeaderField: "Content-Type") == nil {
                     request.setValue("multipart/form-data;charset=utf-8;boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
                 }
-                if contentLength > 0, request.value(forHTTPHeaderField: "Content-Length") == nil {
-                    request.setValue("\(contentLength)", forHTTPHeaderField: "Content-Length")
+            }
+            if let body = body {
+                let data: Data? = body is Data ? (body as! Data) : HTTPParam.extract(body, options: serializationOptions)?.data(using: stringEncoding)
+                guard let httpBody = data, httpBody.isEmpty == false else { throw HTTPError.requestSerializationFailure(.cannotEncodeBody) }
+                request.httpBody = httpBody
+                if request.value(forHTTPHeaderField: "Content-Type") == nil {
+                    // 默认设置为利用URL Encoded数据类型
+                    request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
                 }
             }
+        default: break
         }
         return request
     }
     
-    // url编码
+    /// URL编码
+    /// - Parameter url: 链接字符串
+    /// - Returns: 编码后的字符串
     private func percentEncod(_ url: String) -> String? {
         // 链接编码
         guard var string = (url.removingPercentEncoding ?? url).addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) else { return nil }
         // 参数编码
-        guard let params = HTTPExtractParam(param, options: serializationOptions) else { return string }
-        // 拼接参数
-        string.append(string.contains("?") ? "&" : "?")
-        string.append(params)
+        if let params = HTTPParam.extract(param, options: serializationOptions) {
+            string.append(string.contains("?") ? "&" : "?")
+            string.append(params)
+        }
         return string
     }
 }

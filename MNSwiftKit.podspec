@@ -102,7 +102,7 @@ Pod::Spec.new do |s|
   
   # Request <网络请求封装>
   s.subspec 'Request' do |r|
-    r.frameworks = 'UIKit', 'Foundation', 'CoreGraphics', 'UniformTypeIdentifiers'
+    r.frameworks = 'UIKit', 'Foundation', 'ImageIO', 'CoreServices', 'CoreGraphics', 'UniformTypeIdentifiers'
     r.source_files = 'MNSwiftKit/Request/Sources/**/*.swift'
     r.dependency 'MNSwiftKit/Networking'
   end

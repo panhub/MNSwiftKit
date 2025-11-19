@@ -6,9 +6,6 @@
 //  网络请求基类, 不可直接实例化使用
 
 import Foundation
-//#if canImport(MNSwiftKitNetworking)
-//import MNSwiftKitNetworking
-//#endif
 
 /// 请求开始回调
 public typealias HTTPRequestStartHandler = ()->Void
@@ -55,9 +52,9 @@ public typealias HTTPRequestProgressHandler = HTTPSessionProgressHandler
     /// 请求产生的Task
     @objc public var task: URLSessionTask?
     /// 是否是第一次请求
-    @objc public var isFirstLoading: Bool = true
+    @objc public var isFirstRunning: Bool = true
     /// 是否在请求
-    @objc public var isLoading: Bool {
+    @objc public var isRunning: Bool {
         guard let task = task else { return false }
         return task.state == .running
     }

@@ -139,6 +139,8 @@
       "frameworks": [
         "UIKit",
         "Foundation",
+        "ImageIO",
+        "CoreServices",
         "CoreGraphics",
         "UniformTypeIdentifiers"
       ],

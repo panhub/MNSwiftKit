@@ -18,6 +18,7 @@ public class HTTPParser {
         case json
         case string
         case xml
+        case html
         case plist
     }
     
@@ -51,21 +52,7 @@ public class HTTPParser {
     /**下载选项*/
     public var downloadOptions: DownloadOptions = [.createIntermediateDirectories, .removeExistsFile]
     /**接受的响应数据类型*/
-    public var acceptableContentTypes: Set<String>?
-    
-    private var preferredContentTypes: Set<String>? {
-        switch analyticMode {
-        case .json:
-            return ["application/json", "text/json", "text/javascript"]
-        case .string:
-            return ["text/html", "application/xml", "text/plain", "text/json"]
-        case .xml:
-            return ["application/xml", "text/xml"]
-        case .plist:
-            return ["application/x-plist"]
-        default: return nil
-        }
-    }
+    public var acceptableContentTypes: Set<HTTPContentType>?
     
     
     /// 解析响应结果
@@ -139,14 +126,40 @@ public class HTTPParser {
         }
         
         // 检查数据类型
-        if let acceptTypes = acceptableContentTypes ?? preferredContentTypes {
+        var contentTypes: Set<HTTPContentType>?
+        if let acceptableContentTypes = acceptableContentTypes {
+            contentTypes = acceptableContentTypes
+        } else {
+            switch analyticMode {
+            case .json:
+                contentTypes = [.json]
+            case .string:
+                contentTypes = [.plainText]
+            case .xml:
+                contentTypes = [.xml]
+            case .html:
+                contentTypes = [.html]
+            case .plist:
+                contentTypes = [.plist]
+            default: break
+            }
+        }
+        if let contentTypes = contentTypes, contentTypes.isEmpty == false {
             // 判断响应类型
             guard let mimeType = httpResponse.mimeType else {
                 throw HTTPError.responseParseFailure(.missingMimeType)
             }
             // 判断是否接受响应类型
-            guard acceptTypes.contains(mimeType) else {
-                throw HTTPError.responseParseFailure(.unacceptedContentType(mimeType, accepts: acceptTypes))
+            var acceptable = false
+            for contentType in contentTypes {
+                if mimeType.contains(contentType.rawValue) {
+                    acceptable = true
+                    break
+                }
+            }
+            guard acceptable else {
+                let rawValues = contentTypes.compactMap { $0.rawValue }
+                throw HTTPError.responseParseFailure(.unacceptedContentType(mimeType, accepts: Set(rawValues)))
             }
         }
     }

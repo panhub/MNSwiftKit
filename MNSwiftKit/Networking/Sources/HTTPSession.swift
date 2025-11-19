@@ -286,7 +286,7 @@ extension HTTPSession {
     /// 上传请求任务
     /// - Parameters:
     ///   - url: 上传地址
-    ///   - method: 请求方式
+    ///   - method: 请求方式(PUT, POST)
     ///   - serializer: 请求序列化器
     ///   - parser: 响应者解析器
     ///   - body: 上传体
@@ -310,13 +310,19 @@ extension HTTPSession {
         var uploadTask: URLSessionUploadTask?
         if let filePath = obj as? String, FileManager.default.fileExists(atPath: filePath) {
             DispatchTaskQueue.sync {
-                uploadTask = self.session.uploadTask(with: request, fromFile: URL(fileURLWithPath: filePath))
+                var fileUrl: URL!
+                if #available(iOS 16.0, *) {
+                    fileUrl = URL(filePath: filePath)
+                } else {
+                    fileUrl = URL(fileURLWithPath: filePath)
+                }
+                uploadTask = self.session.uploadTask(with: request, fromFile: fileUrl)
             }
         } else if let fileURL = obj as? URL, fileURL.isFileURL, FileManager.default.fileExists(atPath: fileURL.path) {
             DispatchTaskQueue.sync {
                 uploadTask = self.session.uploadTask(with: request, fromFile: fileURL)
             }
-        } else if let fileData = obj as? Data, fileData.count > 0 {
+        } else if let fileData = obj as? Data, fileData.isEmpty == false {
             DispatchTaskQueue.sync {
                 uploadTask = self.session.uploadTask(with: request, from: fileData)
             }

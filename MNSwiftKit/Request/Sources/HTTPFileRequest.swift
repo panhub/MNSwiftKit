@@ -9,9 +9,6 @@
 
 import UIKit
 import Foundation
-//#if canImport(MNSwiftKitNetworking)
-//import MNSwiftKitNetworking
-//#endif
 
 /// 询问下载位置回调
 public typealias HTTPFileLocationHandler = ()->URL

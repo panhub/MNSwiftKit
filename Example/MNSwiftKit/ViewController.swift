@@ -65,9 +65,10 @@ class ViewController: UIViewController {
             options.maxExportDuration = 30.0
             options.minExportDuration = 3.0
             let picker = MNAssetPicker(options: options)
-            picker.present { picker, assets in
-                if let asset = assets.first {
-                    print(asset.contents!)
+            picker.present { [weak self] picker, assets in
+                guard let self = self else { return }
+                if let asset = assets.first, let image = asset.contents as? UIImage {
+                    self.test(image: image)
                 }
             }
         }
@@ -80,5 +81,25 @@ class ViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func test(image: UIImage) {
+        let adaptor = HTTPUploadRequest.Adaptor(boundary: "com.test.boundary")
+        adaptor.begin()
+        adaptor.append(image: image, name: "image", filename: "MNSwiftKit.jpg")
+        adaptor.endAdapting()
+        let request = HTTPUploadRequest(url: "https://api.imgbb.com/1/upload")
+        request.param = ["key":"e06cf5b19fe2778422c6f11979859360"]
+        request.start(nil) {
+            return adaptor.body
+        } progress: { progress in
+            print(progress)
+        } completion: { result in
+            if result.isSuccess {
+                print("isSuccess")
+            } else {
+                print("失败")
+            }
+        }
     }
 }
