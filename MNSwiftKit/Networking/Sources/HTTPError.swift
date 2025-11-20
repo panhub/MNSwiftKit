@@ -67,7 +67,7 @@ public enum HTTPError: Swift.Error {
     public enum ResponseParseReason {
         case missingMimeType
         case cannotParseResponse(URLResponse?)
-        case unacceptedContentType(String, accepts: Set<String>)
+        case unacceptedContentType(String, accepts: [String])
         case unacceptedStatusCode(Int)
         case underlyingError(Error)
     }
@@ -327,8 +327,8 @@ extension HTTPError.ResponseParseReason {
             return "无法解析响应体"
         case .missingMimeType:
             return "未知ContentType"
-        case .unacceptedContentType(let mimeType, let accept):
-            return "不接受ContentType mimeType:\(mimeType) accept:\(accept)"
+        case .unacceptedContentType(let mimeType, let accepts):
+            return "不接受ContentType mimeType:\(mimeType) accepts:\(accepts)"
         case .unacceptedStatusCode(let code):
             return "响应码错误 code: \(code)"
         case .underlyingError(let error):

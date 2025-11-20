@@ -41,11 +41,11 @@ public typealias HTTPRequestProgressHandler = HTTPSessionProgressHandler
     /// 接受的响应码
     @objc public var acceptableStatusCodes: IndexSet = IndexSet(integersIn: 200..<300)
     /// 接受的响应数据类型
-    @objc public var acceptableContentTypes: Set<String>?
+    public var acceptableContentTypes: [HTTPContentType]?
     /// JSON格式编码选项
     @objc public var jsonReadingOptions: JSONSerialization.ReadingOptions = []
-    /// 数据解析方式
-    @objc public var analyticMode: HTTPParser.AnalyticMode = .json
+    /// 数据类型
+    @objc public var contentType: HTTPContentType = .json
     /// 数据解析回调
     @objc public var analyticHandler: HTTPParser.AnalyticHandler?
     
@@ -66,12 +66,12 @@ public typealias HTTPRequestProgressHandler = HTTPSessionProgressHandler
     /// 进度回调
     public var progressHandler: HTTPRequestProgressHandler?
     
-    @objc public override init() {
+    public override init() {
         super.init()
     }
     
-    /// 依据链接初始化
-    /// - Parameter url: 链接
+    /// 构造请求体
+    /// - Parameter url: 链接字符串
     @objc public init(url: String) {
         super.init()
         self.url = url

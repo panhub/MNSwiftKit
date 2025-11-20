@@ -24,18 +24,18 @@ public typealias HTTPRequestLocationHandler = HTTPSessionLocationHandler
     /// 询问下载位置回调 可能会触发多次回调 下载前检查文件是否存在
     public var locationHandler: HTTPRequestLocationHandler?
     /// 下载选项
-    public var downloadOptions: HTTPParser.DownloadOptions = [.createIntermediateDirectories, .removeExistsFile]
+    public var downloadOptions: HTTPDownloadOptions = [.createIntermediateDirectories, .removeExistsFile]
     /// 请求产生的Task
     @objc public var downloadTask: URLSessionDownloadTask? { task as? URLSessionDownloadTask }
     
     public override init() {
         super.init()
-        analyticMode = .none
+        contentType = .none
     }
     
     @objc public override init(url: String) {
         super.init(url: url)
-        analyticMode = .none
+        contentType = .none
     }
     
     deinit {

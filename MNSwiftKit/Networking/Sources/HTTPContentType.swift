@@ -9,29 +9,50 @@
 import Foundation
 
 /// 编码选项
-public enum HTTPContentType: String {
+@objc public enum HTTPContentType: Int {
+    
+    /// 不做处理
+    case none
     
     /// JSON数据
-    case json = "application/json"
-    
-    /// XML数据
-    case xml = "application/xml"
-    
-    /// HTML数据
-    case html = "text/html"
+    case json
     
     /// 纯文本
-    case plainText = "text/plain"
+    case plainText
     
     /// HTML数据
-    case plist = "application/x-plist"
+    case plist
+    
+    /// XML数据
+    case xml
+    
+    /// HTML数据
+    case html
     
     /// 文件上传
-    case formData = "multipart/form-data"
+    case formData
     
     /// 二进制数据
-    case binary = "application/octet-stream"
+    case binary
     
     /// URL编码数据
-    case formURLEncoded = "application/x-www-form-urlencoded"
+    case formURLEncoded
+}
+
+extension HTTPContentType {
+    
+    /// 内容类型的字符串表达
+    public var rawString: String {
+        switch self {
+        case .none: return "application/octet-stream"
+        case .json: return "application/json"
+        case .plainText: return "text/plain"
+        case .plist: return "application/x-plist"
+        case .xml: return "application/xml"
+        case .html: return "text/html"
+        case .formData: return "multipart/form-data"
+        case .binary: return "application/octet-stream"
+        case .formURLEncoded: return "application/x-www-form-urlencoded"
+        }
+    }
 }

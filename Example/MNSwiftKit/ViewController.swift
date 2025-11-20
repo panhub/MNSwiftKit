@@ -48,31 +48,31 @@ class ViewController: UIViewController {
         //        print("============\(String.uuid)============")
     }
     
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesEnded(touches, with: event)
-        guard let touche = touches.first else { return }
-        let location = touche.location(in: view)
-        if imageView.frame.contains(location) {
-            MNAssetBrowser.present(container: imageView, in: view)
-        } else {
-            //slider.setValue(0.0, animated: true)
-            let options: MNAssetPickerOptions = MNAssetPickerOptions()
-            options.maxPickingCount = 1
-            options.allowsPreview = true
-            options.allowsPickingAlbum = true
-            options.showFileSize = true
-            options.allowsExportVideo = true
-            options.maxExportDuration = 30.0
-            options.minExportDuration = 3.0
-            let picker = MNAssetPicker(options: options)
-            picker.present { [weak self] picker, assets in
-                guard let self = self else { return }
-                if let asset = assets.first, let image = asset.contents as? UIImage {
-                    self.test(image: image)
-                }
-            }
-        }
-    }
+//    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        super.touchesEnded(touches, with: event)
+//        guard let touche = touches.first else { return }
+//        let location = touche.location(in: view)
+//        if imageView.frame.contains(location) {
+//            MNAssetBrowser.present(container: imageView, in: view)
+//        } else {
+//            //slider.setValue(0.0, animated: true)
+//            let options: MNAssetPickerOptions = MNAssetPickerOptions()
+//            options.maxPickingCount = 1
+//            options.allowsPreview = true
+//            options.allowsPickingAlbum = true
+//            options.showFileSize = true
+//            options.allowsExportVideo = true
+//            options.maxExportDuration = 30.0
+//            options.minExportDuration = 3.0
+//            let picker = MNAssetPicker(options: options)
+//            picker.present { [weak self] picker, assets in
+//                guard let self = self else { return }
+//                if let asset = assets.first, let image = asset.contents as? UIImage {
+//                    //self.test(image: image)
+//                }
+//            }
+//        }
+//    }
     
 //    @objc private func valueChanged(_ slider: MNSlider) {
 //        print(slider.value)
@@ -83,23 +83,23 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    func test(image: UIImage) {
-        let adaptor = HTTPUploadRequest.Adaptor(boundary: "com.test.boundary")
-        adaptor.begin()
-        adaptor.append(image: image, name: "image", filename: "MNSwiftKit.jpg")
-        adaptor.endAdapting()
-        let request = HTTPUploadRequest(url: "https://api.imgbb.com/1/upload")
-        request.param = ["key":"e06cf5b19fe2778422c6f11979859360"]
-        request.start(nil) {
-            return adaptor.body
-        } progress: { progress in
-            print(progress)
-        } completion: { result in
-            if result.isSuccess {
-                print("isSuccess")
-            } else {
-                print("失败")
-            }
-        }
-    }
+//    func test(image: UIImage) {
+//        let adaptor = HTTPContentAdaptor(boundary: "com.test.boundary")
+//        adaptor.append(image: image, name: "image", filename: "MNSwiftKit.jpg")
+//        let request = HTTPUploadRequest(url: "https://api.imgbb.com/1/upload")
+//        request.param = ["key":"e06cf5b19fe2778422c6f11979859360"]
+//        request.boundary = adaptor.boundary
+//        request.contentType = .json
+//        request.start(nil) {
+//            return adaptor.data
+//        } progress: { progress in
+//            print(progress)
+//        } completion: { result in
+//            if result.isSuccess {
+//                print("isSuccess")
+//            } else {
+//                print("失败")
+//            }
+//        }
+//    }
 }

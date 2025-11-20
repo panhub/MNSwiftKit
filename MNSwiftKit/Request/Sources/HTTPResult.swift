@@ -6,9 +6,6 @@
 //  网络请求结果
 
 import Foundation
-//#if canImport(MNSwiftKitNetworking)
-//import MNSwiftKitNetworking
-//#endif
 
 /// 网络请求结果
 extension Result where Success == Any, Failure == HTTPError {

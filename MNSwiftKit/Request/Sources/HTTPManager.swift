@@ -290,11 +290,11 @@ private extension HTTPManager {
     /// - Returns: 解析器
     func parser(_ request: HTTPRequest) -> HTTPParser {
         let parser = HTTPParser()
+        parser.contentType = request.contentType
+        parser.analyticHandler = request.analyticHandler
+        parser.stringEncoding = request.stringReadingEncoding
         parser.jsonReadingOptions = request.jsonReadingOptions
         parser.acceptableStatusCodes = request.acceptableStatusCodes
-        parser.stringEncoding = request.stringReadingEncoding
-        parser.analyticMode = request.analyticMode
-        parser.analyticHandler = request.analyticHandler
         parser.acceptableContentTypes = request.acceptableContentTypes
         if request is HTTPFileRequest {
             let fileRequest = request as! HTTPFileRequest

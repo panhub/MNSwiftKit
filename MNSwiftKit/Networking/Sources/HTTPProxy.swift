@@ -179,7 +179,7 @@ public extension HTTPProxy {
                 }
                 return
             }
-            if let fileURL = self.fileURL, parser.analyticMode == .none {
+            if let fileURL = self.fileURL, parser.contentType == .none {
                 // 下载请求, 将下载路径返回
                 if #available(iOS 16.0, *) {
                     result = fileURL.path(percentEncoded: false)

@@ -23,16 +23,16 @@ public class HTTPFileRequest: HTTPRequest {
     public var locationHandler: HTTPFileLocationHandler?
     
     /// 下载选项
-    public var downloadOptions: HTTPParser.DownloadOptions = [.createIntermediateDirectories]
+    public var downloadOptions: HTTPDownloadOptions = [.createIntermediateDirectories]
     
     public override init() {
         super.init()
-        analyticMode = .none
+        contentType = .none
     }
     
     @objc public override init(url: String) {
         super.init(url: url)
-        analyticMode = .none
+        contentType = .none
     }
     
     deinit {

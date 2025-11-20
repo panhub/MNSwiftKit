@@ -9,50 +9,27 @@ import Foundation
 
 public class HTTPParser {
     
-    /// 数据解析回调 (优先于内部解析)
-    public typealias AnalyticHandler = (Data, AnalyticMode)->Any?
+    /// 数据解析回调 (先于内部解析)
+    public typealias AnalyticHandler = (Data, HTTPContentType)->Any?
     
-    /// 数据解析类型
-    @objc public enum AnalyticMode: Int {
-        case none
-        case json
-        case string
-        case xml
-        case html
-        case plist
-    }
-    
-    /**文件下载选项*/
-    public struct DownloadOptions: OptionSet {
-        // 当路径不存在时自动创建文件夹
-        public static let createIntermediateDirectories = DownloadOptions(rawValue: 1 << 0)
-        // 删除已存在的文件 否则存在则使用旧文件
-        public static let removeExistsFile = DownloadOptions(rawValue: 1 << 1)
-        
-        public let rawValue: Int
-        public init(rawValue: Int) {
-            self.rawValue = rawValue
-        }
-    }
-    
-    /** 字符串编码格式*/
+    /// 字符串编码格式
     public var stringEncoding: String.Encoding = .utf8
-    /**接受的响应码*/
+    /// 接受的响应码
     public var acceptableStatusCodes: IndexSet = IndexSet(integersIn: 200..<300)
-    /**JSON格式编码选项*/
+    /// JSON格式编码选项
     public var jsonReadingOptions: JSONSerialization.ReadingOptions = [.fragmentsAllowed]
-    /**删除空数据 针对JsonObject有效*/
+    /// 删除空数据 针对JsonObject有效
     public var removeNullValues: Bool = false
-    /**数据解析方式*/
-    public var analyticMode: AnalyticMode = .json
-    /**数据解析回调*/
+    /// 数据解析方式
+    public var contentType: HTTPContentType = .json
+    /// 数据解析回调
     public var analyticHandler: HTTPParser.AnalyticHandler?
-    /**默认解析实例*/
+    /// 默认解析实例
     public static let `default`: HTTPParser = HTTPParser()
-    /**下载选项*/
-    public var downloadOptions: DownloadOptions = [.createIntermediateDirectories, .removeExistsFile]
-    /**接受的响应数据类型*/
-    public var acceptableContentTypes: Set<HTTPContentType>?
+    /// 下载选项
+    public var downloadOptions: HTTPDownloadOptions = [.createIntermediateDirectories, .removeExistsFile]
+    /// 接受的响应数据类型
+    public var acceptableContentTypes: [HTTPContentType]!
     
     
     /// 解析响应结果
@@ -71,30 +48,34 @@ public class HTTPParser {
         }
         
         // 不解析数据则返回nil
-        if analyticMode == .none {
+        if contentType == .none {
             return data
         }
         
         // 判断数据是否为空
-        guard let responseData = data, responseData.count > 0, data != Data(bytes: " ", count: 1) else {
+        guard let responseData = data, responseData.isEmpty == false else {
             throw HTTPError.dataParseFailure(.zeroByteData)
         }
         
-        // 判断是否支持解析数据
+        if responseData == Data(bytes: " ", count: 1) {
+            throw HTTPError.dataParseFailure(.zeroByteData)
+        }
+        
+        // 判断是否支持自定义解析数据
         if let analyticHandler = analyticHandler {
-            guard let responseObject = analyticHandler(responseData, analyticMode) else {
+            guard let responseObject = analyticHandler(responseData, contentType) else {
                 throw HTTPError.dataParseFailure(.cannotDecodeData)
             }
             return responseObject
         }
         
         // 解析数据
-        var responseObject: Any?
-        switch analyticMode {
+        var responseObject: Any = responseData
+        switch contentType {
         case .json:
             responseObject = try json(responseData)
-        case .string:
-            responseObject = try string(responseData)
+        case .plainText:
+            responseObject = try plainText(responseData)
         case .xml:
             responseObject = try xml(responseData)
         case .plist:
@@ -117,7 +98,9 @@ public class HTTPParser {
         }
 
         // 响应是否合法
-        guard let httpResponse = response as? HTTPURLResponse else { throw HTTPError.responseParseFailure(.cannotParseResponse(response)) }
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw HTTPError.responseParseFailure(.cannotParseResponse(response))
+        }
         
         // 检查状态码
         let statusCode = httpResponse.statusCode
@@ -125,42 +108,29 @@ public class HTTPParser {
             throw HTTPError.responseParseFailure(.unacceptedStatusCode(statusCode))
         }
         
-        // 检查数据类型
-        var contentTypes: Set<HTTPContentType>?
+        // 检查数据类型 先确认是否检查, 便于外部自定义
+        var expectedContentTypes: [HTTPContentType] = []
         if let acceptableContentTypes = acceptableContentTypes {
-            contentTypes = acceptableContentTypes
-        } else {
-            switch analyticMode {
-            case .json:
-                contentTypes = [.json]
-            case .string:
-                contentTypes = [.plainText]
-            case .xml:
-                contentTypes = [.xml]
-            case .html:
-                contentTypes = [.html]
-            case .plist:
-                contentTypes = [.plist]
-            default: break
+            expectedContentTypes.append(contentsOf: acceptableContentTypes)
+        }
+        if contentType != .none {
+            expectedContentTypes.append(contentType)
+        }
+        guard expectedContentTypes.isEmpty == false else { return }
+        guard let mimeType = httpResponse.mimeType else {
+            throw HTTPError.responseParseFailure(.missingMimeType)
+        }
+        // 判断是否接受响应类型
+        var acceptable = false
+        for expectedContentType in expectedContentTypes {
+            if mimeType.contains(expectedContentType.rawString) {
+                acceptable = true
+                break
             }
         }
-        if let contentTypes = contentTypes, contentTypes.isEmpty == false {
-            // 判断响应类型
-            guard let mimeType = httpResponse.mimeType else {
-                throw HTTPError.responseParseFailure(.missingMimeType)
-            }
-            // 判断是否接受响应类型
-            var acceptable = false
-            for contentType in contentTypes {
-                if mimeType.contains(contentType.rawValue) {
-                    acceptable = true
-                    break
-                }
-            }
-            guard acceptable else {
-                let rawValues = contentTypes.compactMap { $0.rawValue }
-                throw HTTPError.responseParseFailure(.unacceptedContentType(mimeType, accepts: Set(rawValues)))
-            }
+        guard acceptable else {
+            let rawStrings = expectedContentTypes.compactMap { $0.rawString }
+            throw HTTPError.responseParseFailure(.unacceptedContentType(mimeType, accepts: rawStrings))
         }
     }
 }
@@ -168,6 +138,9 @@ public class HTTPParser {
 // MARK: - 数据解析
 private extension HTTPParser {
     
+    /// 解析JSON数据
+    /// - Parameter data: JSON数据流
+    /// - Returns: JSON对象
     func json(_ data: Data) throws -> Any {
         
         var jsonObject: Any
@@ -201,7 +174,10 @@ private extension HTTPParser {
         return jsonObject
     }
     
-    func string(_ data: Data) throws -> String {
+    /// 解析文本数据
+    /// - Parameter data: 文本数据流
+    /// - Returns: 文本
+    func plainText(_ data: Data) throws -> String {
         
         guard let stringObject = String(data: data, encoding: stringEncoding) else {
             throw HTTPError.dataParseFailure(.cannotDecodeData)
@@ -209,10 +185,17 @@ private extension HTTPParser {
         return stringObject
     }
     
+    /// 解析XML数据
+    /// - Parameter data: XML数据流
+    /// - Returns: XML解析器
     func xml(_ data: Data) throws -> XMLParser {
-        return XMLParser(data: data)
+        
+        XMLParser(data: data)
     }
     
+    /// 解析Plist数据
+    /// - Parameter data: Plist数据流
+    /// - Returns: Plist数据
     func plist(_ data: Data) throws -> Any {
         
         var propertyList: Any

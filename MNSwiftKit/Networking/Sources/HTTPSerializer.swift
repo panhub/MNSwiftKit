@@ -59,6 +59,7 @@ public class HTTPSerializer {
         // 添加数据体
         switch method.uppercased() {
         case "PUT", "POST":
+            // 这里要先处理boundary, 有可能是文件上传, 要先设置Content-Type
             if let boundary = boundary {
                 // 上传请求
                 if request.value(forHTTPHeaderField: "Content-Type") == nil {
