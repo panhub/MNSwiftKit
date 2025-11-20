@@ -55,6 +55,6 @@ public class MNActivityToast: MNToastBuilder {
     
     public func toastDidAppear(_ toast: MNToast) {
         
-        toast.fireTimer(timeInterval: 3.0)
+        toast.dismiss(after: 3.0)
     }
 }

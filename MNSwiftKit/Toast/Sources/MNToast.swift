@@ -121,8 +121,8 @@ public class MNToast: UIView {
     /// 消失后回调
     public var dismissHandler: (()->Void)?
     
-    /// 提示信息
-    private let textLabel = UILabel()
+    /// 状态信息
+    private let statusLabel = UILabel()
     
     /// 内容视图
     private let contentView = UIView()
@@ -192,11 +192,11 @@ public class MNToast: UIView {
             stackView.addArrangedSubview(activityView)
         }
         
-        textLabel.numberOfLines = 0
-        textLabel.textAlignment = stackView.axis == .horizontal ? .left : .center
-        textLabel.translatesAutoresizingMaskIntoConstraints = false
-        stackView.addArrangedSubview(textLabel)
-        NSLayoutConstraint.activate([textLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 200.0)])
+        statusLabel.numberOfLines = 0
+        statusLabel.textAlignment = stackView.axis == .horizontal ? .left : .center
+        statusLabel.translatesAutoresizingMaskIntoConstraints = false
+        stackView.addArrangedSubview(statusLabel)
+        NSLayoutConstraint.activate([statusLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 200.0)])
         
         isUserInteractionEnabled = builder.userInteractionEnabledForToast == false
         
@@ -237,21 +237,21 @@ public class MNToast: UIView {
     /// - Parameter status: 提示信息
     func update(status: String?) {
         if let status = status, status.isEmpty == false {
-            textLabel.attributedText = NSAttributedString(string: status, attributes: builder.attributesForToastDescription)
-            textLabel.isHidden = false
+            statusLabel.attributedText = NSAttributedString(string: status, attributes: builder.attributesForToastDescription)
+            statusLabel.isHidden = false
         } else {
-            textLabel.attributedText = nil
-            textLabel.isHidden = true
+            statusLabel.attributedText = nil
+            statusLabel.isHidden = true
         }
     }
     
-    /// 开启定时器
+    /// 定时指定时间后结束展示
     /// - Parameter timeInterval: 触发时长
-    func fireTimer(timeInterval: TimeInterval) {
+    func dismiss(after timeInterval: TimeInterval) {
         invalidateTimer()
-        timer = Timer.scheduledTimer(timeInterval: timeInterval, target: self, selector: #selector(timerStrike), userInfo: nil, repeats: false)
+        let fireDate = Date().addingTimeInterval(timeInterval)
+        timer = Timer(fireAt: fireDate, interval: 0.0, target: self, selector: #selector(timerStrike), userInfo: nil, repeats: false)
         RunLoop.main.add(timer, forMode: .common)
-        timer.fire()
     }
     
     func invalidateTimer() {
@@ -283,8 +283,10 @@ extension MNToast {
             // 判断是否是当前类型
             if type(of: toast.builder) == type(of: builder) {
                 // 取消当前动画
-                if toast.contentView.transform != .identity {
+                let animationKeys = toast.contentView.layer.animationKeys()
+                if let _ = animationKeys {
                     toast.contentView.layer.removeAllAnimations()
+                    toast.contentView.transform = .identity
                 }
                 // 这里只做更新
                 if let status = status {
@@ -297,21 +299,8 @@ extension MNToast {
                     toast.dismissHandler = handler
                 }
                 superview.bringSubviewToFront(toast)
-                if toast.contentView.alpha != 1.0, builder.fadeInForToast {
-                    // 有可能在做消失动画
-                    toast.contentView.transform = .init(scaleX: 1.05, y: 1.05)
-                    UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveEaseInOut) { [weak toast] in
-                        guard let toast = toast else { return }
-                        toast.contentView.alpha = 1.0
-                        toast.contentView.transform = .identity
-                    } completion: { [weak toast] _ in
-                        guard let toast = toast else { return }
-                        toast.builder.toastDidAppear(toast)
-                    }
-                } else {
-                    toast.contentView.alpha = 1.0
-                    toast.builder.toastDidAppear(toast)
-                }
+                // 重新展示动画
+                toast.show(animated: animationKeys != nil)
                 return
             }
             // 删除
@@ -330,45 +319,54 @@ extension MNToast {
             toast.bottomAnchor.constraint(equalTo: superview.bottomAnchor),
             toast.rightAnchor.constraint(equalTo: superview.rightAnchor)
         ])
-        toast.layoutIfNeeded()
-        if builder.fadeInForToast {
-            // 有可能在做消失动画
-            toast.contentView.alpha = 0.0
-            toast.contentView.transform = .init(scaleX: 1.05, y: 1.05)
-            UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveEaseInOut) { [weak toast] in
-                guard let toast = toast else { return }
-                toast.contentView.alpha = 1.0
-                toast.contentView.transform = .identity
-            } completion: { [weak toast] finish in
-                guard let toast = toast else { return }
-                guard finish else { return }
-                toast.builder.toastDidAppear(toast)
-            }
+        toast.show(animated: true)
+    }
+    
+    private func show(animated: Bool) {
+        if let _ = window {
+            layoutIfNeeded()
+        }
+        let animationHandler: ()->Void = { [weak self] in
+            guard let self = self else { return }
+            self.contentView.alpha = 1.0
+            self.contentView.transform = .identity
+        }
+        let completionHandler: (Bool)->Void = { [weak self] finished in
+            guard let self = self else { return }
+            guard finished else { return }
+            self.builder.toastDidAppear(self)
+        }
+        if animated, builder.fadeInForToast {
+            contentView.alpha = 0.0
+            contentView.transform = .init(scaleX: 1.3, y: 1.3)
+            UIView.animate(withDuration: 0.15, delay: 0.0, options: [.curveEaseIn, .beginFromCurrentState], animations: animationHandler, completion: completionHandler)
         } else {
-            builder.toastDidAppear(toast)
+            completionHandler(true)
         }
     }
     
-    func dismiss(completion handler: (()->Void)?) {
+    /// 取消Toast展示
+    /// - Parameter handler: 完成后回调
+    public func dismiss(completion handler: (()->Void)? = nil) {
+        guard contentView.alpha == 1.0 else { return }
         invalidateTimer()
+        let animationHandler: ()->Void = { [weak self] in
+            guard let self = self else { return }
+            self.contentView.alpha = 0.0
+            self.contentView.transform = .init(scaleX: 0.75, y: 0.75)
+        }
+        let completionHandler: (Bool)->Void = { [weak self] finished in
+            guard let self = self else { return }
+            guard finished else { return }
+            self.removeFromSuperview()
+            if let dismissHandler = handler {
+                dismissHandler()
+            }
+        }
         if builder.fadeOutForToast {
-            UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveEaseInOut) { [weak self] in
-                guard let self = self else { return }
-                self.contentView.alpha = 0.0
-                self.contentView.transform = .init(scaleX: 1.03, y: 1.03)
-            } completion: { [weak self] finish in
-                guard let self = self else { return }
-                guard finish else { return }
-                self.removeFromSuperview()
-                if let dismissHandler = handler {
-                    dismissHandler()
-                }
-            }
+            UIView.animate(withDuration: 0.15, delay: 0.0, options: [.curveEaseOut, .beginFromCurrentState], animations: animationHandler, completion: completionHandler)
         } else {
-            removeFromSuperview()
-            if let executeHandler = handler {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: executeHandler)
-            }
+            completionHandler(true)
         }
     }
 }
@@ -408,5 +406,27 @@ extension MNToast {
 //        keyboardFrame = rect
 //        guard let _ = window else { return }
 //        applyToKeyboard()
+    }
+    
+    /// 键盘可见高度
+    var visibleKeyboardHeight: CGFloat {
+        guard let window = MNToast.window else { return 0.0 }
+        for possibleKeyboard in window.subviews {
+            let viewName = NSStringFromClass(type(of: possibleKeyboard))
+            guard viewName.hasPrefix("UI") else { continue }
+            if viewName.hasSuffix("PeripheralHostView") || viewName.hasSuffix("Keyboard") {
+                return possibleKeyboard.bounds.height
+            } else if viewName.hasSuffix("InputSetContainerView") {
+                for possibleKeyboardSubview in possibleKeyboard.subviews {
+                    let subviewName = NSStringFromClass(type(of: possibleKeyboardSubview))
+                    guard subviewName.hasPrefix("UI"), subviewName.hasSuffix("InputSetHostView") else { continue }
+                    let convertedRect = possibleKeyboard.convert(possibleKeyboardSubview.frame, to: self)
+                    let intersectedRect = convertedRect.intersection(bounds)
+                    guard intersectedRect.isNull == false else { continue }
+                    return intersectedRect.height
+                }
+            }
+        }
+        return 0.0
     }
 }

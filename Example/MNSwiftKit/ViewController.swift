@@ -1,111 +1,31 @@
 //
 //  ViewController.swift
-//  MNSwiftKit
+//  MNSwiftKit_Example
 //
-//  Created by panhub on 08/22/2025.
-//  Copyright (c) 2025 mellow. All rights reserved.
-//  .{png,json}','MNSwiftKit/EmoticonKeyboard/Resources/default/*.{png,jpg,jpeg}
+//  Created by mellow on 2025/11/20.
+//  Copyright © 2025 CocoaPods. All rights reserved.
+//
 
 import UIKit
 import MNSwiftKit
-import ObjectiveC
 
 class ViewController: UIViewController {
     
-    let imageView = UIImageView()
+    @IBOutlet weak var textField: UITextField!
     
-    //lazy var slider = MNSlider(frame: .init(x: imageView.frame.minX, y: imageView.frame.maxY + 50.0, width: 200.0, height: 50.0))
+    @IBOutlet weak var imageView: UIImageView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        // Do any additional setup after loading the view.
         
-        view.backgroundColor = .red
-        
-        imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 10.0
-        imageView.image = UIImage(named: "image_1")
-        imageView.frame = .init(x: 150.0, y: 150.0, width: 150.0, height: 150.0)
-        view.addSubview(imageView)
-        
-//        slider.minimumValue = -1.0
-//        slider.maximumValue = 1.0
-//        slider.setValueChange(handler: valueChanged(_:))
-//        view.addSubview(slider)
-        
-        
-        //        print("============\(MN_SCREEN_WIDTH)============")
-        //        print("============\(MN_SCREEN_HEIGHT)============")
-        //        print("============\(MN_SCREEN_MAX)============")
-        //        print("============\(MN_SCREEN_MIN)============")
-        //        print("============\(MN_TAB_BAR_HEIGHT)============")
-        //        print("============\(MN_BOTTOM_SAFE_HEIGHT)============")
-        //        print("============\(MN_BOTTOM_BAR_HEIGHT)============")
-        //        print("============\(MN_STATUS_BAR_HEIGHT)============")
-        //        print("============\(MN_NAV_BAR_HEIGHT)============")
-        //        print("============\(MN_TOP_BAR_HEIGHT)============")
-        //        print("============\("md5测试".crypto.md5)============")
-        //        print("============\(String.uuid)============")
+        imageView.layer.cornerRadius = 8.0
     }
-    
-//    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        super.touchesEnded(touches, with: event)
-//        guard let touche = touches.first else { return }
-//        let location = touche.location(in: view)
-//        if imageView.frame.contains(location) {
-//            MNAssetBrowser.present(container: imageView, in: view)
-//        } else {
-//            //slider.setValue(0.0, animated: true)
-//            let options: MNAssetPickerOptions = MNAssetPickerOptions()
-//            options.maxPickingCount = 1
-//            options.allowsPreview = true
-//            options.allowsPickingAlbum = true
-//            options.showFileSize = true
-//            options.allowsExportVideo = true
-//            options.maxExportDuration = 30.0
-//            options.minExportDuration = 3.0
-//            let picker = MNAssetPicker(options: options)
-//            picker.present { [weak self] picker, assets in
-//                guard let self = self else { return }
-//                if let asset = assets.first, let image = asset.contents as? UIImage {
-//                    //self.test(image: image)
-//                }
-//            }
-//        }
-//    }
-    
-//    @objc private func valueChanged(_ slider: MNSlider) {
-//        print(slider.value)
-//    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-//    func test(image: UIImage) {
-//        let adaptor = HTTPContentAdaptor(boundary: "com.test.boundary")
-//        adaptor.append(image: image, name: "image", filename: "MNSwiftKit.jpg")
-//        let request = HTTPUploadRequest(url: "https://api.imgbb.com/1/upload")
-//        request.param = ["key":"e06cf5b19fe2778422c6f11979859360"]
-//        request.boundary = adaptor.boundary
-//        request.contentType = .json
-//        request.start(nil) {
-//            return adaptor.data
-//        } progress: { progress in
-//            print(progress)
-//        } completion: { result in
-//            if result.isSuccess {
-//                print("isSuccess")
-//            } else {
-//                print("失败")
-//            }
-//        }
-//    }
-    
+
+
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
         
-        self.view.showActivityToast("测试弹窗")
+        view.showActivityToast("测试弹窗")
     }
 }

@@ -11,13 +11,13 @@ import Foundation
 public extension MNToast {
     
     /// 是否正在显示
-    @objc static var isAppearing: Bool {
+    @objc class var isAppearing: Bool {
         guard let window = window else { return false }
         return window.mn.isToastAppearing
     }
     
     /// 获取当前窗口
-    @objc static var window: UIWindow? {
+    @objc class var window: UIWindow? {
         if #available(iOS 15.0, *) {
             return mainWindow(in: UIApplication.shared.delegate?.window??.windowScene?.windows.reversed())
         } else {
