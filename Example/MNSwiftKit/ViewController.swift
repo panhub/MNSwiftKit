@@ -102,4 +102,10 @@ class ViewController: UIViewController {
 //            }
 //        }
 //    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        
+        self.view.showActivityToast("测试弹窗")
+    }
 }

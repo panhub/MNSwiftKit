@@ -8,77 +8,45 @@
 import UIKit
 import ObjectiveC.runtime
 
-@objc public protocol MNToastBuilder: NSObjectProtocol {
+public protocol MNToastBuilder {
     
-    /// 内容视图颜色
-    /// - Returns: 颜色
-    func contentColorForToast() -> ToastColor
+    /// Toast布局方向
+    var axisForToast: MNToast.Axis { get }
     
-    /// 内容视图出现的位置
-    /// - Returns: 相对于自身位置
-    func positionForToast() -> ToastPosition
+    /// Toast颜色样式
+    var colorForToast: MNToast.Color { get }
     
-    /// 内容视图文字/指示图四周约束
-    /// - Returns: 四周约束
-    func contentInsetForToast() -> UIEdgeInsets
+    /// Toast内容四周约束
+    var contentInsetForToast: UIEdgeInsets { get }
     
-    /// 内容视图控件间隔
-    /// - Returns: 控件间隔
-    func spacingForToast() -> CGFloat
+    /// Toast指示视图
+    var activityViewForToast: UIView? { get }
     
-    /// 询问内容视图中指示图
-    /// - Returns: 指示图
-    func activityViewForToast() -> UIView?
+    /// Toast显示时是否拒绝交互事件
+    var userInteractionEnabledForToast: Bool { get }
     
-    /// 询问内容视图中文本描述
-    /// - Returns: 文本描述
-    func attributesForToastDescription() -> [NSAttributedString.Key:Any]
+    /// Toast显示的位置
+    var positionForToast: MNToast.Position { get }
     
-    /// 询问是否支持用户点击事件 不支持则屏蔽父视图事件 反之相反
-    /// - Returns: 是否支持用户点击事件
-    @objc optional func supportedUserInteraction() -> Bool
+    /// Toast渐入式显示
+    var fadeInForToast: Bool { get }
     
-    /// 询问是否适应键盘事件
-    /// - Returns: 是否适应键盘事件
-    @objc optional func supportedAdjustsKeyboard() -> Bool
+    /// Toast渐隐式取消
+    var fadeOutForToast: Bool { get }
     
-    /// 内容视图与键盘间隔
-    /// - Returns: 间隔
-    @objc optional func spacingForKeyboard() -> CGFloat
+    /// Toast中文字的富文本描述
+    var attributesForToastDescription: [NSAttributedString.Key:Any] { get }
     
-    /// 询问内容视图相对于位置的偏移量
-    /// - Returns: 相对于位置的偏移量
-    @objc optional func offsetYForToast() -> CGFloat
-    
-    /// 询问内容视图控件排列方向
-    /// - Returns: 控件排列方向
-    @objc optional func distributionForToastActivity() -> ToastDistribution
-    
-    /// 显现动画
-    /// - Returns: 动画类型
-    @objc optional func animationForToastShow() -> ToastAnimation
-    
-    /// 消失动画
-    /// - Returns: 动画类型
-    @objc optional func animationForToastDismiss() -> ToastAnimation
-    
-    /// 出现告知
+    /// Toast出现告知
     /// - Parameter toast: 提示弹窗
-    @objc optional func toastDidAppear(_ toast: MNToast) -> Void
+    func toastDidAppear(_ toast: MNToast)
+}
+
+public protocol MNToastProgressUpdater where Self: MNToastBuilder {
     
-    /// 消失事件告知
-    /// - Parameter toast: 提示弹窗
-    @objc optional func toastDidDisappear(_ toast: MNToast) -> Void
-    
-    /// 文字变化告知
-    /// - Parameter toast: 提示弹窗
-    @objc optional func toastDidUpdateStatus(_ toast: MNToast) -> Void
-    
-    /// 进度变化告知
-    /// - Parameters:
-    ///   - toast: 提示弹窗
-    ///   - progress: 进度值
-    @objc optional func toast(_ toast: MNToast, update progress: Double) -> Void
+    /// 更新进度值
+    /// - Parameter progress: 进度值
+    func toastShouldUpdate(progress: CGFloat)
 }
 
 /// 颜色样式
@@ -106,6 +74,47 @@ import ObjectiveC.runtime
 /// 提示弹窗
 public class MNToast: UIView {
     
+    /// 布局方向
+    public enum Axis {
+        /// 纵向
+        case vertical(spacing: CGFloat)
+        /// 横向
+        case horizontal(spacing: CGFloat)
+    }
+    
+    /// 颜色
+    public enum Color {
+        ///   暗色
+        case dark
+        ///   亮色
+        case light
+        ///   无颜色
+        case clear
+    }
+    
+    /// 显示的位置
+    public enum Position {
+        /// 距离顶部一定距离的位置
+        case top(distance: CGFloat)
+        /// 中间显示
+        case center
+        /// 距离底部一定距离的位置
+        case bottom(distance: CGFloat)
+    }
+    
+    /// 动画类型
+    public enum Animation {
+        /// 不使用动画
+        case none
+        /// 渐入渐出
+        case fade
+        /// 移动
+        case move
+    }
+    
+    /// 定时器
+    private var timer: Timer!
+    
     /// 内容提供者
     private let builder: MNToastBuilder
     
@@ -113,36 +122,19 @@ public class MNToast: UIView {
     public var dismissHandler: (()->Void)?
     
     /// 提示信息
-    private let textLabel: UILabel = UILabel()
+    private let textLabel = UILabel()
+    
+    /// 内容视图
+    private let contentView = UIView()
     
     /// 约束指示图与提示信息(纵向布局)
-    private let stackView: UIStackView = UIStackView()
-    
-    /// 显示的内容(横向布局)
-    private let contentView: UIStackView = UIStackView()
+    private let stackView = UIStackView()
     
     /// 记录键盘位置
     private var keyboardFrame: CGRect = UIScreen.main.bounds.inset(by: UIEdgeInsets(top: UIScreen.main.bounds.height, left: 0.0, bottom: 0.0, right: 0.0))
     
     /// 纵向中心约束
     private lazy var verticalLayout: NSLayoutConstraint = NSLayoutConstraint(item: contentView, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1.0, constant: 0.0)
-    
-    /// 文本内容
-    public var text: String? {
-        get {
-            textLabel.attributedText?.string
-        }
-        set {
-            if let newValue = newValue {
-                textLabel.isHidden = false
-                textLabel.attributedText = NSAttributedString(string: newValue, attributes: builder.attributesForToastDescription())
-            } else {
-                textLabel.isHidden = true
-                textLabel.attributedText = nil
-            }
-            builder.toastDidUpdateStatus?(self)
-        }
-    }
     
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -152,98 +144,61 @@ public class MNToast: UIView {
         self.builder = builder
         super.init(frame: .zero)
         
-        contentView.spacing = 0.0
-        contentView.axis = .horizontal
-        contentView.alignment = .center
-        contentView.distribution = .equalSpacing
+        switch builder.colorForToast {
+        case .dark:
+            contentView.backgroundColor = UIColor(white: 0.05, alpha: 1.0)
+        case .light:
+            contentView.backgroundColor = UIColor(white: 0.95, alpha: 1.0)
+        case .clear:
+            contentView.backgroundColor = .clear
+        }
         contentView.clipsToBounds = true
         contentView.layer.cornerRadius = 8.0
-        contentView.isUserInteractionEnabled = false
         contentView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(contentView)
-        addConstraints([verticalLayout, NSLayoutConstraint(item: contentView, attribute: .centerX, relatedBy: .equal, toItem: self, attribute: .centerX, multiplier: 1.0, constant: 0.0)])
+        NSLayoutConstraint.activate([contentView.centerXAnchor.constraint(equalTo: centerXAnchor)])
+        switch builder.positionForToast {
+        case .top(let distance):
+            NSLayoutConstraint.activate([contentView.topAnchor.constraint(equalTo: topAnchor, constant: distance)])
+        case .center:
+            NSLayoutConstraint.activate([contentView.centerYAnchor.constraint(equalTo: centerYAnchor)])
+        case .bottom(let distance):
+            NSLayoutConstraint.activate([contentView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -distance)])
+        }
         
-        let edgeInset = builder.contentInsetForToast()
-        
-        let left = UIView()
-        left.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addArrangedSubview(left)
-        contentView.addConstraint(NSLayoutConstraint(item: left, attribute: .height, relatedBy: .equal, toItem: contentView, attribute: .height, multiplier: 1.0, constant: 0.0))
-        left.addConstraint(NSLayoutConstraint(item: left, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: edgeInset.left))
-        
-        /// 添加指示图
-        stackView.spacing = 0.0
-        stackView.axis = .vertical
+        /// 布局视图
+        switch builder.axisForToast {
+        case .vertical(let spacing):
+            stackView.axis = .vertical
+            stackView.spacing = spacing
+        case .horizontal(let spacing):
+            stackView.axis = .horizontal
+            stackView.spacing = spacing
+        }
         stackView.alignment = .center
         stackView.distribution = .equalSpacing
-        contentView.addArrangedSubview(stackView)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(stackView)
+        let contentInset = builder.contentInsetForToast
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: contentInset.top),
+            stackView.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: contentInset.left),
+            stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -contentInset.bottom),
+            stackView.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -contentInset.right)
+        ])
         
-        let right = UIView()
-        right.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addArrangedSubview(right)
-        contentView.addConstraint(NSLayoutConstraint(item: right, attribute: .height, relatedBy: .equal, toItem: contentView, attribute: .height, multiplier: 1.0, constant: 0.0))
-        right.addConstraint(NSLayoutConstraint(item: right, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: edgeInset.right))
-        
-        let top = UIView()
-        top.translatesAutoresizingMaskIntoConstraints = false
-        stackView.addArrangedSubview(top)
-        stackView.addConstraint(NSLayoutConstraint(item: top, attribute: .width, relatedBy: .equal, toItem: stackView, attribute: .width, multiplier: 1.0, constant: 0.0))
-        top.addConstraint(NSLayoutConstraint(item: top, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: edgeInset.top))
-        
-        if let activityView = builder.activityViewForToast() {
-            // 活动指示图
+        if let activityView = builder.activityViewForToast {
             activityView.translatesAutoresizingMaskIntoConstraints = false
             stackView.addArrangedSubview(activityView)
-            activityView.addConstraints([NSLayoutConstraint(item: activityView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: activityView.frame.width), NSLayoutConstraint(item: activityView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: activityView.frame.height)])
-            // 间隔
-            let spacing = builder.spacingForToast()
-            if spacing > 0.0 {
-                let spacer = UIView()
-                spacer.translatesAutoresizingMaskIntoConstraints = false
-                stackView.addArrangedSubview(spacer)
-                stackView.addConstraint(NSLayoutConstraint(item: spacer, attribute: .width, relatedBy: .equal, toItem: stackView, attribute: .width, multiplier: 1.0, constant: 0.0))
-                spacer.addConstraint(NSLayoutConstraint(item: spacer, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: spacing))
-            }
         }
         
-        textLabel.isHidden = true
         textLabel.numberOfLines = 0
-        textLabel.textAlignment = .center
+        textLabel.textAlignment = stackView.axis == .horizontal ? .left : .center
         textLabel.translatesAutoresizingMaskIntoConstraints = false
-        if let distribution = builder.distributionForToastActivity?(), distribution == .bottom {
-            stackView.insertArrangedSubview(textLabel, at: 1)
-        } else {
-            stackView.addArrangedSubview(textLabel)
-        }
-        textLabel.addConstraint(NSLayoutConstraint(item: textLabel, attribute: .width, relatedBy: .lessThanOrEqual, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 175.0))
+        stackView.addArrangedSubview(textLabel)
+        NSLayoutConstraint.activate([textLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 200.0)])
         
-        let bottom = UIView()
-        bottom.translatesAutoresizingMaskIntoConstraints = false
-        stackView.addArrangedSubview(bottom)
-        stackView.addConstraint(NSLayoutConstraint(item: bottom, attribute: .width, relatedBy: .equal, toItem: stackView, attribute: .width, multiplier: 1.0, constant: 0.0))
-        bottom.addConstraint(NSLayoutConstraint(item: bottom, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: edgeInset.bottom))
-        
-        /// 添加颜色视图
-        switch builder.contentColorForToast() {
-        case .dark:
-            let effect = UIBlurEffect(style: .dark)
-            let visualView = UIVisualEffectView(effect: effect)
-            visualView.frame = contentView.bounds
-            visualView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            contentView.insertSubview(visualView, at: 0)
-        case .gray:
-            let visualView = UIView(frame: contentView.bounds)
-            visualView.backgroundColor = UIColor(white: 0.0, alpha: 0.12)
-            visualView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            contentView.insertSubview(visualView, at: 0)
-            contentView.backgroundColor = .white
-        default: break
-        }
-        
-        // 交互
-        if let userInteractionEnabled = builder.supportedUserInteraction?(), userInteractionEnabled == true {
-            isUserInteractionEnabled = false
-        }
+        isUserInteractionEnabled = builder.userInteractionEnabledForToast == false
         
         // 键盘变化告知
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame(_:)), name: UIApplication.keyboardWillChangeFrameNotification, object: nil)
@@ -253,16 +208,12 @@ public class MNToast: UIView {
         NotificationCenter.default.removeObserver(self)
     }
     
-    func updateProgress(_ progress: Double) {
-        builder.toast?(self, update: progress)
-    }
-    
     /// 关联弹窗
     open override func willMove(toSuperview newSuperview: UIView?) {
         if let superview = newSuperview {
-            superview.toast = self
-        } else if let superview = superview {
-            superview.toast = nil
+            superview.mn.toast = self
+        } else if let superview = superview, let toast = superview.mn.toast, toast == self {
+            superview.mn.toast = nil
         }
         super.willMove(toSuperview: newSuperview)
     }
@@ -271,6 +222,47 @@ public class MNToast: UIView {
         super.didMoveToWindow()
         guard let _ = window else { return }
         applyToKeyboard()
+    }
+    
+    /// 更新进度
+    /// - Parameter progress: 进度值
+    func update(progress: CGFloat!) {
+        guard let progress = progress else { return }
+        guard builder is MNToastProgressUpdater else { return }
+        let updater = builder as! MNToastProgressUpdater
+        updater.toastShouldUpdate(progress: progress)
+    }
+    
+    /// 更新提示信息
+    /// - Parameter status: 提示信息
+    func update(status: String?) {
+        if let status = status, status.isEmpty == false {
+            textLabel.attributedText = NSAttributedString(string: status, attributes: builder.attributesForToastDescription)
+            textLabel.isHidden = false
+        } else {
+            textLabel.attributedText = nil
+            textLabel.isHidden = true
+        }
+    }
+    
+    /// 开启定时器
+    /// - Parameter timeInterval: 触发时长
+    func fireTimer(timeInterval: TimeInterval) {
+        invalidateTimer()
+        timer = Timer.scheduledTimer(timeInterval: timeInterval, target: self, selector: #selector(timerStrike), userInfo: nil, repeats: false)
+        RunLoop.main.add(timer, forMode: .common)
+        timer.fire()
+    }
+    
+    func invalidateTimer() {
+        guard let timer = timer else { return }
+        timer.invalidate()
+        self.timer = nil
+    }
+    
+    /// 定时到期
+    @objc private func timerStrike() {
+        dismiss(completion: dismissHandler)
     }
     
     /// 拒绝事件响应
@@ -283,153 +275,120 @@ public class MNToast: UIView {
 // MARK: - 显示
 extension MNToast {
     
-    /// 加载弹窗
-    /// - Parameters:
-    ///   - superview: 父视图
-    ///   - handler: 消失回调
-    public func show(in superview: UIView! = MNToast.window, dismiss handler: (()->Void)? = nil) {
+    class func show(builder: MNToastBuilder, in superview: UIView! = MNToast.window, status: String?, progress: CGFloat?, dismiss handler: (()->Void)? = nil) {
         guard let superview = superview else { return }
-        dismissHandler = handler
-        translatesAutoresizingMaskIntoConstraints = false
-        superview.addSubview(self)
-        superview.addConstraints([
-            NSLayoutConstraint(item: self, attribute: .top, relatedBy: .equal, toItem: superview, attribute: .top, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: self, attribute: .left, relatedBy: .equal, toItem: superview, attribute: .left, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: self, attribute: .bottom, relatedBy: .equal, toItem: superview, attribute: .bottom, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: self, attribute: .right, relatedBy: .equal, toItem: superview, attribute: .right, multiplier: 1.0, constant: 0.0)
-        ])
-        layoutIfNeeded()
-        let animation = builder.animationForToastShow?() ?? .none
-        show(animation: animation)
-    }
-    
-    private func show(animation: ToastAnimation) {
-        switch animation {
-        case .none:
-            applyToKeyboard()
-            builder.toastDidAppear?(self)
-            builder.toastDidUpdateStatus?(self)
-        case .fade:
-            applyToKeyboard()
-            contentView.alpha = 0.0
-            contentView.transform = CGAffineTransform(scaleX: 1.18, y: 1.18)
-            UIView.animate(withDuration: 0.2) { [weak self] in
-                guard let self = self else { return }
-                self.contentView.alpha = 1.0
-                self.contentView.transform = .identity
-            } completion: { [weak self] finish in
-                guard let self = self else { return }
-                self.builder.toastDidAppear?(self)
-                self.builder.toastDidUpdateStatus?(self)
-            }
-        case .move:
-            switch builder.positionForToast() {
-            case .top:
-                verticalLayout.constant = -frame.height/2.0 - contentView.frame.height/2.0
-            case .center:
-                verticalLayout.constant = 0.0
-            case .bottom:
-                verticalLayout.constant = frame.height/2.0 + contentView.frame.height/2.0
-            }
-            layoutIfNeeded()
-            contentView.alpha = 0.0
-            UIView.animate(withDuration: 0.2) { [weak self] in
-                guard let self = self else { return }
-                self.contentView.alpha = 1.0
-            }
-            UIView.animate(withDuration: 0.25, delay: 0.0, options: .curveEaseOut) { [weak self] in
-                guard let self = self else { return }
-                self.applyToKeyboard()
-                self.layoutIfNeeded()
-            } completion: { [weak self] finish in
-                guard let self = self else { return }
-                self.builder.toastDidAppear?(self)
-                self.builder.toastDidUpdateStatus?(self)
-            }
-        }
-    }
-    
-    func dismiss(animation: ToastAnimation) {
-        switch animation {
-        case .none:
-            removeFromSuperview()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.builder.toastDidDisappear?(self)
-                self.dismissHandler?()
-            }
-        case .fade:
-            UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveEaseOut) { [weak self] in
-                guard let self = self else { return }
-                self.contentView.alpha = 0.0
-                self.contentView.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
-            } completion: { [weak self] finish in
-                guard let self = self else { return }
-                self.removeFromSuperview()
-                self.builder.toastDidDisappear?(self)
-                self.dismissHandler?()
-            }
-        case .move:
-            UIView.animate(withDuration: 0.25, delay: 0.0, options: .curveEaseOut) { [weak self] in
-                guard let self = self else { return }
-                self.contentView.alpha = 0.0
-                switch self.builder.positionForToast() {
-                case .top:
-                    self.verticalLayout.constant = -self.frame.height/2.0 - self.contentView.frame.height/2.0
-                case .center, .bottom:
-                    self.verticalLayout.constant = (self.frame.height + self.contentView.frame.height)/2.0
+        if let toast = superview.mn.toast {
+            // 取消定时器
+            toast.invalidateTimer()
+            // 判断是否是当前类型
+            if type(of: toast.builder) == type(of: builder) {
+                // 取消当前动画
+                if toast.contentView.transform != .identity {
+                    toast.contentView.layer.removeAllAnimations()
                 }
-                self.layoutIfNeeded()
-            } completion: { [weak self] finish in
-                guard let self = self else { return }
-                self.removeFromSuperview()
-                self.builder.toastDidDisappear?(self)
-                self.dismissHandler?()
+                // 这里只做更新
+                if let status = status {
+                    toast.update(status: status)
+                }
+                if let progress = progress {
+                    toast.update(progress: progress)
+                }
+                if let handler = handler {
+                    toast.dismissHandler = handler
+                }
+                superview.bringSubviewToFront(toast)
+                if toast.contentView.alpha != 1.0, builder.fadeInForToast {
+                    // 有可能在做消失动画
+                    toast.contentView.transform = .init(scaleX: 1.05, y: 1.05)
+                    UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveEaseInOut) { [weak toast] in
+                        guard let toast = toast else { return }
+                        toast.contentView.alpha = 1.0
+                        toast.contentView.transform = .identity
+                    } completion: { [weak toast] _ in
+                        guard let toast = toast else { return }
+                        toast.builder.toastDidAppear(toast)
+                    }
+                } else {
+                    toast.contentView.alpha = 1.0
+                    toast.builder.toastDidAppear(toast)
+                }
+                return
             }
+            // 删除
+            toast.removeFromSuperview()
+        }
+        // 创建
+        let toast = MNToast(builder: builder)
+        toast.update(status: status)
+        toast.update(progress: progress)
+        toast.dismissHandler = handler
+        toast.translatesAutoresizingMaskIntoConstraints = false
+        superview.addSubview(toast)
+        NSLayoutConstraint.activate([
+            toast.topAnchor.constraint(equalTo: superview.topAnchor),
+            toast.leftAnchor.constraint(equalTo: superview.leftAnchor),
+            toast.bottomAnchor.constraint(equalTo: superview.bottomAnchor),
+            toast.rightAnchor.constraint(equalTo: superview.rightAnchor)
+        ])
+        toast.layoutIfNeeded()
+        if builder.fadeInForToast {
+            // 有可能在做消失动画
+            toast.contentView.alpha = 0.0
+            toast.contentView.transform = .init(scaleX: 1.05, y: 1.05)
+            UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveEaseInOut) { [weak toast] in
+                guard let toast = toast else { return }
+                toast.contentView.alpha = 1.0
+                toast.contentView.transform = .identity
+            } completion: { [weak toast] finish in
+                guard let toast = toast else { return }
+                guard finish else { return }
+                toast.builder.toastDidAppear(toast)
+            }
+        } else {
+            builder.toastDidAppear(toast)
         }
     }
     
-    @objc func close() {
-        let animation = builder.animationForToastDismiss?() ?? .none
-        dismiss(animation: animation)
+    func dismiss(completion handler: (()->Void)?) {
+        invalidateTimer()
+        if builder.fadeOutForToast {
+            UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveEaseInOut) { [weak self] in
+                guard let self = self else { return }
+                self.contentView.alpha = 0.0
+                self.contentView.transform = .init(scaleX: 1.03, y: 1.03)
+            } completion: { [weak self] finish in
+                guard let self = self else { return }
+                guard finish else { return }
+                self.removeFromSuperview()
+                if let dismissHandler = handler {
+                    dismissHandler()
+                }
+            }
+        } else {
+            removeFromSuperview()
+            if let executeHandler = handler {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: executeHandler)
+            }
+        }
     }
 }
 
 // MARK: - Helper
 extension MNToast {
     
-    private func constantForPosition() -> CGFloat {
-        var constant: CGFloat = 0.0
-        switch builder.positionForToast() {
-        case .top:
-            constant = contentView.bounds.midY - bounds.midY
-        case .center:
-            constant = 0.0
-        case .bottom:
-            constant = bounds.midY - contentView.bounds.midY
-        }
-        return constant
-    }
-    
-    private func constantForNormal() -> CGFloat {
-        var constant = constantForPosition()
-        let offsetY = builder.offsetYForToast?() ?? 0.0
-        constant += offsetY
-        return constant
-    }
-    
     private func applyToKeyboard() {
-        // 原本位置
-        let constant = constantForNormal()
-        // 与键盘间隔
-        let spacing = keyboardFrame.minY < UIScreen.main.bounds.height ? (builder.spacingForKeyboard?() ?? 0.0) : 0.0
-        // 内容视图位置
-        let point = CGPoint(x: keyboardFrame.midX, y: keyboardFrame.minY - spacing - contentView.bounds.midY)
-        // 转换到自身坐标系
-        let center = convert(point, from: nil)
-        // 与中心点间隔
-        let margin = center.y - bounds.midY
-        verticalLayout.constant = min(margin, constant)
-        layoutIfNeeded()
+//        // 原本位置
+//        let constant = constantForNormal()
+//        // 与键盘间隔
+//        let spacing = keyboardFrame.minY < UIScreen.main.bounds.height ? (builder.spacingForKeyboard?() ?? 0.0) : 0.0
+//        // 内容视图位置
+//        let point = CGPoint(x: keyboardFrame.midX, y: keyboardFrame.minY - spacing - contentView.bounds.midY)
+//        // 转换到自身坐标系
+//        let center = convert(point, from: nil)
+//        // 与中心点间隔
+//        let margin = center.y - bounds.midY
+//        verticalLayout.constant = min(margin, constant)
+//        layoutIfNeeded()
     }
     
     public class func duration(with description: String?) -> TimeInterval {
@@ -443,11 +402,11 @@ extension MNToast {
     /// 键盘变化通知
     /// - Parameter notify: 通知
     @objc private func keyboardWillChangeFrame(_ notify: Notification) {
-        guard let isAdjustsKeyboard = builder.supportedAdjustsKeyboard?(), isAdjustsKeyboard == true else { return }
-        guard let userInfo = notify.userInfo else { return }
-        guard let rect = userInfo[UIWindow.keyboardFrameEndUserInfoKey] as? CGRect else { return }
-        keyboardFrame = rect
-        guard let _ = window else { return }
-        applyToKeyboard()
+//        guard let isAdjustsKeyboard = builder.supportedAdjustsKeyboard?(), isAdjustsKeyboard == true else { return }
+//        guard let userInfo = notify.userInfo else { return }
+//        guard let rect = userInfo[UIWindow.keyboardFrameEndUserInfoKey] as? CGRect else { return }
+//        keyboardFrame = rect
+//        guard let _ = window else { return }
+//        applyToKeyboard()
     }
 }

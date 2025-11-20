@@ -10,8 +10,13 @@ import Foundation
 
 public extension MNToast {
     
-    @objc static var exist: Bool { window?.existToast ?? false }
+    /// 是否正在显示
+    @objc static var isAppearing: Bool {
+        guard let window = window else { return false }
+        return window.mn.isToastAppearing
+    }
     
+    /// 获取当前窗口
     @objc static var window: UIWindow? {
         if #available(iOS 15.0, *) {
             return mainWindow(in: UIApplication.shared.delegate?.window??.windowScene?.windows.reversed())
@@ -19,20 +24,17 @@ public extension MNToast {
             return mainWindow(in: UIApplication.shared.windows.reversed())
         }
     }
+    
     private static func mainWindow(in windows: [UIWindow]?) -> UIWindow? {
         guard let windows = windows else { return nil }
         for window in windows {
-            let isOnMainScreen = window.screen == UIScreen.main
+            let isOnMainScreen = window.screen == .main
             let isVisible = (window.isHidden == false && window.alpha > 0.01)
             if isOnMainScreen, isVisible, window.isKeyWindow {
                 return window
             }
         }
         return nil
-    }
-    
-    @objc class func showInfo(_ status: String, completion: (()->Void)? = nil) {
-        
     }
 }
 

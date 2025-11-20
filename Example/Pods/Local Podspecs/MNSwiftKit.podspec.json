@@ -55,6 +55,9 @@
         "CoreGraphics"
       ],
       "source_files": "MNSwiftKit/Toast/Sources/**/*.swift",
+      "dependencies": {
+        "MNSwiftKit/NameSpace": []
+      },
       "resource_bundles": {
         "MNSwiftKit_Toast": [
           "MNSwiftKit/Toast/Resources/*.{png,jpg,jpeg}"

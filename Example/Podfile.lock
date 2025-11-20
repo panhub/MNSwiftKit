@@ -1,56 +1,18 @@
 PODS:
-  - MNSwiftKit/AnimatedImage (0.1.1)
-  - MNSwiftKit/AssetBrowser (0.1.1):
-    - MNSwiftKit/AnimatedImage
-    - MNSwiftKit/Definition
-    - MNSwiftKit/Extension
-    - MNSwiftKit/Layout
-    - MNSwiftKit/Player
-    - MNSwiftKit/Slider
-  - MNSwiftKit/AssetPicker (0.1.1):
-    - MNSwiftKit/AnimatedImage
-    - MNSwiftKit/AssetBrowser
-    - MNSwiftKit/Definition
-    - MNSwiftKit/EmptyView
-    - MNSwiftKit/Exporter
-    - MNSwiftKit/Extension
-    - MNSwiftKit/Layout
-    - MNSwiftKit/NameSpace
-    - MNSwiftKit/Player
-    - MNSwiftKit/Refresh
-    - MNSwiftKit/Slider
-    - MNSwiftKit/Toast
-  - MNSwiftKit/Definition (0.1.1):
-    - MNSwiftKit/NameSpace
-  - MNSwiftKit/EmptyView (0.1.1):
-    - MNSwiftKit/NameSpace
-  - MNSwiftKit/Exporter (0.1.1)
-  - MNSwiftKit/Extension (0.1.1):
-    - MNSwiftKit/AnimatedImage
-    - MNSwiftKit/NameSpace
-  - MNSwiftKit/Layout (0.1.1):
-    - MNSwiftKit/NameSpace
   - MNSwiftKit/NameSpace (0.1.1)
-  - MNSwiftKit/Networking (0.1.1)
-  - MNSwiftKit/Player (0.1.1)
-  - MNSwiftKit/Refresh (0.1.1):
+  - MNSwiftKit/Toast (0.1.1):
     - MNSwiftKit/NameSpace
-  - MNSwiftKit/Request (0.1.1):
-    - MNSwiftKit/Networking
-  - MNSwiftKit/Slider (0.1.1)
-  - MNSwiftKit/Toast (0.1.1)
 
 DEPENDENCIES:
-  - MNSwiftKit/AssetPicker (from `../`)
-  - MNSwiftKit/Request (from `../`)
+  - MNSwiftKit/Toast (from `../`)
 
 EXTERNAL SOURCES:
   MNSwiftKit:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: 652b312bfa2ea508b886d0e4a13169a8edc63861
+  MNSwiftKit: 3a2e675afa6bae7fcfabe32c8178a1ab8c4f80e1
 
-PODFILE CHECKSUM: 0e471a300f81fadfbc60601a7d780879565352c9
+PODFILE CHECKSUM: ac94b55b65105a0ec668884032e8ce390fa765b1
 
 COCOAPODS: 1.16.2

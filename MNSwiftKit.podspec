@@ -56,6 +56,7 @@ Pod::Spec.new do |s|
   s.subspec 'Toast' do |t|
     t.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
     t.source_files = 'MNSwiftKit/Toast/Sources/**/*.swift'
+    t.dependency 'MNSwiftKit/NameSpace'
     t.resource_bundles = {
         'MNSwiftKit_Toast' => ['MNSwiftKit/Toast/Resources/*.{png,jpg,jpeg}']
     }
