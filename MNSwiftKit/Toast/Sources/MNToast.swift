@@ -14,7 +14,7 @@ public protocol MNToastBuilder {
     var axisForToast: MNToast.Axis { get }
     
     /// Toast颜色样式
-    var colorForToast: MNToast.Color { get }
+    var effectForToast: MNToast.Effect { get }
     
     /// Toast内容四周约束
     var contentInsetForToast: UIEdgeInsets { get }
@@ -89,14 +89,14 @@ public class MNToast: UIView {
         case horizontal(spacing: CGFloat)
     }
     
-    /// 颜色
-    public enum Color {
+    /// 效果
+    public enum Effect {
+        ///   无颜色
+        case none
         ///   暗色
         case dark
         ///   亮色
         case light
-        ///   无颜色
-        case clear
     }
     
     /// 显示的位置
@@ -132,7 +132,7 @@ public class MNToast: UIView {
     private let statusLabel = UILabel()
     
     /// 内容视图
-    private let contentView = UIView()
+    private let contentView = UIVisualEffectView()
     
     /// 约束指示图与提示信息(纵向布局)
     private let stackView = UIStackView()
@@ -151,14 +151,6 @@ public class MNToast: UIView {
         self.builder = builder
         super.init(frame: .zero)
         
-        switch builder.colorForToast {
-        case .dark:
-            contentView.backgroundColor = UIColor(white: 0.05, alpha: 1.0)
-        case .light:
-            contentView.backgroundColor = UIColor(white: 0.95, alpha: 1.0)
-        case .clear:
-            contentView.backgroundColor = .clear
-        }
         contentView.clipsToBounds = true
         contentView.layer.cornerRadius = 8.0
         contentView.translatesAutoresizingMaskIntoConstraints = false
@@ -173,6 +165,14 @@ public class MNToast: UIView {
             NSLayoutConstraint.activate([contentView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -distance)])
         }
         
+        switch builder.effectForToast {
+        case .dark:
+            contentView.effect = UIBlurEffect(style: .dark)
+        case .light:
+            contentView.effect = UIBlurEffect(style: .light)
+        default: break
+        }
+        
         /// 布局视图
         switch builder.axisForToast {
         case .vertical(let spacing):
@@ -185,13 +185,13 @@ public class MNToast: UIView {
         stackView.alignment = .center
         stackView.distribution = .equalSpacing
         stackView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(stackView)
+        contentView.contentView.addSubview(stackView)
         let contentInset = builder.contentInsetForToast
         NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: contentInset.top),
-            stackView.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: contentInset.left),
-            stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -contentInset.bottom),
-            stackView.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -contentInset.right)
+            stackView.topAnchor.constraint(equalTo: contentView.contentView.topAnchor, constant: contentInset.top),
+            stackView.leftAnchor.constraint(equalTo: contentView.contentView.leftAnchor, constant: contentInset.left),
+            stackView.bottomAnchor.constraint(equalTo: contentView.contentView.bottomAnchor, constant: -contentInset.bottom),
+            stackView.rightAnchor.constraint(equalTo: contentView.contentView.rightAnchor, constant: -contentInset.right)
         ])
         
         if let activityView = builder.activityViewForToast {

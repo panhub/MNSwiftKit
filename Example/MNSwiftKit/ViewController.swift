@@ -26,6 +26,6 @@ class ViewController: UIViewController {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
         
-        view.mn.showActivityToast("测试弹窗")
+        view.mn.showMsgToast("测试提示信息")
     }
 }

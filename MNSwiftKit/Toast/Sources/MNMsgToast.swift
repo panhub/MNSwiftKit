@@ -13,7 +13,7 @@ class MNMsgToast: MNToastBuilder {
         .vertical(spacing: 3.0)
     }
     
-    var colorForToast: MNToast.Color {
+    var effectForToast: MNToast.Effect {
         .dark
     }
     

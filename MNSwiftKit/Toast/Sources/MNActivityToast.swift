@@ -13,7 +13,7 @@ public class MNActivityToast: MNToastBuilder {
         .vertical(spacing: 2.0)
     }
     
-    public var colorForToast: MNToast.Color {
+    public var effectForToast: MNToast.Effect {
         .dark
     }
     
