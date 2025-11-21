@@ -33,11 +33,15 @@ extension NameSpaceWrapper where Base: UIView {
 }
 
 // MARK: - 显示弹窗
-extension UIView {
+extension NameSpaceWrapper where Base: UIView {
     
     
-    @objc public func showActivityToast(_ status: String?) {
-        MNToast.show(builder: MNActivityToast(), in: self, status: status, progress: nil, dismiss: nil)
+    public func showActivityToast(_ status: String?) {
+        MNToast.show(builder: MNActivityToast(), in: base, status: status, progress: nil, dismiss: nil)
+    }
+    
+    public func showMsgToast(_ msg: String) {
+        MNToast.show(builder: MNMsgToast(), in: base, status: msg, progress: nil, dismiss: nil)
     }
     
 //    @objc public func showMaskToast(_ status: String) {

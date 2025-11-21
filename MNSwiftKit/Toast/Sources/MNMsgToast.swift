@@ -7,69 +7,48 @@
 
 import UIKit
 
-class MNMsgToast: NSObject, MNToastBuilder {
+class MNMsgToast: MNToastBuilder {
     
+    var axisForToast: MNToast.Axis {
+        .vertical(spacing: 3.0)
+    }
     
-    func contentColorForToast() -> ToastColor {
+    var colorForToast: MNToast.Color {
         .dark
     }
     
-    func positionForToast() -> ToastPosition {
-        .center
+    var contentInsetForToast: UIEdgeInsets {
+        .init(top: 8.0, left: 10.0, bottom: 7.0, right: 10.0)
     }
     
-    func offsetYForToast() -> CGFloat {
-        0.0
-    }
+    var activityViewForToast: UIView? { nil }
     
-    func spacingForToast() -> CGFloat {
-        0.0
-    }
+    var userInteractionEnabledForToast: Bool { true }
     
-    func activityViewForToast() -> UIView? {
-        nil
-    }
+    var positionForToast: MNToast.Position { .center }
     
-    func contentInsetForToast() -> UIEdgeInsets {
-        UIEdgeInsets(top: 10.0, left: 13.0, bottom: 10.0, right: 13.0)
-    }
+    var fadeInForToast: Bool { true }
     
-    func attributesForToastDescription() -> [NSAttributedString.Key : Any] {
+    var fadeOutForToast: Bool { true }
+    
+    var attributesForToastDescription: [NSAttributedString.Key : Any] {
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = .center
         paragraph.lineSpacing = 1.0
         paragraph.paragraphSpacing = 1.0
         paragraph.lineHeightMultiple = 1.0
         paragraph.paragraphSpacingBefore = 1.0
-        return [.font:UIFont.systemFont(ofSize: 16.8, weight: .regular), .paragraphStyle:paragraph, .foregroundColor:UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0)]
+        return [.font:UIFont.systemFont(ofSize: 16.0, weight: .regular), .paragraphStyle:paragraph, .foregroundColor:UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0)]
+    }
+}
+
+extension MNMsgToast: MNToastAnimationHandler {
+    
+    func startAnimating(_ toast: MNToast) {
+        toast.dismiss(after: 2.0)
     }
     
-    func supportedUserInteraction() -> Bool {
-        true
-    }
-    
-    func supportedAdjustsKeyboard() -> Bool {
-        true
-    }
-    
-    func spacingForKeyboard() -> CGFloat {
-        15.0
-    }
-    
-    func animationForToastShow() -> ToastAnimation {
-        .fade
-    }
-    
-    func animationForToastDismiss() -> ToastAnimation {
-        .fade
-    }
-    
-    func toastDidUpdateStatus(_ toast: MNToast) {
-        MNToast.cancelPreviousPerformRequests(withTarget: toast)
-        toast.perform(#selector(toast.close), with: nil, afterDelay: MNToast.duration(with: toast.text))
-    }
-    
-    func toastDidDisappear(_ toast: MNToast) {
-        MNToast.cancelPreviousPerformRequests(withTarget: toast)
+    func stopAnimating(_ toast: MNToast) {
+        
     }
 }

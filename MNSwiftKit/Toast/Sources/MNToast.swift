@@ -36,10 +36,17 @@ public protocol MNToastBuilder {
     
     /// Toast中文字的富文本描述
     var attributesForToastDescription: [NSAttributedString.Key:Any] { get }
+}
+
+public protocol MNToastAnimationHandler where Self: MNToastBuilder {
     
-    /// Toast出现告知
-    /// - Parameter toast: 提示弹窗
-    func toastDidAppear(_ toast: MNToast)
+    /// 开启动画
+    /// - Parameter toast: 弹窗
+    func startAnimating(_ toast: MNToast)
+    
+    /// 停止动画
+    /// - Parameter toast: 弹窗
+    func stopAnimating(_ toast: MNToast)
 }
 
 public protocol MNToastProgressUpdater where Self: MNToastBuilder {
@@ -193,6 +200,7 @@ public class MNToast: UIView {
         }
         
         statusLabel.numberOfLines = 0
+        statusLabel.baselineAdjustment = .alignCenters
         statusLabel.textAlignment = stackView.axis == .horizontal ? .left : .center
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
         stackView.addArrangedSubview(statusLabel)
@@ -334,12 +342,22 @@ extension MNToast {
         let completionHandler: (Bool)->Void = { [weak self] finished in
             guard let self = self else { return }
             guard finished else { return }
-            self.builder.toastDidAppear(self)
+            if self.builder is MNToastAnimationHandler {
+                let delegate = self.builder as! MNToastAnimationHandler
+                delegate.startAnimating(self)
+            }
         }
         if animated, builder.fadeInForToast {
             contentView.alpha = 0.0
-            contentView.transform = .init(scaleX: 1.3, y: 1.3)
-            UIView.animate(withDuration: 0.15, delay: 0.0, options: [.curveEaseIn, .beginFromCurrentState], animations: animationHandler, completion: completionHandler)
+            switch builder.positionForToast {
+            case .top:
+                contentView.transform = .init(translationX: 0.0, y: -10.0)
+            case .center:
+                contentView.transform = .init(scaleX: 1.2, y: 1.2)
+            case .bottom:
+                contentView.transform = .init(translationX: 0.0, y: 10.0)
+            }
+            UIView.animate(withDuration: 0.15, delay: 0.0, options: [.curveEaseInOut, .beginFromCurrentState], animations: animationHandler, completion: completionHandler)
         } else {
             completionHandler(true)
         }
@@ -353,11 +371,22 @@ extension MNToast {
         let animationHandler: ()->Void = { [weak self] in
             guard let self = self else { return }
             self.contentView.alpha = 0.0
-            self.contentView.transform = .init(scaleX: 0.75, y: 0.75)
+            switch self.builder.positionForToast {
+            case .top:
+                self.contentView.transform = .init(translationX: 0.0, y: -10.0)
+            case .center:
+                self.contentView.transform = .init(scaleX: 1.2, y: 1.2)
+            case .bottom:
+                self.contentView.transform = .init(translationX: 0.0, y: 10.0)
+            }
         }
         let completionHandler: (Bool)->Void = { [weak self] finished in
             guard let self = self else { return }
             guard finished else { return }
+            if self.builder is MNToastAnimationHandler {
+                let delegate = self.builder as! MNToastAnimationHandler
+                delegate.stopAnimating(self)
+            }
             self.removeFromSuperview()
             if let dismissHandler = handler {
                 dismissHandler()

@@ -52,9 +52,4 @@ public class MNActivityToast: MNToastBuilder {
         paragraph.paragraphSpacingBefore = 1.0
         return [.font:UIFont.systemFont(ofSize: 16.0, weight: .regular), .paragraphStyle:paragraph, .foregroundColor:UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0)]
     }
-    
-    public func toastDidAppear(_ toast: MNToast) {
-        
-        toast.dismiss(after: 3.0)
-    }
 }

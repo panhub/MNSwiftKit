@@ -15,6 +15,7 @@
 		2F592E20D1FDFD802E8EFB2DF8E312A5 /* MNSwiftKit_Toast.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4A26A6944A062388F54FE4FA4B700F62 /* MNSwiftKit_Toast.bundle */; };
 		317DA1111172098626927118BEA7909D /* info@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D0DABEC5EF0E301BC12C3645F2F24AB /* info@2x.png */; };
 		318107C4CD6C307CBC3B838A53795321 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1B95DD4EC85862008FABBC1C80FC023 /* Foundation.framework */; };
+		34DF60C604E59855208BB20CB123D5BC /* MNMsgToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6700B73C91B0979C3FFECCF088B20DA /* MNMsgToast.swift */; };
 		3B89499DAA34261582752C375AD095AC /* error@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AB46BEB9B72339290909C1679D3A66B0 /* error@2x.png */; };
 		3CCB162BBD5522FEFE657D65906F62D9 /* ToastResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC9CB8C7628B0518813C6D6137C107F0 /* ToastResource.swift */; };
 		49DD59197F3E6DF1215A25D06AF7C232 /* mask-white.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B0DFD7C82A1E08783D6AA75142E2B51 /* mask-white.png */; };
@@ -116,6 +117,7 @@
 		C9FC063806E7395D9031B55819CC1786 /* success@2x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "success@2x.png"; path = "MNSwiftKit/Toast/Resources/success@2x.png"; sourceTree = "<group>"; };
 		D1B95DD4EC85862008FABBC1C80FC023 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		D9878335D6820F17B9534270D12D1B5F /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		E6700B73C91B0979C3FFECCF088B20DA /* MNMsgToast.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNMsgToast.swift; path = MNSwiftKit/Toast/Sources/MNMsgToast.swift; sourceTree = "<group>"; };
 		EAC5FACCFBF0219414D6A85C98E20651 /* Pods-MNSwiftKit_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-MNSwiftKit_Example.modulemap"; sourceTree = "<group>"; };
 		EE69506C8F583C994172FD606D6426AB /* mask-white@3x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "mask-white@3x.png"; path = "MNSwiftKit/Toast/Resources/mask-white@3x.png"; sourceTree = "<group>"; };
 		F1DF06A3ABBD3DF7D4AD5DE02C312882 /* Pods-MNSwiftKit_Example-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MNSwiftKit_Example-dummy.m"; sourceTree = "<group>"; };
@@ -179,6 +181,7 @@
 				FC724AEEED026D51C606B4739FAD67D8 /* mask@2x.png */,
 				C0F736B0CC43A465FFDD49A8B01B9513 /* mask@3x.png */,
 				4E4CBA000C0369B23A787F0C3654DFBB /* MNActivityToast.swift */,
+				E6700B73C91B0979C3FFECCF088B20DA /* MNMsgToast.swift */,
 				2FBBFD8202864ED9DB5DB42443548CFC /* MNToast.swift */,
 				35B2BC94A85C74558A0FB15EAB30CD35 /* MNToast+Extension.swift */,
 				275BF65A03D3AF3B070E6B32C51DA647 /* success.png */,
@@ -513,6 +516,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				58152F86AAEB5C192DFDB67E486406AA /* MNActivityToast.swift in Sources */,
+				34DF60C604E59855208BB20CB123D5BC /* MNMsgToast.swift in Sources */,
 				E215B9520983E392B88C9CBEF36F92F0 /* MNSwiftKit-dummy.m in Sources */,
 				5292048F13A73FB6DC94070EF516E15D /* MNToast.swift in Sources */,
 				1F60F88852F115B384B98934FD7624A5 /* MNToast+Extension.swift in Sources */,
