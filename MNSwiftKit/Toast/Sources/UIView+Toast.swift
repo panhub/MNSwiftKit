@@ -44,6 +44,10 @@ extension NameSpaceWrapper where Base: UIView {
         MNToast.show(builder: MNMsgToast(), in: base, status: msg, progress: nil, dismiss: nil)
     }
     
+    public func dismissToast(delay: TimeInterval, completion: (()->Void)?) {
+        
+    }
+    
 //    @objc public func showMaskToast(_ status: String) {
 //        showToast(MNMaskToast(), status: status)
 //    }

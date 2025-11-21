@@ -131,17 +131,11 @@ public class MNToast: UIView {
     /// 状态信息
     private let statusLabel = UILabel()
     
-    /// 内容视图
-    private let contentView = UIVisualEffectView()
-    
     /// 约束指示图与提示信息(纵向布局)
     private let stackView = UIStackView()
     
-    /// 记录键盘位置
-    private var keyboardFrame: CGRect = UIScreen.main.bounds.inset(by: UIEdgeInsets(top: UIScreen.main.bounds.height, left: 0.0, bottom: 0.0, right: 0.0))
-    
-    /// 纵向中心约束
-    private lazy var verticalLayout: NSLayoutConstraint = NSLayoutConstraint(item: contentView, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1.0, constant: 0.0)
+    /// 内容视图
+    private let contentView = UIVisualEffectView()
     
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
