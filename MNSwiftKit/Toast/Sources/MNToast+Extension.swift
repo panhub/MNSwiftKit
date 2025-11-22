@@ -43,6 +43,30 @@ public extension MNToast {
 
 extension MNToast {
     
+    /// Toast配置
+    public class Configuration {
+        
+        /// 唯一实例化入口
+        static let shared = MNToast.Configuration()
+        
+        private init() {}
+        
+        /// 效果
+        public var effect: MNToast.Effect = .dark
+        
+        /// 视图元素颜色
+        public var color: UIColor = UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0)
+        
+        /// 字体
+        public var font: UIFont = .systemFont(ofSize: 15.0, weight: .regular)
+        
+        /// 文字最大宽度
+        public var greatestFiniteWidth: CGFloat = 200.0
+    }
+}
+
+extension MNToast {
+    
     /// 显示系统活动视图Toast
     /// - Parameters:
     ///   - status: 状态描述
