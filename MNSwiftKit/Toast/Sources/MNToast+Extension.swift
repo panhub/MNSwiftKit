@@ -19,13 +19,16 @@ public extension MNToast {
     /// 获取当前窗口
     @objc class var window: UIWindow? {
         if #available(iOS 15.0, *) {
-            return mainWindow(in: UIApplication.shared.delegate?.window??.windowScene?.windows.reversed())
+            return window(in: UIApplication.shared.delegate?.window??.windowScene?.windows.reversed())
         } else {
-            return mainWindow(in: UIApplication.shared.windows.reversed())
+            return window(in: UIApplication.shared.windows.reversed())
         }
     }
     
-    private static func mainWindow(in windows: [UIWindow]?) -> UIWindow? {
+    /// 在窗口集合中寻找当前窗口
+    /// - Parameter windows: 窗口集合
+    /// - Returns: 当前窗口
+    private static func window(in windows: [UIWindow]?) -> UIWindow! {
         guard let windows = windows else { return nil }
         for window in windows {
             let isOnMainScreen = window.screen == .main
@@ -38,114 +41,113 @@ public extension MNToast {
     }
 }
 
-//// MARK: - Window显示弹窗
-//public extension MNToast {
-//    
-//    @objc class func show(_ status: String?) {
-//        OperationQueue.main.addOperation {
-//            MNToast.window?.showToast(status)
-//        }
-//    }
-//    
-//    @objc class func showActivity(_ status: String?) {
-//        OperationQueue.main.addOperation {
-//            MNToast.window?.showActivityToast(status)
-//        }
-//    }
-//    
-//    @objc class func showMask(_ status: String?) {
-//        OperationQueue.main.addOperation {
-//            MNToast.window?.showMaskToast(status)
-//        }
-//    }
-//    
-//    @objc class func showMsg(_ status: String) {
-//        OperationQueue.main.addOperation {
-//            MNToast.window?.showMsgToast(status)
-//        }
-//    }
-//    
-//    @objc class func showMsg(_ status: String, completion: (()->Void)?) {
-//        OperationQueue.main.addOperation {
-//            MNToast.window?.showMsgToast(status, completion: completion)
-//        }
-//    }
-//    
-//    @objc class func showInfo(_ status: String) {
-//        OperationQueue.main.addOperation {
-//            MNToast.window?.showInfoToast(status)
-//        }
-//    }
-//    
-//    @objc class func showInfo(_ status: String, completion: (()->Void)?) {
-//        OperationQueue.main.addOperation {
-//            MNToast.window?.showInfoToast(status, completion: completion)
-//        }
-//    }
-//    
-//    @objc class func showComplete(_ status: String?) {
-//        OperationQueue.main.addOperation {
-//            MNToast.window?.showCompleteToast(status)
-//        }
-//    }
-//    
-//    @objc class func showComplete(_ status: String?, completion: (()->Void)?) {
-//        OperationQueue.main.addOperation {
-//            MNToast.window?.showCompleteToast(status, completion: completion)
-//        }
-//    }
-//
-//    @objc class func showError(_ status: String?) {
-//        OperationQueue.main.addOperation {
-//            MNToast.window?.showFailureToast(status)
-//        }
-//    }
-//    
-//    @objc class func showError(_ status: String?, completion: (()->Void)?) {
-//        OperationQueue.main.addOperation {
-//            MNToast.window?.showFailureToast(status, completion: completion)
-//        }
-//    }
-//    
-//    @objc class func showProgress(_ status: String?) {
-//        OperationQueue.main.addOperation {
-//            MNToast.window?.showProgressToast(status)
-//        }
-//    }
-//}
-//
-//// MARK: - Window更新弹窗
-//public extension MNToast {
-//    @objc class func update(progress pro: Double) {
-//        OperationQueue.main.addOperation {
-//            MNToast.window?.updateToast(progress: pro)
-//        }
-//    }
-//    
-//    @objc class func update(status msg: String?) {
-//        OperationQueue.main.addOperation {
-//            MNToast.window?.updateToast(status: msg)
-//        }
-//    }
-//    
-//    @objc class func update(success completion:(()->Void)?) {
-//        OperationQueue.main.addOperation {
-//            MNToast.window?.updateToast(success: completion)
-//        }
-//    }
-//}
-//
-//// MARK: - Window关闭弹窗
-//public extension MNToast {
-//    @objc class func close() {
-//        OperationQueue.main.addOperation {
-//            MNToast.window?.closeToast()
-//        }
-//    }
-//    
-//    @objc class func close(completion: (()->Void)?) {
-//        OperationQueue.main.addOperation {
-//            MNToast.window?.closeToast(completion: completion)
-//        }
-//    }
-//}
+extension MNToast {
+    
+    /// 显示系统活动视图Toast
+    /// - Parameters:
+    ///   - status: 状态描述
+    ///   - timeInterval: 显示时长
+    ///   - dismissHandler: 消失回调
+    public class func showActivity(_ status: String?, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+        
+        show(builder: MNActivityToast(), status: status, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+    }
+    
+    /// 显示消息Toast
+    /// - Parameters:
+    ///   - status: 消息内容
+    ///   - timeInterval: 显示时长
+    ///   - dismissHandler: 消失回调
+    public class func showMsg(_ status: String, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+        
+        show(builder: MNMsgToast(), status: status, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+    }
+    
+    /// 显示提示Toast
+    /// - Parameters:
+    ///   - status: 状态描述
+    ///   - timeInterval: 显示时长
+    ///   - dismissHandler: 消失回调
+    public class func showInfo(_ status: String?, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+        
+        show(builder: MNInfoToast(), status: status, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+    }
+    
+    /// 显示圆形旋转Toast
+    /// - Parameters:
+    ///   - status: 状态描述
+    ///   - style: 样式
+    ///   - timeInterval: 显示时长
+    ///   - dismissHandler: 消失回调
+    public class func showShape(_ status: String?, style: MNShapeToast.Style = .mask, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+        
+        show(builder: MNShapeToast(style: style), status: status, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+    }
+    
+    /// 显示进度Toast
+    /// - Parameters:
+    ///   - status: 状态描述
+    ///   - style: 样式
+    ///   - value: 进度值
+    ///   - timeInterval: 显示时长
+    ///   - dismissHandler: 消失回调
+    public class func showProgress(_ status: String?, style: MNProgressToast.Style = .line, progress value: (any BinaryFloatingPoint)? = nil, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+        
+        show(builder: MNProgressToast(style: style), status: status, progress: value, delay: timeInterval, dismiss: dismissHandler)
+    }
+    
+    /// 显示成功Toast
+    /// - Parameters:
+    ///   - status: 状态描述
+    ///   - timeInterval: 显示时长
+    ///   - dismissHandler: 消失回调
+    public class func showSuccess(_ status: String?, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+        
+        show(builder: MNSuccessToast(), status: status, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+    }
+    
+    /// 显示失败Toast
+    /// - Parameters:
+    ///   - status: 状态描述
+    ///   - timeInterval: 显示时长
+    ///   - dismissHandler: 消失回调
+    public class func showFailure(_ status: String?, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+        
+        show(builder: MNFailureToast(), status: status, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+    }
+    
+    /// 在当前窗口显示Toast
+    /// - Parameters:
+    ///   - builder: Toast构建者
+    ///   - status: 状态描述
+    ///   - progress: 进度值
+    ///   - timeInterval: 显示时长
+    ///   - dismissHandler: 消失回调
+    public class func show(builder: MNToastBuilder, status: String?, progress: (any BinaryFloatingPoint)?, delay timeInterval: TimeInterval?, dismiss dismissHandler: (()->Void)?) {
+        let executeHandler: ()->Void = {
+            guard let window = MNToast.window else { return }
+            MNToast.show(builder: builder, in: window, status: status, progress: progress, delay: timeInterval, dismiss: dismissHandler)
+        }
+        if Thread.isMainThread {
+            executeHandler()
+        } else {
+            DispatchQueue.main.async(execute: executeHandler)
+        }
+    }
+    
+    /// 取消Toast
+    /// - Parameters:
+    ///   - timeInterval: 等待时长
+    ///   - dismissHandler: 消失回调
+    public class func dismiss(after timeInterval: TimeInterval = 0.0, completion dismissHandler: (()->Void)? = nil) {
+        let executeHandler: ()->Void = {
+            guard let window = MNToast.window else { return }
+            window.mn.dismissToast(after: timeInterval, completion: dismissHandler)
+        }
+        if Thread.isMainThread {
+            executeHandler()
+        } else {
+            DispatchQueue.main.async(execute: executeHandler)
+        }
+    }
+}

@@ -8,7 +8,6 @@
 import UIKit
 import ObjectiveC.runtime
 
-// MARK: - 获取弹窗
 extension UIView {
     
     internal struct MNToastAssociated {
@@ -32,91 +31,88 @@ extension NameSpaceWrapper where Base: UIView {
     }
 }
 
-// MARK: - 显示弹窗
 extension NameSpaceWrapper where Base: UIView {
     
-    
-    public func showActivityToast(_ status: String?) {
-        MNToast.show(builder: MNActivityToast(), in: base, status: status, progress: nil, dismiss: nil)
-    }
-    
-    public func showMsgToast(_ msg: String) {
-        MNToast.show(builder: MNMsgToast(), in: base, status: msg, progress: nil, dismiss: nil)
-    }
-    
-    public func dismissToast(delay: TimeInterval, completion: (()->Void)?) {
+    /// 显示系统活动视图Toast
+    /// - Parameters:
+    ///   - status: 状态描述
+    ///   - timeInterval: 显示时长
+    ///   - dismissHandler: 消失回调
+    public func showActivityToast(_ status: String?, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
         
+        MNToast.show(builder: MNActivityToast(), in: base, status: status, progress: nil, delay: timeInterval, dismiss: dismissHandler)
     }
     
-//    @objc public func showMaskToast(_ status: String) {
-//        showToast(MNMaskToast(), status: status)
-//    }
-//    
-//    @objc public func showProgressToast(_ status: String) {
-//        showToast(MNProgressToast(), status: status)
-//    }
-//    
-//    @objc public func showMsgToast(_ msg: String, dismiss handler: (()->Void)? = nil) {
-//        showToast(MNMsgToast(), status: msg, dismiss: handler)
-//    }
-//    
-//    @objc public func showInfoToast(_ status: String, dismiss handler: (()->Void)? = nil) {
-//        showToast(MNInfoToast(), status: status, dismiss: handler)
-//    }
-//    
-//    @objc public func showSuccessToast(_ msg: String, dismiss handler: (()->Void)? = nil) {
-//        showToast(MNSuccessToast(), status: msg, dismiss: handler)
-//    }
-//    
-//    @objc public func showFailureToast(_ msg: String, dismiss handler: (()->Void)? = nil) {
-//        showToast(MNFailureToast(), status: msg, dismiss: handler)
-//    }
-//    
-//    @objc public func showToast(_ builder: MNToastBuilder, status: String? = nil, dismiss handler: (()->Void)? = nil) {
-//        if let toast = toast {
-//            toast.dismiss(animation: .none)
-//        }
-//        let toast = MNToast(builder: builder)
-//        toast.text = status
-//        toast.show(in: self, dismiss: handler)
-//    }
-//    
-//    @objc public func showInfo(_ status: String, completion: (()->Void)? = nil) {
-//        
-//    }
+    /// 显示消息Toast
+    /// - Parameters:
+    ///   - status: 消息内容
+    ///   - timeInterval: 显示时长
+    ///   - dismissHandler: 消失回调
+    public func showMsgToast(_ status: String, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+        
+        MNToast.show(builder: MNMsgToast(), in: base, status: status, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+    }
+    
+    /// 显示提示Toast
+    /// - Parameters:
+    ///   - status: 状态描述
+    ///   - timeInterval: 显示时长
+    ///   - dismissHandler: 消失回调
+    public func showInfoToast(_ status: String?, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+        
+        MNToast.show(builder: MNInfoToast(), in: base, status: status, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+    }
+    
+    /// 显示圆形旋转Toast
+    /// - Parameters:
+    ///   - status: 状态描述
+    ///   - style: 样式
+    ///   - timeInterval: 显示时长
+    ///   - dismissHandler: 消失回调
+    public func showShapeToast(_ status: String?, style: MNShapeToast.Style = .mask, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+        
+        MNToast.show(builder: MNShapeToast(style: style), in: base, status: status, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+    }
+    
+    /// 显示进度Toast
+    /// - Parameters:
+    ///   - status: 状态描述
+    ///   - style: 样式
+    ///   - value: 进度值
+    ///   - timeInterval: 显示时长
+    ///   - dismissHandler: 消失回调
+    public func showProgressToast(_ status: String?, style: MNProgressToast.Style = .line, progress value: (any BinaryFloatingPoint)? = nil, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+        
+        MNToast.show(builder: MNProgressToast(style: style), in: base, status: status, progress: value, delay: timeInterval, dismiss: dismissHandler)
+    }
+    
+    /// 显示成功Toast
+    /// - Parameters:
+    ///   - status: 状态描述
+    ///   - timeInterval: 显示时长
+    ///   - dismissHandler: 消失回调
+    public func showSuccessToast(_ status: String?, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+        
+        MNToast.show(builder: MNSuccessToast(), in: base, status: status, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+    }
+    
+    /// 显示失败Toast
+    /// - Parameters:
+    ///   - status: 状态描述
+    ///   - timeInterval: 显示时长
+    ///   - dismissHandler: 消失回调
+    public func showFailureToast(_ status: String?, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+        
+        MNToast.show(builder: MNFailureToast(), in: base, status: status, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+    }
+    
+    /// 取消Toast
+    /// - Parameters:
+    ///   - timeInterval: 等待时长
+    ///   - dismissHandler: 消失回调
+    public func dismissToast(after timeInterval: TimeInterval = 0.0, completion dismissHandler: (()->Void)? = nil) {
+        guard let toast = toast else { return }
+        toast.dismissHandler = dismissHandler
+        toast.dismiss(after: timeInterval)
+    }
 }
-
-//// MARK: - 更新弹窗
-//extension UIView {
-//    
-//    /// 更新弹窗
-//    /// - Parameter status: 状态提示
-//    @objc public func updateToast(status: String?) {
-//        guard let toast = toast else { return }
-//        toast.text = status
-//    }
-//    
-//    /// 更新弹窗
-//    /// - Parameter progress: 进度
-//    @objc public func updateToast(progress: Double) {
-//        guard let toast = toast else { return }
-//        toast.updateProgress(progress)
-//    }
-//}
-
-//// MARK: - 关闭弹窗
-//extension UIView {
-//    
-//    /// 关闭弹窗
-//    @objc public func closeToast() {
-//        closeToast(dismiss: nil)
-//    }
-//    
-//    /// 关闭弹窗
-//    /// - Parameter handler: 结束回调
-//    @objc public func closeToast(dismiss handler: (()->Void)?) {
-//        guard let toast = toast else { return }
-//        toast.dismissHandler = handler
-//        toast.close()
-//    }
-//}

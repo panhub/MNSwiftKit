@@ -10,45 +10,61 @@ import UIKit
 class MNMsgToast: MNToastBuilder {
     
     var axisForToast: MNToast.Axis {
+        
         .vertical(spacing: 3.0)
     }
     
     var effectForToast: MNToast.Effect {
+        
         .dark
     }
     
-    var contentInsetForToast: UIEdgeInsets {
-        .init(top: 8.0, left: 10.0, bottom: 7.0, right: 10.0)
+    var positionForToast: MNToast.Position {
+        
+        .center
     }
     
-    var activityViewForToast: UIView? { nil }
+    var contentInsetForToast: UIEdgeInsets {
+        
+        .init(top: 10.0, left: 12.0, bottom: 9.0, right: 12.0)
+    }
     
-    var userInteractionEnabledForToast: Bool { true }
+    var activityViewForToast: UIView? {
+        
+        nil
+    }
     
-    var positionForToast: MNToast.Position { .center }
-    
-    var fadeInForToast: Bool { true }
-    
-    var fadeOutForToast: Bool { true }
-    
-    var attributesForToastDescription: [NSAttributedString.Key : Any] {
+    var attributesForToastStatus: [NSAttributedString.Key : Any] {
+        
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = .center
         paragraph.lineSpacing = 1.0
         paragraph.paragraphSpacing = 1.0
         paragraph.lineHeightMultiple = 1.0
         paragraph.paragraphSpacingBefore = 1.0
-        return [.font:UIFont.systemFont(ofSize: 16.0, weight: .regular), .paragraphStyle:paragraph, .foregroundColor:UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0)]
+        return [.font:UIFont.systemFont(ofSize: 15.0, weight: .regular), .paragraphStyle:paragraph, .foregroundColor:UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0)]
+    }
+    
+    var fadeInForToast: Bool {
+        
+        true
+    }
+    
+    var fadeOutForToast: Bool {
+        
+        true
+    }
+    
+    var allowUserInteractionWhenDisplayed: Bool {
+        
+        true
     }
 }
 
-extension MNMsgToast: MNToastAnimationHandler {
+extension MNMsgToast: MNToastTimerHandler {
     
-    func startAnimating(_ toast: MNToast) {
-        toast.dismiss(after: 2.0)
-    }
-    
-    func stopAnimating(_ toast: MNToast) {
+    func toastShouldDelayDismiss(with status: String?) -> TimeInterval? {
         
+        MNToast.displayTimeInterval(with: status)
     }
 }

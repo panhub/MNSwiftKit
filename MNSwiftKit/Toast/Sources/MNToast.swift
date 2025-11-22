@@ -8,13 +8,17 @@
 import UIKit
 import ObjectiveC.runtime
 
+/// 弹框构建规则
 public protocol MNToastBuilder {
     
     /// Toast布局方向
     var axisForToast: MNToast.Axis { get }
     
-    /// Toast颜色样式
+    /// Toast视觉效果
     var effectForToast: MNToast.Effect { get }
+    
+    /// Toast显示的位置
+    var positionForToast: MNToast.Position { get }
     
     /// Toast内容四周约束
     var contentInsetForToast: UIEdgeInsets { get }
@@ -22,11 +26,8 @@ public protocol MNToastBuilder {
     /// Toast指示视图
     var activityViewForToast: UIView? { get }
     
-    /// Toast显示时是否拒绝交互事件
-    var userInteractionEnabledForToast: Bool { get }
-    
-    /// Toast显示的位置
-    var positionForToast: MNToast.Position { get }
+    /// Toast中状态文字的富文本描述
+    var attributesForToastStatus: [NSAttributedString.Key:Any] { get }
     
     /// Toast渐入式显示
     var fadeInForToast: Bool { get }
@@ -34,47 +35,35 @@ public protocol MNToastBuilder {
     /// Toast渐隐式取消
     var fadeOutForToast: Bool { get }
     
-    /// Toast中文字的富文本描述
-    var attributesForToastDescription: [NSAttributedString.Key:Any] { get }
+    /// Toast显示时是否拒绝交互事件
+    var allowUserInteractionWhenDisplayed: Bool { get }
 }
 
+/// 弹框动画规则
 public protocol MNToastAnimationHandler where Self: MNToastBuilder {
     
     /// 开启动画
-    /// - Parameter toast: 弹窗
-    func startAnimating(_ toast: MNToast)
+    func startAnimating()
     
     /// 停止动画
-    /// - Parameter toast: 弹窗
-    func stopAnimating(_ toast: MNToast)
+    func stopAnimating()
 }
 
+/// 弹框进度更新规则
 public protocol MNToastProgressUpdater where Self: MNToastBuilder {
     
     /// 更新进度值
-    /// - Parameter progress: 进度值
-    func toastShouldUpdate(progress: CGFloat)
+    /// - Parameter value: 进度值
+    func toastProgressDidUpdate(_ value: CGFloat)
 }
 
-/// 颜色样式
-@objc public enum ToastColor: Int {
-    ///   暗色  亮色 无颜色
-    case dark, gray, clear
-}
-
-/// 显示的位置
-@objc public enum ToastPosition: Int {
-    case top, center, bottom
-}
-
-/// 动画类型
-@objc public enum ToastAnimation: Int {
-    case none, fade, move
-}
-
-/// 活动视图方位
-@objc public enum ToastDistribution: Int {
-    case top, bottom
+/// 弹框定时器规则
+public protocol MNToastTimerHandler where Self: MNToastBuilder {
+    
+    /// 定时自动消失Toast
+    /// - Parameter status: 状态文字
+    /// - Returns: 延迟时长, nil则不做自动消失操作
+    func toastShouldDelayDismiss(with status: String?) -> TimeInterval?
 }
 
 
@@ -131,39 +120,58 @@ public class MNToast: UIView {
     /// 状态信息
     private let statusLabel = UILabel()
     
-    /// 约束指示图与提示信息(纵向布局)
+    /// 约束指示图与状态信息
     private let stackView = UIStackView()
     
     /// 内容视图
-    private let contentView = UIVisualEffectView()
+    private let visualView = UIVisualEffectView()
+    
+    /// 当前状态描述
+    public var status: String? {
+        get {
+            if let attributedText = statusLabel.attributedText { return attributedText.string }
+            return statusLabel.text
+        }
+        set {
+            if let text = newValue, text.isEmpty == false {
+                statusLabel.isHidden = false
+                statusLabel.attributedText = NSAttributedString(string: text, attributes: builder.attributesForToastStatus)
+            } else {
+                statusLabel.isHidden = true
+                statusLabel.attributedText = nil
+            }
+        }
+    }
     
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    /// 构建Toast弹窗
+    /// - Parameter builder: 弹窗建造者
     public init(builder: MNToastBuilder) {
         self.builder = builder
         super.init(frame: .zero)
         
-        contentView.clipsToBounds = true
-        contentView.layer.cornerRadius = 8.0
-        contentView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(contentView)
-        NSLayoutConstraint.activate([contentView.centerXAnchor.constraint(equalTo: centerXAnchor)])
+        visualView.clipsToBounds = true
+        visualView.layer.cornerRadius = 8.0
+        visualView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(visualView)
+        NSLayoutConstraint.activate([visualView.centerXAnchor.constraint(equalTo: centerXAnchor)])
         switch builder.positionForToast {
         case .top(let distance):
-            NSLayoutConstraint.activate([contentView.topAnchor.constraint(equalTo: topAnchor, constant: distance)])
+            NSLayoutConstraint.activate([visualView.topAnchor.constraint(equalTo: topAnchor, constant: distance)])
         case .center:
-            NSLayoutConstraint.activate([contentView.centerYAnchor.constraint(equalTo: centerYAnchor)])
+            NSLayoutConstraint.activate([visualView.centerYAnchor.constraint(equalTo: centerYAnchor)])
         case .bottom(let distance):
-            NSLayoutConstraint.activate([contentView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -distance)])
+            NSLayoutConstraint.activate([visualView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -distance)])
         }
         
         switch builder.effectForToast {
         case .dark:
-            contentView.effect = UIBlurEffect(style: .dark)
+            visualView.effect = UIBlurEffect(style: .dark)
         case .light:
-            contentView.effect = UIBlurEffect(style: .light)
+            visualView.effect = UIBlurEffect(style: .light)
         default: break
         }
         
@@ -179,18 +187,22 @@ public class MNToast: UIView {
         stackView.alignment = .center
         stackView.distribution = .equalSpacing
         stackView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.contentView.addSubview(stackView)
+        visualView.contentView.addSubview(stackView)
         let contentInset = builder.contentInsetForToast
         NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: contentView.contentView.topAnchor, constant: contentInset.top),
-            stackView.leftAnchor.constraint(equalTo: contentView.contentView.leftAnchor, constant: contentInset.left),
-            stackView.bottomAnchor.constraint(equalTo: contentView.contentView.bottomAnchor, constant: -contentInset.bottom),
-            stackView.rightAnchor.constraint(equalTo: contentView.contentView.rightAnchor, constant: -contentInset.right)
+            stackView.topAnchor.constraint(equalTo: visualView.contentView.topAnchor, constant: contentInset.top),
+            stackView.leftAnchor.constraint(equalTo: visualView.contentView.leftAnchor, constant: contentInset.left),
+            stackView.bottomAnchor.constraint(equalTo: visualView.contentView.bottomAnchor, constant: -contentInset.bottom),
+            stackView.rightAnchor.constraint(equalTo: visualView.contentView.rightAnchor, constant: -contentInset.right)
         ])
         
         if let activityView = builder.activityViewForToast {
             activityView.translatesAutoresizingMaskIntoConstraints = false
             stackView.addArrangedSubview(activityView)
+            NSLayoutConstraint.activate([
+                activityView.widthAnchor.constraint(equalToConstant: activityView.frame.width),
+                activityView.heightAnchor.constraint(equalToConstant: activityView.frame.height)
+            ])
         }
         
         statusLabel.numberOfLines = 0
@@ -200,7 +212,7 @@ public class MNToast: UIView {
         stackView.addArrangedSubview(statusLabel)
         NSLayoutConstraint.activate([statusLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 200.0)])
         
-        isUserInteractionEnabled = builder.userInteractionEnabledForToast == false
+        isUserInteractionEnabled = builder.allowUserInteractionWhenDisplayed == false
         
         // 键盘变化告知
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame(_:)), name: UIApplication.keyboardWillChangeFrameNotification, object: nil)
@@ -210,7 +222,6 @@ public class MNToast: UIView {
         NotificationCenter.default.removeObserver(self)
     }
     
-    /// 关联弹窗
     open override func willMove(toSuperview newSuperview: UIView?) {
         if let superview = newSuperview {
             superview.mn.toast = self
@@ -220,31 +231,12 @@ public class MNToast: UIView {
         super.willMove(toSuperview: newSuperview)
     }
     
-    public override func didMoveToWindow() {
-        super.didMoveToWindow()
-        guard let _ = window else { return }
-        applyToKeyboard()
-    }
-    
     /// 更新进度
-    /// - Parameter progress: 进度值
-    func update(progress: CGFloat!) {
-        guard let progress = progress else { return }
+    /// - Parameter value: 进度值
+    func update(progress value: any BinaryFloatingPoint) {
         guard builder is MNToastProgressUpdater else { return }
         let updater = builder as! MNToastProgressUpdater
-        updater.toastShouldUpdate(progress: progress)
-    }
-    
-    /// 更新提示信息
-    /// - Parameter status: 提示信息
-    func update(status: String?) {
-        if let status = status, status.isEmpty == false {
-            statusLabel.attributedText = NSAttributedString(string: status, attributes: builder.attributesForToastDescription)
-            statusLabel.isHidden = false
-        } else {
-            statusLabel.attributedText = nil
-            statusLabel.isHidden = true
-        }
+        updater.toastProgressDidUpdate(CGFloat(value))
     }
     
     /// 定时指定时间后结束展示
@@ -256,6 +248,7 @@ public class MNToast: UIView {
         RunLoop.main.add(timer, forMode: .common)
     }
     
+    /// 销毁定时器
     func invalidateTimer() {
         guard let timer = timer else { return }
         timer.invalidate()
@@ -267,42 +260,63 @@ public class MNToast: UIView {
         dismiss(completion: dismissHandler)
     }
     
-    /// 拒绝事件响应
+    /// 计算弹窗显示时长
+    /// - Parameter status: 状态描述
+    /// - Returns: 显示时长
+    public class func displayTimeInterval(with status: String?) -> TimeInterval {
+        var timeInterval = 1.5
+        if let status = status, status.isEmpty == false {
+            let string = status.components(separatedBy: "\n").joined()
+            let count = string.count - 8
+            if count > 0 {
+                timeInterval += TimeInterval(count)*0.06
+            }
+        }
+        return timeInterval
+    }
+    
     open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {}
     open override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {}
     open override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {}
     open override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {}
 }
 
-// MARK: - 显示
+// MARK: - Show
 extension MNToast {
     
-    class func show(builder: MNToastBuilder, in superview: UIView! = MNToast.window, status: String?, progress: CGFloat?, dismiss handler: (()->Void)? = nil) {
-        guard let superview = superview else { return }
+    /// 展示Toast, 若存在同类型则执行更新
+    /// - Parameters:
+    ///   - builder: 构建者
+    ///   - superview: Toast父视图
+    ///   - status: 状态
+    ///   - progress: 进度
+    ///   - delay: 展示时长
+    ///   - dismissHandler: 展示结束回调
+    public class func show(builder: MNToastBuilder, in superview: UIView, status: String?, progress: (any BinaryFloatingPoint)? = nil, delay: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
         if let toast = superview.mn.toast {
             // 取消定时器
             toast.invalidateTimer()
-            // 判断是否是当前类型
+            // 判断是否是当前类型, 存在则更新
             if type(of: toast.builder) == type(of: builder) {
                 // 取消当前动画
-                let animationKeys = toast.contentView.layer.animationKeys()
-                if let _ = animationKeys {
-                    toast.contentView.layer.removeAllAnimations()
-                    toast.contentView.transform = .identity
+                let animationKeys = toast.visualView.layer.animationKeys()
+                if animationKeys != nil {
+                    toast.visualView.layer.removeAllAnimations()
+                    toast.visualView.transform = .identity
                 }
                 // 这里只做更新
                 if let status = status {
-                    toast.update(status: status)
+                    toast.status = status
                 }
                 if let progress = progress {
                     toast.update(progress: progress)
                 }
-                if let handler = handler {
-                    toast.dismissHandler = handler
+                if let dismissHandler = dismissHandler {
+                    toast.dismissHandler = dismissHandler
                 }
                 superview.bringSubviewToFront(toast)
                 // 重新展示动画
-                toast.show(animated: animationKeys != nil)
+                toast.show(animated: animationKeys != nil, delay: delay)
                 return
             }
             // 删除
@@ -310,9 +324,11 @@ extension MNToast {
         }
         // 创建
         let toast = MNToast(builder: builder)
-        toast.update(status: status)
-        toast.update(progress: progress)
-        toast.dismissHandler = handler
+        toast.status = status
+        if let progress = progress {
+            toast.update(progress: progress)
+        }
+        toast.dismissHandler = dismissHandler
         toast.translatesAutoresizingMaskIntoConstraints = false
         superview.addSubview(toast)
         NSLayoutConstraint.activate([
@@ -321,57 +337,70 @@ extension MNToast {
             toast.bottomAnchor.constraint(equalTo: superview.bottomAnchor),
             toast.rightAnchor.constraint(equalTo: superview.rightAnchor)
         ])
-        toast.show(animated: true)
+        toast.show(animated: builder.fadeInForToast, delay: delay)
     }
     
-    private func show(animated: Bool) {
+    private func show(animated: Bool, delay: TimeInterval?) {
         if let _ = window {
             layoutIfNeeded()
         }
         let animationHandler: ()->Void = { [weak self] in
             guard let self = self else { return }
-            self.contentView.alpha = 1.0
-            self.contentView.transform = .identity
+            self.visualView.alpha = 1.0
+            self.visualView.transform = .identity
         }
         let completionHandler: (Bool)->Void = { [weak self] finished in
             guard let self = self else { return }
             guard finished else { return }
             if self.builder is MNToastAnimationHandler {
                 let delegate = self.builder as! MNToastAnimationHandler
-                delegate.startAnimating(self)
+                delegate.startAnimating()
+            }
+            if self.builder is MNToastTimerHandler {
+                let delegate = self.builder as! MNToastTimerHandler
+                if let timeInterval = delegate.toastShouldDelayDismiss(with: self.status) {
+                    self.dismiss(after: timeInterval)
+                }
+            }
+            if let delay = delay {
+                self.dismiss(after: delay)
             }
         }
-        if animated, builder.fadeInForToast {
-            contentView.alpha = 0.0
+        if animated {
+            visualView.alpha = 0.0
             switch builder.positionForToast {
             case .top:
-                contentView.transform = .init(translationX: 0.0, y: -10.0)
+                visualView.transform = .init(translationX: 0.0, y: -10.0)
             case .center:
-                contentView.transform = .init(scaleX: 1.2, y: 1.2)
+                visualView.transform = .init(scaleX: 1.22, y: 1.22)
             case .bottom:
-                contentView.transform = .init(translationX: 0.0, y: 10.0)
+                visualView.transform = .init(translationX: 0.0, y: 10.0)
             }
             UIView.animate(withDuration: 0.15, delay: 0.0, options: [.curveEaseInOut, .beginFromCurrentState], animations: animationHandler, completion: completionHandler)
         } else {
             completionHandler(true)
         }
     }
+}
+
+// MARK: - Dismiss
+extension MNToast {
     
-    /// 取消Toast展示
-    /// - Parameter handler: 完成后回调
-    public func dismiss(completion handler: (()->Void)? = nil) {
-        guard contentView.alpha == 1.0 else { return }
+    /// 关闭Toast弹窗
+    /// - Parameter dismissHandler: 结束后回调
+    public func dismiss(completion dismissHandler: (()->Void)? = nil) {
+        guard visualView.alpha == 1.0 else { return }
         invalidateTimer()
         let animationHandler: ()->Void = { [weak self] in
             guard let self = self else { return }
-            self.contentView.alpha = 0.0
+            self.visualView.alpha = 0.0
             switch self.builder.positionForToast {
             case .top:
-                self.contentView.transform = .init(translationX: 0.0, y: -10.0)
+                self.visualView.transform = .init(translationX: 0.0, y: -10.0)
             case .center:
-                self.contentView.transform = .init(scaleX: 1.2, y: 1.2)
+                self.visualView.transform = .init(scaleX: 0.78, y: 0.78)
             case .bottom:
-                self.contentView.transform = .init(translationX: 0.0, y: 10.0)
+                self.visualView.transform = .init(translationX: 0.0, y: 10.0)
             }
         }
         let completionHandler: (Bool)->Void = { [weak self] finished in
@@ -379,11 +408,13 @@ extension MNToast {
             guard finished else { return }
             if self.builder is MNToastAnimationHandler {
                 let delegate = self.builder as! MNToastAnimationHandler
-                delegate.stopAnimating(self)
+                delegate.stopAnimating()
             }
             self.removeFromSuperview()
-            if let dismissHandler = handler {
-                dismissHandler()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                if let dismissHandler = dismissHandler {
+                    dismissHandler()
+                }
             }
         }
         if builder.fadeOutForToast {
@@ -394,62 +425,45 @@ extension MNToast {
     }
 }
 
-// MARK: - Helper
+// MARK: - Notification
 extension MNToast {
     
-    private func applyToKeyboard() {
-//        // 原本位置
-//        let constant = constantForNormal()
-//        // 与键盘间隔
-//        let spacing = keyboardFrame.minY < UIScreen.main.bounds.height ? (builder.spacingForKeyboard?() ?? 0.0) : 0.0
-//        // 内容视图位置
-//        let point = CGPoint(x: keyboardFrame.midX, y: keyboardFrame.minY - spacing - contentView.bounds.midY)
-//        // 转换到自身坐标系
-//        let center = convert(point, from: nil)
-//        // 与中心点间隔
-//        let margin = center.y - bounds.midY
-//        verticalLayout.constant = min(margin, constant)
-//        layoutIfNeeded()
-    }
-    
-    public class func duration(with description: String?) -> TimeInterval {
-        max(TimeInterval(description?.count ?? 0)*0.06 + 0.5, 1.5)
-    }
-}
-
-// MARK: - 键盘变化通知
-extension MNToast {
-    
-    /// 键盘变化通知
-    /// - Parameter notify: 通知
-    @objc private func keyboardWillChangeFrame(_ notify: Notification) {
-//        guard let isAdjustsKeyboard = builder.supportedAdjustsKeyboard?(), isAdjustsKeyboard == true else { return }
-//        guard let userInfo = notify.userInfo else { return }
-//        guard let rect = userInfo[UIWindow.keyboardFrameEndUserInfoKey] as? CGRect else { return }
-//        keyboardFrame = rect
-//        guard let _ = window else { return }
-//        applyToKeyboard()
-    }
-    
-    /// 键盘可见高度
-    var visibleKeyboardHeight: CGFloat {
-        guard let window = MNToast.window else { return 0.0 }
-        for possibleKeyboard in window.subviews {
-            let viewName = NSStringFromClass(type(of: possibleKeyboard))
-            guard viewName.hasPrefix("UI") else { continue }
-            if viewName.hasSuffix("PeripheralHostView") || viewName.hasSuffix("Keyboard") {
-                return possibleKeyboard.bounds.height
-            } else if viewName.hasSuffix("InputSetContainerView") {
-                for possibleKeyboardSubview in possibleKeyboard.subviews {
-                    let subviewName = NSStringFromClass(type(of: possibleKeyboardSubview))
-                    guard subviewName.hasPrefix("UI"), subviewName.hasSuffix("InputSetHostView") else { continue }
-                    let convertedRect = possibleKeyboard.convert(possibleKeyboardSubview.frame, to: self)
-                    let intersectedRect = convertedRect.intersection(bounds)
-                    guard intersectedRect.isNull == false else { continue }
-                    return intersectedRect.height
-                }
-            }
+    /// 键盘Frame变化通知
+    /// - Parameter notification: 通知
+    @objc private func keyboardWillChangeFrame(_ notification: Notification) {
+        guard let window = window else { return }
+        guard let userInfo = notification.userInfo else { return }
+        guard let keyboardFrame = userInfo[UIWindow.keyboardFrameEndUserInfoKey] as? CGRect else { return }
+        let convertedRect = convert(visualView.frame, to: window)
+        let minY = keyboardFrame.minY - 15.0 - convertedRect.height
+        switch builder.positionForToast {
+        case .top(let distance):
+            // 顶部
+            guard let constraint = constraints.first(where: { constraint in
+                guard let firstItem = constraint.firstItem, firstItem is UIVisualEffectView else { return false }
+                guard constraint.firstAttribute == .top else { return false }
+                return true
+            }) else { break }
+            constraint.constant = min(distance, minY - convertedRect.minY + constraint.constant)
+            layoutIfNeeded()
+        case .center:
+            // 中心
+            guard let constraint = constraints.first(where: { constraint in
+                guard let firstItem = constraint.firstItem, firstItem is UIVisualEffectView else { return false }
+                guard constraint.firstAttribute == .centerY else { return false }
+                return true
+            }) else { break }
+            constraint.constant = min(0.0, minY - convertedRect.minY + constraint.constant)
+            layoutIfNeeded()
+        case .bottom(let distance):
+            // 底部
+            guard let constraint = constraints.first(where: { constraint in
+                guard let firstItem = constraint.firstItem, firstItem is UIVisualEffectView else { return false }
+                guard constraint.firstAttribute == .bottom else { return false }
+                return true
+            }) else { break }
+            constraint.constant = min(-distance, minY - convertedRect.minY + constraint.constant)
+            layoutIfNeeded()
         }
-        return 0.0
     }
 }

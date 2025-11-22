@@ -1,56 +1,64 @@
 //
-//  MNProgressToast.swift
+//  MNShapeToast.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2021/9/10.
-//  进度Toast
+//  Mask弹窗
 
 import UIKit
 
-/// 进度Toast构建者
-public class MNProgressToast {
+/// 圆形旋转Toast样式构建者
+public class MNShapeToast {
     
-    /// 进度条样式
+    /// 线条样式
     public enum Style {
-        /// 填充至100%
-        case fill
-        /// 线条至100%
+        /// 线条
         case line
+        /// 遮罩
+        case mask
     }
     
     /// 进度弹框样式
-    public let style: MNProgressToast.Style
+    public let style: MNShapeToast.Style
     
-    /// 构造进度Toast弹窗
+    /// 构造圆形旋转Toast弹窗
     /// - Parameter style: 样式
-    public init(style: MNProgressToast.Style) {
+    public init(style: MNShapeToast.Style) {
         self.style = style
     }
     
-    lazy var activityLayer: CAShapeLayer = {
+    lazy var activityLayer: CALayer = {
         
+        let lineWidth: CGFloat = 2.2
         let borderSize: CGSize = .init(width: 40.0, height: 40.0)
-        let lineWidth: CGFloat = style == .line ? 2.2 : borderSize.width/2.0
         
-        let path = UIBezierPath(arcCenter: .init(x: borderSize.width/2.0, y: borderSize.height/2.0), radius: (borderSize.width - lineWidth)/2.0, startAngle: -.pi/2.0, endAngle: .pi/2.0*3.0, clockwise: true)
-        
+        let path = UIBezierPath(arcCenter: CGPoint(x: borderSize.width/2.0, y: borderSize.height/2.0), radius: (borderSize.width - lineWidth)/2.0, startAngle: -.pi/2.0, endAngle: .pi/2.0*3.0, clockwise: true)
         let activityLayer = CAShapeLayer()
         activityLayer.frame = .init(origin: .zero, size: borderSize)
         activityLayer.path = path.cgPath
         activityLayer.fillColor = UIColor.clear.cgColor
         activityLayer.strokeColor = UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0).cgColor
         activityLayer.lineWidth = lineWidth
-        activityLayer.strokeEnd = 0.0
-        if style == .line {
-            activityLayer.lineCap = .round
-            activityLayer.lineJoin = .round
+        activityLayer.lineCap = .round
+        activityLayer.lineJoin = .round
+        
+        switch style {
+        case .line:
+            activityLayer.strokeEnd = 0.82
+        case .mask:
+            let mask = CALayer()
+            mask.frame = activityLayer.bounds
+            mask.contentsScale = UIScreen.main.scale
+            mask.contents = ToastResource.image(named: "mask-light")?.cgImage
+            activityLayer.mask = mask
+            activityLayer.strokeEnd = 1.0
         }
         
         return activityLayer
     }()
 }
-
-extension MNProgressToast: MNToastBuilder {
+    
+extension MNShapeToast: MNToastBuilder {
     
     public var axisForToast: MNToast.Axis {
         
@@ -74,23 +82,8 @@ extension MNProgressToast: MNToastBuilder {
     
     public var activityViewForToast: UIView? {
         
-        let lineWidth: CGFloat = 2.2
-        let borderSize: CGSize = activityLayer.frame.size
-        
-        let path = UIBezierPath(arcCenter: .init(x: borderSize.width/2.0, y: borderSize.height/2.0), radius: (borderSize.width - lineWidth)/2.0, startAngle: 0.0, endAngle: .pi*2.0, clockwise: true)
-        
-        let trackLayer = CAShapeLayer()
-        trackLayer.frame = .init(origin: .zero, size: borderSize)
-        trackLayer.path = path.cgPath
-        trackLayer.fillColor = UIColor.clear.cgColor
-        trackLayer.strokeColor = activityLayer.strokeColor?.copy(alpha: 0.05)
-        trackLayer.lineWidth = lineWidth
-        trackLayer.strokeEnd = 1.0
-        
-        let activityView = UIView(frame: CGRect(origin: .zero, size: borderSize))
-        activityView.layer.addSublayer(trackLayer)
+        let activityView = UIView(frame: CGRect(origin: .zero, size: activityLayer.frame.size))
         activityView.layer.addSublayer(activityLayer)
-        
         return activityView
     }
     
@@ -121,12 +114,25 @@ extension MNProgressToast: MNToastBuilder {
     }
 }
 
-extension MNProgressToast: MNToastProgressUpdater {
+extension MNShapeToast: MNToastAnimationHandler {
     
-    public func toastProgressDidUpdate(_ value: CGFloat) {
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        activityLayer.strokeEnd = max(0.0, min(value, 1.0))
-        CATransaction.commit()
+    public func startAnimating() {
+        
+        if let animationKeys = activityLayer.animationKeys(), animationKeys.isEmpty == false { return }
+        
+        let animation = CABasicAnimation(keyPath: "transform.rotation")
+        animation.duration = 0.8
+        animation.toValue = Double.pi*2.0
+        animation.repeatCount = .greatestFiniteMagnitude
+        animation.isRemovedOnCompletion = false
+        animation.fillMode = .forwards
+        animation.autoreverses = false
+        animation.timingFunction = CAMediaTimingFunction(name: .linear)
+        activityLayer.add(animation, forKey: "com.mn.toast.animation.rotation")
+    }
+    
+    public func stopAnimating() {
+        
+        activityLayer.removeAllAnimations()
     }
 }
