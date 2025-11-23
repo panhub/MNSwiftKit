@@ -38,12 +38,14 @@ public class MNProgressToast {
         activityLayer.frame = .init(origin: .zero, size: borderSize)
         activityLayer.path = path.cgPath
         activityLayer.fillColor = UIColor.clear.cgColor
-        activityLayer.strokeColor = UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0).cgColor
         activityLayer.lineWidth = lineWidth
         activityLayer.strokeEnd = 0.0
         if style == .line {
             activityLayer.lineCap = .round
             activityLayer.lineJoin = .round
+            activityLayer.strokeColor = MNToast.Configuration.shared.color.cgColor
+        } else {
+            activityLayer.strokeColor = MNToast.Configuration.shared.color.withAlphaComponent(0.8).cgColor
         }
         
         return activityLayer
@@ -54,22 +56,17 @@ extension MNProgressToast: MNToastBuilder {
     
     public var axisForToast: MNToast.Axis {
         
-        .vertical(spacing: 7.0)
+        MNToast.Configuration.shared.axis
     }
     
     public var effectForToast: MNToast.Effect {
         
-        .dark
-    }
-    
-    public var positionForToast: MNToast.Position {
-        
-        .center
+        MNToast.Configuration.shared.effect
     }
     
     public var contentInsetForToast: UIEdgeInsets {
         
-        .init(top: 12.0, left: 12.0, bottom: 11.0, right: 12.0)
+        MNToast.Configuration.shared.contentInset
     }
     
     public var activityViewForToast: UIView? {
@@ -102,7 +99,7 @@ extension MNProgressToast: MNToastBuilder {
         paragraph.paragraphSpacing = 1.0
         paragraph.lineHeightMultiple = 1.0
         paragraph.paragraphSpacingBefore = 1.0
-        return [.font:UIFont.systemFont(ofSize: 15.0, weight: .regular), .paragraphStyle:paragraph, .foregroundColor:UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0)]
+        return [.font:MNToast.Configuration.shared.font, .foregroundColor:MNToast.Configuration.shared.color, .paragraphStyle:paragraph]
     }
     
     public var fadeInForToast: Bool {
@@ -117,7 +114,7 @@ extension MNProgressToast: MNToastBuilder {
     
     public var allowUserInteractionWhenDisplayed: Bool {
         
-        true
+        MNToast.Configuration.shared.allowUserInteractionWhenDisplayed
     }
 }
 

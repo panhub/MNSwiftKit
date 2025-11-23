@@ -26,7 +26,7 @@ class MNFailureToast {
         activityLayer.frame = .init(origin: .zero, size: wrongSize)
         activityLayer.path = path.cgPath
         activityLayer.fillColor = UIColor.clear.cgColor
-        activityLayer.strokeColor = UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0).cgColor
+        activityLayer.strokeColor = MNToast.Configuration.shared.color.cgColor
         activityLayer.lineWidth = lineWidth
         activityLayer.lineCap = .round
         activityLayer.lineJoin = .round
@@ -40,22 +40,17 @@ extension MNFailureToast: MNToastBuilder {
     
     var axisForToast: MNToast.Axis {
         
-        .vertical(spacing: 7.0)
+        MNToast.Configuration.shared.axis
     }
     
     var effectForToast: MNToast.Effect {
         
-        .dark
-    }
-    
-    var positionForToast: MNToast.Position {
-        
-        .center
+        MNToast.Configuration.shared.effect
     }
     
     var contentInsetForToast: UIEdgeInsets {
         
-        .init(top: 12.0, left: 12.0, bottom: 11.0, right: 12.0)
+        MNToast.Configuration.shared.contentInset
     }
     
     var activityViewForToast: UIView? {
@@ -73,7 +68,7 @@ extension MNFailureToast: MNToastBuilder {
         paragraph.paragraphSpacing = 1.0
         paragraph.lineHeightMultiple = 1.0
         paragraph.paragraphSpacingBefore = 1.0
-        return [.font:UIFont.systemFont(ofSize: 15.0, weight: .regular), .paragraphStyle:paragraph, .foregroundColor:UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0)]
+        return [.font:MNToast.Configuration.shared.font, .foregroundColor:MNToast.Configuration.shared.color, .paragraphStyle:paragraph]
     }
     
     var fadeInForToast: Bool {
@@ -88,7 +83,7 @@ extension MNFailureToast: MNToastBuilder {
     
     var allowUserInteractionWhenDisplayed: Bool {
         
-        true
+        MNToast.Configuration.shared.allowUserInteractionWhenDisplayed
     }
 }
 

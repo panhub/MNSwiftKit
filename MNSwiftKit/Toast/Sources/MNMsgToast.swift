@@ -11,22 +11,17 @@ class MNMsgToast: MNToastBuilder {
     
     var axisForToast: MNToast.Axis {
         
-        .vertical(spacing: 3.0)
+        MNToast.Configuration.shared.axis
     }
     
     var effectForToast: MNToast.Effect {
         
-        .dark
-    }
-    
-    var positionForToast: MNToast.Position {
-        
-        .center
+        MNToast.Configuration.shared.effect
     }
     
     var contentInsetForToast: UIEdgeInsets {
         
-        .init(top: 10.0, left: 12.0, bottom: 9.0, right: 12.0)
+        .init(top: 11.0, left: 12.0, bottom: 10.0, right: 12.0)
     }
     
     var activityViewForToast: UIView? {
@@ -42,7 +37,7 @@ class MNMsgToast: MNToastBuilder {
         paragraph.paragraphSpacing = 1.0
         paragraph.lineHeightMultiple = 1.0
         paragraph.paragraphSpacingBefore = 1.0
-        return [.font:UIFont.systemFont(ofSize: 15.0, weight: .regular), .paragraphStyle:paragraph, .foregroundColor:UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0)]
+        return [.font:MNToast.Configuration.shared.font, .foregroundColor:MNToast.Configuration.shared.color, .paragraphStyle:paragraph]
     }
     
     var fadeInForToast: Bool {
@@ -57,7 +52,7 @@ class MNMsgToast: MNToastBuilder {
     
     var allowUserInteractionWhenDisplayed: Bool {
         
-        true
+        MNToast.Configuration.shared.allowUserInteractionWhenDisplayed
     }
 }
 
