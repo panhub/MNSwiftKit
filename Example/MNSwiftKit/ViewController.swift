@@ -22,18 +22,22 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view.
         
         imageView.layer.cornerRadius = 8.0
-        imageView.isHidden = true
+        //imageView.isHidden = true
     }
 
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
         
-        if textField.isFirstResponder {
+        let location = touches.first!.location(in: view)
+        if imageView.frame.contains(location) {
+            MNAssetBrowser.present(container: imageView)
+        } else if textField.isFirstResponder {
             textField.resignFirstResponder()
         } else {
             // tests[Int.random(in: 0..<tests.count)]
-            let tests = ["测试提示信息", "今天天气不错", "你知道今天星期几吗", "xixie", "这厮怎么回事呢?"]
+            /*
+            let tests = ["测试提示信息", "今天天气不错", "你知道今天星期几吗", "这厮怎么回事呢?"]
             MNToast.showError(tests[Int.random(in: 0..<tests.count)], delay: 10.0) {
                 MNToast.showMsg("弹窗已删除")
             }
@@ -43,6 +47,16 @@ class ViewController: UIViewController {
             } else {
                 self.progress += 0.1
             }
+            */
+            let picker = MNAssetPicker()
+            picker.options.maxPickingCount = 10
+            picker.options.allowsPreview = true
+            //picker.options.presentationStyle = .pageSheet
+            picker.cancel { picker in
+                
+            }.picking { picker, assets in
+                
+            }.present()
         }
     }
 }

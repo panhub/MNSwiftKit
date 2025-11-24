@@ -188,7 +188,7 @@ public class MNAssetBrowser: UIView {
     /// 构造资源浏览器
     /// - Parameter assets: 资源集合
     public init(assets: [MNAssetBrowseSupported]) {
-        super.init(frame: UIScreen.main.bounds)
+        super.init(frame: .zero)
         self.assets.append(contentsOf: assets)
     }
     
@@ -264,14 +264,21 @@ public class MNAssetBrowser: UIView {
         interactiveView.isUserInteractionEnabled = false
         addSubview(interactiveView)
         
-        // 导航栏
+        // 导航栏 适配资源选择器
+        var statusBarHeight = 0.0
+        var navigationViewHeight = 55.0
+        if let superview = superview, let window = UIWindow.mn.current, superview.bounds == window.bounds {
+            // 全屏展示
+            statusBarHeight = MN_STATUS_BAR_HEIGHT
+            navigationViewHeight = MN_NAV_BAR_HEIGHT
+        }
         navigationView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(navigationView)
         NSLayoutConstraint.activate([
             navigationView.topAnchor.constraint(equalTo: topAnchor),
             navigationView.leftAnchor.constraint(equalTo: leftAnchor),
             navigationView.rightAnchor.constraint(equalTo: rightAnchor),
-            navigationView.heightAnchor.constraint(equalToConstant: MN_TOP_BAR_HEIGHT)
+            navigationView.heightAnchor.constraint(equalToConstant: statusBarHeight + navigationViewHeight)
         ])
         
         // 导航左按钮
@@ -302,7 +309,7 @@ public class MNAssetBrowser: UIView {
                 button.widthAnchor.constraint(equalToConstant: 24.0),
                 button.heightAnchor.constraint(equalToConstant: 24.0),
                 button.leftAnchor.constraint(equalTo: navigationView.leftAnchor, constant: 16.0),
-                button.topAnchor.constraint(equalTo: navigationView.topAnchor, constant: MN_STATUS_BAR_HEIGHT + (MN_NAV_BAR_HEIGHT - 24.0)/2.0)
+                button.topAnchor.constraint(equalTo: navigationView.topAnchor, constant: statusBarHeight + (navigationViewHeight - 24.0)/2.0)
             ])
         }
         
@@ -334,7 +341,7 @@ public class MNAssetBrowser: UIView {
                 button.widthAnchor.constraint(equalToConstant: 24.0),
                 button.heightAnchor.constraint(equalToConstant: 24.0),
                 button.rightAnchor.constraint(equalTo: navigationView.rightAnchor, constant: -16.0),
-                button.topAnchor.constraint(equalTo: navigationView.topAnchor, constant:  MN_STATUS_BAR_HEIGHT + (MN_NAV_BAR_HEIGHT - 24.0)/2.0)
+                button.topAnchor.constraint(equalTo: navigationView.topAnchor, constant:  statusBarHeight + (navigationViewHeight - 24.0)/2.0)
             ])
         }
         
@@ -468,6 +475,8 @@ extension MNAssetBrowser {
             delegate.assetBrowser?(self, didChange: .willAppear)
         }
         
+        frame = superview.bounds
+        
         let isUserInteractionEnabled = superview.isUserInteractionEnabled
         superview.isUserInteractionEnabled = false
         center = CGPoint(x: superview.bounds.midX, y: superview.bounds.midY)
@@ -483,7 +492,6 @@ extension MNAssetBrowser {
         backgroundView.image = superview.layer.mn.snapshotImage
         container.isHidden = hidden
         
-        center = .init(x: superview.bounds.midX, y: superview.bounds.midY)
         superview.addSubview(self)
         buildView()
         setupEvent()

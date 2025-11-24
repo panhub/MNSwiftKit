@@ -182,7 +182,7 @@ public class MNToast: UIView {
         case .dark:
             visualView.effect = UIBlurEffect(style: .dark)
         case .light:
-            visualView.effect = UIBlurEffect(style: .light)
+            visualView.effect = UIBlurEffect(style: .extraLight)
         default: break
         }
         

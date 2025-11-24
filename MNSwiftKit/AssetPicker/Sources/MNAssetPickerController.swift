@@ -341,8 +341,7 @@ extension MNAssetPickerController {
             self.collectionView.reloadData()
         }
         if assets.isEmpty == false, assets.count <= options.pageCount, options.sortAscending == false {
-            // 第一页数据且降序
-            // TODO: 这里需要进一步优化, assets.count <= options.pageCount 并不准确
+            // 降序则从底部开始显示
             let indexPath = IndexPath(item: assets.count - 1, section: 0)
             collectionView.scrollToItem(at: indexPath, at: .top, animated: false)
         }

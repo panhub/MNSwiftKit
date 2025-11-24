@@ -216,7 +216,7 @@ extension MNAssetPickerOptions {
     
     /// 导航栏高度
     internal var navBarHeight: CGFloat {
-        MN_NAV_BAR_HEIGHT
+        presentationStyle == .fullScreen ? MN_NAV_BAR_HEIGHT : 55.0
     }
     
     /// 顶部栏总高度
