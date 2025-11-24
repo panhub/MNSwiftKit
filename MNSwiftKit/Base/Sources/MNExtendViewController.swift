@@ -6,9 +6,6 @@
 //  附带导航条的控制器基类
 
 import UIKit
-//#if canImport(MNSwiftKitDefinition)
-//import MNSwiftKitDefinition
-//#endif
 
 /// 导航栏控制器
 open class MNExtendViewController: MNBaseViewController {

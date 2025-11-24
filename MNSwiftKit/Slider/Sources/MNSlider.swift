@@ -9,26 +9,33 @@ import UIKit
 
 // MARK: - 事件代理
 @objc public protocol MNSliderDelegate: NSObjectProtocol {
+    
     /// 想要滑动询问
     /// - Parameter slider: 滑块
     /// - Returns: 是否允许滑动
     @objc optional func sliderShouldBeginDragging(_ slider: MNSlider) -> Bool
+    
     /// 即将开始滑动
     /// - Parameter slider: 滑块
     @objc optional func sliderWillBeginDragging(_ slider: MNSlider)
+    
     /// 滑块滑动
     /// - Parameter slider: 滑块
     @objc optional func sliderDidDragging(_ slider: MNSlider)
+    
     /// 停止滑动
     /// - Parameter slider: 滑块
     @objc optional func sliderDidEndDragging(_ slider: MNSlider)
+    
     /// 想要点击询问
     /// - Parameter slider: 滑块
     /// - Returns: 是否允许滑动
     @objc optional func sliderShouldBeginTouching(_ slider: MNSlider) -> Bool
+    
     /// 即将点击
     /// - Parameter slider: 滑块
     @objc optional func sliderWillBeginTouching(_ slider: MNSlider)
+    
     /// 点击结束
     /// - Parameter slider: 滑块
     @objc optional func sliderDidEndTouching(_ slider: MNSlider)
@@ -146,14 +153,17 @@ public class MNSlider: UIView {
             thumbImageView.rightAnchor.constraint(equalTo: thumbView.rightAnchor)
         ])
         
+        /// 滑动支持
         let pan = UIPanGestureRecognizer(target: self, action: #selector(pan(recognizer:)))
         pan.delegate = self
         thumbView.addGestureRecognizer(pan)
         
+        /// 点击支持
         let tap = UITapGestureRecognizer(target: self, action: #selector(tap(recognizer:)))
         tap.delegate = self
         trackView.addGestureRecognizer(tap)
         
+        /// 手势冲突
         tap.require(toFail: pan)
     }
     
@@ -285,7 +295,11 @@ private extension MNSlider {
 // MARK: - Progress
 extension MNSlider {
     
-    public func setValue<T>(_ value: T, animated: Bool) where T: BinaryFloatingPoint {
+    /// 设置当前值
+    /// - Parameters:
+    ///   - value: 指定当前值
+    ///   - animated: 是否动态更新UI变化
+    public func setValue(_ value: any BinaryFloatingPoint, animated: Bool) {
         let difference = maximumValue - minimumValue
         guard difference.isNaN == false, difference > 0.0 else { return }
         let current = CGFloat(value) - minimumValue
@@ -296,10 +310,10 @@ extension MNSlider {
     /// 设置进度值
     /// - Parameters:
     ///   - value: 进度值
-    ///   - animated: 是否动态
-    public func setProgress<T>(_ value: T, animated: Bool = false) where T: BinaryFloatingPoint {
+    ///   - animated: 是否动态更新UI变化
+    public func setProgress(_ value: any BinaryFloatingPoint, animated: Bool = false) {
         guard isDragging == false else { return }
-        updateProgress(Double(value), animated: animated)
+        updateProgress(CGFloat(value), animated: animated)
     }
     
     private func updateProgress(_ value: CGFloat, animated: Bool) {

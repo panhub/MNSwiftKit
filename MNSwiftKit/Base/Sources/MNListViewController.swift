@@ -6,12 +6,6 @@
 //  数据流控制器
 
 import UIKit
-//#if canImport(MNSwiftKitRefresh)
-//import MNSwiftKitRefresh
-//#endif
-//#if canImport(MNSwiftKitToast)
-//import MNSwiftKitToast
-//#endif
 
 /// 列表控制器
 open class MNListViewController: MNExtendViewController {
@@ -69,8 +63,8 @@ open class MNListViewController: MNExtendViewController {
 extension MNListViewController {
     
     open override func prepareLoadData(_ request: HTTPDataRequest) {
-        guard contentView.existToast == false, listView.mn.isLoading == false else { return }
-        contentView.showActivityToast("请稍后")
+        guard contentView.mn.isToastAppearing == false, listView.mn.isLoading == false else { return }
+        contentView.mn.showActivityToast("请稍后")
     }
     
     open override func completeLoadData(_ result: HTTPResult) {
@@ -141,7 +135,7 @@ extension MNListViewController {
     
     /// 开始刷新
     @objc open func beginRefresh() {
-        guard let request = httpRequest, request.isLoading == false else {
+        guard let request = httpRequest, request.isRunning == false else {
             listView.mn.endRefreshing()
             return
         }
@@ -150,7 +144,7 @@ extension MNListViewController {
     
     /// 开始加载更多
     @objc open func beginLoadMore() {
-        guard let request = httpRequest, request.isLoading == false else {
+        guard let request = httpRequest, request.isRunning == false else {
             listView.mn.endLoadMore()
             return
         }

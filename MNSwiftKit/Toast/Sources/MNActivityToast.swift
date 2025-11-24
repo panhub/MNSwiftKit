@@ -70,7 +70,7 @@ extension MNActivityToast: MNToastBuilder {
     
     var allowUserInteractionWhenDisplayed: Bool {
         
-        MNToast.Configuration.shared.allowUserInteractionWhenDisplayed
+        false
     }
 }
 

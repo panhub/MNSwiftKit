@@ -1,9 +1,62 @@
 PODS:
+  - MNSwiftKit/AnimatedImage (0.1.1)
+  - MNSwiftKit/AssetBrowser (0.1.1):
+    - MNSwiftKit/AnimatedImage
+    - MNSwiftKit/Definition
+    - MNSwiftKit/Extension
+    - MNSwiftKit/Layout
+    - MNSwiftKit/Player
+    - MNSwiftKit/Slider
+  - MNSwiftKit/AssetPicker (0.1.1):
+    - MNSwiftKit/AnimatedImage
+    - MNSwiftKit/AssetBrowser
+    - MNSwiftKit/Definition
+    - MNSwiftKit/EmptyView
+    - MNSwiftKit/Exporter
+    - MNSwiftKit/Extension
+    - MNSwiftKit/Layout
+    - MNSwiftKit/NameSpace
+    - MNSwiftKit/Player
+    - MNSwiftKit/Refresh
+    - MNSwiftKit/Slider
+    - MNSwiftKit/Toast
+  - MNSwiftKit/Base (0.1.1):
+    - MNSwiftKit/CollectionLayout
+    - MNSwiftKit/Definition
+    - MNSwiftKit/EmptyView
+    - MNSwiftKit/Extension
+    - MNSwiftKit/Layout
+    - MNSwiftKit/Refresh
+    - MNSwiftKit/Request
+    - MNSwiftKit/Toast
+    - MNSwiftKit/Transitioning
+  - MNSwiftKit/CollectionLayout (0.1.1)
+  - MNSwiftKit/Definition (0.1.1):
+    - MNSwiftKit/NameSpace
+  - MNSwiftKit/EmptyView (0.1.1):
+    - MNSwiftKit/NameSpace
+  - MNSwiftKit/Exporter (0.1.1)
+  - MNSwiftKit/Extension (0.1.1):
+    - MNSwiftKit/AnimatedImage
+    - MNSwiftKit/NameSpace
+  - MNSwiftKit/Layout (0.1.1):
+    - MNSwiftKit/NameSpace
   - MNSwiftKit/NameSpace (0.1.1)
+  - MNSwiftKit/Networking (0.1.1)
+  - MNSwiftKit/Player (0.1.1)
+  - MNSwiftKit/Refresh (0.1.1):
+    - MNSwiftKit/NameSpace
+  - MNSwiftKit/Request (0.1.1):
+    - MNSwiftKit/Networking
+  - MNSwiftKit/Slider (0.1.1)
   - MNSwiftKit/Toast (0.1.1):
+    - MNSwiftKit/NameSpace
+  - MNSwiftKit/Transitioning (0.1.1):
     - MNSwiftKit/NameSpace
 
 DEPENDENCIES:
+  - MNSwiftKit/AssetPicker (from `../`)
+  - MNSwiftKit/Base (from `../`)
   - MNSwiftKit/Toast (from `../`)
 
 EXTERNAL SOURCES:
@@ -13,6 +66,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   MNSwiftKit: 3a2e675afa6bae7fcfabe32c8178a1ab8c4f80e1
 
-PODFILE CHECKSUM: ac94b55b65105a0ec668884032e8ce390fa765b1
+PODFILE CHECKSUM: 583ecc80b0409bec3c49698b4b859d44597579f4
 
 COCOAPODS: 1.16.2

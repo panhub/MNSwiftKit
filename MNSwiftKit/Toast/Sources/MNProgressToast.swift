@@ -114,7 +114,7 @@ extension MNProgressToast: MNToastBuilder {
     
     public var allowUserInteractionWhenDisplayed: Bool {
         
-        MNToast.Configuration.shared.allowUserInteractionWhenDisplayed
+        false
     }
 }
 

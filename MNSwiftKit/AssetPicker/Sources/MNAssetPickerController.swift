@@ -177,22 +177,17 @@ extension MNAssetPickerController {
     /// 导出资源并结束选择
     /// - Parameter assets: 需要导出内容的资源模型集合
     private func didPicking(_ assets: [MNAsset]) {
-        guard let view = navigationController?.view else { return }
-        view.showActivityToast("请稍后")
-        view.isUserInteractionEnabled = false
-        MNAssetHelper.exportAsynchronously(for: assets, options: options) { [weak view] index, count in
-            guard let view = view else { return }
-            view.updateToast(status: "正在导出\(index)/\(count)")
-        } completion: { [weak view, weak self] result in
-            guard let view = view else { return }
-            view.isUserInteractionEnabled = true
-            view.closeToast {
+        MNToast.showActivity("请稍后")
+        MNAssetHelper.exportAsynchronously(for: assets, options: options) { index, count in
+            MNToast.showActivity("正在导出\(index)/\(count)")
+        } completion: { [weak self] result in
+            MNToast.close {
                 guard let self = self else { return }
                 if result.count == assets.count {
                     self.finishPicking(result)
                 } else if (result.isEmpty || result.count < self.options.minPickingCount) {
                     // 低于最小数量
-                    let alert = UIAlertController(title: nil, message: "iCloud资源下载失败!", preferredStyle: .alert)
+                    let alert = UIAlertController(title: "提示", message: "iCloud资源下载失败", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "取消", style: .cancel))
                     alert.addAction(UIAlertAction(title: "重试", style: .default, handler: { [weak self] _ in
                         guard let self = self else { return }
@@ -201,7 +196,7 @@ extension MNAssetPickerController {
                     self.present(alert, animated: true, completion: nil)
                 } else {
                     // 有失败的
-                    let alert = UIAlertController(title: nil, message: "\(assets.count - result.count)项资源导出失败!", preferredStyle: .alert)
+                    let alert = UIAlertController(title: "提示", message: "\(assets.count - result.count)项资源导出失败", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "取消", style: .cancel))
                     alert.addAction(UIAlertAction(title: "确定", style: .default, handler: { [weak self] _ in
                         guard let self = self else { return }
@@ -268,7 +263,7 @@ extension MNAssetPickerController {
     
     /// 获取相簿集合
     private func fetchAlbums() {
-        collectionView.showActivityToast("请稍后")
+        collectionView.mn.showActivityToast("请稍后")
         MNAssetHelper.fetchAlbum(using: options) { [weak self] albums in
             guard let self = self else { return }
             self.isEnteredLibrary = true
@@ -280,7 +275,7 @@ extension MNAssetPickerController {
             } else {
                 // 确保显示占位图
                 self.collectionView.reloadData()
-                self.collectionView.closeToast()
+                self.collectionView.mn.closeToast()
             }
         }
     }
@@ -300,13 +295,13 @@ extension MNAssetPickerController {
                 }
             }
             self.navBar.badge.isUserInteractionEnabled = true
-            self.collectionView.closeToast()
+            self.collectionView.mn.closeToast()
         }
         if album.assets.isEmpty == false, collectionView.mn.isLoading == false {
             completionHandler()
         } else {
             if collectionView.mn.isLoading == false {
-                collectionView.showActivityToast("请稍后")
+                collectionView.mn.showActivityToast("请稍后")
             }
             navBar.badge.isUserInteractionEnabled = false
             MNAssetHelper.fetchAsset(in: album, options: options, completion: completionHandler)
@@ -481,20 +476,22 @@ extension MNAssetPickerController: UICollectionViewDelegate, UICollectionViewDat
     /// 裁剪视频
     /// - Parameter asset: 视频资源模型
     private func tailorVideo(_ asset: MNAsset) {
-        view.showActivityToast("请稍后")
+        view.mn.showActivityToast("请稍后")
         MNAssetHelper.fetchContents(for: asset, progress: nil) { [weak self] asset in
             guard let self = self else { return }
             if let videoPath = asset.contents as? String {
                 asset.contents = nil
-                self.view.closeToast()
-                let vc = MNTailorViewController(videoPath: videoPath)
-                vc.delegate = self
-                vc.exportingPath = self.options.videoExportURL?.mn.path
-                vc.minTailorDuration = self.options.minExportDuration
-                vc.maxTailorDuration = self.options.maxExportDuration
-                self.navigationController?.pushViewController(vc, animated: true)
+                self.view.mn.closeToast { [weak self] in
+                    guard let self = self else { return }
+                    let vc = MNTailorViewController(videoPath: videoPath)
+                    vc.delegate = self
+                    vc.exportingPath = self.options.videoExportURL?.mn.path
+                    vc.minTailorDuration = self.options.minExportDuration
+                    vc.maxTailorDuration = self.options.maxExportDuration
+                    self.navigationController?.pushViewController(vc, animated: true)
+                }
             } else {
-                self.view.showMsgToast("导出视频失败")
+                self.view.mn.showMsgToast("导出视频失败")
             }
         }
     }
@@ -505,7 +502,7 @@ extension MNAssetPickerController: MNAssetCellEventHandler {
     
     func assetCellShouldPreview(_ cell: MNAssetCell) {
         guard let asset = cell.asset, let _ = asset.cover else {
-            view.showMsgToast("暂无法预览")
+            MNToast.showMsg("暂无法预览")
             return
         }
         let browser = MNAssetBrowser(assets: [asset])
@@ -607,7 +604,7 @@ extension MNAssetPickerController: MNDataEmptyDelegate {
     
     func dataEmptyViewButtonTouchUpInside() {
         guard let url = URL(string: UIApplication.openSettingsURLString) else {
-            view.showInfoToast("无法跳转设置界面,\n请前往[设置]手动打开")
+            MNToast.showMsg("无法跳转设置界面\n请前往[设置]手动打开")
             return
         }
         if #available(iOS 10.0, *) {
@@ -628,7 +625,7 @@ extension MNAssetPickerController: MNTailorViewControllerDelegate {
     func tailorController(_ tailorController: MNTailorViewController, didTailorVideoAtPath videoPath: String) {
         guard let asset = MNAsset(contents: videoPath, options: options) else {
             try? FileManager.default.removeItem(atPath: videoPath)
-            tailorController.view.showMsgToast("视频导出失败")
+            MNToast.showMsg("视频导出失败")
             return
         }
         finishPicking([asset])

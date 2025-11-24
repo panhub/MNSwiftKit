@@ -317,7 +317,7 @@ extension MNTailorViewController {
             // 询问是否可以复制视频
             guard (delegate?.tailorControllerShouldCopyVideo?(self) ?? true) == true else { return }
             // 原视频 拷贝视频即可
-            view.showActivityToast("视频导出中")
+            MNToast.showActivity("视频导出中")
             DispatchQueue.global().async { [weak self] in
                 let url: URL = URL(fileAtPath: exportingPath)
                 do {
@@ -328,7 +328,7 @@ extension MNTailorViewController {
 #endif
                     DispatchQueue.main.async {
                         guard let self = self else { return }
-                        self.view.showMsgToast("创建文件夹失败")
+                        MNToast.showMsg("创建文件夹失败")
                     }
                     return
                 }
@@ -340,23 +340,22 @@ extension MNTailorViewController {
 #endif
                     DispatchQueue.main.async {
                         guard let self = self else { return }
-                        self.view.showMsgToast("拷贝视频失败")
+                        MNToast.showMsg("拷贝视频失败")
                     }
                     return
                 }
                 // 回调结果
-                DispatchQueue.main.async {
+                MNToast.close {
                     guard let self = self else { return }
-                    self.view.closeToast()
                     self.delegate?.tailorController(self, didTailorVideoAtPath: exportingPath)
                 }
             }
         } else {
             guard let session = MNAssetExportSession(fileAtPath: videoPath) else {
-                view.showMsgToast("解析视频失败")
+                MNToast.showMsg("解析视频失败")
                 return
             }
-            view.showProgressToast("视频导出中")
+            view.mn.showProgressToast("视频导出中", style: .fill)
             session.outputFileType = .mp4
             session.shouldOptimizeForNetworkUse = true
             session.outputURL = URL(fileURLWithPath: exportingPath)
@@ -364,16 +363,18 @@ extension MNTailorViewController {
             session.exportAsynchronously { [weak self] progress in
                 DispatchQueue.main.async {
                     guard let self = self else { return }
-                    self.view.updateToast(progress: CGFloat(progress))
+                    self.view.mn.showProgressToast("视频导出中", style: .fill, progress: progress)
                 }
             } completionHandler: { [weak self] status, _ in
                 DispatchQueue.main.async {
                     guard let self = self else { return }
                     if status == .completed {
-                        self.view.closeToast()
-                        self.delegate?.tailorController(self, didTailorVideoAtPath: exportingPath)
+                        self.view.mn.closeToast { [weak self] in
+                            guard let self = self else { return }
+                            self.delegate?.tailorController(self, didTailorVideoAtPath: exportingPath)
+                        }
                     } else {
-                        self.view.showMsgToast("视频裁剪失败")
+                        self.view.mn.showMsgToast("视频裁剪失败")
                     }
                 }
             }

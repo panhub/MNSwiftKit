@@ -71,9 +71,6 @@ extension MNToast {
         
         /// 状态文字最大宽度
         public var greatestFiniteStatusWidth: CGFloat = 200.0
-        
-        /// Toast显示时是否允许交互
-        public var allowUserInteractionWhenDisplayed: Bool = true
     }
 }
 

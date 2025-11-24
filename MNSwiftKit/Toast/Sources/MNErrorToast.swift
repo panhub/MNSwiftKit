@@ -83,7 +83,7 @@ extension MNErrorToast: MNToastBuilder {
     
     var allowUserInteractionWhenDisplayed: Bool {
         
-        MNToast.Configuration.shared.allowUserInteractionWhenDisplayed
+        false
     }
 }
 

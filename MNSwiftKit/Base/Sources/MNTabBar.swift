@@ -6,12 +6,6 @@
 //  标签栏
 
 import UIKit
-//#if canImport(MNSwiftKitDefinition)
-//import MNSwiftKitDefinition
-//#endif
-//#if canImport(MNSwiftKitLayout)
-//import MNSwiftKitLayout
-//#endif
 
 /// 标签栏代理
 @objc public protocol MNTabBarDelegate: NSObjectProtocol {

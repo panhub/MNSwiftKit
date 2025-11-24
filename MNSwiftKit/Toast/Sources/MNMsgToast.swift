@@ -52,7 +52,7 @@ class MNMsgToast: MNToastBuilder {
     
     var allowUserInteractionWhenDisplayed: Bool {
         
-        MNToast.Configuration.shared.allowUserInteractionWhenDisplayed
+        true
     }
 }
 

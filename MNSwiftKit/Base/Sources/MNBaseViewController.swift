@@ -8,12 +8,6 @@
 import UIKit
 import Foundation
 import CoreGraphics
-//#if canImport(MNSwiftKitDefinition)
-//import MNSwiftKitDefinition
-//#endif
-//#if canImport(MNSwiftKitToast)
-//import MNSwiftKitToast
-//#endif
 
 open class MNBaseViewController: UIViewController {
     
@@ -151,7 +145,7 @@ extension MNBaseViewController {
     
     /// 加载数据
     @objc open func loadData() {
-        guard let request = httpRequest, request.isLoading == false else { return }
+        guard let request = httpRequest, request.isRunning == false else { return }
         request.start { [weak self] in
             guard let self = self, let request = self.httpRequest else { return }
             self.prepareLoadData(request)
@@ -164,8 +158,8 @@ extension MNBaseViewController {
     /// 即将开始请求
     /// - Parameter request: 请求体
     @objc open func prepareLoadData(_ request: HTTPDataRequest) {
-        guard contentView.existToast == false else { return }
-        contentView.showActivityToast("请稍后")
+        guard contentView.mn.isToastAppearing == false else { return }
+        contentView.mn.showActivityToast("请稍后")
     }
     
     /// 请求结束
@@ -173,9 +167,9 @@ extension MNBaseViewController {
     ///   - result: 请求结果
     @objc open func completeLoadData(_ result: HTTPResult) {
         if result.isSuccess {
-            contentView.closeToast()
+            contentView.mn.closeToast()
         } else {
-            contentView.showMsgToast(result.msg)
+            contentView.mn.showMsgToast(result.msg)
         }
     }
 }
