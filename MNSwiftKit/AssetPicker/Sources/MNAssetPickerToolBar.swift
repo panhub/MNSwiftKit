@@ -156,7 +156,7 @@ extension MNAssetPickerToolBar {
     
     /// 更新资源
     /// - Parameter assets: 资源模型集合
-    func updateAssets(_ assets: [MNAsset]) {
+    func update(assets: [MNAsset]) {
         var suffix: String
         if options.showFileSize {
             let fileSize: Int64 = assets.reduce(0) { $0 + max($1.fileSize, 0) }

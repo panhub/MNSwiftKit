@@ -267,11 +267,13 @@ extension MNAssetPickerController {
         MNAssetHelper.fetchAlbum(using: options) { [weak self] albums in
             guard let self = self else { return }
             self.isEnteredLibrary = true
-            if let first = albums.first {
-                first.isSelected = true
+            if let album = albums.first {
+                album.isSelected = true
+                album.isFirstAppear = true
                 self.albumView.update(albums: albums)
                 self.navBar.badge.isEnabled = albums.count > 1
-                self.fetchAssets(in: first)
+                self.navBar.badge.updateTitle(album.name, animated: albums.count > 1)
+                self.fetchAssets(in: album)
             } else {
                 // 确保显示占位图
                 self.collectionView.reloadData()
@@ -285,7 +287,21 @@ extension MNAssetPickerController {
     private func fetchAssets(in album: MNAssetAlbum) {
         let completionHandler: ()->Void = { [weak self] in
             guard let self = self else { return }
-            self.reload(with: album)
+            if album.assets.isEmpty == false {
+                album.assets.filter { $0.isEnabled == false }.forEach { $0.isEnabled = true }
+                self.reload(assets: album.assets)
+            }
+            self.assets.removeAll()
+            self.assets.append(contentsOf: album.assets)
+            UIView.performWithoutAnimation {
+                self.collectionView.reloadData()
+            }
+            if album.assets.isEmpty == false, album.isFirstAppear, self.options.sortAscending == false {
+                // 降序则从底部开始显示
+                let indexPath = IndexPath(item: album.assets.count - 1, section: 0)
+                self.collectionView.scrollToItem(at: indexPath, at: .top, animated: false)
+            }
+            album.isFirstAppear = false
             let hasMore: Bool = album.offset < album.count
             if let component = self.collectionView.mn.header ?? self.collectionView.mn.footer {
                 if hasMore {
@@ -326,30 +342,9 @@ extension MNAssetPickerController {
 // MARK: - Update
 extension MNAssetPickerController {
     
-    /// 重载数据
-    /// - Parameter album: 相簿模型
-    private func reload(with album: MNAssetAlbum) {
-        // 处理不可选
-        if album.assets.isEmpty == false {
-            album.assets.filter { $0.isEnabled == false }.forEach { $0.isEnabled = true }
-            reloadAssets(album.assets)
-        }
-        assets.removeAll()
-        assets.append(contentsOf: album.assets)
-        navBar.badge.updateTitle(album.name, animated: navBar.badge.isEnabled)
-        UIView.performWithoutAnimation {
-            self.collectionView.reloadData()
-        }
-        if assets.isEmpty == false, assets.count <= options.pageCount, options.sortAscending == false {
-            // 降序则从底部开始显示
-            let indexPath = IndexPath(item: assets.count - 1, section: 0)
-            collectionView.scrollToItem(at: indexPath, at: .top, animated: false)
-        }
-    }
-    
     /// 更新资源
     /// - Parameter asset: 资源模型
-    private func updateAsset(_ asset: MNAsset) {
+    private func update(asset: MNAsset) {
         if asset.isSelected {
             asset.index = 0
             asset.isSelected = false
@@ -362,8 +357,8 @@ extension MNAssetPickerController {
         for (index, asset) in selections.enumerated() {
             asset.index = index + 1
         }
-        reloadAssets(assets)
-        toolBar.updateAssets(selections)
+        reload(assets: assets)
+        toolBar.update(assets: selections)
         UIView.performWithoutAnimation {
             collectionView.reloadItems(at: collectionView.indexPathsForVisibleItems)
         }
@@ -371,7 +366,7 @@ extension MNAssetPickerController {
     
     /// 更新资源状态
     /// - Parameter assets: 需要更新状态的资源模型集合
-    private func reloadAssets(_ assets: [MNAsset]) {
+    private func reload(assets: [MNAsset]) {
         // 判断是否超过限制
         if selections.count >= options.maxPickingCount {
             // 标记不能再选择
@@ -424,7 +419,7 @@ extension MNAssetPickerController {
             lastTouchIndex = indexPath.item
             let asset = assets[indexPath.item]
             guard asset.isEnabled else { return }
-            updateAsset(asset)
+            update(asset: asset)
         default:
             lastTouchIndex = .min
         }
@@ -468,7 +463,7 @@ extension MNAssetPickerController: UICollectionViewDelegate, UICollectionViewDat
             }
         } else {
             // 更新选择状态
-            updateAsset(asset)
+            update(asset: asset)
         }
     }
     
@@ -685,7 +680,7 @@ extension MNAssetPickerController: MNAssetPickerToolDelegate {
                 self.albumView.reloadVisibleRows()
             }
             if self.options.maxPickingCount > 1 {
-                self.toolBar.updateAssets(self.selections)
+                self.toolBar.update(assets: self.selections)
             }
         }))
         present(alert, animated: true)
@@ -703,6 +698,8 @@ extension MNAssetPickerController: MNAssetAlbumViewDelegate {
         albumView.dismiss()
         navBar.badge.isSelected = false
         guard let album = album else { return }
+        navBar.badge.updateTitle(album.name, animated: navBar.badge.isEnabled)
+        album.isFirstAppear = true
         fetchAssets(in: album)
     }
 }
@@ -711,7 +708,7 @@ extension MNAssetPickerController: MNAssetAlbumViewDelegate {
 extension MNAssetPickerController: MNAssetPreviewControllerDelegate {
     
     func previewControllerUpdateAsset(_ asset: MNAsset) {
-        updateAsset(asset)
+        update(asset: asset)
     }
 }
 

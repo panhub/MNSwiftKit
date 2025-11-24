@@ -23,11 +23,14 @@ public class MNAssetAlbum: NSObject {
     /// 查询选项
     public let options = PHFetchOptions()
     
-    /// 当前已查询个数
-    public internal(set) var offset: Int = 0
-    
     /// 资源总数
-    public internal(set) var count: Int = 0
+    public var count: Int = 0
+    
+    /// 当前已查询个数
+    public var offset: Int = 0
+    
+    /// 系统相簿
+    public var isFirstAppear: Bool = true
     
     /// 是否选中
     public var isSelected: Bool = false
@@ -40,7 +43,6 @@ public class MNAssetAlbum: NSObject {
     
     /// 封面变化回调
     public var coverUpdateHandler: ((_ album: MNAssetAlbum)->Void)?
-    
     
     
     /// 构造相簿
