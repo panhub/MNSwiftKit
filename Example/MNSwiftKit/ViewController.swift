@@ -34,10 +34,10 @@ class ViewController: UIViewController {
         } else {
             // tests[Int.random(in: 0..<tests.count)]
             let tests = ["测试提示信息", "今天天气不错", "你知道今天星期几吗", "xixie", "这厮怎么回事呢?"]
-            MNToast.showSuccess(tests[Int.random(in: 0..<tests.count)], delay: 10.0) {
-                print("----弹窗消失")
+            MNToast.showError(tests[Int.random(in: 0..<tests.count)], delay: 10.0) {
+                MNToast.showMsg("弹窗已删除")
             }
-            MNToast.dismiss(after: 3.0)
+            MNToast.close(delay: 3.0)
             if self.progress >= 1.0 {
                 self.progress = 0.0
             } else {

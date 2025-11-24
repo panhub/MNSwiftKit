@@ -95,16 +95,6 @@ public class MNToast: UIView {
         case bottom(distance: CGFloat)
     }
     
-    /// 动画类型
-    public enum Animation {
-        /// 不使用动画
-        case none
-        /// 渐入渐出
-        case fade
-        /// 移动
-        case move
-    }
-    
     /// 当前状态
     private enum State {
         /// 即将出现
@@ -127,13 +117,13 @@ public class MNToast: UIView {
     private let position: MNToast.Position
     
     /// 消失后回调
-    public var dismissHandler: (()->Void)?
+    public var closeHandler: (()->Void)?
     
     /// 当前状态
     private var state: MNToast.State = .willAppear
     
-    /// 预设的展示时长
-    private var referenceTimeInterval: TimeInterval!
+    /// 延迟执行关闭操作的时长
+    private var delayTimeInterval: TimeInterval!
     
     /// 状态信息
     private let statusLabel = UILabel()
@@ -240,6 +230,7 @@ public class MNToast: UIView {
     }
     
     deinit {
+        destroyTimer()
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -260,50 +251,45 @@ public class MNToast: UIView {
         updater.toastProgressDidUpdate(CGFloat(value))
     }
     
-    /// 立即定时指定时间后结束展示
-    /// - Parameter timeInterval: 展示时长(多少秒后触发)
-    func dismiss(after timeInterval: TimeInterval) {
-        invalidateTimer()
-        let fireDate = Date().addingTimeInterval(max(0.0, timeInterval))
-        timer = Timer(fireAt: fireDate, interval: 0.0, target: self, selector: #selector(timerStrike), userInfo: nil, repeats: false)
-        RunLoop.main.add(timer, forMode: .common)
-    }
-    
     /// 根据当前状态判断是否立即定时
     /// - Parameters:
     ///   - timeInterval: 展示时长(多少秒后触发)
     ///   - handler: 取消展示回调
-    func dismissWhenAppear(delay timeInterval: TimeInterval, completion handler: (()->Void)?) {
+    func closeWhenAppear(delay timeInterval: TimeInterval, completion handler: (()->Void)?) {
         // 更新回调
         if state != .disappear {
             if let handler = handler {
-                dismissHandler = handler
+                closeHandler = handler
             }
         }
         // 更新定时器
         if state == .willAppear {
-            referenceTimeInterval = timeInterval
+            delayTimeInterval = timeInterval
         } else if state == .appearing {
-            dismiss(after: timeInterval)
+            closeToast(delay: timeInterval)
         }
     }
     
+    /// 立即定时指定时间后结束展示
+    /// - Parameter timeInterval: 展示时长(多少秒后触发)
+    private func closeToast(delay timeInterval: TimeInterval) {
+        destroyTimer()
+        let fireDate = Date().addingTimeInterval(max(0.0, timeInterval))
+        timer = Timer(fireAt: fireDate, interval: 0.0, target: self, selector: #selector(close), userInfo: nil, repeats: false)
+        RunLoop.main.add(timer, forMode: .common)
+    }
+    
     /// 销毁定时器
-    func invalidateTimer() {
+    private func destroyTimer() {
         guard let timer = timer else { return }
         timer.invalidate()
         self.timer = nil
     }
     
-    /// 定时到期
-    @objc private func timerStrike() {
-        dismiss(completion: dismissHandler)
-    }
-    
     /// 依据状态文字计算Toast显示时长
     /// - Parameter status: 状态描述
     /// - Returns: 显示时长
-    public class func displayTimeInterval(with status: String?) -> TimeInterval {
+    public class func displayDuration(with status: String?) -> TimeInterval {
         var timeInterval = 1.5
         if let status = status, status.isEmpty == false {
             let string = status.components(separatedBy: "\n").joined()
@@ -332,8 +318,8 @@ extension MNToast {
     ///   - status: 状态
     ///   - progress: 进度
     ///   - delay: 展示时长
-    ///   - dismissHandler: 展示结束回调
-    public class func show(builder: MNToastBuilder, in superview: UIView, at position: MNToast.Position = MNToast.Configuration.shared.position, status: String?, progress: (any BinaryFloatingPoint)? = nil, delay: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+    ///   - handler: 展示结束回调
+    public class func show(builder: MNToastBuilder, in superview: UIView, at position: MNToast.Position = MNToast.Configuration.shared.position, status: String?, progress: (any BinaryFloatingPoint)? = nil, delay: TimeInterval? = nil, close handler: (()->Void)? = nil) {
         if let toast = superview.mn.toast {
             // 判断是否是当前类型, 存在则更新
             if type(of: toast.builder) == type(of: builder) {
@@ -351,11 +337,11 @@ extension MNToast {
                     toast.update(progress: progress)
                 }
                 if let delay = delay {
-                    toast.invalidateTimer()
-                    toast.referenceTimeInterval = delay
+                    toast.destroyTimer()
+                    toast.delayTimeInterval = delay
                 }
-                if let dismissHandler = dismissHandler {
-                    toast.dismissHandler = dismissHandler
+                if let handler = handler {
+                    toast.closeHandler = handler
                 }
                 superview.bringSubviewToFront(toast)
                 // 重新展示动画
@@ -363,14 +349,14 @@ extension MNToast {
                 return
             }
             // 删除旧的Toast
-            toast.invalidateTimer()
+            toast.destroyTimer()
             toast.removeFromSuperview()
         }
         // 创建新的Toast
         let toast = MNToast(builder: builder, position: position)
         toast.status = status
-        toast.dismissHandler = dismissHandler
-        toast.referenceTimeInterval = delay
+        toast.closeHandler = handler
+        toast.delayTimeInterval = delay
         if let progress = progress {
             toast.update(progress: progress)
         }
@@ -402,15 +388,15 @@ extension MNToast {
                 let delegate = self.builder as! MNToastAnimationHandler
                 delegate.startAnimating()
             }
-            if self.builder is MNToastTimerHandler {
+            // 定时关闭
+            if let timeInterval = self.delayTimeInterval {
+                self.delayTimeInterval = nil
+                self.closeToast(delay: timeInterval)
+            } else if self.builder is MNToastTimerHandler {
                 let delegate = self.builder as! MNToastTimerHandler
                 if let timeInterval = delegate.toastShouldDelayDismiss(with: self.status) {
-                    self.dismiss(after: timeInterval)
+                    self.closeToast(delay: timeInterval)
                 }
-            }
-            if let delay = self.referenceTimeInterval {
-                self.referenceTimeInterval = nil
-                self.dismiss(after: delay)
             }
         }
         if animated {
@@ -434,11 +420,10 @@ extension MNToast {
 // MARK: - Dismiss
 extension MNToast {
     
-    /// 关闭Toast弹窗
-    /// - Parameter dismissHandler: 结束后回调
-    public func dismiss(completion dismissHandler: (()->Void)? = nil) {
+    /// 关闭Toast
+    @objc func close() {
         guard state == .willAppear || state == .appearing else { return }
-        invalidateTimer()
+        destroyTimer()
         let animationHandler: ()->Void = { [weak self] in
             guard let self = self else { return }
             self.visualView.alpha = 0.0
@@ -454,15 +439,15 @@ extension MNToast {
         let completionHandler: (Bool)->Void = { [weak self] finished in
             guard let self = self else { return }
             guard finished else { return }
+            self.state = .disappear
             if self.builder is MNToastAnimationHandler {
                 let delegate = self.builder as! MNToastAnimationHandler
                 delegate.stopAnimating()
             }
             self.removeFromSuperview()
-            self.state = .disappear
-            if let dismissHandler = dismissHandler {
-                // 延迟执行, 确保视图已在界面消失
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: dismissHandler)
+            if let closeHandler = self.closeHandler {
+                // 延迟执行, 确保Toast已释放
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: closeHandler)
             }
         }
         if builder.fadeOutForToast {

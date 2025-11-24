@@ -1,5 +1,5 @@
 //
-//  MNFailureToast.swift
+//  MNErrorToast.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2021/9/10.
@@ -8,13 +8,13 @@
 import UIKit
 
 /// 失败弹窗构建者
-class MNFailureToast {
+class MNErrorToast {
     
     /// 对号
     lazy var activityLayer: CAShapeLayer = {
         
         let lineWidth: CGFloat = 2.2
-        let wrongSize: CGSize = .init(width: 35.0, height: 35.0)
+        let wrongSize: CGSize = .init(width: 33.0, height: 33.0)
         
         let path = UIBezierPath()
         path.move(to: CGPoint(x: wrongSize.width - lineWidth/2.0, y: lineWidth/2.0))
@@ -36,7 +36,7 @@ class MNFailureToast {
     }()
 }
     
-extension MNFailureToast: MNToastBuilder {
+extension MNErrorToast: MNToastBuilder {
     
     var axisForToast: MNToast.Axis {
         
@@ -87,7 +87,7 @@ extension MNFailureToast: MNToastBuilder {
     }
 }
 
-extension MNFailureToast: MNToastAnimationHandler {
+extension MNErrorToast: MNToastAnimationHandler {
     
     func startAnimating() {
         
@@ -96,7 +96,7 @@ extension MNFailureToast: MNToastAnimationHandler {
         let animation = CABasicAnimation(keyPath: #keyPath(CAShapeLayer.strokeEnd))
         animation.fromValue = activityLayer.strokeStart
         animation.toValue = 1.0
-        animation.duration = 0.8
+        animation.duration = 0.55
         animation.fillMode = .forwards
         animation.autoreverses = false
         animation.isRemovedOnCompletion = false

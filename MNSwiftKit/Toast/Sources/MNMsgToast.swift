@@ -60,6 +60,6 @@ extension MNMsgToast: MNToastTimerHandler {
     
     func toastShouldDelayDismiss(with status: String?) -> TimeInterval? {
         
-        MNToast.displayTimeInterval(with: status)
+        MNToast.displayDuration(with: status)
     }
 }

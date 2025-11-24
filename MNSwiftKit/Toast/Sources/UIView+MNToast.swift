@@ -39,9 +39,9 @@ extension NameSpaceWrapper where Base: UIView {
     ///   - position: 展示位置
     ///   - timeInterval: 显示时长
     ///   - dismissHandler: 消失回调
-    public func showActivityToast(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+    public func showActivityToast(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
         
-        MNToast.show(builder: MNActivityToast(), in: base, at: position, status: status, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+        MNToast.show(builder: MNActivityToast(), in: base, at: position, status: status, progress: nil, delay: timeInterval, close: handler)
     }
     
     /// 显示消息Toast
@@ -49,10 +49,10 @@ extension NameSpaceWrapper where Base: UIView {
     ///   - msg: 消息内容
     ///   - position: 展示位置
     ///   - timeInterval: 显示时长
-    ///   - dismissHandler: 消失回调
-    public func showMsgToast(_ msg: String, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+    ///   - handler: 消失回调
+    public func showMsgToast(_ msg: String, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
         
-        MNToast.show(builder: MNMsgToast(), in: base, at: position, status: msg, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+        MNToast.show(builder: MNMsgToast(), in: base, at: position, status: msg, progress: nil, delay: timeInterval, close: handler)
     }
     
     /// 显示提示Toast
@@ -60,10 +60,10 @@ extension NameSpaceWrapper where Base: UIView {
     ///   - status: 状态描述
     ///   - position: 展示位置
     ///   - timeInterval: 显示时长
-    ///   - dismissHandler: 消失回调
-    public func showInfoToast(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+    ///   - handler: 消失回调
+    public func showInfoToast(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
         
-        MNToast.show(builder: MNInfoToast(), in: base, at: position, status: status, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+        MNToast.show(builder: MNInfoToast(), in: base, at: position, status: status, progress: nil, delay: timeInterval, close: handler)
     }
     
     /// 显示圆形旋转Toast
@@ -72,10 +72,10 @@ extension NameSpaceWrapper where Base: UIView {
     ///   - style: 样式
     ///   - position: 展示位置
     ///   - timeInterval: 显示时长
-    ///   - dismissHandler: 消失回调
-    public func showShapeToast(_ status: String?, style: MNShapeToast.Style = .mask, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+    ///   - handler: 消失回调
+    public func showShapeToast(_ status: String?, style: MNShapeToast.Style = .mask, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
         
-        MNToast.show(builder: MNShapeToast(style: style), in: base, at: position, status: status, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+        MNToast.show(builder: MNShapeToast(style: style), in: base, at: position, status: status, progress: nil, delay: timeInterval, close: handler)
     }
     
     /// 显示进度Toast
@@ -85,10 +85,10 @@ extension NameSpaceWrapper where Base: UIView {
     ///   - value: 进度值
     ///   - position: 展示位置
     ///   - timeInterval: 显示时长
-    ///   - dismissHandler: 消失回调
-    public func showProgressToast(_ status: String?, style: MNProgressToast.Style = .line, progress value: (any BinaryFloatingPoint)? = nil, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+    ///   - handler: 消失回调
+    public func showProgressToast(_ status: String?, style: MNProgressToast.Style = .line, progress value: (any BinaryFloatingPoint)? = nil, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
         
-        MNToast.show(builder: MNProgressToast(style: style), in: base, at: position, status: status, progress: value, delay: timeInterval, dismiss: dismissHandler)
+        MNToast.show(builder: MNProgressToast(style: style), in: base, at: position, status: status, progress: value, delay: timeInterval, close: handler)
     }
     
     /// 显示成功Toast
@@ -96,10 +96,10 @@ extension NameSpaceWrapper where Base: UIView {
     ///   - status: 状态描述
     ///   - position: 展示位置
     ///   - timeInterval: 显示时长
-    ///   - dismissHandler: 消失回调
-    public func showSuccessToast(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+    ///   - handler: 消失回调
+    public func showSuccessToast(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
         
-        MNToast.show(builder: MNSuccessToast(), in: base, at: position, status: status, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+        MNToast.show(builder: MNSuccessToast(), in: base, at: position, status: status, progress: nil, delay: timeInterval, close: handler)
     }
     
     /// 显示失败Toast
@@ -107,18 +107,18 @@ extension NameSpaceWrapper where Base: UIView {
     ///   - status: 状态描述
     ///   - position: 展示位置
     ///   - timeInterval: 显示时长
-    ///   - dismissHandler: 消失回调
-    public func showFailureToast(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+    ///   - handler: 消失回调
+    public func showErrorToast(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
         
-        MNToast.show(builder: MNFailureToast(), in: base, at: position, status: status, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+        MNToast.show(builder: MNErrorToast(), in: base, at: position, status: status, progress: nil, delay: timeInterval, close: handler)
     }
     
     /// 取消Toast
     /// - Parameters:
     ///   - timeInterval: 等待时长
-    ///   - dismissHandler: 消失回调
-    public func dismissToast(after timeInterval: TimeInterval = 0.0, completion dismissHandler: (()->Void)? = nil) {
+    ///   - handler: 消失回调
+    public func closeToast(delay timeInterval: TimeInterval = 0.0, completion handler: (()->Void)? = nil) {
         guard let toast = toast else { return }
-        toast.dismissWhenAppear(delay: timeInterval, completion: dismissHandler)
+        toast.closeWhenAppear(delay: timeInterval, completion: handler)
     }
 }

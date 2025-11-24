@@ -84,10 +84,10 @@ extension MNToast {
     ///   - status: 状态描述
     ///   - position: 展示位置
     ///   - timeInterval: 显示时长
-    ///   - dismissHandler: 消失回调
-    public class func showActivity(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+    ///   - handler: 消失回调
+    public class func showActivity(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
         
-        show(builder: MNActivityToast(), at: position, status: status, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+        show(builder: MNActivityToast(), at: position, status: status, progress: nil, delay: timeInterval, close: handler)
     }
     
     /// 显示消息Toast
@@ -95,10 +95,10 @@ extension MNToast {
     ///   - msg: 消息内容
     ///   - position: 展示位置
     ///   - timeInterval: 显示时长
-    ///   - dismissHandler: 消失回调
-    public class func showMsg(_ msg: String, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+    ///   - handler: 消失回调
+    public class func showMsg(_ msg: String, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
         
-        show(builder: MNMsgToast(), at: position, status: msg, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+        show(builder: MNMsgToast(), at: position, status: msg, progress: nil, delay: timeInterval, close: handler)
     }
     
     /// 显示提示Toast
@@ -106,10 +106,10 @@ extension MNToast {
     ///   - status: 状态描述
     ///   - position: 展示位置
     ///   - timeInterval: 显示时长
-    ///   - dismissHandler: 消失回调
-    public class func showInfo(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+    ///   - handler: 消失回调
+    public class func showInfo(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
         
-        show(builder: MNInfoToast(), at: position, status: status, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+        show(builder: MNInfoToast(), at: position, status: status, progress: nil, delay: timeInterval, close: handler)
     }
     
     /// 显示圆形旋转Toast
@@ -118,10 +118,10 @@ extension MNToast {
     ///   - style: 样式
     ///   - position: 展示位置
     ///   - timeInterval: 显示时长
-    ///   - dismissHandler: 消失回调
-    public class func showShape(_ status: String?, style: MNShapeToast.Style = .mask, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+    ///   - handler: 消失回调
+    public class func showShape(_ status: String?, style: MNShapeToast.Style = .mask, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
         
-        show(builder: MNShapeToast(style: style), at: position, status: status, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+        show(builder: MNShapeToast(style: style), at: position, status: status, progress: nil, delay: timeInterval, close: handler)
     }
     
     /// 显示进度Toast
@@ -131,10 +131,10 @@ extension MNToast {
     ///   - value: 进度值
     ///   - position: 展示位置
     ///   - timeInterval: 显示时长
-    ///   - dismissHandler: 消失回调
-    public class func showProgress(_ status: String?, style: MNProgressToast.Style = .line, progress value: (any BinaryFloatingPoint)? = nil, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+    ///   - handler: 消失回调
+    public class func showProgress(_ status: String?, style: MNProgressToast.Style = .line, progress value: (any BinaryFloatingPoint)? = nil, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
         
-        show(builder: MNProgressToast(style: style), at: position, status: status, progress: value, delay: timeInterval, dismiss: dismissHandler)
+        show(builder: MNProgressToast(style: style), at: position, status: status, progress: value, delay: timeInterval, close: handler)
     }
     
     /// 显示成功Toast
@@ -142,10 +142,10 @@ extension MNToast {
     ///   - status: 状态描述
     ///   - position: 展示位置
     ///   - timeInterval: 显示时长
-    ///   - dismissHandler: 消失回调
-    public class func showSuccess(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+    ///   - handler: 消失回调
+    public class func showSuccess(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
         
-        show(builder: MNSuccessToast(), at: position, status: status, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+        show(builder: MNSuccessToast(), at: position, status: status, progress: nil, delay: timeInterval, close: handler)
     }
     
     /// 显示失败Toast
@@ -153,10 +153,10 @@ extension MNToast {
     ///   - status: 状态描述
     ///   - position: 展示位置
     ///   - timeInterval: 显示时长
-    ///   - dismissHandler: 消失回调
-    public class func showFailure(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, dismiss dismissHandler: (()->Void)? = nil) {
+    ///   - handler: 消失回调
+    public class func showError(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
         
-        show(builder: MNFailureToast(), at: position, status: status, progress: nil, delay: timeInterval, dismiss: dismissHandler)
+        show(builder: MNErrorToast(), at: position, status: status, progress: nil, delay: timeInterval, close: handler)
     }
     
     /// 在当前窗口显示Toast
@@ -166,11 +166,11 @@ extension MNToast {
     ///   - status: 状态描述
     ///   - progress: 进度值
     ///   - timeInterval: 显示时长
-    ///   - dismissHandler: 消失回调
-    public class func show(builder: MNToastBuilder, at position: MNToast.Position, status: String?, progress: (any BinaryFloatingPoint)?, delay timeInterval: TimeInterval?, dismiss dismissHandler: (()->Void)?) {
+    ///   - handler: 消失回调
+    public class func show(builder: MNToastBuilder, at position: MNToast.Position, status: String?, progress: (any BinaryFloatingPoint)?, delay timeInterval: TimeInterval?, close handler: (()->Void)?) {
         let executeHandler: ()->Void = {
             guard let window = MNToast.window else { return }
-            MNToast.show(builder: builder, in: window, at: position, status: status, progress: progress, delay: timeInterval, dismiss: dismissHandler)
+            MNToast.show(builder: builder, in: window, at: position, status: status, progress: progress, delay: timeInterval, close: handler)
         }
         if Thread.isMainThread {
             executeHandler()
@@ -182,11 +182,11 @@ extension MNToast {
     /// 取消Toast
     /// - Parameters:
     ///   - timeInterval: 等待时长
-    ///   - dismissHandler: 消失回调
-    public class func dismiss(after timeInterval: TimeInterval = 0.0, completion dismissHandler: (()->Void)? = nil) {
+    ///   - handler: 消失回调
+    public class func close(delay timeInterval: TimeInterval = 0.0, completion handler: (()->Void)? = nil) {
         let executeHandler: ()->Void = {
             guard let window = MNToast.window else { return }
-            window.mn.dismissToast(after: timeInterval, completion: dismissHandler)
+            window.mn.closeToast(delay: timeInterval, completion: handler)
         }
         if Thread.isMainThread {
             executeHandler()
