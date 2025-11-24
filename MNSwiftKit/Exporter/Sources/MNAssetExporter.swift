@@ -9,28 +9,136 @@ import Foundation
 import AVFoundation
 import ObjectiveC
 
+/// 导出配置
+public struct MNAssetExportConfiguration {
+    /// 预设画质
+    public enum Quality {
+        case low
+        case medium
+        case high
+        case custom(String)
+        
+        var presetName: String {
+            switch self {
+            case .low: return AVAssetExportPresetLowQuality
+            case .medium: return AVAssetExportPresetMediumQuality
+            case .high: return AVAssetExportPresetHighestQuality
+            case .custom(let value): return value
+            }
+        }
+    }
+    
+    /// 码率策略
+    public enum BitRateStrategy: Equatable {
+        case automatic
+        case highQuality
+        case custom(Double)
+    }
+    
+    public var timeRange: CMTimeRange
+    public var outputRect: CGRect?
+    public var renderSize: CGSize?
+    public var frameRate: Int
+    public var exportVideo: Bool
+    public var exportAudio: Bool
+    public var optimizeForNetworkUse: Bool
+    public var quality: Quality
+    public var bitRateStrategy: BitRateStrategy
+    
+    public init(timeRange: CMTimeRange = .invalid,
+                outputRect: CGRect? = nil,
+                renderSize: CGSize? = nil,
+                frameRate: Int = 30,
+                exportVideo: Bool = true,
+                exportAudio: Bool = true,
+                optimizeForNetworkUse: Bool = false,
+                quality: Quality = .high,
+                bitRateStrategy: BitRateStrategy = .automatic) {
+        self.timeRange = timeRange
+        self.outputRect = outputRect
+        self.renderSize = renderSize
+        self.frameRate = frameRate
+        self.exportVideo = exportVideo
+        self.exportAudio = exportAudio
+        self.optimizeForNetworkUse = optimizeForNetworkUse
+        self.quality = quality
+        self.bitRateStrategy = bitRateStrategy
+    }
+}
+
 /// 资源导出
 public class MNAssetExporter: NSObject {
+    /// 配置
+    public var configuration: MNAssetExportConfiguration = .init()
     /// 裁剪片段
-    public var timeRange: CMTimeRange = .invalid
+    public var timeRange: CMTimeRange {
+        get { configuration.timeRange }
+        set { configuration.timeRange = newValue }
+    }
     /// 裁剪画面
-    public var outputRect: CGRect?
+    public var outputRect: CGRect? {
+        get { configuration.outputRect }
+        set { configuration.outputRect = newValue }
+    }
     /// 预设质量
-    public var presetName: String?
+    public var presetName: String? {
+        get { configuration.quality.presetName }
+        set {
+            if let preset = newValue {
+                configuration.quality = .custom(preset)
+            } else {
+                configuration.quality = .high
+            }
+        }
+    }
     /// 帧率
-    public var frameRate: Int = 30
+    public var frameRate: Int {
+        get { configuration.frameRate }
+        set { configuration.frameRate = newValue }
+    }
     /// 输出路径
     public var outputURL: URL?
     /// 输出分辨率outputRect有效时有效
-    public var renderSize: CGSize?
+    public var renderSize: CGSize? {
+        get { configuration.renderSize }
+        set { configuration.renderSize = newValue }
+    }
     /// 使用高比特率输出
-    public var shouldHighBitRateForUse: Bool = false
+    public var shouldHighBitRateForUse: Bool {
+        get { configuration.bitRateStrategy == .highQuality }
+        set { configuration.bitRateStrategy = newValue ? .highQuality : .automatic }
+    }
     /// 是否针对网络使用进行优化
-    public var shouldOptimizeForNetworkUse: Bool = false
+    public var shouldOptimizeForNetworkUse: Bool {
+        get { configuration.optimizeForNetworkUse }
+        set { configuration.optimizeForNetworkUse = newValue }
+    }
     /// 是否输出视频内容
-    public var isExportVideoTrack: Bool = true
+    public var isExportVideoTrack: Bool {
+        get { configuration.exportVideo }
+        set { configuration.exportVideo = newValue }
+    }
     /// 是否输出音频内容
-    public var isExportAudioTrack: Bool = true
+    public var isExportAudioTrack: Bool {
+        get { configuration.exportAudio }
+        set { configuration.exportAudio = newValue }
+    }
+    /// 自定义码率
+    public var customBitRate: Double? {
+        get {
+            guard case .custom(let value) = configuration.bitRateStrategy else { return nil }
+            return value
+        }
+        set {
+            if let value = newValue {
+                configuration.bitRateStrategy = .custom(value)
+            } else if shouldHighBitRateForUse {
+                configuration.bitRateStrategy = .highQuality
+            } else {
+                configuration.bitRateStrategy = .automatic
+            }
+        }
+    }
     /// 获取资源信息
     public var asset: AVAsset { composition }
     /// 内部使用
@@ -51,6 +159,8 @@ public class MNAssetExporter: NSObject {
     private(set) var progress: Double = 0.0
     /// 状态
     private(set) var status: AVAssetExportSession.Status = .unknown
+    /// 回调队列
+    public var callbackQueue: DispatchQueue = .main
     /// 进度回调
     private var progressHandler: ((Double)->Void)?
     /// 结束回调
@@ -83,6 +193,7 @@ public class MNAssetExporter: NSObject {
     
     // MARK: - export
     private func export() {
+        let configuration = self.configuration
         
         // 检查输出路径
         guard let outputURL = outputURL, outputURL.isFileURL else {
@@ -98,8 +209,8 @@ public class MNAssetExporter: NSObject {
         
         // 检查输出画面大小
         let naturalSize: CGSize = composition.track(mediaType: .video)?.naturalSizeOfVideo ?? .zero
-        let outputRect = self.outputRect ?? CGRect(x: 0.0, y: 0.0, width: naturalSize.width, height: naturalSize.height)
-        if isExportVideoTrack, outputRect.size == .zero {
+        let outputRect = configuration.outputRect ?? CGRect(x: 0.0, y: 0.0, width: naturalSize.width, height: naturalSize.height)
+        if configuration.exportVideo, outputRect.size == .zero {
             finish(error: .trackError(.outputRectIsZero))
             return
         }
@@ -108,8 +219,8 @@ public class MNAssetExporter: NSObject {
         let videoTrack = composition.track(mediaType: .video)
         let audioTrack = composition.track(mediaType: .audio)
         let asset = AVMutableComposition()
-        if isExportVideoTrack, let track = videoTrack {
-            let timeRange = CMTIMERANGE_IS_VALID(timeRange) ? timeRange : CMTimeRange(start: .zero, duration: track.timeRange.duration)
+        if configuration.exportVideo, let track = videoTrack {
+            let timeRange = CMTIMERANGE_IS_VALID(configuration.timeRange) ? configuration.timeRange : CMTimeRange(start: .zero, duration: track.timeRange.duration)
             let compositionTrack = asset.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid)
             do {
                 try compositionTrack?.insertTimeRange(timeRange, of: track, at: .zero)
@@ -118,8 +229,8 @@ public class MNAssetExporter: NSObject {
                 return
             }
         }
-        if isExportAudioTrack, let track = audioTrack {
-            let timeRange = CMTIMERANGE_IS_VALID(timeRange) ? timeRange : CMTimeRange(start: .zero, duration: track.timeRange.duration)
+        if configuration.exportAudio, let track = audioTrack {
+            let timeRange = CMTIMERANGE_IS_VALID(configuration.timeRange) ? configuration.timeRange : CMTimeRange(start: .zero, duration: track.timeRange.duration)
             let compositionTrack = asset.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid)
             do {
                 try compositionTrack?.insertTimeRange(timeRange, of: track, at: .zero)
@@ -152,7 +263,7 @@ public class MNAssetExporter: NSObject {
         
         // 文件写入
         var assetWriter: AVAssetWriter?
-        let fileType: AVFileType = (videoTrack != nil && isExportVideoTrack) ? .mp4 : .m4a
+        let fileType: AVFileType = (videoTrack != nil && configuration.exportVideo) ? .mp4 : .m4a
         do {
             assetWriter = try AVAssetWriter(url: outputURL, fileType: fileType)
         } catch {
@@ -166,10 +277,10 @@ public class MNAssetExporter: NSObject {
         }
         
         // 配置视频
-        if let track = videoTrack, isExportVideoTrack {
+        if let track = videoTrack, configuration.exportVideo {
             // Output
             var renderSize = outputRect.size
-            if let size = self.renderSize {
+            if let size = configuration.renderSize {
                 renderSize = size
                 renderSize.width = floor(ceil(renderSize.width)/16.0)*16.0
                 renderSize.height = floor(ceil(renderSize.height)/16.0)*16.0
@@ -186,7 +297,9 @@ public class MNAssetExporter: NSObject {
             let videoComposition = AVMutableVideoComposition(propertiesOf: asset)
             videoComposition.renderSize = renderSize
             videoComposition.instructions = [videoInstruction]
-            videoComposition.frameDuration = CMTime(value: 1, timescale: CMTimeScale(track.nominalFrameRate))
+            let nominalFrameRate = track.nominalFrameRate > 0 ? track.nominalFrameRate : Float(configuration.frameRate)
+            let frameDurationTimescale = CMTimeScale(max(1, min(240, Int(nominalFrameRate))))
+            videoComposition.frameDuration = CMTime(value: 1, timescale: frameDurationTimescale)
             
             let videoOutput = AVAssetReaderVideoCompositionOutput(videoTracks: asset.tracks(withMediaType: .video), videoSettings: [kCVPixelBufferPixelFormatTypeKey as String:kCVPixelFormatType_420YpCbCr8BiPlanarFullRange])
             videoOutput.alwaysCopiesSampleData = false
@@ -202,22 +315,26 @@ public class MNAssetExporter: NSObject {
             let width = Int(renderSize.width)
             let height = Int(renderSize.height)
             // 比特率
-            var averageDataRate: Float = 0.0
-            if shouldHighBitRateForUse, shouldOptimizeForNetworkUse == false {
+            let averageDataRate: Float
+            switch configuration.bitRateStrategy {
+            case .custom(let customValue):
+                averageDataRate = Float(max(customValue, 1))
+            case .highQuality where configuration.optimizeForNetworkUse == false:
                 let bitsPerPixel: Float = width*height <= (640*480) ? 4.05 : 10.1
                 averageDataRate = Float(width*height)*bitsPerPixel
-            } else {
+            default:
                 let videoDataRate: Float = track.estimatedDataRate
                 let audioDataRate: Float = audioTrack?.estimatedDataRate ?? 0.0
-                averageDataRate = videoDataRate + audioDataRate
-                if averageDataRate <= audioDataRate {
-                    averageDataRate = Float(width*height)*7.5
+                var temp = videoDataRate + audioDataRate
+                if temp <= audioDataRate || temp == 0 {
+                    temp = Float(width*height)*7.5
                 }
+                averageDataRate = temp
             }
             // 压缩级别
             var profileLevel: String = AVVideoProfileLevelH264BaselineAutoLevel
-            if shouldOptimizeForNetworkUse == false {
-                let presetName = presetName ?? AVAssetExportPresetHighestQuality
+            if configuration.optimizeForNetworkUse == false {
+                let presetName = configuration.quality.presetName
                 if presetName == AVAssetExportPresetHighestQuality || presetName == AVAssetExportPreset3840x2160 || presetName == AVAssetExportPreset1920x1080 {
                     profileLevel = AVVideoProfileLevelH264HighAutoLevel
                 } else if presetName == AVAssetExportPresetMediumQuality || presetName == AVAssetExportPreset1280x720  || presetName == AVAssetExportPreset960x540 {
@@ -227,7 +344,7 @@ public class MNAssetExporter: NSObject {
                 }
             }
             // 帧率
-            let frameRate: Int = min(max(30, self.frameRate), 120)
+            let frameRate: Int = min(max(30, configuration.frameRate), 120)
             var h264Codec: String
             if #available(iOS 11.0, *) {
                 h264Codec = AVVideoCodecType.h264.rawValue
@@ -245,7 +362,7 @@ public class MNAssetExporter: NSObject {
         }
         
         // 配置音频
-        if let _ = audioTrack, isExportAudioTrack {
+        if let _ = audioTrack, configuration.exportAudio {
             // Output
             let audioOutput = AVAssetReaderAudioMixOutput(audioTracks: asset.tracks(withMediaType: .audio), audioSettings: [AVFormatIDKey:kAudioFormatLinearPCM])
             audioOutput.alwaysCopiesSampleData = false
@@ -297,98 +414,31 @@ public class MNAssetExporter: NSObject {
         
         // group组为了等待结果回调, 读写队列为串行队列是为了避免数据错乱
         let group = DispatchGroup()
+        let durationSeconds = max(reader.asset.duration.seconds, 0.001)
         
         // 视频数据读写
         if let videoInput = videoInput, let videoOutput = videoOutput {
-            group.enter()
-            let duration = reader.asset.duration.seconds
-            videoInput.requestMediaDataWhenReady(on: DispatchQueue(label: "com.mn.asset.video.export.queue")) { [weak self] in
-                guard let self = self, self.status == .exporting else {
-                    videoInput.markAsFinished()
-                    group.leave()
-                    return
-                }
-                if let sampleBuffer = videoOutput.copyNextSampleBuffer() {
-                    if videoInput.append(sampleBuffer) {
-                        let time = CMSampleBufferGetOutputPresentationTimeStamp(sampleBuffer)
-                        self.update(progress: min(time.seconds/duration, 0.99))
-                    } else {
-                        switch writer.status {
-                        case .cancelled, .failed:
-                            objc_sync_enter(self)
-                            self.status = .failed
-                            objc_sync_exit(self)
-#if DEBUG
-                        print("video write fail")
-#endif
-                        default: break
-                        }
-                        videoInput.markAsFinished()
-                        group.leave()
-                    }
-                } else {
-                    switch reader.status {
-                    case .cancelled, .failed:
-                        objc_sync_enter(self)
-                        self.status = .failed
-                        objc_sync_exit(self)
-#if DEBUG
-                    print("video write fail")
-#endif
-                    default: break
-                    }
-                    videoInput.markAsFinished()
-                    group.leave()
-                }
-            }
+            transferSamples(from: videoOutput,
+                            to: videoInput,
+                            duration: durationSeconds,
+                            reader: reader,
+                            writer: writer,
+                            kind: .video,
+                            shouldUpdateProgress: true,
+                            group: group)
         }
         
         // 音频数据读写
         if let audioInput = audioInput, let audioOutput = audioOutput {
-            group.enter()
-            let duration = reader.asset.duration.seconds
             let shouldAudioCallback = (videoInput == nil || videoOutput == nil)
-            audioInput.requestMediaDataWhenReady(on: DispatchQueue(label: "com.mn.asset.audio.export.queue"), using: { [weak self] in
-                guard let self = self, self.status == .exporting else {
-                    audioInput.markAsFinished()
-                    group.leave()
-                    return
-                }
-                if let nextSampleBuffer = audioOutput.copyNextSampleBuffer() {
-                    if audioInput.append(nextSampleBuffer) {
-                        if shouldAudioCallback {
-                            let time = CMSampleBufferGetOutputPresentationTimeStamp(nextSampleBuffer)
-                            self.update(progress: min(time.seconds/duration, 0.99))
-                        }
-                    } else {
-                        switch writer.status {
-                        case .cancelled, .failed:
-                            objc_sync_enter(self)
-                            self.status = .failed
-                            objc_sync_exit(self)
-#if DEBUG
-                        print("audio write fail")
-#endif
-                        default: break
-                        }
-                        audioInput.markAsFinished()
-                        group.leave()
-                    }
-                } else {
-                    switch reader.status {
-                    case .cancelled, .failed:
-                        objc_sync_enter(self)
-                        self.status = .failed
-                        objc_sync_exit(self)
-#if DEBUG
-                    print("audio write fail")
-#endif
-                    default: break
-                    }
-                    audioInput.markAsFinished()
-                    group.leave()
-                }
-            })
+            transferSamples(from: audioOutput,
+                            to: audioInput,
+                            duration: durationSeconds,
+                            reader: reader,
+                            writer: writer,
+                            kind: .audio,
+                            shouldUpdateProgress: shouldAudioCallback,
+                            group: group)
         }
         
         // 等待结果回调
@@ -416,20 +466,119 @@ public class MNAssetExporter: NSObject {
                 self.videoInput = nil
                 self.audioOutput = nil
                 self.videoOutput = nil
-                self.completionHandler?(self.status, self.error)
+                if let completionHandler = self.completionHandler {
+                    self.callbackQueue.async {
+                        completionHandler(self.status, self.error)
+                    }
+                }
             }
         }
+    }
+    
+    private enum MediaTrackKind {
+        case video
+        case audio
+        
+        var queueLabel: String {
+            switch self {
+            case .video: return "com.mn.asset.video.export.queue"
+            case .audio: return "com.mn.asset.audio.export.queue"
+            }
+        }
+    }
+    
+    private func transferSamples(from output: AVAssetReaderOutput,
+                                 to input: AVAssetWriterInput,
+                                 duration: Double,
+                                 reader: AVAssetReader,
+                                 writer: AVAssetWriter,
+                                 kind: MediaTrackKind,
+                                 shouldUpdateProgress: Bool,
+                                 group: DispatchGroup) {
+        group.enter()
+        let queue = DispatchQueue(label: kind.queueLabel)
+        input.requestMediaDataWhenReady(on: queue) { [weak self] in
+            guard let self = self else {
+                input.markAsFinished()
+                group.leave()
+                return
+            }
+            while input.isReadyForMoreMediaData && self.status == .exporting {
+                guard let sampleBuffer = output.copyNextSampleBuffer() else {
+                    self.handleReaderCompletion(reader: reader, kind: kind)
+                    input.markAsFinished()
+                    group.leave()
+                    return
+                }
+                guard input.append(sampleBuffer) else {
+                    self.handleWriterFailure(writer: writer, kind: kind)
+                    input.markAsFinished()
+                    group.leave()
+                    return
+                }
+                if shouldUpdateProgress {
+                    let time = CMSampleBufferGetOutputPresentationTimeStamp(sampleBuffer)
+                    self.update(progress: min(time.seconds/duration, 0.99))
+                }
+            }
+            if self.status != .exporting {
+                input.markAsFinished()
+                group.leave()
+                return
+            }
+        }
+    }
+    
+    private func handleWriterFailure(writer: AVAssetWriter, kind: MediaTrackKind) {
+        let defaultReason: AVError.WriteErrorReason = (kind == .video) ? .cannotAppendVideoBuffer : .cannotAppendAudioBuffer
+        if let writerError = writer.error {
+            error = error ?? .writeError(.underlyingError(writerError))
+        } else {
+            error = error ?? .writeError(defaultReason)
+        }
+        updateStatusIfNeeded(writer.status == .cancelled ? .cancelled : .failed)
+    }
+    
+    private func handleReaderCompletion(reader: AVAssetReader, kind: MediaTrackKind) {
+        switch reader.status {
+        case .failed:
+            if let readError = reader.error {
+                error = error ?? .readError(.underlyingError(readError))
+            } else {
+                let reason: AVError.ReadErrorReason = (kind == .video) ? .cannotAddVoidOutput : .cannotAddAudioOutput
+                error = error ?? .readError(reason)
+            }
+            updateStatusIfNeeded(.failed)
+        case .cancelled:
+            updateStatusIfNeeded(.cancelled)
+        default:
+            break
+        }
+    }
+    
+    private func updateStatusIfNeeded(_ newStatus: AVAssetExportSession.Status) {
+        objc_sync_enter(self)
+        if status == .exporting {
+            status = newStatus
+        }
+        objc_sync_exit(self)
     }
     
     private func finish(error: AVError?) {
         self.error = error
         status = .failed
-        completionHandler?(.failed, error)
+        guard let completionHandler else { return }
+        callbackQueue.async {
+            completionHandler(.failed, error)
+        }
     }
     
     private func update(progress: Double) {
         self.progress = progress
-        progressHandler?(progress)
+        guard let progressHandler else { return }
+        callbackQueue.async {
+            progressHandler(progress)
+        }
     }
     
     /// 取消任务

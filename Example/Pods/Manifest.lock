@@ -40,6 +40,7 @@ PODS:
 
 DEPENDENCIES:
   - MNSwiftKit/AssetPicker (from `../`)
+  - MNSwiftKit/Exporter (from `../`)
 
 EXTERNAL SOURCES:
   MNSwiftKit:
@@ -48,6 +49,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   MNSwiftKit: 3a2e675afa6bae7fcfabe32c8178a1ab8c4f80e1
 
-PODFILE CHECKSUM: 9eee9c28edf005a86416cdaa90d81919fcb95cf0
+PODFILE CHECKSUM: 4c4ff52674fbced4798e2baa2e73de108c36ef06
 
 COCOAPODS: 1.16.2

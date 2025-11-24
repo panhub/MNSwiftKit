@@ -129,7 +129,7 @@ extension MNToast {
     ///   - position: 展示位置
     ///   - timeInterval: 显示时长
     ///   - handler: 消失回调
-    public class func showProgress(_ status: String?, style: MNProgressToast.Style = .line, progress value: (any BinaryFloatingPoint)? = nil, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
+    public class func showProgress(_ status: String?, style: MNProgressToast.Style = .line, value: (any BinaryFloatingPoint)? = nil, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
         
         show(builder: MNProgressToast(style: style), at: position, status: status, progress: value, delay: timeInterval, close: handler)
     }

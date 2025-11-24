@@ -45,7 +45,7 @@ public class MNProgressToast {
             activityLayer.lineJoin = .round
             activityLayer.strokeColor = MNToast.Configuration.shared.color.cgColor
         } else {
-            activityLayer.strokeColor = MNToast.Configuration.shared.color.withAlphaComponent(0.8).cgColor
+            activityLayer.strokeColor = MNToast.Configuration.shared.color.withAlphaComponent(0.75).cgColor
         }
         
         return activityLayer

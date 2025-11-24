@@ -333,6 +333,30 @@ extension MNTailorViewController {
                 }
             }
         } else {
+            /*
+            guard let exporter = MNAssetExporter(fileAtPath: videoPath) else {
+                MNToast.showMsg("解析视频失败")
+                return
+            }
+            MNToast.showProgress("正在导出", style: .fill)
+            exporter.outputURL = URL(fileURLWithPath: exportingPath)
+            exporter.timeRange = exporter.asset.progressRange(from: begin, to: end)
+            //exporter.presetName = AVAssetExportPresetMediumQuality
+            exporter.exportAsynchronously { value in
+                MNToast.showProgress(nil, style: .fill, value: value)
+            } completionHandler: { [weak self] status, error in
+                if status == .completed {
+                    MNToast.close {
+                        guard let self = self else { return }
+                        self.delegate?.tailorController(self, didTailorVideoAtPath: exportingPath)
+                    }
+                } else if let error = error {
+                    MNToast.showMsg(error.localizedDescription)
+                } else {
+                    MNToast.showMsg("视频导出失败")
+                }
+            }
+             */
             guard let session = MNAssetExportSession(fileAtPath: videoPath) else {
                 MNToast.showMsg("解析视频失败")
                 return

@@ -56,7 +56,9 @@ class ViewController: UIViewController {
             picker.cancel { picker in
                 
             }.picking { picker, assets in
-                
+                if let asset = assets.first {
+                    print(asset.contents!)
+                }
             }.present()
         }
     }

@@ -324,8 +324,8 @@ extension MNToast {
             // 判断是否是当前类型, 存在则更新
             if type(of: toast.builder) == type(of: builder) {
                 // 取消当前动画
-                let isAnimating = toast.visualView.layer.animationKeys() != nil
-                if isAnimating {
+                //let isAnimating = toast.visualView.layer.animationKeys() != nil
+                if toast.state == .willDisappear {
                     toast.visualView.layer.removeAllAnimations()
                     toast.visualView.transform = .identity
                 }
@@ -343,9 +343,11 @@ extension MNToast {
                 if let handler = handler {
                     toast.closeHandler = handler
                 }
-                superview.bringSubviewToFront(toast)
                 // 重新展示动画
-                toast.show(animated: isAnimating)
+                if toast.state == .willDisappear {
+                    superview.bringSubviewToFront(toast)
+                    toast.show(animated: builder.fadeInForToast)
+                }
                 return
             }
             // 删除旧的Toast

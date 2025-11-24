@@ -15,7 +15,7 @@ target 'MNSwiftKit_Example' do
   #pod 'MNSwiftKit/Layout', :path => '../'
   #pod 'MNSwiftKit/Refresh', :path => '../'
   #pod 'MNSwiftKit/Request', :path => '../'
-  #pod 'MNSwiftKit/Exporter', :path => '../'
+  pod 'MNSwiftKit/Exporter', :path => '../'
   #pod 'MNSwiftKit/Purchase', :path => '../'
   #pod 'MNSwiftKit/Database', :path => '../'
   #pod 'MNSwiftKit/Definition', :path => '../'
