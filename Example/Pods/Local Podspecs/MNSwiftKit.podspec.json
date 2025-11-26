@@ -153,13 +153,13 @@
       }
     },
     {
-      "name": "Exporter",
+      "name": "MediaExport",
       "frameworks": [
         "Foundation",
         "AVFoundation",
         "QuartzCore"
       ],
-      "source_files": "MNSwiftKit/Exporter/Sources/**/*.swift"
+      "source_files": "MNSwiftKit/MediaExport/Sources/**/*.swift"
     },
     {
       "name": "Purchase",
@@ -258,11 +258,11 @@
         "MNSwiftKit/Player": [],
         "MNSwiftKit/Layout": [],
         "MNSwiftKit/Refresh": [],
-        "MNSwiftKit/Exporter": [],
         "MNSwiftKit/Definition": [],
         "MNSwiftKit/Extension": [],
         "MNSwiftKit/EmptyView": [],
         "MNSwiftKit/NameSpace": [],
+        "MNSwiftKit/MediaExport": [],
         "MNSwiftKit/AssetBrowser": [],
         "MNSwiftKit/AnimatedImage": []
       }
@@ -395,7 +395,6 @@
         "MNSwiftKit/Layout": [],
         "MNSwiftKit/Refresh": [],
         "MNSwiftKit/Request": [],
-        "MNSwiftKit/Exporter": [],
         "MNSwiftKit/Purchase": [],
         "MNSwiftKit/Database": [],
         "MNSwiftKit/Definition": [],
@@ -406,6 +405,7 @@
         "MNSwiftKit/NameSpace": [],
         "MNSwiftKit/PageControl": [],
         "MNSwiftKit/Components": [],
+        "MNSwiftKit/MediaExport": [],
         "MNSwiftKit/Transitioning": [],
         "MNSwiftKit/AssetBrowser": [],
         "MNSwiftKit/AnimatedImage": [],

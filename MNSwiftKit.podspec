@@ -108,10 +108,10 @@ Pod::Spec.new do |s|
     r.dependency 'MNSwiftKit/Networking'
   end
   
-  # Exporter <媒体资源输出>
-  s.subspec 'Exporter' do |e|
+  # MediaExport <媒体资源输出>
+  s.subspec 'MediaExport' do |e|
     e.frameworks = 'Foundation', 'AVFoundation', 'QuartzCore'
-    e.source_files = 'MNSwiftKit/Exporter/Sources/**/*.swift'
+    e.source_files = 'MNSwiftKit/MediaExport/Sources/**/*.swift'
   end
   
   # Purchase <内购支持>
@@ -170,11 +170,11 @@ Pod::Spec.new do |s|
     p.dependency 'MNSwiftKit/Player'
     p.dependency 'MNSwiftKit/Layout'
     p.dependency 'MNSwiftKit/Refresh'
-    p.dependency 'MNSwiftKit/Exporter'
     p.dependency 'MNSwiftKit/Definition'
     p.dependency 'MNSwiftKit/Extension'
     p.dependency 'MNSwiftKit/EmptyView'
     p.dependency 'MNSwiftKit/NameSpace'
+    p.dependency 'MNSwiftKit/MediaExport'
     p.dependency 'MNSwiftKit/AssetBrowser'
     p.dependency 'MNSwiftKit/AnimatedImage'
   end
@@ -263,7 +263,6 @@ Pod::Spec.new do |s|
     full.dependency 'MNSwiftKit/Layout'
     full.dependency 'MNSwiftKit/Refresh'
     full.dependency 'MNSwiftKit/Request'
-    full.dependency 'MNSwiftKit/Exporter'
     full.dependency 'MNSwiftKit/Purchase'
     full.dependency 'MNSwiftKit/Database'
     full.dependency 'MNSwiftKit/Definition'
@@ -274,6 +273,7 @@ Pod::Spec.new do |s|
     full.dependency 'MNSwiftKit/NameSpace'
     full.dependency 'MNSwiftKit/PageControl'
     full.dependency 'MNSwiftKit/Components'
+    full.dependency 'MNSwiftKit/MediaExport'
     full.dependency 'MNSwiftKit/Transitioning'
     full.dependency 'MNSwiftKit/AssetBrowser'
     full.dependency 'MNSwiftKit/AnimatedImage'
