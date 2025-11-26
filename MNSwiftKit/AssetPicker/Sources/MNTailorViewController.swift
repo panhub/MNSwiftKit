@@ -105,9 +105,9 @@ class MNTailorViewController: UIViewController {
         self.init(nibName: nil, bundle: nil)
         self.videoPath = videoPath
         modalPresentationStyle = .fullScreen
-        self.duration = MNAssetExporter.duration(mediaAtPath: videoPath)
-        self.thumbnail = MNAssetExporter.thumbnail(videoAtPath: videoPath)
-        let naturalSize = MNAssetExporter.naturalSize(videoAtPath: videoPath)
+        self.duration = MNAssetExportSession.duration(for: videoPath)
+        self.thumbnail = MNAssetExportSession.generateImage(for: videoPath)
+        let naturalSize = MNAssetExportSession.naturalSize(for: videoPath)
         if naturalSize != .zero {
             self.naturalSize = naturalSize
         }
@@ -365,7 +365,7 @@ extension MNTailorViewController {
             session.outputFileType = .mp4
             session.shouldOptimizeForNetworkUse = true
             session.outputURL = URL(fileURLWithPath: exportingPath)
-            session.timeRange = session.asset.progressRange(from: begin, to: end)
+            session.timeRange = session.asset.mn.timeRange(withProgress: begin, to: end)
             session.exportAsynchronously { [weak self] status, error in
                 if status == .completed {
                     MNToast.close {
