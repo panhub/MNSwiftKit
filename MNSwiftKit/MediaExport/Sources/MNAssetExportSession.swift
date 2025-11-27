@@ -11,7 +11,6 @@ import QuartzCore.CADisplayLink
 
 /// 音/视频转码切割
 public class MNAssetExportSession: NSObject {
-    
     /// 输出格式
     public var outputFileType: AVFileType?
     /// 裁剪片段
@@ -37,7 +36,7 @@ public class MNAssetExportSession: NSObject {
     /// 系统输出使用
     private weak var exportSession: AVAssetExportSession?
     /// 内部使用
-    private let composition: AVMutableComposition = AVMutableComposition()
+    public let composition = AVMutableComposition()
     /// 错误信息
     private(set) var error: AVError?
     /// 进度
@@ -253,53 +252,24 @@ public class MNAssetExportSession: NSObject {
 // MARK: - convenience
 extension MNAssetExportSession {
     
-    /// 便捷构造入口
-    /// - Parameter asset: 资源实例
+    /// 构造资源输出会话
+    /// - Parameter asset: 媒体资源
     public convenience init(asset: AVAsset) {
         self.init()
-        composition.append(asset: asset)
+        composition.mn.append(asset: asset)
     }
     
-    /// 便捷构造入口
-    /// - Parameter filePath: 资源路径
-    public convenience init?(fileAtPath filePath: String) {
-        self.init(fileOfURL: URL(fileURLWithPath: filePath))
+    /// 构造资源输出会话
+    /// - Parameter filePath: 媒体资源路径
+    public convenience init(fileAtPath filePath: String) {
+        self.init()
+        composition.mn.appendAsset(for: filePath)
     }
     
-    /// 便捷构造入口
-    /// - Parameter fileURL: 资源地址
-    public convenience init?(fileOfURL fileURL: URL) {
-        guard fileURL.isFileURL, FileManager.default.fileExists(atPath: fileURL.path) else { return nil }
-        self.init(asset: AVURLAsset(url: fileURL, options: [AVURLAssetPreferPreciseDurationAndTimingKey:true]))
-    }
-}
-
-// MARK: - append
-extension MNAssetExportSession {
-    
-    /// 追加资源
-    /// - Parameter url: 资源地址
-    public func append(assetOfURL url: URL) {
-        composition.append(assetOfURL: url)
-    }
-    
-    /// 追加资源
-    /// - Parameter asset: 资源实例
-    public func append(asset: AVAsset) {
-        composition.append(asset: asset)
-    }
-    
-    /// 追加资源
-    /// - Parameters:
-    ///   - url: 资源地址
-    ///   - mediaType: 媒体类型
-    public func append(assetOfURL url: URL, mediaType: AVMediaType) {
-        composition.append(assetOfURL: url, mediaType: mediaType)
-    }
-    
-    /// 追加资源
-    /// - Parameter track: 资源轨道
-    public func append(track: AVAssetTrack) {
-        composition.append(track: track)
+    /// 构造资源输出会话
+    /// - Parameter fileURL: 媒体资源定位器
+    public convenience init(fileOfURL fileURL: URL) {
+        self.init()
+        composition.mn.appendAsset(for: fileURL)
     }
 }

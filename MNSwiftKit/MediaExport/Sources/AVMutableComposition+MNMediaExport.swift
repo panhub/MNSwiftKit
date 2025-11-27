@@ -8,103 +8,81 @@
 import Foundation
 import AVFoundation
 
-// MARK: - Composition
-extension AVMutableComposition {
+extension NameSpaceWrapper where Base: AVMutableComposition {
     
-    /// 转换合成器
+    /// 获取合成轨道
     /// - Parameter mediaType: 媒体类型
-    /// - Returns: 合成轨
-    public func composition(mediaType: AVMediaType) -> AVMutableCompositionTrack? {
-        let tracks = tracks(withMediaType: mediaType)
-        guard tracks.isEmpty == false else {
-            return addMutableTrack(withMediaType: mediaType, preferredTrackID: kCMPersistentTrackID_Invalid)
+    /// - Returns: 获取到的合成轨道(没有则添加后返回)
+    public func compositionTrack(with mediaType: AVMediaType) -> AVMutableCompositionTrack? {
+        let tracks = base.tracks(withMediaType: mediaType)
+        if tracks.isEmpty {
+            return base.addMutableTrack(withMediaType: mediaType, preferredTrackID: kCMPersistentTrackID_Invalid)
         }
         return tracks.first
     }
     
-    /// 删除媒体轨
-    /// - Parameter mediaType: 轨类型
-    public func removeTrack(mediaType: AVMediaType) {
-        for track in tracks(withMediaType: mediaType) {
-            removeTrack(track)
-        }
-    }
-    
-    /// 删除所有媒体轨
-    public func removeAllTrack() {
-        for type in [AVMediaType.video, AVMediaType.audio, AVMediaType.text, AVMediaType.subtitle] {
-            removeTrack(mediaType: type)
+    /// 删除指定类型的轨道
+    /// - Parameter mediaType: 媒体类型
+    public func removeTrack(with mediaType: AVMediaType) {
+        for track in base.tracks(withMediaType: mediaType) {
+            base.removeTrack(track)
         }
     }
 }
 
-// MARK: - append
-extension AVMutableComposition {
+extension NameSpaceWrapper where Base: AVMutableComposition {
     
-    /// 追加媒体资源
-    /// - Parameter url: 文件地址
-    /// - Returns: 是否追加成功
+    /// 拼接媒体资源内音视频轨道
+    /// - Parameter string: 媒体资源路径或远程地址
+    /// - Returns: 是否拼接成功
     @discardableResult
-    func append(assetOfURL url: URL) -> Bool {
-        let asset = AVURLAsset(mediaOfURL: url)
+    public func appendAsset(for string: String) -> Bool {
+        guard let asset = AVURLAsset(string: string) else { return false }
         return append(asset: asset)
     }
     
-    /// 追加资源
-    /// - Parameter asset: 资源
-    /// - Returns: 是否成功
+    /// 拼接媒体资源内音视频轨道
+    /// - Parameter url: 媒体资源定位器
+    /// - Returns: 是否拼接成功
     @discardableResult
-    func append(asset: AVAsset) -> Bool {
-        if let videoTrack = asset.track(mediaType: .video), append(track: videoTrack) == false { return false }
-        if let audioTrack = asset.track(mediaType: .audio), append(track: audioTrack) == false { return false }
+    public func appendAsset(for url: URL) -> Bool {
+        let asset = AVURLAsset(for: url)
+        return append(asset: asset)
+    }
+    
+    /// 拼接媒体资源内音视频轨道
+    /// - Parameter asset: 媒体资源
+    /// - Returns: 是否拼接成功
+    @discardableResult
+    public func append(asset: AVAsset) -> Bool {
+        if let videoTrack = track(with: .video) {
+            guard append(track: videoTrack) else { return false }
+        }
+        if let audioTrack = track(with: .audio) {
+            guard append(track: audioTrack) else { return false }
+        }
         return true
     }
     
-    /// 追加资源
-    /// - Parameters:
-    ///   - url: 文件地址
-    ///   - mediaType: 媒体类型
-    /// - Returns: 是否成功
-    @discardableResult
-    func append(assetOfURL url: URL, mediaType: AVMediaType) -> Bool {
-        let asset = AVURLAsset(mediaOfURL: url)
-        guard let track = asset.track(mediaType: mediaType) else { return false }
-        return append(track: track)
-    }
-    
-    /// 追加资源轨
-    /// - Parameter track: 资源轨
-    /// - Returns: 是否成功
+    /// 拼接轨道到尾部
+    /// - Parameter track: 拼接的轨道
+    /// - Returns: 是否拼接成功
     @discardableResult
     func append(track: AVAssetTrack) -> Bool {
         guard CMTIMERANGE_IS_VALID(track.timeRange) else { return false }
-        if track.mediaType == .video {
-            // 视频轨道
-            guard let videoTrack = composition(mediaType: .video) else { return false }
-            let time: CMTime = CMTIMERANGE_IS_VALID(videoTrack.timeRange) ? videoTrack.timeRange.duration : .zero
-            do {
-                try videoTrack.insertTimeRange(CMTimeRange(start: .zero, duration: track.timeRange.duration), of: track, at: time)
-            } catch {
+        guard let compositionTrack = compositionTrack(with: track.mediaType) else { return false }
+        let timeRange = CMTimeRange(start: .zero, duration: track.timeRange.duration)
+        do {
+            try compositionTrack.insertTimeRange(timeRange, of: track, at: base.duration)
+        } catch {
 #if DEBUG
-                print(error)
+            print("插入轨道到媒体合成轨道出错: \(error)")
 #endif
-                return false
-            }
-            return true
-        } else if track.mediaType == .audio {
-            // 音频轨道
-            guard let audioTrack = composition(mediaType: .audio) else { return false }
-            let time: CMTime = CMTIMERANGE_IS_VALID(audioTrack.timeRange) ? audioTrack.timeRange.duration : .zero
-            do {
-                try audioTrack.insertTimeRange(CMTimeRange(start: .zero, duration: track.timeRange.duration), of: track, at: time)
-            } catch  {
-#if DEBUG
-                print(error)
-#endif
-                return false
-            }
-            return true
+            return false
         }
-        return false
+        if track.mediaType == .video {
+            compositionTrack.preferredTransform = track.mn.preferredTransform
+        }
+        return true
     }
 }

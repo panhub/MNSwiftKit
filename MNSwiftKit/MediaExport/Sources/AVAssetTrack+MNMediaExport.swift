@@ -7,6 +7,7 @@
 
 import Foundation
 import AVFoundation
+import CoreFoundation
 
 extension NameSpaceWrapper where Base: AVAssetTrack {
     
@@ -68,5 +69,18 @@ extension NameSpaceWrapper where Base: AVAssetTrack {
             return frameRate
         }
         return CGFloat(base.nominalFrameRate)
+    }
+    
+    public func transform(for cropRectang: CGRect, renderSize: CGSize? = nil) -> CGAffineTransform {
+        
+        var targetSize = cropRectang.size
+        if let renderSize = renderSize, renderSize.width > 0.0, renderSize.height > 0.0 {
+            // 
+        }
+        
+        
+        let naturalSize = naturalSize
+        let preferredTransform = preferredTransform
+        
     }
 }
