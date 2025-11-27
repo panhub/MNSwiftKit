@@ -37,7 +37,7 @@ extension NameSpaceWrapper where Base: AVMutableComposition {
     /// - Returns: 是否拼接成功
     @discardableResult
     public func appendAsset(for string: String) -> Bool {
-        guard let asset = AVURLAsset(string: string) else { return false }
+        guard let asset = AVURLAsset(for: string) else { return false }
         return append(asset: asset)
     }
     
@@ -65,13 +65,15 @@ extension NameSpaceWrapper where Base: AVMutableComposition {
     }
     
     /// 拼接轨道到尾部
-    /// - Parameter track: 拼接的轨道
+    /// - Parameters:
+    ///   - track: 拼接的轨道
+    ///   - range: 拼接时间段
     /// - Returns: 是否拼接成功
     @discardableResult
-    func append(track: AVAssetTrack) -> Bool {
-        guard CMTIMERANGE_IS_VALID(track.timeRange) else { return false }
+    func append(track: AVAssetTrack, range: CMTimeRange? = nil) -> Bool {
+        let timeRange = range ?? CMTimeRange(start: .zero, duration: track.timeRange.duration)
+        guard CMTIMERANGE_IS_VALID(timeRange) else { return false }
         guard let compositionTrack = compositionTrack(with: track.mediaType) else { return false }
-        let timeRange = CMTimeRange(start: .zero, duration: track.timeRange.duration)
         do {
             try compositionTrack.insertTimeRange(timeRange, of: track, at: base.duration)
         } catch {

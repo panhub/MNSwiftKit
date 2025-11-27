@@ -106,11 +106,11 @@ class MNTailorViewController: UIViewController {
         self.videoPath = videoPath
         modalPresentationStyle = .fullScreen
         self.duration = MNAssetExportSession.duration(for: videoPath)
-        self.thumbnail = MNAssetExportSession.generateImage(for: videoPath)
-        let naturalSize = MNAssetExportSession.naturalSize(for: videoPath)
-        if naturalSize != .zero {
-            self.naturalSize = naturalSize
-        }
+//        self.thumbnail = MNAssetExportSession.generateImage(for: videoPath)
+//        let naturalSize = MNAssetExportSession.naturalSize(for: videoPath)
+//        if naturalSize != .zero {
+//            self.naturalSize = naturalSize
+//        }
     }
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -213,10 +213,13 @@ class MNTailorViewController: UIViewController {
         timeView.backgroundColor = BlackColor.withAlphaComponent(0.83)
         view.addSubview(timeView)
         
+        let s = duration
+        let z = thumbnail
+        
         if duration > 0.0, let thumbnail = thumbnail {
             playView.coverView.image = thumbnail
             timeLabel.text = "00:00/\(Date(timeIntervalSince1970: ceil(duration)).mn.playTime)"
-            tailorView.reloadData()
+            tailorView.reloadFrames()
         } else {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
                 guard let self = self else { return }
@@ -357,16 +360,21 @@ extension MNTailorViewController {
                 }
             }
              */
-            guard let session = MNAssetExportSession(fileAtPath: videoPath) else {
+            guard let exportSession = MNAssetExportSession(fileAtPath: videoPath) else {
                 MNToast.showMsg("解析视频失败")
                 return
             }
             MNToast.showActivity("正在导出")
-            session.outputFileType = .mp4
-            session.shouldOptimizeForNetworkUse = true
-            session.outputURL = URL(fileURLWithPath: exportingPath)
-            session.timeRange = session.asset.mn.timeRange(withProgress: begin, to: end)
-            session.exportAsynchronously { [weak self] status, error in
+            exportSession.outputFileType = .mp4
+            exportSession.shouldOptimizeForNetworkUse = true
+            exportSession.cropRect = .init(origin: .zero, size: .init(width: 100.0, height: 100.0))
+            exportSession.timeRange = exportSession.asset.mn.timeRange(withProgress: begin, to: end)
+            if #available(iOS 16.0, *) {
+                exportSession.outputURL = URL(filePath: exportingPath)
+            } else {
+                exportSession.outputURL = URL(fileURLWithPath: exportingPath)
+            }
+            exportSession.exportAsynchronously { [weak self] status, error in
                 if status == .completed {
                     MNToast.close {
                         guard let self = self else { return }
@@ -530,6 +538,6 @@ extension MNTailorViewController: MNPlayerDelegate {
     
     func player(_ player: MNPlayer, didPlayFail error: Error) {
         indicatorView.stopAnimating()
-        failure(error.asPlayError.msg)
+        failure(error.localizedDescription)
     }
 }

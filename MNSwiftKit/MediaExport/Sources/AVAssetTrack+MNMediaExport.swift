@@ -71,16 +71,23 @@ extension NameSpaceWrapper where Base: AVAssetTrack {
         return CGFloat(base.nominalFrameRate)
     }
     
-    public func transform(for cropRectang: CGRect, renderSize: CGSize? = nil) -> CGAffineTransform {
+    public func transform(for cropRect: CGRect, renderSize: CGSize? = nil) -> CGAffineTransform {
         
-        var targetSize = cropRectang.size
+        let preferredTransform = preferredTransform
+        let inverseTransform = preferredTransform.inverted()
+        // 将显示坐标的矩形四个角映射回未旋转的 track 坐标
+        let topLeft = CGPoint(x: cropRect.minX, y: cropRect.minY).applying(inverseTransform)
+        let bottomRight = CGPoint(x: cropRect.maxX, y: cropRect.maxY).applying(inverseTransform)
+        let trackRect = CGRect(x: topLeft.x, y: topLeft.y, width: bottomRight.x - topLeft.x, height: bottomRight.y - topLeft.y)
+        
+        var transform = preferredTransform.concatenating(.init(translationX: -trackRect.minX, y: -trackRect.minY))
         if let renderSize = renderSize, renderSize.width > 0.0, renderSize.height > 0.0 {
-            // 
+            //
+            let scaleX = renderSize.width/trackRect.width
+            let scaleY = renderSize.height/trackRect.height
+            transform = transform.concatenating(.init(translationX: scaleX, y: scaleY))
         }
         
-        
-        let naturalSize = naturalSize
-        let preferredTransform = preferredTransform
-        
+        return transform
     }
 }

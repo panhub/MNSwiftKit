@@ -7,9 +7,6 @@
 
 import UIKit
 import AVFoundation
-//#if canImport(MNSwiftKitLayout)
-//import MNSwiftKitLayout
-//#endif
 
 protocol MNTailorViewDelegate: NSObjectProtocol {
     
@@ -163,7 +160,7 @@ class MNTailorView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func reloadData() {
+    func reloadFrames() {
         
         let videoPath: String = videoPath
         

@@ -3,369 +3,106 @@
 //  MNSwiftKit
 //
 //  Created by panhub on 2021/12/8.
-//  错误信息
+//  媒体输出信息
 
 import Foundation
 import AVFoundation
 
-public let AVErrorUnknown: Int = -133303
-
-public enum AVError: Swift.Error {
+/// 媒体输出错误信息
+public enum MNExportError: Swift.Error {
     
-    public enum URLErrorReason {
-        case badUrl
-        case cannotCreateFile
-        case cannotCreateDirectory(String)
-    }
-    
-    public enum TrackErrorReason {
-        case notFound
-        case notExists(AVMediaType)
-        case cannotInsert(AVMediaType)
-        case outputRectIsZero
-    }
-    
-    public enum AssetErrorReason {
-        case notFound
-    }
-    
-    public enum ReadErrorReason {
-        case cannotReading
-        case cannotCreateReader
-        case cannotAddVoidOutput
-        case cannotAddAudioOutput
-        case underlyingError(Error)
-    }
-    
-    public enum WriteErrorReason {
-        case cannotWriting
-        case cannotCreateWriter
-        case cannotAddVoidInput
-        case cannotAddAudioInput
-        case cannotAppendAudioBuffer
-        case cannotAppendVideoBuffer
-        case underlyingError(Error)
-    }
-    
-    public enum ExportFailureReason {
-        case unknown
-        case cancelled
-        case unsupported
-        case underlyingError(Error)
-    }
-    
-    public enum RecordFailureReason {
-        case cannotConvertCamera
-    }
-    
-    public enum AuthorizationFailureReason {
-        case cameraDenied
-        case microphoneDenied
-    }
-    
-    public enum SessionErrorReason {
-        case notRunning
-        case categoryNotActive(AVAudioSession.Category)
-        case unsupportedPreset(AVCaptureSession.Preset)
-        case cannotAddAudioInput
-        case cannotAddVideoInput
-        case cannotAddAudioOutput
-        case cannotAddVideoOutput
-        case cannotAddImageOutput
-        case cannotAddPhotoOutput
-    }
-    
-    public enum CaptureFailureReason {
-        case busying
-        case photoOutputNotFound
-        case unsupportedPhotoFormat
-        case cannotCapturePhoto
-        case cannotCaptureLivePhoto
-        case underlyingError(Error)
-    }
-    
-    public enum DeviceErrorReason {
-        case notFound
-        case torchNotFound
-        case flashNotFound
-        case cannotCreateAudioInput
-        case cannotCreateVideoInput
-        case unsupportedFlashMode(AVCaptureDevice.FlashMode)
-        case unsupportedTorchMode(AVCaptureDevice.TorchMode)
-    }
-    
-    public enum PlayErrorReason {
-        case playFailed
-        case notActive(AVAudioSession.Category)
-        case statusError(AVPlayer.Status)
-        case custom(Int, String)
-        case underlyingError(Error)
-    }
-    
-    case urlError(URLErrorReason)
-    case trackError(TrackErrorReason)
-    case exportError(ExportFailureReason)
-    case assetError(AssetErrorReason)
-    case readError(ReadErrorReason)
-    case writeError(WriteErrorReason)
-    case recordError(RecordFailureReason)
-    case notPermission(AuthorizationFailureReason)
-    case sessionError(SessionErrorReason)
-    case captureError(CaptureFailureReason)
-    case deviceError(DeviceErrorReason)
-    case playError(PlayErrorReason)
-    case custom(Int, String)
+    /// 未知输出目录
+    case unknownOutputDirectory
+    /// 无法输出文件
+    case cannotExportFile
+    /// 媒体资源为空
+    case assetIsEmpty
+    /// 无法创建输出目录
+    case cannotCreateDirectory(String)
+    /// 文件已存在
+    case fileDoesExist(String)
+    /// 无法添加轨道
+    case cannotInsertTrack(AVMediaType)
+    /// 底层错误
+    case underlyingError(Swift.Error)
 }
 
 extension Swift.Error {
     
     /// 转化错误
-    public var avError: AVError? { self as? AVError }
+    public var asExportError: MNExportError? { self as? MNExportError }
 }
 
-extension AVError {
+extension MNExportError {
     
-    public var errMsg: String {
+    /// 错误信息
+    public var msg: String {
         switch self {
-        case .urlError(let reason):
-            return reason.errMsg
-        case .trackError(let reason):
-            return reason.errMsg
-        case .exportError(let reason):
-            return reason.errMsg
-        case .assetError(let reason):
-            return reason.errMsg
-        case .readError(let reason):
-            return reason.errMsg
-        case .writeError(let reason):
-            return reason.errMsg
-        case .recordError(let reason):
-            return reason.errMsg
-        case .notPermission(let reason):
-            return reason.errMsg
-        case .sessionError(let reason):
-            return reason.errMsg
-        case .captureError(let reason):
-            return reason.errMsg
-        case .deviceError(let reason):
-            return reason.errMsg
-        case .playError(let reason):
-            return reason.errMsg
-        case .custom(_, let msg):
-            return msg
+        case .unknownOutputDirectory: return "未知输出目录"
+        case .cannotExportFile: return "无法输出文件"
+        case .assetIsEmpty: return "媒体资源为空"
+        case .cannotCreateDirectory: return "无法创建输出目录"
+        case .fileDoesExist: return "文件已存在"
+        case .cannotInsertTrack: return "无法插入媒体轨道"
+        case .underlyingError(let error): return error.localizedDescription
         }
     }
     
-    public var isAuthorizationError: Bool {
+    /// 内部错误
+    public var underlyingError: Error? {
         switch self {
-        case .notPermission(_):
-            return true
-        default:
-            return false
+        case .underlyingError(let error): return error
+        default: return nil
         }
     }
 }
 
-extension AVError.URLErrorReason {
+extension MNExportError: CustomNSError {
     
-    public var errMsg: String {
+    public static var errorDomain: String {
+        
+        "com.mn.asset.export.error"
+    }
+    
+    public var errorCode: Int {
         switch self {
-        case .badUrl:
-            return "文件路径不可用"
-        case .cannotCreateFile:
-            return "无法创建文件"
-        case .cannotCreateDirectory(_):
-            return "无法创建文件夹"
+        case .unknownOutputDirectory: return -181377
+        case .cannotExportFile: return -181378
+        case .assetIsEmpty: return -181379
+        case .cannotCreateDirectory: return -181380
+        case .fileDoesExist(let string): return -181381
+        case .cannotInsertTrack: return -181382
+        case .underlyingError(let error): return error._code
         }
+    }
+    
+    public var errorUserInfo: [String : Any] {
+        var userInfo: [String : Any] = [NSLocalizedDescriptionKey: msg]
+        if let error = underlyingError {
+            userInfo[NSUnderlyingErrorKey] = error
+        }
+        return userInfo
     }
 }
 
-extension AVError.TrackErrorReason {
+extension MNExportError: CustomDebugStringConvertible {
     
-    public var errMsg: String {
+    public var debugDescription: String {
         switch self {
-        case .notFound:
-            return "素材不存在"
-        case .notExists(let type):
-            return "\(type == .video ? "视频" : "音频")素材不存在"
-        case .cannotInsert(let type):
-            return "插入\(type == .video ? "视频" : "音频")素材失败"
-        case .outputRectIsZero:
-            return "输出尺寸为空"
-        }
-    }
-}
-
-extension AVError.AssetErrorReason {
-    
-    public var errMsg: String {
-        switch self {
-        case .notFound:
-            return "资源不存在"
-        }
-    }
-}
-
-extension AVError.ReadErrorReason {
-    
-    public var errMsg: String {
-        switch self {
-        case .cannotCreateReader:
-            return "无法读取文件"
-        case .cannotAddVoidOutput:
-            return "视频读取失败"
-        case .cannotAddAudioOutput:
-            return "音频读取失败"
-        case .cannotReading:
-            return "文件读取失败"
+        case .unknownOutputDirectory:
+            return "输出目录为空"
+        case .cannotExportFile:
+            return "创建输出会话失败"
+        case .assetIsEmpty:
+            return "未插入任何资源轨道"
+        case .cannotCreateDirectory(let string):
+            return "无法创建创建输出目录: \(string)"
+        case .fileDoesExist(let string):
+            return "文件已经存在: \(string)"
+        case .cannotInsertTrack(let aVMediaType):
+            return "无法插入资源轨道: \(aVMediaType == .video ? "视频" : "音频")"
         case .underlyingError(let error):
-            return error.localizedDescription
-        }
-    }
-}
-
-extension AVError.WriteErrorReason {
-    
-    public var errMsg: String {
-        switch self {
-        case .cannotCreateWriter:
-            return "无法写入文件"
-        case .cannotAddVoidInput:
-            return "视频写入失败"
-        case .cannotAddAudioInput:
-            return "音频写入失败"
-        case .cannotWriting:
-            return "无法写入失败"
-        case .cannotAppendAudioBuffer:
-            return "追加音频数据失败"
-        case .cannotAppendVideoBuffer:
-            return "追加视频数据失败"
-        case .underlyingError(let error):
-            return error.localizedDescription
-        }
-    }
-}
-
-extension AVError.ExportFailureReason {
-    
-    public var errMsg: String {
-        switch self {
-        case .unknown:
-            return "发生未知错误"
-        case .cancelled:
-            return "已取消操作"
-        case .unsupported:
-            return "不支持此操作"
-        case .underlyingError(let error):
-            return error.localizedDescription
-        }
-    }
-}
-
-extension AVError.RecordFailureReason {
-    
-    public var errMsg: String {
-        switch self {
-        case .cannotConvertCamera:
-            return "切换摄像头失败"
-        }
-    }
-}
-
-extension AVError.AuthorizationFailureReason {
-    
-    public var errMsg: String {
-        switch self {
-        case .cameraDenied:
-            return "访问摄像头被拒绝"
-        case .microphoneDenied:
-            return "访问麦克风被拒绝"
-        }
-    }
-}
-
-extension AVError.SessionErrorReason {
-    
-    public var errMsg: String {
-        switch self {
-        case .notRunning:
-            return "捕获未开启"
-        case .categoryNotActive(let category):
-            return "会话类别设置失败:\(category.rawValue)"
-        case .unsupportedPreset(let sessionPreset):
-            return "不支持会话类型:\(sessionPreset.rawValue)"
-        case .cannotAddAudioInput:
-            return "无法添加设备"
-        case .cannotAddVideoInput:
-            return "无法添加设备"
-        case .cannotAddAudioOutput:
-            return "无法添加设备"
-        case .cannotAddVideoOutput:
-            return "无法添加设备"
-        case .cannotAddImageOutput:
-            return "无法拍摄照片"
-        case .cannotAddPhotoOutput:
-            return "无法拍摄照片"
-        }
-    }
-}
-
-extension AVError.CaptureFailureReason {
-    
-    public var errMsg: String {
-        switch self {
-        case .busying:
-            return "繁忙"
-        case .photoOutputNotFound:
-            return "照片配置错误"
-        case .unsupportedPhotoFormat:
-            return "不支持照片格式"
-        case .cannotCapturePhoto:
-            return "捕捉图像失败"
-        case .cannotCaptureLivePhoto:
-            return "捕捉LivePhoto失败"
-        case .underlyingError(let error):
-            return error.localizedDescription
-        }
-    }
-}
-
-extension AVError.DeviceErrorReason {
-    
-    public var errMsg: String {
-        switch self {
-        case .notFound:
-            return "未发现设备"
-        case .flashNotFound:
-            return "未发现闪光灯"
-        case .torchNotFound:
-            return "未发现手电筒"
-        case .cannotCreateAudioInput:
-            return "创建音频输出失败"
-        case .cannotCreateVideoInput:
-            return "创建视频输出失败"
-        case .unsupportedFlashMode(let mode):
-            return "\(mode == .on ? "开启" : "关闭")闪光灯失败"
-        case .unsupportedTorchMode(let mode):
-            return "\(mode == .on ? "开启" : "关闭")手电筒失败"
-        }
-    }
-}
-
-extension AVError.PlayErrorReason {
-    
-    public var errMsg: String {
-        switch self {
-        case .playFailed:
-            return "播放失败"
-        case .notActive(_):
-            return "设置会话模式失败"
-        case .statusError(_):
-            return "媒体文件解析错误"
-        case .custom(_, let msg):
-            return msg
-        case .underlyingError(let error):
-            return error.localizedDescription
+            return "\(error)"
         }
     }
 }

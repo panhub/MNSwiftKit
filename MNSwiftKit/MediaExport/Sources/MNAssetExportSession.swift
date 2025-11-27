@@ -11,12 +11,14 @@ import QuartzCore.CADisplayLink
 
 /// 音/视频转码切割
 public class MNAssetExportSession: NSObject {
+    /// 获取资源信息
+    public let asset: AVAsset
     /// 输出格式
     public var outputFileType: AVFileType?
     /// 裁剪片段
     public var timeRange: CMTimeRange = .invalid
-    /// 裁剪画面
-    public var outputRect: CGRect?
+    /// 裁剪画面矩形
+    public var cropRect: CGRect?
     /// 预设质量
     public var presetName: String?
     /// 输出路径
@@ -29,27 +31,39 @@ public class MNAssetExportSession: NSObject {
     public var isExportVideoTrack: Bool = true
     /// 是否输出音频内容
     public var isExportAudioTrack: Bool = true
-    /// 获取资源信息
-    public var asset: AVAsset { composition }
     /// 查询进度
     private weak var displayLink: CADisplayLink?
     /// 系统输出使用
     private weak var exportSession: AVAssetExportSession?
-    /// 内部使用
-    public let composition = AVMutableComposition()
     /// 错误信息
-    private(set) var error: AVError?
+    public private(set) var error: Error?
     /// 进度
-    private(set) var progress: Float = 0.0
+    public private(set) var progress: CGFloat = 0.0
     /// 状态
-    private(set) var status: AVAssetExportSession.Status = .unknown
+    public private(set) var status: AVAssetExportSession.Status = .unknown
     /// 进度回调
-    private var progressHandler: ((Float)->Void)?
+    private var progressHandler: ((CGFloat)->Void)?
     /// 结束回调
-    private var completionHandler: ((AVAssetExportSession.Status, AVError?)->Void)?
+    private var completionHandler: ((AVAssetExportSession.Status, Error?)->Void)?
     
-    fileprivate override init() {
-        super.init()
+    /// 构造资源输出会话
+    /// - Parameter asset: 媒体资源
+    public init(asset: AVAsset) {
+        self.asset = asset
+    }
+    
+    /// 构造资源输出会话
+    /// - Parameter filePath: 媒体资源路径
+    public convenience init?(fileAtPath filePath: String) {
+        guard let asset = AVURLAsset(for: filePath) else { return nil }
+        self.init(asset: asset)
+    }
+    
+    /// 构造资源输出会话
+    /// - Parameter fileURL: 媒体资源定位器
+    public convenience init(fileOfURL fileURL: URL) {
+        let asset = AVURLAsset(for: fileURL)
+        self.init(asset: asset)
     }
     
     deinit {
@@ -66,150 +80,172 @@ public class MNAssetExportSession: NSObject {
     /// - Parameters:
     ///   - progressHandler: 进度回调
     ///   - completionHandler: 导出结束回调
-    public func exportAsynchronously(progressHandler: ((Float)->Void)? = nil, completionHandler: ((AVAssetExportSession.Status, AVError?)->Void)?) {
-        guard status != .waiting, status != .exporting else { return }
+    public func exportAsynchronously(progressHandler: ((CGFloat)->Void)? = nil, completionHandler: ((AVAssetExportSession.Status, Error?)->Void)?) {
+        if status == .waiting || status == .exporting { return }
         error = nil
         progress = 0.0
         status = .waiting
         exportSession = nil
         self.progressHandler = progressHandler
         self.completionHandler = completionHandler
-        DispatchQueue(label: "com.av.asset.export").async {
+        DispatchQueue(label: "com.mn.asset.export.session.queue", qos: .userInitiated).async {
             self.export()
         }
     }
     
     private func export() {
         
-        func finish(error: AVError?) {
+        func finish(error: MNExportError?) {
             self.error = error
             status = .failed
             completionHandler?(.failed, error)
         }
         
         guard let outputURL = outputURL, outputURL.isFileURL else {
-            finish(error: .urlError(.badUrl))
+            finish(error: .unknownOutputDirectory)
             return
         }
         
-        guard composition.tracks.isEmpty == false else {
-            finish(error: .trackError(.notFound))
-            return
+        // 删除本地文件
+        var outputPath: String = ""
+        if #available(iOS 16.0, *) {
+            outputPath = outputURL.path(percentEncoded: false)
+        } else {
+            outputPath = outputURL.path
+        }
+        if FileManager.default.fileExists(atPath: outputPath) {
+            do {
+                try FileManager.default.removeItem(at: outputURL)
+            } catch {
+#if DEBUG
+                print("删除旧文件失败: \(error)")
+#endif
+                finish(error: .fileDoesExist(outputPath))
+                return
+            }
+        }
+        let outputDirectory = (outputPath as NSString).deletingLastPathComponent
+        if FileManager.default.fileExists(atPath: outputDirectory) == false {
+            do {
+                try FileManager.default.createDirectory(atPath: outputDirectory, withIntermediateDirectories: true)
+            } catch {
+#if DEBUG
+                print("创建输出目录失败: \(error)")
+#endif
+                finish(error: .cannotCreateDirectory(outputDirectory))
+                return
+            }
         }
         
         // 重新提取素材
-        let videoTrack = composition.track(mediaType: .video)
-        let audioTrack = composition.track(mediaType: .audio)
-        let asset = AVMutableComposition()
+        let videoTrack = asset.mn.track(with: .video)
+        let audioTrack = asset.mn.track(with: .audio)
+        let composition = AVMutableComposition()
         if isExportVideoTrack, let track = videoTrack {
-            let timeRange = CMTIMERANGE_IS_VALID(timeRange) ? timeRange : CMTimeRange(start: .zero, duration: track.timeRange.duration)
-            let compositionTrack = asset.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid)
-            do {
-                try compositionTrack?.insertTimeRange(timeRange, of: track, at: .zero)
-            } catch {
-                finish(error: .trackError(.cannotInsert(.video)))
+            guard composition.mn.append(track: track, range: timeRange) else {
+                finish(error: .cannotInsertTrack(.video))
                 return
             }
         }
         if isExportAudioTrack, let track = audioTrack {
-            let timeRange = CMTIMERANGE_IS_VALID(timeRange) ? timeRange : CMTimeRange(start: .zero, duration: track.timeRange.duration)
-            let compositionTrack = asset.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid)
-            do {
-                try compositionTrack?.insertTimeRange(timeRange, of: track, at: .zero)
-            } catch {
-                finish(error: .trackError(.cannotInsert(.audio)))
+            guard composition.mn.append(track: track, range: timeRange) else {
+                finish(error: .cannotInsertTrack(.audio))
                 return
             }
         }
         
         // 检查输出项
-        guard asset.tracks.isEmpty == false else {
-            finish(error: .trackError(.notFound))
+        guard composition.tracks.isEmpty == false else {
+            finish(error: .assetIsEmpty)
             return
         }
         
-        // 删除本地文件
-        try? FileManager.default.removeItem(at: outputURL)
-        try? FileManager.default.createDirectory(at: outputURL.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
-        
         // 寻找合适的预设质量<内部封装>
         func presetCompatible(with asset: AVAsset) -> String {
-            let presets = AVAssetExportSession.exportPresets(compatibleWith: asset)
-            if let presetName = presetName, presets.contains(presetName) {
+            let compatiblePresetNames = AVAssetExportSession.exportPresets(compatibleWith: asset)
+            if let presetName = presetName, compatiblePresetNames.contains(presetName) {
                 return presetName
             }
-            var container = [String]()
-            if isExportVideoTrack, let _ = composition.track(mediaType: .video) {
-                container.append(AVAssetExportPresetHighestQuality)
-                container.append(AVAssetExportPreset1280x720)
-                container.append(AVAssetExportPresetMediumQuality)
-                container.append(AVAssetExportPresetLowQuality)
+            var presetNames: [String] = []
+            if isExportVideoTrack, let _ = videoTrack {
+                presetNames.append(AVAssetExportPresetHighestQuality)
+                presetNames.append(AVAssetExportPreset1280x720)
+                presetNames.append(AVAssetExportPresetMediumQuality)
+                presetNames.append(AVAssetExportPresetLowQuality)
             }
-            if isExportAudioTrack, let _ = composition.track(mediaType: .audio) {
-                container.append(AVAssetExportPresetAppleM4A)
+            if isExportAudioTrack, let _ = audioTrack {
+                presetNames.append(AVAssetExportPresetAppleM4A)
             }
-            if let preset = container.first(where: { presets.contains($0) }) {
-                return preset
+            if let presetName = presetNames.first(where: { compatiblePresetNames.contains($0) }) {
+                return presetName
             }
             return AVAssetExportPresetPassthrough
         }
         
         // 开始输出
-        guard let exportSession = AVAssetExportSession(asset: asset, presetName: presetCompatible(with: asset)) else {
-            finish(error: .exportError(.unsupported))
+        guard let exportSession = AVAssetExportSession(asset: composition, presetName: presetCompatible(with: composition)) else {
+            finish(error: .cannotExportFile)
             return
         }
         exportSession.outputURL = outputURL
-        exportSession.outputFileType = outputFileType ?? ((isExportVideoTrack && videoTrack != nil) ? .mp4 : .m4a)
         exportSession.shouldOptimizeForNetworkUse = shouldOptimizeForNetworkUse
-        if isExportVideoTrack, let track = videoTrack, let outputRect = outputRect, outputRect.isEmpty == false, CMTIMERANGE_IS_VALID(track.timeRange) {
+        if let outputFileType = outputFileType {
+            exportSession.outputFileType = outputFileType
+        } else if isExportVideoTrack, let _ = videoTrack {
+            exportSession.outputFileType = .mp4
+        } else {
+            exportSession.outputFileType = .m4a
+        }
+        if isExportVideoTrack, let track = videoTrack, let cropRect = cropRect, cropRect.isEmpty == false, cropRect.isNull == false {
             // 渲染尺寸
-            var renderSize = outputRect.size
+            var renderSize = cropRect.size
             if let size = self.renderSize {
                 renderSize = size
-                renderSize.width = floor(ceil(renderSize.width)/16.0)*16.0
-                renderSize.height = floor(ceil(renderSize.height)/16.0)*16.0
+                //renderSize.width = floor(ceil(renderSize.width)/16.0)*16.0
+                //renderSize.height = floor(ceil(renderSize.height)/16.0)*16.0
             }
             // 配置画面设置
             let videoLayerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
             videoLayerInstruction.setOpacity(1.0, at: .zero)
-            videoLayerInstruction.setTransform(track.transform(withRect: outputRect, renderSize: renderSize), at: .zero)
+            videoLayerInstruction.setTransform(track.mn.transform(for: cropRect, renderSize: renderSize), at: .zero)
             
             let videoInstruction = AVMutableVideoCompositionInstruction()
             videoInstruction.layerInstructions = [videoLayerInstruction]
-            videoInstruction.timeRange = CMTimeRange(start: .zero, duration: asset.duration)
+            videoInstruction.timeRange = CMTimeRange(start: .zero, duration: composition.duration)
             
-            let videoComposition = AVMutableVideoComposition(propertiesOf: asset)
+            let videoComposition = AVMutableVideoComposition(propertiesOf: composition)
             videoComposition.renderSize = renderSize
             videoComposition.instructions = [videoInstruction]
-            videoComposition.frameDuration = CMTime(value: 1, timescale: CMTimeScale(track.nominalFrameRate))
+            videoComposition.frameDuration = CMTime(value: 1, timescale: CMTimeScale(track.mn.nominalFrameRate))
             
             exportSession.videoComposition = videoComposition
         }
         self.exportSession = exportSession
         // 监听
-        let displayLink = CADisplayLink(target: self, selector: #selector(tip(_:)))
+        let displayLink = CADisplayLink(target: self, selector: #selector(strike(_:)))
         displayLink.isPaused = true
         displayLink.add(to: .main, forMode: .common)
         self.displayLink = displayLink
-        exportSession.addObserver(self, forKeyPath: "status", options: .new, context: nil)
+        exportSession.addObserver(self, forKeyPath: #keyPath(AVAssetExportSession.status), options: .new, context: nil)
         // 开始输出
-        exportSession.exportAsynchronously { [weak exportSession] in
+        exportSession.exportAsynchronously { [weak self] in
+            guard let self = self else { return }
+            guard let exportSession = self.exportSession else { return }
+            exportSession.removeObserver(self, forKeyPath: #keyPath(AVAssetExportSession.status))
             self.exportSession = nil
-            exportSession?.removeObserver(self, forKeyPath: "status")
             if let displayLink = self.displayLink {
+                self.displayLink = nil
                 displayLink.isPaused = true
                 displayLink.remove(from: .main, forMode: .common)
             }
-            if let error = exportSession?.error {
-                self.error = .exportError(.underlyingError(error))
-            }
-            let status: AVAssetExportSession.Status = exportSession?.status ?? .failed
-            self.status = status
-            if status != .completed {
+            self.status = exportSession.status
+            if exportSession.status != .completed {
                 try? FileManager.default.removeItem(at: outputURL)
             }
-            self.completionHandler?(status, self.error)
+            if let error = exportSession.error {
+                self.error = MNExportError.underlyingError(error)
+            }
+            self.completionHandler?(self.status, self.error)
         }
     }
     
@@ -221,55 +257,36 @@ public class MNAssetExportSession: NSObject {
     
     // MARK: - observe
     public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        guard let keyPath = keyPath, keyPath == "status" else { return }
-        guard let status = change?[.newKey] as? Int else { return }
-        self.status = AVAssetExportSession.Status(rawValue: status) ?? .unknown
-        if status == AVAssetExportSession.Status.exporting.rawValue {
+        guard let keyPath = keyPath, keyPath == #keyPath(AVAssetExportSession.status) else { return }
+        guard let rawValue = change?[.newKey] as? Int else { return }
+        guard let status = AVAssetExportSession.Status(rawValue: rawValue) else { return }
+        self.status = status
+        switch status {
+        case .exporting:
             // 开启轮询
             if let displayLink = displayLink {
                 displayLink.isPaused = false
             }
-        } else if status >= AVAssetExportSession.Status.completed.rawValue {
-            // 停止轮询
+        case .completed, .failed, .cancelled:
+            // 结束轮询
             if let displayLink = displayLink {
+                self.displayLink = nil
                 displayLink.isPaused = true
                 displayLink.remove(from: .main, forMode: .common)
             }
-            if status == AVAssetExportSession.Status.completed.rawValue, progress < 1.0 {
+            if status == .completed {
                 progress = 1.0
                 progressHandler?(progress)
             }
+        default: break
         }
     }
     
-    @objc private func tip(_ displayLink: CADisplayLink) {
+    @objc private func strike(_ displayLink: CADisplayLink) {
         guard let exportSession = exportSession, displayLink.isPaused == false else { return }
-        progress = exportSession.progress
-        progressHandler?(progress)
-    }
-}
-
-// MARK: - convenience
-extension MNAssetExportSession {
-    
-    /// 构造资源输出会话
-    /// - Parameter asset: 媒体资源
-    public convenience init(asset: AVAsset) {
-        self.init()
-        composition.mn.append(asset: asset)
-    }
-    
-    /// 构造资源输出会话
-    /// - Parameter filePath: 媒体资源路径
-    public convenience init(fileAtPath filePath: String) {
-        self.init()
-        composition.mn.appendAsset(for: filePath)
-    }
-    
-    /// 构造资源输出会话
-    /// - Parameter fileURL: 媒体资源定位器
-    public convenience init(fileOfURL fileURL: URL) {
-        self.init()
-        composition.mn.appendAsset(for: fileURL)
+        progress = CGFloat(exportSession.progress)
+        if let progressHandler = progressHandler {
+            progressHandler(progress)
+        }
     }
 }

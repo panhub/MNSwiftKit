@@ -13,7 +13,7 @@ extension AVURLAsset {
     
     /// 构造媒体资源
     /// - Parameter path: 文件路径或远程链接
-    public convenience init?(string: String) {
+    public convenience init?(for string: String) {
         var isDirectory: ObjCBool = true
         if FileManager.default.fileExists(atPath: string, isDirectory: &isDirectory) {
             // 本地路径
@@ -25,8 +25,9 @@ extension AVURLAsset {
             }
         } else if let url = URL(string: string) {
             self.init(for: url)
+        } else {
+            return nil
         }
-        return nil
     }
     
     /// 构造媒体资源
@@ -41,24 +42,23 @@ extension NameSpaceWrapper where Base: AVAsset {
     /// 媒体资源时长
     public var duration: CMTime {
         if #available(iOS 16.0, *) {
-            var duration: CMTime = .zero
-            Task {
-                do {
-                    duration = try await base.load(.duration)
-                } catch {
-#if DEBUG
-                    print("获取媒体资源时长出错: \(error)")
-#endif
-                }
-            }
-            return duration
+//            var duration: CMTime = .zero
+//            Task {
+//                do {
+//                    duration = try await base.load(.duration)
+//                } catch {
+//#if DEBUG
+//                    print("获取媒体资源时长出错: \(error)")
+//#endif
+//                }
+//            }
+//            return duration
         }
         return base.duration
     }
     
     /// 媒体资源时长(秒)
     public var seconds: TimeInterval {
-        
         TimeInterval(CMTimeGetSeconds(duration))
     }
     
