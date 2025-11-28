@@ -31,33 +31,35 @@ class ViewController: UIViewController {
         
         let location = touches.first!.location(in: view)
         if imageView.frame.contains(location) {
-            MNAssetBrowser.present(container: imageView)
+            //MNAssetBrowser.present(container: imageView)
         } else if textField.isFirstResponder {
             textField.resignFirstResponder()
         } else {
             // tests[Int.random(in: 0..<tests.count)]
-//            let tests = ["测试提示信息", "今天天气不错", "你知道今天星期几吗", "这厮怎么回事呢?"]
-//            MNToast.showShape(tests[Int.random(in: 0..<tests.count)], style: .line) {
-//                MNToast.showMsg("弹窗已删除")
-//            }
-//            MNToast.close(delay: 5.0)
-//            if self.progress >= 1.0 {
-//                self.progress = 0.0
-//            } else {
-//                self.progress += 0.1
-//            }
-            let picker = MNAssetPicker()
-            picker.options.maxPickingCount = 1
-            picker.options.allowsPreview = true
-            picker.options.maxExportDuration = 20.0
-            //picker.options.presentationStyle = .pageSheet
-            picker.cancel { picker in
-                
-            }.picking { picker, assets in
-                if let asset = assets.first {
-                    print(asset.contents!)
-                }
-            }.present()
+            let tests = ["测试提示信息", "今天天气不错", "你知道今天星期几吗", "这厮怎么回事呢?"]
+            MNToast.showSuccess(tests[Int.random(in: 0..<tests.count)], cancellation: true) { _ in
+                MNToast.showMsg("弹窗已删除")
+            }
+            MNToast.close(delay: 10.0) { cancellation in
+                MNToast.showMsg("弹窗已关闭 \(cancellation ? "手动取消" : "自动取消")", at: .bottom())
+            }
+            if self.progress >= 1.0 {
+                self.progress = 0.0
+            } else {
+                self.progress += 0.1
+            }
+//            let picker = MNAssetPicker()
+//            picker.options.maxPickingCount = 1
+//            picker.options.allowsPreview = true
+//            picker.options.maxExportDuration = 20.0
+//            //picker.options.presentationStyle = .pageSheet
+//            picker.cancel { picker in
+//                
+//            }.picking { picker, assets in
+//                if let asset = assets.first {
+//                    print(asset.contents!)
+//                }
+//            }.present()
         }
     }
 }

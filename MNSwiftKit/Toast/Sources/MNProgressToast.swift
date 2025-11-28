@@ -132,7 +132,7 @@ extension MNProgressToast: MNToastBuilder {
         true
     }
     
-    public var allowUserInteractionWhenDisplayed: Bool {
+    public var allowUserInteraction: Bool {
         
         false
     }

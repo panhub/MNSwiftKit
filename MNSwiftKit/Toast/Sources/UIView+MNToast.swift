@@ -37,33 +37,36 @@ extension NameSpaceWrapper where Base: UIView {
     /// - Parameters:
     ///   - status: 状态描述
     ///   - position: 展示位置
-    ///   - timeInterval: 显示时长
-    ///   - dismissHandler: 消失回调
-    public func showActivityToast(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
+    ///   - cancellation: 是否支持手动取消
+    ///   - timeInterval: 显示时长后自动关闭
+    ///   - dismissHandler: 关闭后回调(是否是手动取消的Toast)
+    public func showActivityToast(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellation: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ cancellation: Bool)->Void)? = nil) {
         
-        MNToast.show(builder: MNActivityToast(), in: base, at: position, status: status, progress: nil, delay: timeInterval, close: handler)
+        MNToast.show(builder: MNActivityToast(), in: base, at: position, status: status, progress: nil, cancellation: cancellation, delay: timeInterval, close: handler)
     }
     
     /// 显示消息Toast
     /// - Parameters:
     ///   - msg: 消息内容
     ///   - position: 展示位置
-    ///   - timeInterval: 显示时长
-    ///   - handler: 消失回调
-    public func showMsgToast(_ msg: String, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
+    ///   - cancellation: 是否支持手动取消
+    ///   - timeInterval: 显示时长后自动关闭
+    ///   - handler: 关闭后回调(是否是手动取消的Toast)
+    public func showMsgToast(_ msg: String, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellation: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ cancellation: Bool)->Void)? = nil) {
         
-        MNToast.show(builder: MNMsgToast(), in: base, at: position, status: msg, progress: nil, delay: timeInterval, close: handler)
+        MNToast.show(builder: MNMsgToast(), in: base, at: position, status: msg, progress: nil, cancellation: cancellation, delay: timeInterval, close: handler)
     }
     
     /// 显示提示Toast
     /// - Parameters:
     ///   - status: 状态描述
     ///   - position: 展示位置
-    ///   - timeInterval: 显示时长
-    ///   - handler: 消失回调
-    public func showInfoToast(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
+    ///   - cancellation: 是否支持手动取消
+    ///   - timeInterval: 显示时长后自动关闭
+    ///   - handler: 关闭后回调(是否是手动取消的Toast)
+    public func showInfoToast(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellation: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ cancellation: Bool)->Void)? = nil) {
         
-        MNToast.show(builder: MNInfoToast(), in: base, at: position, status: status, progress: nil, delay: timeInterval, close: handler)
+        MNToast.show(builder: MNInfoToast(), in: base, at: position, status: status, progress: nil, cancellation: cancellation, delay: timeInterval, close: handler)
     }
     
     /// 显示圆形旋转Toast
@@ -71,11 +74,12 @@ extension NameSpaceWrapper where Base: UIView {
     ///   - status: 状态描述
     ///   - style: 样式
     ///   - position: 展示位置
-    ///   - timeInterval: 显示时长
-    ///   - handler: 消失回调
-    public func showShapeToast(_ status: String?, style: MNShapeToast.Style = .gradient, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
+    ///   - cancellation: 是否支持手动取消
+    ///   - timeInterval: 显示时长后自动关闭
+    ///   - handler: 关闭后回调(是否是手动取消的Toast)
+    public func showShapeToast(_ status: String?, style: MNShapeToast.Style = .gradient, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellation: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ cancellation: Bool)->Void)? = nil) {
         
-        MNToast.show(builder: MNShapeToast(style: style), in: base, at: position, status: status, progress: nil, delay: timeInterval, close: handler)
+        MNToast.show(builder: MNShapeToast(style: style), in: base, at: position, status: status, progress: nil, cancellation: cancellation, delay: timeInterval, close: handler)
     }
     
     /// 显示进度Toast
@@ -84,40 +88,43 @@ extension NameSpaceWrapper where Base: UIView {
     ///   - style: 样式
     ///   - value: 进度值
     ///   - position: 展示位置
-    ///   - timeInterval: 显示时长
-    ///   - handler: 消失回调
-    public func showProgressToast(_ status: String?, style: MNProgressToast.Style = .line, value: (any BinaryFloatingPoint)? = nil, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
+    ///   - cancellation: 是否支持手动取消
+    ///   - timeInterval: 显示时长后自动关闭
+    ///   - handler: 关闭后回调(是否是手动取消的Toast)
+    public func showProgressToast(_ status: String?, style: MNProgressToast.Style = .line, value: (any BinaryFloatingPoint)? = nil, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellation: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ cancellation: Bool)->Void)? = nil) {
         
-        MNToast.show(builder: MNProgressToast(style: style), in: base, at: position, status: status, progress: value, delay: timeInterval, close: handler)
+        MNToast.show(builder: MNProgressToast(style: style), in: base, at: position, status: status, progress: value, cancellation: cancellation, delay: timeInterval, close: handler)
     }
     
     /// 显示成功Toast
     /// - Parameters:
     ///   - status: 状态描述
     ///   - position: 展示位置
-    ///   - timeInterval: 显示时长
-    ///   - handler: 消失回调
-    public func showSuccessToast(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
+    ///   - cancellation: 是否支持手动取消
+    ///   - timeInterval: 显示时长后自动关闭
+    ///   - handler: 关闭后回调(是否是手动取消的Toast)
+    public func showSuccessToast(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellation: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ cancellation: Bool)->Void)? = nil) {
         
-        MNToast.show(builder: MNSuccessToast(), in: base, at: position, status: status, progress: nil, delay: timeInterval, close: handler)
+        MNToast.show(builder: MNSuccessToast(), in: base, at: position, status: status, progress: nil, cancellation: cancellation, delay: timeInterval, close: handler)
     }
     
     /// 显示失败Toast
     /// - Parameters:
     ///   - status: 状态描述
     ///   - position: 展示位置
-    ///   - timeInterval: 显示时长
-    ///   - handler: 消失回调
-    public func showErrorToast(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
+    ///   - cancellation: 是否支持手动取消
+    ///   - timeInterval: 显示时长后自动关闭
+    ///   - handler: 关闭后回调(是否是手动取消的Toast)
+    public func showErrorToast(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellation: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ cancellation: Bool)->Void)? = nil) {
         
-        MNToast.show(builder: MNErrorToast(), in: base, at: position, status: status, progress: nil, delay: timeInterval, close: handler)
+        MNToast.show(builder: MNErrorToast(), in: base, at: position, status: status, progress: nil, cancellation: cancellation, delay: timeInterval, close: handler)
     }
     
     /// 取消Toast
     /// - Parameters:
     ///   - timeInterval: 等待时长
-    ///   - handler: 消失回调
-    public func closeToast(delay timeInterval: TimeInterval = 0.0, completion handler: (()->Void)? = nil) {
+    ///   - handler: 关闭后回调(是否是手动取消的Toast)
+    public func closeToast(delay timeInterval: TimeInterval = 0.0, completion handler: ((_ cancellation: Bool)->Void)? = nil) {
         guard let toast = toast else { return }
         toast.closeWhenAppear(delay: timeInterval, completion: handler)
     }

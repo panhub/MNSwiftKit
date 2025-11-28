@@ -50,7 +50,7 @@ class MNMsgToast: MNToastBuilder {
         true
     }
     
-    var allowUserInteractionWhenDisplayed: Bool {
+    var allowUserInteraction: Bool {
         
         true
     }
@@ -58,7 +58,7 @@ class MNMsgToast: MNToastBuilder {
 
 extension MNMsgToast: MNToastTimerHandler {
     
-    func toastShouldDelayDismiss(with status: String?) -> TimeInterval? {
+    func toastShouldDelayClose(with status: String?) -> TimeInterval? {
         
         MNToast.displayDuration(with: status)
     }

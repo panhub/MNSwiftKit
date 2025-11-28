@@ -36,7 +36,7 @@ class MNInfoToast: MNToastBuilder {
         let imageView = UIImageView(frame: .init(origin: .zero, size: .init(width: 40.0, height: 40.0)))
         imageView.image = image?.withRenderingMode(.alwaysTemplate)
         imageView.contentMode = .scaleAspectFit
-        imageView.tintColor = MNToast.Configuration.shared.color
+        imageView.tintColor = MNToast.Configuration.shared.color.withAlphaComponent(0.75)
         return imageView
     }
     
@@ -61,7 +61,7 @@ class MNInfoToast: MNToastBuilder {
         true
     }
     
-    var allowUserInteractionWhenDisplayed: Bool {
+    var allowUserInteraction: Bool {
         
         false
     }

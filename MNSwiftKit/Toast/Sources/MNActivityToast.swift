@@ -68,7 +68,7 @@ extension MNActivityToast: MNToastBuilder {
         true
     }
     
-    var allowUserInteractionWhenDisplayed: Bool {
+    var allowUserInteraction: Bool {
         
         false
     }
