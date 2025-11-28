@@ -248,7 +248,8 @@ public class MNToast: UIView {
     func update(progress value: any BinaryFloatingPoint) {
         guard builder is MNToastProgressUpdater else { return }
         let updater = builder as! MNToastProgressUpdater
-        updater.toastProgressDidUpdate(CGFloat(value))
+        let floatValue: CGFloat = Swift.min(1.0, Swift.max(CGFloat(value), 0.0))
+        updater.toastProgressDidUpdate(floatValue)
     }
     
     /// 根据当前状态判断是否立即定时

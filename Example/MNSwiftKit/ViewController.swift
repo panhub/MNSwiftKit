@@ -36,18 +36,16 @@ class ViewController: UIViewController {
             textField.resignFirstResponder()
         } else {
             // tests[Int.random(in: 0..<tests.count)]
-            /*
-            let tests = ["测试提示信息", "今天天气不错", "你知道今天星期几吗", "这厮怎么回事呢?"]
-            MNToast.showError(tests[Int.random(in: 0..<tests.count)], delay: 10.0) {
-                MNToast.showMsg("弹窗已删除")
-            }
-            MNToast.close(delay: 3.0)
-            if self.progress >= 1.0 {
-                self.progress = 0.0
-            } else {
-                self.progress += 0.1
-            }
-            */
+//            let tests = ["测试提示信息", "今天天气不错", "你知道今天星期几吗", "这厮怎么回事呢?"]
+//            MNToast.showShape(tests[Int.random(in: 0..<tests.count)], style: .line) {
+//                MNToast.showMsg("弹窗已删除")
+//            }
+//            MNToast.close(delay: 5.0)
+//            if self.progress >= 1.0 {
+//                self.progress = 0.0
+//            } else {
+//                self.progress += 0.1
+//            }
             let picker = MNAssetPicker()
             picker.options.maxPickingCount = 1
             picker.options.allowsPreview = true

@@ -27,6 +27,7 @@ public class MNProgressToast {
         self.style = style
     }
     
+    /// 活动视图动画层
     lazy var activityLayer: CAShapeLayer = {
         
         let borderSize: CGSize = .init(width: 40.0, height: 40.0)
@@ -49,6 +50,16 @@ public class MNProgressToast {
         }
         
         return activityLayer
+    }()
+    
+    /// 百分比提示(style = line时有效)
+    lazy var percentLabel: UILabel = {
+        let percentLabel = UILabel()
+        percentLabel.numberOfLines = 1
+        percentLabel.textAlignment = .center
+        percentLabel.textColor = MNToast.Configuration.shared.color
+        percentLabel.font = .systemFont(ofSize: 10.0, weight: .medium)
+        return percentLabel
     }()
 }
 
@@ -88,6 +99,15 @@ extension MNProgressToast: MNToastBuilder {
         activityView.layer.addSublayer(trackLayer)
         activityView.layer.addSublayer(activityLayer)
         
+        if style == .line {
+            percentLabel.translatesAutoresizingMaskIntoConstraints = false
+            activityView.addSubview(percentLabel)
+            NSLayoutConstraint.activate([
+                percentLabel.centerXAnchor.constraint(equalTo: activityView.centerXAnchor),
+                percentLabel.centerYAnchor.constraint(equalTo: activityView.centerYAnchor)
+            ])
+        }
+        
         return activityView
     }
     
@@ -123,7 +143,14 @@ extension MNProgressToast: MNToastProgressUpdater {
     public func toastProgressDidUpdate(_ value: CGFloat) {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        activityLayer.strokeEnd = max(0.0, min(value, 1.0))
+        activityLayer.strokeEnd = value
         CATransaction.commit()
+        if style == .line {
+            let percentFormatter = NumberFormatter()
+            percentFormatter.numberStyle = .percent
+            percentFormatter.minimumFractionDigits = 0
+            percentFormatter.maximumFractionDigits = 0
+            percentLabel.text = percentFormatter.string(for: value)
+        }
     }
 }

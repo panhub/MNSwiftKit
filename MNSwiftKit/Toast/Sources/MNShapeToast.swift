@@ -12,10 +12,10 @@ public class MNShapeToast {
     
     /// 线条样式
     public enum Style {
-        /// 线条
+        /// 纯色线条
         case line
-        /// 遮罩
-        case mask
+        /// 渐变颜色线条
+        case gradient
     }
     
     /// 进度弹框样式
@@ -37,15 +37,16 @@ public class MNShapeToast {
         activityLayer.frame = .init(origin: .zero, size: borderSize)
         activityLayer.path = path.cgPath
         activityLayer.fillColor = UIColor.clear.cgColor
-        activityLayer.strokeColor = MNToast.Configuration.shared.color.cgColor
+        activityLayer.strokeColor = MNToast.Configuration.shared.color.withAlphaComponent(0.85).cgColor
         activityLayer.lineWidth = lineWidth
         activityLayer.lineCap = .round
         activityLayer.lineJoin = .round
         
         switch style {
         case .line:
-            activityLayer.strokeEnd = 0.82
-        case .mask:
+            activityLayer.strokeStart = 0.09
+            activityLayer.strokeEnd = 0.91
+        case .gradient:
             let mask = CALayer()
             mask.frame = activityLayer.bounds
             mask.contentsScale = UIScreen.main.scale

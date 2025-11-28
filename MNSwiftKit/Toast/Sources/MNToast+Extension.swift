@@ -116,7 +116,7 @@ extension MNToast {
     ///   - position: 展示位置
     ///   - timeInterval: 显示时长
     ///   - handler: 消失回调
-    public class func showShape(_ status: String?, style: MNShapeToast.Style = .mask, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
+    public class func showShape(_ status: String?, style: MNShapeToast.Style = .gradient, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
         
         show(builder: MNShapeToast(style: style), at: position, status: status, progress: nil, delay: timeInterval, close: handler)
     }

@@ -73,7 +73,7 @@ extension NameSpaceWrapper where Base: UIView {
     ///   - position: 展示位置
     ///   - timeInterval: 显示时长
     ///   - handler: 消失回调
-    public func showShapeToast(_ status: String?, style: MNShapeToast.Style = .mask, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
+    public func showShapeToast(_ status: String?, style: MNShapeToast.Style = .gradient, at position: MNToast.Position = MNToast.Configuration.shared.position, delay timeInterval: TimeInterval? = nil, close handler: (()->Void)? = nil) {
         
         MNToast.show(builder: MNShapeToast(style: style), in: base, at: position, status: status, progress: nil, delay: timeInterval, close: handler)
     }
