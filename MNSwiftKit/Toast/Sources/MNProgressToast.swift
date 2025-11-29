@@ -138,9 +138,9 @@ extension MNProgressToast: MNToastBuilder {
     }
 }
 
-extension MNProgressToast: MNToastProgressUpdater {
+extension MNProgressToast: MNToastProgressSupported {
     
-    public func toastProgressDidUpdate(_ value: CGFloat) {
+    public func toastShouldUpdateProgress(_ value: CGFloat) {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         activityLayer.strokeEnd = value

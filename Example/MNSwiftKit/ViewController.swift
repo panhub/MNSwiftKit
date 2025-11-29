@@ -35,9 +35,9 @@ class ViewController: UIViewController {
         } else if textField.isFirstResponder {
             textField.resignFirstResponder()
         } else {
-            // tests[Int.random(in: 0..<tests.count)]
-            let tests = ["测试提示信息", "今天天气不错", "你知道今天星期几吗", "这厮怎么回事呢?"]
-            MNToast.showSuccess(tests[Int.random(in: 0..<tests.count)], cancellation: true) { _ in
+            // tests[Int.random(in: 0..<tests.count)] tests[Int.random(in: 0..<tests.count)]
+            //let tests = ["测试提示信息", "今天天气不错", "你知道今天星期几吗", "这厮怎么回事呢?"]
+            MNToast.showSuccess("测试", cancellation: true) { _ in
                 MNToast.showMsg("弹窗已删除")
             }
             MNToast.close(delay: 10.0) { cancellation in

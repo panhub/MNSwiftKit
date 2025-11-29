@@ -56,9 +56,9 @@ class MNMsgToast: MNToastBuilder {
     }
 }
 
-extension MNMsgToast: MNToastTimerHandler {
+extension MNMsgToast: MNToastCloseSupported {
     
-    func toastShouldDelayClose(with status: String?) -> TimeInterval? {
+    func toastShouldClose(with status: String?) -> TimeInterval {
         
         MNToast.displayDuration(with: status)
     }

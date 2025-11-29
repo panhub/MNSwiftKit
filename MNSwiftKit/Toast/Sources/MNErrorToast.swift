@@ -87,7 +87,7 @@ extension MNErrorToast: MNToastBuilder {
     }
 }
 
-extension MNErrorToast: MNToastAnimationHandler {
+extension MNErrorToast: MNToastAnimationSupported {
     
     func startAnimating() {
         

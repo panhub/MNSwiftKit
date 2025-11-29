@@ -87,7 +87,7 @@ extension MNSuccessToast: MNToastBuilder {
     }
 }
 
-extension MNSuccessToast: MNToastAnimationHandler {
+extension MNSuccessToast: MNToastAnimationSupported {
     
     func startAnimating() {
         

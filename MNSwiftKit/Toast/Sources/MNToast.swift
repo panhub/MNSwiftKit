@@ -37,7 +37,7 @@ public protocol MNToastBuilder {
 }
 
 /// 弹框动画规则
-public protocol MNToastAnimationHandler where Self: MNToastBuilder {
+public protocol MNToastAnimationSupported where Self: MNToastBuilder {
     
     /// 开启动画
     func startAnimating()
@@ -47,20 +47,20 @@ public protocol MNToastAnimationHandler where Self: MNToastBuilder {
 }
 
 /// 弹框进度更新规则
-public protocol MNToastProgressUpdater where Self: MNToastBuilder {
+public protocol MNToastProgressSupported where Self: MNToastBuilder {
     
-    /// 更新进度值
+    /// Toast需要更新进度
     /// - Parameter value: 进度值
-    func toastProgressDidUpdate(_ value: CGFloat)
+    func toastShouldUpdateProgress(_ value: CGFloat)
 }
 
-/// 弹框定时器规则
-public protocol MNToastTimerHandler where Self: MNToastBuilder {
+/// 弹框自动关闭支持
+public protocol MNToastCloseSupported where Self: MNToastBuilder {
     
-    /// 定时自动关闭Toast
+    /// Toast想要定时自动关闭
     /// - Parameter status: 状态文字
     /// - Returns: 显示时长(nil则不做自动关闭操作)
-    func toastShouldDelayClose(with status: String?) -> TimeInterval?
+    func toastShouldClose(with status: String?) -> TimeInterval
 }
 
 
@@ -121,6 +121,8 @@ public class MNToast: UIView {
     private var state: MNToast.State = .willAppear
     /// 延迟执行关闭操作的时长
     private var delayTimeInterval: TimeInterval!
+    /// 关闭按钮
+    private var closeButton: UIButton!
     /// 状态信息
     private let statusLabel = UILabel()
     /// 约束指示图与状态信息
@@ -140,6 +142,51 @@ public class MNToast: UIView {
             } else {
                 statusLabel.isHidden = true
                 statusLabel.attributedText = nil
+            }
+            // 存在关闭按钮以及活动视图则需要适配关闭按钮
+            guard let closeButton = closeButton else { return }
+            guard let activityView = stackView.arrangedSubviews.first, activityView is UILabel == false else { return }
+            guard let activityWidthConstraint = activityView.constraints.first(where: { $0.firstAttribute == .width }) else { return }
+            guard let stackLeftConstraint = visualView.contentView.constraints.first(where: { constraint in
+                guard let firstItem = constraint.firstItem, firstItem is UIStackView else { return false }
+                guard constraint.firstAttribute == .left, constraint.secondAttribute == .left else { return false }
+                return true
+            }) else { return }
+            guard let stackRightConstraint = visualView.contentView.constraints.first(where: { constraint in
+                guard let firstItem = constraint.firstItem, firstItem is UIStackView else { return false }
+                guard constraint.firstAttribute == .right, constraint.secondAttribute == .right else { return false }
+                return true
+            }) else { return }
+            guard let closeWidthConstraint = closeButton.constraints.first(where: { $0.firstAttribute == .width }) else { return }
+            guard let closeRightConstraint = visualView.contentView.constraints.first(where: { constraint in
+                guard let firstItem = constraint.firstItem, firstItem is UIButton else { return false }
+                guard constraint.firstAttribute == .right, constraint.secondAttribute == .right else { return false }
+                return true
+            }) else { return }
+            // 右部分正常宽度
+            var rightPartWidth = activityView.frame.width/2.0
+            if let attributedText = statusLabel.attributedText {
+                let attributedTextWidth = attributedText.size().width
+                if attributedTextWidth > activityWidthConstraint.constant {
+                    rightPartWidth += ceil(attributedTextWidth - activityWidthConstraint.constant)/2.0
+                }
+            }
+            let contentInset = builder.contentInsetForToast
+            rightPartWidth += contentInset.right
+            // 活动视图与关闭按钮间隔
+            let spacing = rightPartWidth - abs(closeRightConstraint.constant) - closeWidthConstraint.constant - activityWidthConstraint.constant/2.0
+            // 定义活动视图与关闭按钮最小间隔
+            let leastSpacingMagnitude = 10.0
+            // 假如需要添加, 添加的量
+            let addition = leastSpacingMagnitude - spacing
+            if addition < 1.0 {
+                // 正常约束即可
+                stackLeftConstraint.constant = contentInset.left
+                stackRightConstraint.constant = -contentInset.right
+            } else {
+                // 修改约束
+                stackLeftConstraint.constant = contentInset.left + addition
+                stackRightConstraint.constant = -contentInset.right - addition
             }
         }
     }
@@ -219,32 +266,32 @@ public class MNToast: UIView {
         NSLayoutConstraint.activate([statusLabel.widthAnchor.constraint(lessThanOrEqualToConstant: MNToast.Configuration.shared.greatestFiniteStatusWidth)])
         
         if cancellation {
-            let cancelImage = ToastResource.image(named: "close")?.withRenderingMode(.alwaysTemplate)
-            let cancelButton = UIButton(type: .custom)
-            cancelButton.tintColor = MNToast.Configuration.shared.color.withAlphaComponent(0.75)
-            cancelButton.translatesAutoresizingMaskIntoConstraints = false
-            cancelButton.addTarget(self, action: #selector(cancel), for: .touchUpInside)
+            let closeImage = ToastResource.image(named: "close")?.withRenderingMode(.alwaysTemplate)
+            closeButton = UIButton(type: .custom)
+            closeButton.tintColor = MNToast.Configuration.shared.color.withAlphaComponent(0.75)
+            closeButton.translatesAutoresizingMaskIntoConstraints = false
+            closeButton.addTarget(self, action: #selector(cancel), for: .touchUpInside)
             if #available(iOS 15.0, *) {
                 var configuration = UIButton.Configuration.plain()
                 configuration.background.backgroundColor = .clear
-                cancelButton.configuration = configuration
-                cancelButton.configurationUpdateHandler = { button in
+                closeButton.configuration = configuration
+                closeButton.configurationUpdateHandler = { button in
                     switch button.state {
                     case .normal, .highlighted:
-                        button.configuration?.background.image = cancelImage
+                        button.configuration?.background.image = closeImage
                     default: break
                     }
                 }
             } else {
-                cancelButton.adjustsImageWhenHighlighted = false
-                cancelButton.setBackgroundImage(cancelImage, for: .normal)
+                closeButton.adjustsImageWhenHighlighted = false
+                closeButton.setBackgroundImage(closeImage, for: .normal)
             }
-            visualView.contentView.addSubview(cancelButton)
+            visualView.contentView.addSubview(closeButton)
             NSLayoutConstraint.activate([
-                cancelButton.topAnchor.constraint(equalTo: visualView.contentView.topAnchor, constant: 8.0),
-                cancelButton.rightAnchor.constraint(equalTo: visualView.contentView.rightAnchor, constant: -8.0),
-                cancelButton.widthAnchor.constraint(equalToConstant: 18.0),
-                cancelButton.heightAnchor.constraint(equalToConstant: 18.0)
+                closeButton.topAnchor.constraint(equalTo: visualView.contentView.topAnchor, constant: 8.0),
+                closeButton.rightAnchor.constraint(equalTo: visualView.contentView.rightAnchor, constant: -8.0),
+                closeButton.widthAnchor.constraint(equalToConstant: 15.0),
+                closeButton.heightAnchor.constraint(equalToConstant: 15.0)
             ])
         }
         
@@ -269,10 +316,10 @@ public class MNToast: UIView {
     /// 更新进度
     /// - Parameter value: 进度值
     func update(progress value: any BinaryFloatingPoint) {
-        guard builder is MNToastProgressUpdater else { return }
-        let updater = builder as! MNToastProgressUpdater
+        guard builder is MNToastProgressSupported else { return }
+        let updater = builder as! MNToastProgressSupported
         let floatValue: CGFloat = Swift.min(1.0, Swift.max(CGFloat(value), 0.0))
-        updater.toastProgressDidUpdate(floatValue)
+        updater.toastShouldUpdateProgress(floatValue)
     }
     
     /// 根据当前状态判断是否立即定时
@@ -427,19 +474,18 @@ extension MNToast {
             guard let self = self else { return }
             guard finished else { return }
             self.state = .appearing
-            if self.builder is MNToastAnimationHandler {
-                let delegate = self.builder as! MNToastAnimationHandler
+            if self.builder is MNToastAnimationSupported {
+                let delegate = self.builder as! MNToastAnimationSupported
                 delegate.startAnimating()
             }
             // 定时关闭
             if let timeInterval = self.delayTimeInterval {
                 self.delayTimeInterval = nil
                 self.close(delay: timeInterval)
-            } else if self.builder is MNToastTimerHandler {
-                let delegate = self.builder as! MNToastTimerHandler
-                if let timeInterval = delegate.toastShouldDelayClose(with: self.status) {
-                    self.close(delay: timeInterval)
-                }
+            } else if self.builder is MNToastCloseSupported {
+                let delegate = self.builder as! MNToastCloseSupported
+                let timeInterval = delegate.toastShouldClose(with: self.status)
+                self.close(delay: timeInterval)
             }
         }
         if animated {
@@ -484,8 +530,8 @@ extension MNToast {
             guard let self = self else { return }
             guard finished else { return }
             self.state = .disappear
-            if self.builder is MNToastAnimationHandler {
-                let delegate = self.builder as! MNToastAnimationHandler
+            if self.builder is MNToastAnimationSupported {
+                let delegate = self.builder as! MNToastAnimationSupported
                 delegate.stopAnimating()
             }
             self.removeFromSuperview()

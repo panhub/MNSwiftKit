@@ -1,5 +1,5 @@
 //
-//  MNShapeToast.swift
+//  MNRotationToast.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2021/9/10.
@@ -7,8 +7,8 @@
 
 import UIKit
 
-/// 圆形旋转Toast样式构建者
-public class MNShapeToast {
+/// 旋转Toast样式构建者
+public class MNRotationToast {
     
     /// 线条样式
     public enum Style {
@@ -19,11 +19,11 @@ public class MNShapeToast {
     }
     
     /// 进度弹框样式
-    public let style: MNShapeToast.Style
+    public let style: MNRotationToast.Style
     
-    /// 构造圆形旋转Toast弹窗
+    /// 构造旋转Toast
     /// - Parameter style: 样式
-    public init(style: MNShapeToast.Style) {
+    public init(style: MNRotationToast.Style) {
         self.style = style
     }
     
@@ -59,7 +59,7 @@ public class MNShapeToast {
     }()
 }
     
-extension MNShapeToast: MNToastBuilder {
+extension MNRotationToast: MNToastBuilder {
     
     public var axisForToast: MNToast.Axis {
         
@@ -110,7 +110,7 @@ extension MNShapeToast: MNToastBuilder {
     }
 }
 
-extension MNShapeToast: MNToastAnimationHandler {
+extension MNRotationToast: MNToastAnimationSupported {
     
     public func startAnimating() {
         

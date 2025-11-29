@@ -74,7 +74,7 @@ extension MNActivityToast: MNToastBuilder {
     }
 }
 
-extension MNActivityToast: MNToastAnimationHandler {
+extension MNActivityToast: MNToastAnimationSupported {
     
     func startAnimating() {
         
