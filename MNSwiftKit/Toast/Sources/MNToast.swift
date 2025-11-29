@@ -145,11 +145,10 @@ public class MNToast: UIView {
             }
             // 存在关闭按钮以及活动视图则需要适配关闭按钮
             guard let closeButton = closeButton else { return }
-            guard let activityView = stackView.arrangedSubviews.first, activityView is UILabel == false else { return }
-            guard let activityWidthConstraint = activityView.constraints.first(where: { $0.firstAttribute == .width }) else { return }
-            guard let stackLeftConstraint = visualView.contentView.constraints.first(where: { constraint in
-                guard let firstItem = constraint.firstItem, firstItem is UIStackView else { return false }
-                guard constraint.firstAttribute == .left, constraint.secondAttribute == .left else { return false }
+            guard let closeWidthConstraint = closeButton.constraints.first(where: { $0.firstAttribute == .width }) else { return }
+            guard let closeRightConstraint = visualView.contentView.constraints.first(where: { constraint in
+                guard let firstItem = constraint.firstItem, firstItem is UIButton else { return false }
+                guard constraint.firstAttribute == .right, constraint.secondAttribute == .right else { return false }
                 return true
             }) else { return }
             guard let stackRightConstraint = visualView.contentView.constraints.first(where: { constraint in
@@ -157,36 +156,80 @@ public class MNToast: UIView {
                 guard constraint.firstAttribute == .right, constraint.secondAttribute == .right else { return false }
                 return true
             }) else { return }
-            guard let closeWidthConstraint = closeButton.constraints.first(where: { $0.firstAttribute == .width }) else { return }
-            guard let closeRightConstraint = visualView.contentView.constraints.first(where: { constraint in
-                guard let firstItem = constraint.firstItem, firstItem is UIButton else { return false }
-                guard constraint.firstAttribute == .right, constraint.secondAttribute == .right else { return false }
-                return true
-            }) else { return }
-            // 右部分正常宽度
-            var rightPartWidth = activityView.frame.width/2.0
-            if let attributedText = statusLabel.attributedText {
-                let attributedTextWidth = attributedText.size().width
-                if attributedTextWidth > activityWidthConstraint.constant {
-                    rightPartWidth += ceil(attributedTextWidth - activityWidthConstraint.constant)/2.0
-                }
-            }
             let contentInset = builder.contentInsetForToast
-            rightPartWidth += contentInset.right
-            // 活动视图与关闭按钮间隔
-            let spacing = rightPartWidth - abs(closeRightConstraint.constant) - closeWidthConstraint.constant - activityWidthConstraint.constant/2.0
-            // 定义活动视图与关闭按钮最小间隔
-            let leastSpacingMagnitude = 10.0
-            // 假如需要添加, 添加的量
-            let addition = leastSpacingMagnitude - spacing
-            if addition < 1.0 {
-                // 正常约束即可
-                stackLeftConstraint.constant = contentInset.left
-                stackRightConstraint.constant = -contentInset.right
+            if let activityView = stackView.arrangedSubviews.first, activityView != statusLabel {
+                // 存在活动视图
+                switch builder.axisForToast {
+                case .vertical:
+                    // 纵向布局
+                    guard let activityWidthConstraint = activityView.constraints.first(where: { $0.firstAttribute == .width }) else { break }
+                    guard let stackLeftConstraint = visualView.contentView.constraints.first(where: { constraint in
+                        guard let firstItem = constraint.firstItem, firstItem is UIStackView else { return false }
+                        guard constraint.firstAttribute == .left, constraint.secondAttribute == .left else { return false }
+                        return true
+                    }) else { break }
+                    // 活动视图与关闭按钮最小间隔
+                    let leastSpacingMagnitude = 10.0
+                    // 右部分正常宽度
+                    var contentPartWidth = activityWidthConstraint.constant/2.0
+                    if let statusText = statusLabel.attributedText {
+                        let statusTextWidth = statusText.boundingRect(with: .init(width: MNToast.Configuration.shared.greatestFiniteStatusWidth, height: .greatestFiniteMagnitude), options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil).width
+                        if statusTextWidth > activityWidthConstraint.constant {
+                            contentPartWidth += ceil(statusTextWidth - activityWidthConstraint.constant)/2.0
+                        }
+                    }
+                    contentPartWidth += contentInset.right
+                    // 活动视图与关闭按钮间隔
+                    let spacing = contentPartWidth - abs(closeRightConstraint.constant) - closeWidthConstraint.constant - activityWidthConstraint.constant/2.0
+                    // 假如需要添加, 添加的量
+                    let addition = leastSpacingMagnitude - spacing
+                    if addition <= 0.0 {
+                        // 正常约束即可
+                        stackLeftConstraint.constant = contentInset.left
+                        stackRightConstraint.constant = -contentInset.right
+                    } else {
+                        // 修改约束
+                        stackLeftConstraint.constant = contentInset.left + addition
+                        stackRightConstraint.constant = -contentInset.right - addition
+                    }
+                case .horizontal:
+                    // 横向布局
+                    // 活动视图与关闭按钮最小间隔
+                    let leastSpacingMagnitude = stackView.spacing
+                    closeRightConstraint.constant = -contentInset.right
+                    stackRightConstraint.constant = -leastSpacingMagnitude - closeWidthConstraint.constant - contentInset.right
+                    guard let closeHeightConstraint = closeButton.constraints.first(where: { $0.firstAttribute == .height }) else { return }
+                    guard let closeTopConstraint = visualView.contentView.constraints.first(where: { constraint in
+                        guard let firstItem = constraint.firstItem, firstItem is UIButton else { return false }
+                        guard constraint.firstAttribute == .top, constraint.secondAttribute == .top else { return false }
+                        return true
+                    }) else { return }
+                    guard let activityHeightConstraint = activityView.constraints.first(where: { $0.firstAttribute == .height }) else { break }
+                    var contentHeight = activityHeightConstraint.constant
+                    if let statusText = statusLabel.attributedText {
+                        // [.usesFontLeading, .usesLineFragmentOrigin]
+                        //
+                        let statusTextHeight = statusText.boundingRect(with: .init(width: MNToast.Configuration.shared.greatestFiniteStatusWidth, height: .greatestFiniteMagnitude), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).height
+                        contentHeight = max(contentHeight, statusTextHeight)
+                    }
+                    closeTopConstraint.constant = (contentInset.top + contentHeight + contentInset.bottom - closeHeightConstraint.constant)/2.0
+                }
             } else {
-                // 修改约束
-                stackLeftConstraint.constant = contentInset.left + addition
-                stackRightConstraint.constant = -contentInset.right - addition
+                // 不存在活动视图
+                // 活动视图与关闭按钮最小间隔
+                let leastSpacingMagnitude = 7.0
+                closeRightConstraint.constant = -contentInset.right
+                stackRightConstraint.constant = -leastSpacingMagnitude - closeWidthConstraint.constant - contentInset.right
+                // 按钮与文字应纵向中心对齐
+                guard let statusText = statusLabel.attributedText else { return }
+                guard let closeHeightConstraint = closeButton.constraints.first(where: { $0.firstAttribute == .height }) else { return }
+                guard let closeTopConstraint = visualView.contentView.constraints.first(where: { constraint in
+                    guard let firstItem = constraint.firstItem, firstItem is UIButton else { return false }
+                    guard constraint.firstAttribute == .top, constraint.secondAttribute == .top else { return false }
+                    return true
+                }) else { return }
+                let statusTextHeight = statusText.boundingRect(with: .init(width: MNToast.Configuration.shared.greatestFiniteStatusWidth, height: .greatestFiniteMagnitude), options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil).height
+                closeTopConstraint.constant = (contentInset.top + statusTextHeight + contentInset.bottom - closeHeightConstraint.constant)/2.0
             }
         }
     }
@@ -290,8 +333,8 @@ public class MNToast: UIView {
             NSLayoutConstraint.activate([
                 closeButton.topAnchor.constraint(equalTo: visualView.contentView.topAnchor, constant: 8.0),
                 closeButton.rightAnchor.constraint(equalTo: visualView.contentView.rightAnchor, constant: -8.0),
-                closeButton.widthAnchor.constraint(equalToConstant: 15.0),
-                closeButton.heightAnchor.constraint(equalToConstant: 15.0)
+                closeButton.widthAnchor.constraint(equalToConstant: 14.0),
+                closeButton.heightAnchor.constraint(equalToConstant: 14.0)
             ])
         }
         

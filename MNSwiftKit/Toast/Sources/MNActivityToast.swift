@@ -7,18 +7,44 @@
 
 import UIKit
 
-/// Activity弹窗构建者
-class MNActivityToast {
+/// 活动Toast构建者
+public class MNActivityToast {
     
-    /// 弹窗视图
+    /// 活动视图样式
+    public enum Style {
+        /// 大号
+        case large
+        /// 中号
+        case medium
+    }
+    
+    /// 活动Toast样式
+    public let style: MNActivityToast.Style
+    
+    /// 构造活动Toast
+    /// - Parameter style: 样式
+    public init(style: MNActivityToast.Style) {
+        self.style = style
+    }
+    
+    /// 活动视图
     lazy var activityView: UIActivityIndicatorView = {
-        var style: UIActivityIndicatorView.Style!
-        if #available(iOS 13.0, *) {
-            style = .large
-        } else {
-            style = .whiteLarge
+        var activityStyle: UIActivityIndicatorView.Style!
+        switch style {
+        case .large:
+            if #available(iOS 13.0, *) {
+                activityStyle = .large
+            } else {
+                activityStyle = .whiteLarge
+            }
+        case .medium:
+            if #available(iOS 13.0, *) {
+                activityStyle = .medium
+            } else {
+                activityStyle = .white
+            }
         }
-        let activityView = UIActivityIndicatorView(style: style)
+        let activityView = UIActivityIndicatorView(style: activityStyle)
         activityView.hidesWhenStopped = false
         activityView.color = MNToast.Configuration.shared.color
         return activityView
@@ -27,27 +53,27 @@ class MNActivityToast {
 
 extension MNActivityToast: MNToastBuilder {
     
-    var axisForToast: MNToast.Axis {
+    public var axisForToast: MNToast.Axis {
         
         MNToast.Configuration.shared.axis
     }
     
-    var effectForToast: MNToast.Effect {
+    public var effectForToast: MNToast.Effect {
         
         MNToast.Configuration.shared.effect
     }
     
-    var contentInsetForToast: UIEdgeInsets {
+    public var contentInsetForToast: UIEdgeInsets {
         
         MNToast.Configuration.shared.contentInset
     }
     
-    var activityViewForToast: UIView? {
+    public var activityViewForToast: UIView? {
         
         activityView
     }
     
-    var attributesForToastStatus: [NSAttributedString.Key : Any] {
+    public var attributesForToastStatus: [NSAttributedString.Key : Any] {
         
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = .center
@@ -58,17 +84,17 @@ extension MNActivityToast: MNToastBuilder {
         return [.font:MNToast.Configuration.shared.font, .foregroundColor:MNToast.Configuration.shared.color, .paragraphStyle:paragraph]
     }
     
-    var fadeInForToast: Bool {
+    public var fadeInForToast: Bool {
         
         true
     }
     
-    var fadeOutForToast: Bool {
+    public var fadeOutForToast: Bool {
         
         true
     }
     
-    var allowUserInteraction: Bool {
+    public var allowUserInteraction: Bool {
         
         false
     }
@@ -76,14 +102,14 @@ extension MNActivityToast: MNToastBuilder {
 
 extension MNActivityToast: MNToastAnimationSupported {
     
-    func startAnimating() {
+    public func startAnimating() {
         
         if activityView.isAnimating { return }
         
         activityView.startAnimating()
     }
     
-    func stopAnimating() {
+    public func stopAnimating() {
         
         activityView.stopAnimating()
     }

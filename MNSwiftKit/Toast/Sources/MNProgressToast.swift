@@ -21,7 +21,7 @@ public class MNProgressToast {
     /// 进度弹框样式
     public let style: MNProgressToast.Style
     
-    /// 构造进度Toast弹窗
+    /// 构造进度Toast
     /// - Parameter style: 样式
     public init(style: MNProgressToast.Style) {
         self.style = style

@@ -37,11 +37,11 @@ class ViewController: UIViewController {
         } else {
             // tests[Int.random(in: 0..<tests.count)] tests[Int.random(in: 0..<tests.count)]
             //let tests = ["测试提示信息", "今天天气不错", "你知道今天星期几吗", "这厮怎么回事呢?"]
-            MNToast.showSuccess("测试", cancellation: true) { _ in
+            MNToast.showActivity("测试弹窗", style: .medium, cancellation: true) { _ in
                 MNToast.showMsg("弹窗已删除")
             }
-            MNToast.close(delay: 10.0) { cancellation in
-                MNToast.showMsg("弹窗已关闭 \(cancellation ? "手动取消" : "自动取消")", at: .bottom())
+            MNToast.close(delay: 5.0) { cancellation in
+                MNToast.showMsg("弹窗已关闭 \(cancellation ? "手动取消" : "自动取消")", at: .bottom(), cancellation: true)
             }
             if self.progress >= 1.0 {
                 self.progress = 0.0

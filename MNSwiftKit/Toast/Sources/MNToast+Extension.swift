@@ -79,20 +79,21 @@ extension MNToast {
     /// 显示系统活动视图Toast
     /// - Parameters:
     ///   - status: 状态描述
+    ///   - style: 样式
     ///   - position: 展示位置
-    ///   - cancellation: 是否支持手动取消(存在活动视图有效)
+    ///   - cancellation: 是否支持手动取消
     ///   - timeInterval: 显示时长后自动关闭
     ///   - handler: 关闭后回调(是否是手动取消的Toast)
-    public class func showActivity(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellation: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ cancellation: Bool)->Void)? = nil) {
+    public class func showActivity(_ status: String?, style: MNActivityToast.Style = .large, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellation: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ cancellation: Bool)->Void)? = nil) {
         
-        show(builder: MNActivityToast(), at: position, status: status, progress: nil, cancellation: cancellation, delay: timeInterval, close: handler)
+        show(builder: MNActivityToast(style: style), at: position, status: status, progress: nil, cancellation: cancellation, delay: timeInterval, close: handler)
     }
     
     /// 显示消息Toast
     /// - Parameters:
     ///   - msg: 消息内容
     ///   - position: 展示位置
-    ///   - cancellation: 是否支持手动取消(存在活动视图有效)
+    ///   - cancellation: 是否支持手动取消
     ///   - timeInterval: 显示时长后自动关闭
     ///   - handler: 关闭后回调(是否是手动取消的Toast)
     public class func showMsg(_ msg: String, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellation: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ cancellation: Bool)->Void)? = nil) {
@@ -104,7 +105,7 @@ extension MNToast {
     /// - Parameters:
     ///   - status: 状态描述
     ///   - position: 展示位置
-    ///   - cancellation: 是否支持手动取消(存在活动视图有效)
+    ///   - cancellation: 是否支持手动取消
     ///   - timeInterval: 显示时长后自动关闭
     ///   - handler: 关闭后回调(是否是手动取消的Toast)
     public class func showInfo(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellation: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ cancellation: Bool)->Void)? = nil) {
@@ -117,7 +118,7 @@ extension MNToast {
     ///   - status: 状态描述
     ///   - style: 样式
     ///   - position: 展示位置
-    ///   - cancellation: 是否支持手动取消(存在活动视图有效)
+    ///   - cancellation: 是否支持手动取消
     ///   - timeInterval: 显示时长后自动关闭
     ///   - handler: 关闭后回调(是否是手动取消的Toast)
     public class func showRotation(_ status: String?, style: MNRotationToast.Style = .gradient, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellation: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ cancellation: Bool)->Void)? = nil) {
@@ -131,7 +132,7 @@ extension MNToast {
     ///   - style: 样式
     ///   - value: 进度值
     ///   - position: 展示位置
-    ///   - cancellation: 是否支持手动取消(存在活动视图有效)
+    ///   - cancellation: 是否支持手动取消
     ///   - timeInterval: 显示时长后自动关闭
     ///   - handler: 关闭后回调(是否是手动取消的Toast)
     public class func showProgress(_ status: String?, style: MNProgressToast.Style = .line, value: (any BinaryFloatingPoint)? = nil, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellation: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ cancellation: Bool)->Void)? = nil) {
@@ -143,7 +144,7 @@ extension MNToast {
     /// - Parameters:
     ///   - status: 状态描述
     ///   - position: 展示位置
-    ///   - cancellation: 是否支持手动取消(存在活动视图有效)
+    ///   - cancellation: 是否支持手动取消
     ///   - timeInterval: 显示时长后自动关闭
     ///   - handler: 关闭后回调(是否是手动取消的Toast)
     public class func showSuccess(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellation: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ cancellation: Bool)->Void)? = nil) {
@@ -155,7 +156,7 @@ extension MNToast {
     /// - Parameters:
     ///   - status: 状态描述
     ///   - position: 展示位置
-    ///   - cancellation: 是否支持手动取消(存在活动视图有效)
+    ///   - cancellation: 是否支持手动取消
     ///   - timeInterval: 显示时长后自动关闭
     ///   - handler: 关闭后回调(是否是手动取消的Toast)
     public class func showError(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellation: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ cancellation: Bool)->Void)? = nil) {
@@ -169,7 +170,7 @@ extension MNToast {
     ///   - position: 展示位置
     ///   - status: 状态描述
     ///   - progress: 进度值
-    ///   - cancellation: 是否支持手动取消(存在活动视图有效)
+    ///   - cancellation: 是否支持手动取消
     ///   - timeInterval: 显示时长后自动关闭
     ///   - handler: 关闭后回调(是否是手动取消的Toast)
     public class func show(builder: MNToastBuilder, at position: MNToast.Position, status: String?, progress: (any BinaryFloatingPoint)?, cancellation: Bool = false, delay timeInterval: TimeInterval?, close handler: ((_ cancellation: Bool)->Void)?) {

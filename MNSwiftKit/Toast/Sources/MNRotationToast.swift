@@ -18,7 +18,7 @@ public class MNRotationToast {
         case gradient
     }
     
-    /// 进度弹框样式
+    /// 进度Toast样式
     public let style: MNRotationToast.Style
     
     /// 构造旋转Toast
