@@ -70,7 +70,7 @@ extension MNExportError: CustomNSError {
         case .cannotExportFile: return -181378
         case .assetIsEmpty: return -181379
         case .cannotCreateDirectory: return -181380
-        case .fileDoesExist(let string): return -181381
+        case .fileDoesExist: return -181381
         case .cannotInsertTrack: return -181382
         case .underlyingError(let error): return error._code
         }

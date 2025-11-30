@@ -32,8 +32,8 @@ public class MNAssetExportSession: NSObject {
     /// 是否输出音频内容
     public var isExportAudioTrack: Bool = true
     /// 查询进度
-    private weak var displayLink: CADisplayLink?
-    /// 系统输出使用
+    private var timer: Timer!
+    /// 系统输出
     private weak var exportSession: AVAssetExportSession?
     /// 错误信息
     public private(set) var error: Error?
@@ -70,10 +70,7 @@ public class MNAssetExportSession: NSObject {
         exportSession = nil
         progressHandler = nil
         completionHandler = nil
-        if let displayLink  = displayLink {
-            displayLink.isPaused = true
-            displayLink.remove(from: .main, forMode: .common)
-        }
+        destroyTimer()
     }
     
     /// 异步导出资源
@@ -84,7 +81,6 @@ public class MNAssetExportSession: NSObject {
         if status == .waiting || status == .exporting { return }
         error = nil
         progress = 0.0
-        status = .waiting
         exportSession = nil
         self.progressHandler = progressHandler
         self.completionHandler = completionHandler
@@ -93,6 +89,7 @@ public class MNAssetExportSession: NSObject {
         }
     }
     
+    /// 以配置输出
     private func export() {
         
         func finish(error: MNExportError?) {
@@ -141,14 +138,14 @@ public class MNAssetExportSession: NSObject {
         let videoTrack = asset.mn.track(with: .video)
         let audioTrack = asset.mn.track(with: .audio)
         let composition = AVMutableComposition()
-        if isExportVideoTrack, let track = videoTrack {
-            guard composition.mn.append(track: track, range: timeRange) else {
+        if isExportVideoTrack, let videoTrack = videoTrack {
+            guard composition.mn.append(track: videoTrack, range: timeRange) else {
                 finish(error: .cannotInsertTrack(.video))
                 return
             }
         }
-        if isExportAudioTrack, let track = audioTrack {
-            guard composition.mn.append(track: track, range: timeRange) else {
+        if isExportAudioTrack, let audioTrack = audioTrack {
+            guard composition.mn.append(track: audioTrack, range: timeRange) else {
                 finish(error: .cannotInsertTrack(.audio))
                 return
             }
@@ -196,18 +193,21 @@ public class MNAssetExportSession: NSObject {
         } else {
             exportSession.outputFileType = .m4a
         }
-        if isExportVideoTrack, let track = videoTrack, let cropRect = cropRect, cropRect.isEmpty == false, cropRect.isNull == false {
+        if let cropRect = cropRect, cropRect.isEmpty == false, cropRect.isNull == false, let videoTrack = composition.mn.track(with: .video) {
             // 渲染尺寸
             var renderSize = cropRect.size
             if let size = self.renderSize {
                 renderSize = size
-                //renderSize.width = floor(ceil(renderSize.width)/16.0)*16.0
-                //renderSize.height = floor(ceil(renderSize.height)/16.0)*16.0
             }
+            //renderSize.width = floor(ceil(renderSize.width)/16.0)*16.0
+            //renderSize.height = floor(ceil(renderSize.height)/16.0)*16.0
             // 配置画面设置
-            let videoLayerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
+            let videoLayerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: videoTrack)
             videoLayerInstruction.setOpacity(1.0, at: .zero)
+            let track = asset.mn.track(with: .video)!
             videoLayerInstruction.setTransform(track.mn.transform(for: cropRect, renderSize: renderSize), at: .zero)
+            //videoLayerInstruction.setCropRectangle(cropRect, at: .zero)
+            //videoLayerInstruction.setTransform(track.mn.preferredTransform, at: .zero)
             
             let videoInstruction = AVMutableVideoCompositionInstruction()
             videoInstruction.layerInstructions = [videoLayerInstruction]
@@ -216,35 +216,14 @@ public class MNAssetExportSession: NSObject {
             let videoComposition = AVMutableVideoComposition(propertiesOf: composition)
             videoComposition.renderSize = renderSize
             videoComposition.instructions = [videoInstruction]
-            videoComposition.frameDuration = CMTime(value: 1, timescale: CMTimeScale(track.mn.nominalFrameRate))
+            videoComposition.frameDuration = CMTime(value: 1, timescale: CMTimeScale(videoTrack.mn.nominalFrameRate))
             
             exportSession.videoComposition = videoComposition
         }
-        self.exportSession = exportSession
-        // 监听
-        let displayLink = CADisplayLink(target: self, selector: #selector(strike(_:)))
-        displayLink.isPaused = true
-        displayLink.add(to: .main, forMode: .common)
-        self.displayLink = displayLink
         exportSession.addObserver(self, forKeyPath: #keyPath(AVAssetExportSession.status), options: .new, context: nil)
+        self.exportSession = exportSession
         // 开始输出
-        exportSession.exportAsynchronously { [weak self] in
-            guard let self = self else { return }
-            guard let exportSession = self.exportSession else { return }
-            exportSession.removeObserver(self, forKeyPath: #keyPath(AVAssetExportSession.status))
-            self.exportSession = nil
-            if let displayLink = self.displayLink {
-                self.displayLink = nil
-                displayLink.isPaused = true
-                displayLink.remove(from: .main, forMode: .common)
-            }
-            self.status = exportSession.status
-            if exportSession.status != .completed {
-                try? FileManager.default.removeItem(at: outputURL)
-            }
-            if let error = exportSession.error {
-                self.error = MNExportError.underlyingError(error)
-            }
+        exportSession.exportAsynchronously {
             self.completionHandler?(self.status, self.error)
         }
     }
@@ -255,7 +234,6 @@ public class MNAssetExportSession: NSObject {
         exportSession.cancelExport()
     }
     
-    // MARK: - observe
     public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         guard let keyPath = keyPath, keyPath == #keyPath(AVAssetExportSession.status) else { return }
         guard let rawValue = change?[.newKey] as? Int else { return }
@@ -264,29 +242,48 @@ public class MNAssetExportSession: NSObject {
         switch status {
         case .exporting:
             // 开启轮询
-            if let displayLink = displayLink {
-                displayLink.isPaused = false
-            }
+            destroyTimer()
+            timer = Timer(timeInterval: 0.2, target: self, selector: #selector(timerStrike), userInfo: nil, repeats: true)
+            RunLoop.main.add(timer, forMode: .common)
         case .completed, .failed, .cancelled:
             // 结束轮询
-            if let displayLink = displayLink {
-                self.displayLink = nil
-                displayLink.isPaused = true
-                displayLink.remove(from: .main, forMode: .common)
+            destroyTimer()
+            if let exportSession = exportSession {
+                if let error = exportSession.error {
+                    self.error = MNExportError.underlyingError(error)
+                }
+                exportSession.removeObserver(self, forKeyPath: #keyPath(AVAssetExportSession.status))
             }
             if status == .completed {
-                progress = 1.0
-                progressHandler?(progress)
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    self.progress = 1.0
+                    if let progressHandler = self.progressHandler {
+                        progressHandler(1.0)
+                    }
+                }
             }
         default: break
         }
     }
+}
+
+// MARK: - 定时器
+extension MNAssetExportSession {
     
-    @objc private func strike(_ displayLink: CADisplayLink) {
-        guard let exportSession = exportSession, displayLink.isPaused == false else { return }
+    /// 定时器事件
+    @objc private func timerStrike() {
+        guard let exportSession = exportSession else { return }
         progress = CGFloat(exportSession.progress)
         if let progressHandler = progressHandler {
             progressHandler(progress)
         }
+    }
+    
+    /// 销毁定时器
+    private func destroyTimer() {
+        guard let timer = timer else { return }
+        timer.invalidate()
+        self.timer = nil
     }
 }

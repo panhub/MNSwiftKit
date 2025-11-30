@@ -168,7 +168,7 @@ public class MNWebPayController: MNWebViewController {
     /// 取消支付
     /// - Parameter message: 提示信息
     private func cancel(message: String) {
-        MNToast.showInfo(message) { [weak self] in
+        MNToast.showInfo(message) { [weak self] _ in
             guard let self = self else { return }
             self.mn.pop()
         }

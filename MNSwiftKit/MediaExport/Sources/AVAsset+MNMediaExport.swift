@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Dispatch
 import Foundation
 import AVFoundation
 
@@ -42,17 +43,20 @@ extension NameSpaceWrapper where Base: AVAsset {
     /// 媒体资源时长
     public var duration: CMTime {
         if #available(iOS 16.0, *) {
-//            var duration: CMTime = .zero
-//            Task {
-//                do {
-//                    duration = try await base.load(.duration)
-//                } catch {
-//#if DEBUG
-//                    print("获取媒体资源时长出错: \(error)")
-//#endif
-//                }
-//            }
-//            return duration
+            var duration: CMTime = .zero
+            let semaphore = DispatchSemaphore(value: 0)
+            Task {
+                do {
+                    duration = try await base.load(.duration)
+                } catch {
+#if DEBUG
+                    print("获取媒体资源时长出错: \(error)")
+#endif
+                }
+                semaphore.signal()
+            }
+            semaphore.wait()
+            return duration
         }
         return base.duration
     }
@@ -69,20 +73,21 @@ extension NameSpaceWrapper where Base: AVAsset {
     public func track(with mediaType: AVMediaType) -> AVAssetTrack? {
         if #available(iOS 16.0, *) {
             var track: AVAssetTrack?
+            let semaphore = DispatchSemaphore(value: 0)
             Task {
                 do {
-                    let tracks = try await base.loadTracks(withMediaType: mediaType)
-                    track = tracks.first
+                    track = try await base.loadTracks(withMediaType: mediaType).first
                 } catch {
 #if DEBUG
                     print("获取媒体资源轨迹出错: \(error)")
 #endif
                 }
+                semaphore.signal()
             }
+            semaphore.wait()
             return track
         }
         let tracks = base.tracks(withMediaType: mediaType)
-        guard tracks.isEmpty == false else { return nil }
         return tracks.first
     }
     
@@ -93,13 +98,10 @@ extension NameSpaceWrapper where Base: AVAsset {
     ///   - to: 结束进度值
     /// - Returns: 时间片段
     public func timeRange(withProgress from: any BinaryFloatingPoint, to: any BinaryFloatingPoint) -> CMTimeRange {
-        let fromProgress = Float64(from)
-        let toProgress = Float64(to)
-        guard fromProgress >= 0.0, toProgress <= 1.0, toProgress > fromProgress else { return .zero }
-        let time = duration
-        let start = CMTimeMultiplyByFloat64(time, multiplier: fromProgress)
-        let duration = CMTimeMultiplyByFloat64(time, multiplier: toProgress - fromProgress)
-        return CMTimeRange(start: start, duration: duration)
+        let seconds = seconds
+        let fromSeconds = seconds*Double(from)
+        let toSeconds = seconds*Double(to)
+        return timeRange(from: fromSeconds, to: toSeconds)
     }
     
     /// 获取时间片段
@@ -110,10 +112,10 @@ extension NameSpaceWrapper where Base: AVAsset {
     public func timeRange(from: any BinaryFloatingPoint, to: any BinaryFloatingPoint) -> CMTimeRange {
         let duration = duration
         let seconds = CMTimeGetSeconds(duration)
-        let fromValue = Float64(from)
-        let toValue = Float64(to)
-        guard fromValue >= 0.0, toValue > fromValue, toValue <= seconds else { return .zero }
-        return CMTimeRange(start: CMTime(seconds: fromValue, preferredTimescale: duration.timescale), duration: CMTime(seconds: toValue - fromValue, preferredTimescale: duration.timescale))
+        let fromSeconds = Float64(from)
+        let toSeconds = Float64(to)
+        guard fromSeconds >= 0.0, toSeconds <= seconds, toSeconds > fromSeconds else { return .zero }
+        return CMTimeRangeFromTimeToTime(start: CMTime(seconds: fromSeconds, preferredTimescale: duration.timescale), end: CMTime(seconds: toSeconds, preferredTimescale: duration.timescale))
     }
 }
 
@@ -138,6 +140,7 @@ extension NameSpaceWrapper where Base: AVAsset {
         }
         var image: UIImage?
         if #available(iOS 16.0, *) {
+            let semaphore = DispatchSemaphore(value: 0)
             Task {
                 do {
                     let cgImage = try await imageGenerator.image(at: time).image
@@ -147,7 +150,9 @@ extension NameSpaceWrapper where Base: AVAsset {
                     print("获取媒体资源图片出错: \(error)")
 #endif
                 }
+                semaphore.signal()
             }
+            semaphore.wait()
         } else {
             do {
                 let cgImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
@@ -165,6 +170,7 @@ extension NameSpaceWrapper where Base: AVAsset {
     public var artwork: UIImage? {
         var metadatas: [AVMetadataItem]!
         if #available(iOS 16.0, *) {
+            let semaphore = DispatchSemaphore(value: 0)
             Task {
                 do {
                     metadatas = try await base.load(.metadata)
@@ -173,7 +179,9 @@ extension NameSpaceWrapper where Base: AVAsset {
                     print("获取媒体元数据出错: \(error)")
 #endif
                 }
+                semaphore.signal()
             }
+            semaphore.wait()
         } else {
             metadatas = base.metadata
         }
@@ -182,6 +190,7 @@ extension NameSpaceWrapper where Base: AVAsset {
             guard let commonKey = metadata.commonKey else { continue }
             guard commonKey == .commonKeyArtwork else { continue }
             if #available(iOS 16.0, *) {
+                let semaphore = DispatchSemaphore(value: 0)
                 Task {
                     do {
                         let value = try await metadata.load(.value)
@@ -193,7 +202,9 @@ extension NameSpaceWrapper where Base: AVAsset {
                         print("获取媒体资源插图出错: \(error)")
 #endif
                     }
+                    semaphore.signal()
                 }
+                semaphore.wait()
             } else if let imageData = metadata.value as? Data {
                 image = UIImage(data: imageData)
             }

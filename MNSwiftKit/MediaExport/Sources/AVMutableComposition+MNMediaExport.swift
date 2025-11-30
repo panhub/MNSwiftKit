@@ -75,16 +75,16 @@ extension NameSpaceWrapper where Base: AVMutableComposition {
         guard CMTIMERANGE_IS_VALID(timeRange) else { return false }
         guard let compositionTrack = compositionTrack(with: track.mediaType) else { return false }
         do {
-            try compositionTrack.insertTimeRange(timeRange, of: track, at: base.duration)
+            try compositionTrack.insertTimeRange(timeRange, of: track, at: compositionTrack.timeRange.duration)
         } catch {
 #if DEBUG
             print("插入轨道到媒体合成轨道出错: \(error)")
 #endif
             return false
         }
-        if track.mediaType == .video {
-            compositionTrack.preferredTransform = track.mn.preferredTransform
-        }
+//        if track.mediaType == .video {
+//            compositionTrack.preferredTransform = track.mn.preferredTransform
+//        }
         return true
     }
 }

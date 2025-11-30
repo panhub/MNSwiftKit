@@ -135,7 +135,7 @@ extension MNToast {
     ///   - cancellation: 是否支持手动取消
     ///   - timeInterval: 显示时长后自动关闭
     ///   - handler: 关闭后回调(是否是手动取消的Toast)
-    public class func showProgress(_ status: String?, style: MNProgressToast.Style = .line, value: (any BinaryFloatingPoint)? = nil, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellation: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ cancellation: Bool)->Void)? = nil) {
+    public class func showProgress(_ status: String? = nil, style: MNProgressToast.Style = .line, value: (any BinaryFloatingPoint)? = nil, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellation: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ cancellation: Bool)->Void)? = nil) {
         
         show(builder: MNProgressToast(style: style), at: position, status: status, progress: value, cancellation: cancellation, delay: timeInterval, close: handler)
     }

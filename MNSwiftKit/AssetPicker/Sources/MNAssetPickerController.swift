@@ -181,7 +181,7 @@ extension MNAssetPickerController {
         MNAssetHelper.exportAsynchronously(for: assets, options: options) { index, count in
             MNToast.showActivity("正在导出\(index)/\(count)")
         } completion: { [weak self] result in
-            MNToast.close {
+            MNToast.close { _ in
                 guard let self = self else { return }
                 if result.count == assets.count {
                     self.finishPicking(result)
@@ -475,7 +475,7 @@ extension MNAssetPickerController: UICollectionViewDelegate, UICollectionViewDat
             guard let self = self else { return }
             if let videoPath = asset.contents as? String {
                 asset.contents = nil
-                self.view.mn.closeToast { [weak self] in
+                self.view.mn.closeToast { [weak self] _ in
                     guard let self = self else { return }
                     let vc = MNTailorViewController(videoPath: videoPath)
                     vc.delegate = self
