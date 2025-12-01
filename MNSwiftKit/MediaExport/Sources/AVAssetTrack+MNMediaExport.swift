@@ -95,90 +95,13 @@ extension NameSpaceWrapper where Base: AVAssetTrack {
     ///   - renderSize: 渲染尺寸
     /// - Returns: 视频轨道形变
     public func transform(for cropRect: CGRect, renderSize: CGSize? = nil) -> CGAffineTransform {
-        //let trackRenderSize = self.renderSize
         let preferredTransform = preferredTransform
-//        let invertedTransform = preferredTransform.inverted()
-//        let trackCropRect = cropRect.applying(invertedTransform).standardized
-//        var transform = invertedTransform.translatedBy(x: -trackCropRect.minX, y: -trackCropRect.minY)
-//        if let renderSize = renderSize, renderSize.width > 0.0, renderSize.height > 0.0 {
-//            let scaleX = renderSize.width/trackCropRect.width
-//            let scaleY = renderSize.height/trackCropRect.height
-//            transform = transform.scaledBy(x: scaleX, y: scaleY)
-//        }
-        
-//        let topLeft = CGPoint(x: cropRect.minX, y: cropRect.minY).applying(preferredTransform)
-//        let topRight = CGPoint(x: cropRect.maxX, y: cropRect.minY).applying(preferredTransform)
-//        let bottomLeft = CGPoint(x: cropRect.minX, y: cropRect.maxY).applying(preferredTransform)
-//        //let bottomRight = CGPoint(x: cropRect.maxX, y: cropRect.maxY).applying(preferredTransform)
-//        // 计算转换后的边界矩形
-//        let minX = Swift.min(topLeft.x, topRight.x, bottomLeft.x) // , bottomRight.x
-//        let maxX = Swift.max(topLeft.x, topRight.x, bottomLeft.x)
-//        let minY = Swift.min(topLeft.y, topRight.y, bottomLeft.y)
-//        let maxY = Swift.max(topLeft.y, topRight.y, bottomLeft.y)
-//        let trackCropRect = CGRect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
-        
-        let trackCropRect = cropRect
-        var transform = preferredTransform.concatenating(
-            .init(translationX: -trackCropRect.minX, y: -trackCropRect.minY)
-        )
+        var transform = preferredTransform.concatenating(.init(translationX: -cropRect.minX, y: -cropRect.minY))
         if let renderSize = renderSize, renderSize.width > 0.0, renderSize.height > 0.0 {
-            let scaleX = renderSize.width/trackCropRect.width
-            let scaleY = renderSize.height/trackCropRect.height
-            transform = transform.concatenating(
-                .init(scaleX: scaleX, y: scaleY)
-            )
+            let scaleX = renderSize.width/cropRect.width
+            let scaleY = renderSize.height/cropRect.height
+            transform = transform.concatenating(.init(scaleX: scaleX, y: scaleY))
         }
-        
-//        var trackCropRect: CGRect
-//        let preferredTransform = preferredTransform
-//        if preferredTransform == .identity {
-//            // 没有 preferredTransform，直接使用原坐标
-//            trackCropRect = cropRect
-//        } else {
-//            // 有 preferredTransform，需要转换回轨道坐标
-//            let inverseTransform = preferredTransform.inverted()
-//            // 将裁剪矩形的四个角转换回轨道坐标
-//            let topLeft = CGPoint(x: cropRect.minX, y: cropRect.minY).applying(inverseTransform)
-//            let topRight = CGPoint(x: cropRect.maxX, y: cropRect.minY).applying(inverseTransform)
-//            let bottomLeft = CGPoint(x: cropRect.minX, y: cropRect.maxY).applying(inverseTransform)
-//            let bottomRight = CGPoint(x: cropRect.maxX, y: cropRect.maxY).applying(inverseTransform)
-//            // 计算转换后的边界矩形
-//            let minX = Swift.min(topLeft.x, topRight.x, bottomLeft.x, bottomRight.x)
-//            let maxX = Swift.max(topLeft.x, topRight.x, bottomLeft.x, bottomRight.x)
-//            let minY = Swift.min(topLeft.y, topRight.y, bottomLeft.y, bottomRight.y)
-//            let maxY = Swift.max(topLeft.y, topRight.y, bottomLeft.y, bottomRight.y)
-//            trackCropRect = CGRect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
-//        }
-//        // 构建 transform：先应用 preferredTransform，再平移，再缩放
-//        var transform = preferredTransform
-//        // 平移：将裁剪区域移动到左上角
-//        transform = transform.concatenating(
-//            CGAffineTransform(translationX: -trackCropRect.origin.x, y: -trackCropRect.origin.y)
-//        )
-//        // 缩放：将裁剪区域缩放到输出尺寸
-//        if let renderSize = renderSize, renderSize.width > 0.0, renderSize.height > 0.0 {
-//            let scaleX = renderSize.width/trackCropRect.width
-//            let scaleY = renderSize.height/trackCropRect.height
-//            transform = transform.concatenating(
-//                CGAffineTransform(scaleX: scaleX, y: scaleY)
-//            )
-//        }
-        
-//        if preferredTransform == .identity {
-//            print("")
-//        }
-//        let inverseTransform = preferredTransform.inverted()
-//        // 将显示坐标的矩形四个角映射回未旋转的 track 坐标
-//        let topLeft = CGPoint(x: cropRect.minX, y: cropRect.minY).applying(inverseTransform)
-//        let bottomRight = CGPoint(x: cropRect.maxX, y: cropRect.maxY).applying(inverseTransform)
-//        let trackRect = CGRect(x: topLeft.x, y: topLeft.y, width: bottomRight.x - topLeft.x, height: bottomRight.y - topLeft.y)
-//        var transform = preferredTransform.concatenating(.init(translationX: -trackRect.minX, y: -trackRect.minY))
-//        if let renderSize = renderSize, renderSize.width > 0.0, renderSize.height > 0.0 {
-//            //
-//            let scaleX = renderSize.width/trackRect.width
-//            let scaleY = renderSize.height/trackRect.height
-//            transform = transform.concatenating(.init(translationX: scaleX, y: scaleY))
-//        }
         return transform
     }
 }

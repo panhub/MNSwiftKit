@@ -46,6 +46,18 @@ public class MNPlayView: UIView {
     /// 指定播放器画布
     public override class var layerClass: AnyClass { AVPlayerLayer.self }
     
+    /// 播放器
+    public var player: AVPlayer? {
+        get {
+            let layer = layer as! AVPlayerLayer
+            return layer.player
+        }
+        set {
+            let layer = layer as! AVPlayerLayer
+            layer.player = newValue
+        }
+    }
+    
     /// 画面渲染方式
     @objc public var videoGravity: AVLayerVideoGravity {
         get {

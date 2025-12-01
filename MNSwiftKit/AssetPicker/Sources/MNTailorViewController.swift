@@ -92,7 +92,6 @@ class MNTailorViewController: UIViewController {
     private lazy var player: MNPlayer = {
         let player = MNPlayer(urls: [URL(fileURLWithPath: videoPath)])
         player.delegate = self
-        player.layer = playView.layer
         player.periodicFrequency = 30
         return player
     }()
@@ -365,16 +364,16 @@ extension MNTailorViewController {
             exportSession.outputFileType = .mp4
             exportSession.shouldOptimizeForNetworkUse = true
             let z = MNAssetExportSession.renderSize(for: videoPath)
-            let w = ceil(z.width/2.0)
+            let w = ceil(z.height/2.0)
             //let x = 0.0
             let x = ceil((z.width - w)/2.0)
             //let x = z.width - w
-            let cropRect = CGRect(origin: .init(x: x, y: 0.0), size: .init(width: w, height: w))
+            let cropRect = CGRect(origin: .init(x: x, y: z.height - w), size: .init(width: w, height: w))
             
-            let playerLayer = player.layer as! AVPlayerLayer
+            let playerLayer = playView.layer as! AVPlayerLayer
             let playerVideoRect = playerLayer.videoRect
             
-            let cropInPlayerW = ceil(playView.frame.width/2.0)
+            let cropInPlayerW = ceil(playView.frame.height/2.0)
             let cropInPlayerX = ceil((playView.frame.width - cropInPlayerW)/2.0)
             let cropInPlayer = CGRect(origin: .init(x: cropInPlayerX, y: playView.frame.height - cropInPlayerW), size: .init(width: cropInPlayerW, height: cropInPlayerW))
             
@@ -389,7 +388,7 @@ extension MNTailorViewController {
             let croppRect = CGRect(x: cropX, y: cropY, width: cropW, height: cropH)
             
             exportSession.cropRect = cropRect
-            //exportSession.renderSize = .init(width: 1080.0, height: 1080.0)
+            exportSession.renderSize = .init(width: 1080.0, height: 1080.0)
             exportSession.timeRange = exportSession.asset.mn.timeRange(withProgress: begin, to: end)
             if #available(iOS 16.0, *) {
                 exportSession.outputURL = URL(filePath: exportingPath)
@@ -432,6 +431,7 @@ extension MNTailorViewController: MNTailorViewDelegate {
     }
     
     func tailorViewDidEndLoadThumbnail(_ tailorView: MNTailorView) {
+        playView.player = player.player
         player.play()
     }
     

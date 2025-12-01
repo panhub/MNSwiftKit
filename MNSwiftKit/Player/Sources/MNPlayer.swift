@@ -85,19 +85,6 @@ public class MNPlayer: NSObject {
         case finished
     }
     
-    /// 显示层AVPlayerLayer
-    public var layer: CALayer? {
-        willSet {
-            guard let layer = layer as? AVPlayerLayer else { return }
-            layer.player = nil
-        }
-        didSet {
-            guard let layer = layer as? AVPlayerLayer else { return }
-            //layer.videoGravity = .resize
-            layer.player = player
-        }
-    }
-    
     /// 当前状态
     public private(set) var status: Status = .idle {
         didSet {
@@ -187,7 +174,7 @@ public class MNPlayer: NSObject {
     private var items: [String:AVPlayerItem] = [String:AVPlayerItem]()
     
     /// 内部播放器
-    private let player: AVPlayer = AVPlayer()
+    public let player: AVPlayer = AVPlayer()
     
     /// 监听者
     private var observer: Any?
@@ -223,7 +210,6 @@ public class MNPlayer: NSObject {
     }
     
     deinit {
-        layer = nil
         delegate = nil
         removeAll()
         if let observer = observer { player.removeTimeObserver(observer) }

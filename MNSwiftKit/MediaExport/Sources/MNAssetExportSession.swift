@@ -166,6 +166,8 @@ public class MNAssetExportSession: NSObject {
             var presetNames: [String] = []
             if isExportVideoTrack, let _ = videoTrack {
                 presetNames.append(AVAssetExportPresetHighestQuality)
+                presetNames.append(AVAssetExportPreset3840x2160)
+                presetNames.append(AVAssetExportPreset1920x1080)
                 presetNames.append(AVAssetExportPreset1280x720)
                 presetNames.append(AVAssetExportPresetMediumQuality)
                 presetNames.append(AVAssetExportPresetLowQuality)
@@ -179,8 +181,8 @@ public class MNAssetExportSession: NSObject {
             return AVAssetExportPresetPassthrough
         }
         
-        // 开始输出 presetCompatible(with: composition)
-        guard let exportSession = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetMediumQuality) else {
+        // 开始输出
+        guard let exportSession = AVAssetExportSession(asset: composition, presetName: presetCompatible(with: composition)) else {
             finish(error: .cannotExportFile)
             return
         }
@@ -204,10 +206,7 @@ public class MNAssetExportSession: NSObject {
             // 配置画面设置
             let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: videoTrack)
             layerInstruction.setOpacity(1.0, at: .zero)
-            //let track = asset.mn.track(with: .video)!
             layerInstruction.setTransform(videoTrack.mn.transform(for: cropRect, renderSize: renderSize), at: .zero)
-            //layerInstruction.setCropRectangle(cropRect, at: .zero)
-            //layerInstruction.setTransform(videoTrack.mn.preferredTransform, at: .zero)
             
             let instruction = AVMutableVideoCompositionInstruction()
             instruction.timeRange = CMTimeRange(start: .zero, duration: composition.duration)

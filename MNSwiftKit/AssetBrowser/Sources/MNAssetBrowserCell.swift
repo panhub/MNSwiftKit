@@ -78,8 +78,8 @@ public class MNAssetBrowserCell: UICollectionViewCell {
     private lazy var player: MNPlayer = {
         let player = MNPlayer()
         player.delegate = self
-        player.layer = scrollView.playView.layer
         player.periodicFrequency = 30
+        scrollView.playView.player = player.player
         return player
     }()
     /// 封面图更新回调
