@@ -40,7 +40,7 @@ extension AVURLAsset {
 
 extension NameSpaceWrapper where Base: AVAsset {
     
-    /// 媒体资源时长
+    /// 媒体资源时长(CMTime)
     public var duration: CMTime {
         if #available(iOS 16.0, *) {
             var duration: CMTime = .zero

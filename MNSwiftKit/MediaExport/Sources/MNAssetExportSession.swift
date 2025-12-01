@@ -179,8 +179,8 @@ public class MNAssetExportSession: NSObject {
             return AVAssetExportPresetPassthrough
         }
         
-        // 开始输出
-        guard let exportSession = AVAssetExportSession(asset: composition, presetName: presetCompatible(with: composition)) else {
+        // 开始输出 presetCompatible(with: composition)
+        guard let exportSession = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetMediumQuality) else {
             finish(error: .cannotExportFile)
             return
         }
@@ -202,20 +202,20 @@ public class MNAssetExportSession: NSObject {
             //renderSize.width = floor(ceil(renderSize.width)/16.0)*16.0
             //renderSize.height = floor(ceil(renderSize.height)/16.0)*16.0
             // 配置画面设置
-            let videoLayerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: videoTrack)
-            videoLayerInstruction.setOpacity(1.0, at: .zero)
-            let track = asset.mn.track(with: .video)!
-            videoLayerInstruction.setTransform(track.mn.transform(for: cropRect, renderSize: renderSize), at: .zero)
-            //videoLayerInstruction.setCropRectangle(cropRect, at: .zero)
-            //videoLayerInstruction.setTransform(track.mn.preferredTransform, at: .zero)
+            let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: videoTrack)
+            layerInstruction.setOpacity(1.0, at: .zero)
+            //let track = asset.mn.track(with: .video)!
+            layerInstruction.setTransform(videoTrack.mn.transform(for: cropRect, renderSize: renderSize), at: .zero)
+            //layerInstruction.setCropRectangle(cropRect, at: .zero)
+            //layerInstruction.setTransform(videoTrack.mn.preferredTransform, at: .zero)
             
-            let videoInstruction = AVMutableVideoCompositionInstruction()
-            videoInstruction.layerInstructions = [videoLayerInstruction]
-            videoInstruction.timeRange = CMTimeRange(start: .zero, duration: composition.duration)
+            let instruction = AVMutableVideoCompositionInstruction()
+            instruction.timeRange = CMTimeRange(start: .zero, duration: composition.duration)
+            instruction.layerInstructions = [layerInstruction]
             
             let videoComposition = AVMutableVideoComposition(propertiesOf: composition)
             videoComposition.renderSize = renderSize
-            videoComposition.instructions = [videoInstruction]
+            videoComposition.instructions = [instruction]
             videoComposition.frameDuration = CMTime(value: 1, timescale: CMTimeScale(videoTrack.mn.nominalFrameRate))
             
             exportSession.videoComposition = videoComposition

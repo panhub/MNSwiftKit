@@ -13,8 +13,6 @@ class MNAssetPickerController: UIViewController {
     private let options: MNAssetPickerOptions
     /// 是否进入相册
     private var isEnteredLibrary = false
-    /// 是否加载了资源
-    private var isAssetLoaded = false
     /// 当前资源集合
     private var assets: [MNAsset] = []
     /// 选中的资源集合
@@ -152,8 +150,7 @@ class MNAssetPickerController: UIViewController {
         super.viewWillAppear(animated)
         setNeedsStatusBarAppearanceUpdate()
         // 请求相册
-        if isAssetLoaded == false {
-            isAssetLoaded = true
+        if mn.isFirstAssociated {
             apply()
         }
     }
@@ -177,7 +174,7 @@ extension MNAssetPickerController {
     /// 导出资源并结束选择
     /// - Parameter assets: 需要导出内容的资源模型集合
     private func didPicking(_ assets: [MNAsset]) {
-        MNToast.showActivity("请稍后")
+        MNToast.showActivity("正在导出")
         MNAssetHelper.exportAsynchronously(for: assets, options: options) { index, count in
             MNToast.showActivity("正在导出\(index)/\(count)")
         } completion: { [weak self] result in
@@ -263,7 +260,7 @@ extension MNAssetPickerController {
     
     /// 获取相簿集合
     private func fetchAlbums() {
-        collectionView.mn.showActivityToast("请稍后")
+        collectionView.mn.showActivityToast(nil)
         MNAssetHelper.fetchAlbum(using: options) { [weak self] albums in
             guard let self = self else { return }
             self.isEnteredLibrary = true
@@ -317,7 +314,7 @@ extension MNAssetPickerController {
             completionHandler()
         } else {
             if collectionView.mn.isLoading == false {
-                collectionView.mn.showActivityToast("请稍后")
+                collectionView.mn.showActivityToast(nil)
             }
             navBar.badge.isUserInteractionEnabled = false
             MNAssetHelper.fetchAsset(in: album, options: options, completion: completionHandler)
@@ -470,7 +467,7 @@ extension MNAssetPickerController: UICollectionViewDelegate, UICollectionViewDat
     /// 裁剪视频
     /// - Parameter asset: 视频资源模型
     private func tailorVideo(_ asset: MNAsset) {
-        view.mn.showActivityToast("请稍后")
+        view.mn.showActivityToast(nil)
         MNAssetHelper.fetchContents(for: asset, progress: nil) { [weak self] asset in
             guard let self = self else { return }
             if let videoPath = asset.contents as? String {
@@ -567,7 +564,7 @@ extension MNAssetPickerController: MNDataEmptySource {
             text = "相簿下暂无照片"
         }
         guard let text = text else { return nil }
-        return NSAttributedString(string: text, attributes: [.font:UIFont.systemFont(ofSize: 16.5, weight: .regular), .foregroundColor:UIColor(red: 103.0/255.0, green: 105.0/255.0, blue: 107.0/255.0, alpha: 1.0)])
+        return NSAttributedString(string: text, attributes: [.font:UIFont.systemFont(ofSize: 16.0, weight: .regular), .foregroundColor:UIColor(red: 103.0/255.0, green: 105.0/255.0, blue: 107.0/255.0, alpha: 1.0)])
     }
     
     func buttonSizeForDataEmptyView(_ superview: UIView) -> CGSize {

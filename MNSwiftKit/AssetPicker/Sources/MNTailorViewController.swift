@@ -34,7 +34,7 @@ class MNTailorViewController: UIViewController {
     /// 视频时长
     private var duration: TimeInterval = 0.0
     /// 视频尺寸
-    private var naturalSize: CGSize = CGSize(width: 1920.0, height: 1080.0)
+    private var renderSize: CGSize = CGSize(width: 1920.0, height: 1080.0)
     /// 最小裁剪时长
     var minTailorDuration: TimeInterval = 0.0
     /// 最大裁剪时长
@@ -105,11 +105,11 @@ class MNTailorViewController: UIViewController {
         self.init(nibName: nil, bundle: nil)
         self.videoPath = videoPath
         modalPresentationStyle = .fullScreen
-        self.duration = MNAssetExportSession.duration(for: videoPath)
+        self.duration = MNAssetExportSession.seconds(for: videoPath)
         self.cover = MNAssetExportSession.generateImage(for: videoPath)
-        let naturalSize = MNAssetExportSession.naturalSize(for: videoPath)
-        if naturalSize != .zero {
-            self.naturalSize = naturalSize
+        let renderSize = MNAssetExportSession.renderSize(for: videoPath)
+        if renderSize != .zero {
+            self.renderSize = renderSize
         }
     }
     
@@ -180,24 +180,24 @@ class MNTailorViewController: UIViewController {
         let top: CGFloat = MN_STATUS_BAR_HEIGHT + MN_NAV_BAR_HEIGHT/2.0
         let width: CGFloat = view.frame.width
         let height: CGFloat = playControl.frame.minY - 20.0 - top
-        var naturalSize: CGSize = naturalSize
-        if naturalSize.width >= naturalSize.height {
+        var renderSize: CGSize = renderSize
+        if renderSize.width >= renderSize.height {
             // 横向视频
-            naturalSize = naturalSize.mn.multiplyTo(width: width)
-            if floor(naturalSize.height) > height {
-                naturalSize = self.naturalSize.mn.multiplyTo(height: height)
+            renderSize = renderSize.mn.multiplyTo(width: width)
+            if floor(renderSize.height) > height {
+                renderSize = self.renderSize.mn.multiplyTo(height: height)
             }
         } else {
             // 纵向视频
-            naturalSize = naturalSize.mn.multiplyTo(height: height)
-            if floor(naturalSize.width) > width {
-                naturalSize = self.naturalSize.mn.multiplyTo(width: width)
+            renderSize = renderSize.mn.multiplyTo(height: height)
+            if floor(renderSize.width) > width {
+                renderSize = self.renderSize.mn.multiplyTo(width: width)
             }
         }
-        naturalSize.width = ceil(naturalSize.width)
-        naturalSize.height = ceil(naturalSize.height)
-        playView.frame = CGRect(x: (view.frame.width - naturalSize.width)/2.0, y: (height - naturalSize.height)/2.0 + top, width: naturalSize.width, height: naturalSize.height)
-        playView.mn.minX = (view.frame.width - naturalSize.width)/2.0
+        renderSize.width = ceil(renderSize.width)
+        renderSize.height = ceil(renderSize.height)
+        playView.frame = CGRect(x: (view.frame.width - renderSize.width)/2.0, y: (height - renderSize.height)/2.0 + top, width: renderSize.width, height: renderSize.height)
+        playView.mn.minX = (view.frame.width - renderSize.width)/2.0
         playView.isTouchEnabled = false
         playView.backgroundColor = BlackColor
         view.addSubview(playView)
@@ -364,12 +364,31 @@ extension MNTailorViewController {
             MNToast.showProgress("正在导出", style: .line)
             exportSession.outputFileType = .mp4
             exportSession.shouldOptimizeForNetworkUse = true
-            let z = MNAssetExportSession.naturalSize(for: videoPath)
+            let z = MNAssetExportSession.renderSize(for: videoPath)
             let w = ceil(z.width/2.0)
             //let x = 0.0
             let x = ceil((z.width - w)/2.0)
             //let x = z.width - w
-            exportSession.cropRect = .init(origin: .init(x: x, y: z.height - w), size: .init(width: w, height: w))
+            let cropRect = CGRect(origin: .init(x: x, y: 0.0), size: .init(width: w, height: w))
+            
+            let playerLayer = player.layer as! AVPlayerLayer
+            let playerVideoRect = playerLayer.videoRect
+            
+            let cropInPlayerW = ceil(playView.frame.width/2.0)
+            let cropInPlayerX = ceil((playView.frame.width - cropInPlayerW)/2.0)
+            let cropInPlayer = CGRect(origin: .init(x: cropInPlayerX, y: playView.frame.height - cropInPlayerW), size: .init(width: cropInPlayerW, height: cropInPlayerW))
+            
+            let scaleX = z.width / playerVideoRect.width
+            let scaleY = z.height / playerVideoRect.height
+
+            let cropX = (cropInPlayer.origin.x - playerVideoRect.origin.x) * scaleX
+            let cropY = (cropInPlayer.origin.y - playerVideoRect.origin.y) * scaleY
+            let cropW = cropInPlayer.width * scaleX
+            let cropH = cropInPlayer.height * scaleY
+            
+            let croppRect = CGRect(x: cropX, y: cropY, width: cropW, height: cropH)
+            
+            exportSession.cropRect = cropRect
             //exportSession.renderSize = .init(width: 1080.0, height: 1080.0)
             exportSession.timeRange = exportSession.asset.mn.timeRange(withProgress: begin, to: end)
             if #available(iOS 16.0, *) {

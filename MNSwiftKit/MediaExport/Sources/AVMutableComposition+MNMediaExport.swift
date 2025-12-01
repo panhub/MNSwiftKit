@@ -82,9 +82,9 @@ extension NameSpaceWrapper where Base: AVMutableComposition {
 #endif
             return false
         }
-//        if track.mediaType == .video {
-//            compositionTrack.preferredTransform = track.mn.preferredTransform
-//        }
+        if track.mediaType == .video {
+            compositionTrack.preferredTransform = track.mn.preferredTransform
+        }
         return true
     }
 }

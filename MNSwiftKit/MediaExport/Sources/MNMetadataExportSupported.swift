@@ -19,7 +19,7 @@ extension MNMetadataExportSupported {
     /// 获取媒体资源时长
     /// - Parameter string: 媒体文件路径或远程连接
     /// - Returns: 获取到的时长
-    static func duration(for string: String) -> TimeInterval {
+    static func seconds(for string: String) -> TimeInterval {
         guard let asset = AVURLAsset(for: string) else { return 0.0 }
         return asset.mn.seconds
     }
@@ -27,7 +27,7 @@ extension MNMetadataExportSupported {
     /// 获取视频资源时长
     /// - Parameter url: 媒体文件定位器
     /// - Returns: 获取到的时长
-    static func duration(for url: URL) -> TimeInterval {
+    static func seconds(for url: URL) -> TimeInterval {
         let asset = AVURLAsset(for: url)
         return asset.mn.seconds
     }
@@ -35,25 +35,25 @@ extension MNMetadataExportSupported {
     /// 获取视频资源的原始尺寸
     /// - Parameter string: 视频文件路径或远程连接
     /// - Returns: 获取到的原始尺寸
-    static func naturalSize(for string: String) -> CGSize {
+    static func renderSize(for string: String) -> CGSize {
         guard let asset = AVURLAsset(for: string) else { return .zero }
-        return naturalSize(for: asset)
+        return renderSize(for: asset)
     }
     
     /// 获取视频资源的原始尺寸
     /// - Parameter url: 视频文件定位器
     /// - Returns: 获取到的原始尺寸
-    static func naturalSize(for url: URL) -> CGSize {
+    static func renderSize(for url: URL) -> CGSize {
         let asset = AVURLAsset(for: url)
-        return naturalSize(for: asset)
+        return renderSize(for: asset)
     }
     
     /// 获取视频资源的原始尺寸
     /// - Parameter asset: 视频资源
     /// - Returns: 获取到的原始尺寸
-    static func naturalSize(for asset: AVAsset) -> CGSize {
+    static func renderSize(for asset: AVAsset) -> CGSize {
         guard let track = asset.mn.track(with: .video) else { return .zero }
-        return track.mn.naturalSize
+        return track.mn.renderSize
     }
     
     /// 依据媒体资源类型获取截图

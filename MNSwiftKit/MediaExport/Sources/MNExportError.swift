@@ -100,7 +100,7 @@ extension MNExportError: CustomDebugStringConvertible {
         case .fileDoesExist(let string):
             return "文件已经存在: \(string)"
         case .cannotInsertTrack(let aVMediaType):
-            return "无法插入资源轨道: \(aVMediaType == .video ? "视频" : "音频")"
+            return "无法导入\(aVMediaType == .video ? "视频" : "音频")轨道"
         case .underlyingError(let error):
             return "\(error)"
         }
