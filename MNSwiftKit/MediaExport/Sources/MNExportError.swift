@@ -15,14 +15,16 @@ public enum MNExportError: Swift.Error {
     case unknownOutputDirectory
     /// 无法输出文件
     case cannotExportFile
-    /// 媒体资源为空
-    case assetIsEmpty
+    /// 未知文件类型
+    case unknownFileType(String)
+    /// 无资源轨道
+    case trackIsEmpty
     /// 无法创建输出目录
     case cannotCreateDirectory(String)
     /// 文件已存在
     case fileDoesExist(String)
-    /// 无法添加轨道
-    case cannotInsertTrack(AVMediaType)
+    /// 无法输出轨道
+    case cannotExportTrack(AVMediaType)
     /// 底层错误
     case underlyingError(Swift.Error)
 }
@@ -40,10 +42,11 @@ extension MNExportError {
         switch self {
         case .unknownOutputDirectory: return "未知输出目录"
         case .cannotExportFile: return "无法输出文件"
-        case .assetIsEmpty: return "媒体资源为空"
+        case .unknownFileType: return "未知输出文件类型"
+        case .trackIsEmpty: return "媒体资源为空"
         case .cannotCreateDirectory: return "无法创建输出目录"
         case .fileDoesExist: return "文件已存在"
-        case .cannotInsertTrack: return "无法插入媒体轨道"
+        case .cannotExportTrack: return "无法添加媒体轨道"
         case .underlyingError(let error): return error.localizedDescription
         }
     }
@@ -68,10 +71,11 @@ extension MNExportError: CustomNSError {
         switch self {
         case .unknownOutputDirectory: return -181377
         case .cannotExportFile: return -181378
-        case .assetIsEmpty: return -181379
-        case .cannotCreateDirectory: return -181380
-        case .fileDoesExist: return -181381
-        case .cannotInsertTrack: return -181382
+        case .unknownFileType: return -181379
+        case .trackIsEmpty: return -181380
+        case .cannotCreateDirectory: return -181381
+        case .fileDoesExist: return -181382
+        case .cannotExportTrack: return -181383
         case .underlyingError(let error): return error._code
         }
     }
@@ -93,14 +97,16 @@ extension MNExportError: CustomDebugStringConvertible {
             return "输出目录为空"
         case .cannotExportFile:
             return "创建输出会话失败"
-        case .assetIsEmpty:
+        case .unknownFileType(let pathExtension):
+            return "未知文件类型: \(pathExtension)"
+        case .trackIsEmpty:
             return "未插入任何资源轨道"
-        case .cannotCreateDirectory(let string):
-            return "无法创建创建输出目录: \(string)"
-        case .fileDoesExist(let string):
-            return "文件已经存在: \(string)"
-        case .cannotInsertTrack(let aVMediaType):
-            return "无法导入\(aVMediaType == .video ? "视频" : "音频")轨道"
+        case .cannotCreateDirectory(let directory):
+            return "无法创建创建输出目录: \(directory)"
+        case .fileDoesExist(let filePath):
+            return "文件已经存在: \(filePath)"
+        case .cannotExportTrack(let mediaType):
+            return "无法导入\(mediaType == .video ? "视频" : "音频")轨道"
         case .underlyingError(let error):
             return "\(error)"
         }

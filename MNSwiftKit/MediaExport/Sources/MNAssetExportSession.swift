@@ -13,10 +13,6 @@ import QuartzCore.CADisplayLink
 public class MNAssetExportSession: NSObject {
     /// 获取资源信息
     public let asset: AVAsset
-    /// 输出格式
-    public var outputFileType: AVFileType?
-    /// 裁剪片段
-    public var timeRange: CMTimeRange = .invalid
     /// 裁剪画面矩形
     public var cropRect: CGRect?
     /// 预设质量
@@ -25,12 +21,16 @@ public class MNAssetExportSession: NSObject {
     public var outputURL: URL?
     /// 输出分辨率outputRect有效时有效
     public var renderSize: CGSize?
+    /// 裁剪片段
+    public var timeRange: CMTimeRange?
+    /// 输出格式
+    public var outputFileType: AVFileType?
+    /// 是否输出音频内容
+    public var exportAudioTrack: Bool = true
+    /// 是否输出视频内容
+    public var exportVideoTrack: Bool = true
     /// 是否针对网络使用进行优化
     public var shouldOptimizeForNetworkUse: Bool = true
-    /// 是否输出视频内容
-    public var isExportVideoTrack: Bool = true
-    /// 是否输出音频内容
-    public var isExportAudioTrack: Bool = true
     /// 查询进度
     private var timer: Timer!
     /// 系统输出
@@ -92,14 +92,14 @@ public class MNAssetExportSession: NSObject {
     /// 以配置输出
     private func export() {
         
-        func finish(error: MNExportError?) {
-            self.error = error
-            status = .failed
-            completionHandler?(.failed, error)
-        }
-        
         guard let outputURL = outputURL, outputURL.isFileURL else {
             finish(error: .unknownOutputDirectory)
+            return
+        }
+        
+        // 检查文件类型
+        guard let outputFileType = MNAssetExportSession.fileType(for: outputURL.pathExtension) else {
+            finish(error: .unknownFileType(outputURL.pathExtension))
             return
         }
         
@@ -134,66 +134,40 @@ public class MNAssetExportSession: NSObject {
             }
         }
         
-        // 重新提取素材
-        let videoTrack = asset.mn.track(with: .video)
-        let audioTrack = asset.mn.track(with: .audio)
+        // 合成器
         let composition = AVMutableComposition()
-        if isExportVideoTrack, let videoTrack = videoTrack {
+        if exportVideoTrack, let videoTrack = asset.mn.track(with: .video) {
             guard composition.mn.append(track: videoTrack, range: timeRange) else {
-                finish(error: .cannotInsertTrack(.video))
+                finish(error: .cannotExportTrack(.video))
                 return
             }
         }
-        if isExportAudioTrack, let audioTrack = audioTrack {
+        if exportAudioTrack, let audioTrack = asset.mn.track(with: .audio) {
             guard composition.mn.append(track: audioTrack, range: timeRange) else {
-                finish(error: .cannotInsertTrack(.audio))
+                finish(error: .cannotExportTrack(.audio))
                 return
             }
         }
         
         // 检查输出项
         guard composition.tracks.isEmpty == false else {
-            finish(error: .assetIsEmpty)
+            finish(error: .trackIsEmpty)
             return
         }
         
-        // 寻找合适的预设质量<内部封装>
-        func presetCompatible(with asset: AVAsset) -> String {
-            let compatiblePresetNames = AVAssetExportSession.exportPresets(compatibleWith: asset)
-            if let presetName = presetName, compatiblePresetNames.contains(presetName) {
-                return presetName
-            }
-            var presetNames: [String] = []
-            if isExportVideoTrack, let _ = videoTrack {
-                presetNames.append(AVAssetExportPresetHighestQuality)
-                presetNames.append(AVAssetExportPreset3840x2160)
-                presetNames.append(AVAssetExportPreset1920x1080)
-                presetNames.append(AVAssetExportPreset1280x720)
-                presetNames.append(AVAssetExportPresetMediumQuality)
-                presetNames.append(AVAssetExportPresetLowQuality)
-            }
-            if isExportAudioTrack, let _ = audioTrack {
-                presetNames.append(AVAssetExportPresetAppleM4A)
-            }
-            if let presetName = presetNames.first(where: { compatiblePresetNames.contains($0) }) {
-                return presetName
-            }
-            return AVAssetExportPresetPassthrough
-        }
+        // 寻找合适的预设质量
+        let presetName = compatiblePresetName(with: composition)
         
-        // 开始输出
-        guard let exportSession = AVAssetExportSession(asset: composition, presetName: presetCompatible(with: composition)) else {
+        // 检查设置是否可以输出
+        guard compatibility(ofExportPreset: presetName, with: composition, outputFileType: outputFileType) else {
             finish(error: .cannotExportFile)
             return
         }
-        exportSession.outputURL = outputURL
-        exportSession.shouldOptimizeForNetworkUse = shouldOptimizeForNetworkUse
-        if let outputFileType = outputFileType {
-            exportSession.outputFileType = outputFileType
-        } else if isExportVideoTrack, let _ = videoTrack {
-            exportSession.outputFileType = .mp4
-        } else {
-            exportSession.outputFileType = .m4a
+        
+        // 开始输出
+        guard let exportSession = AVAssetExportSession(asset: composition, presetName: presetName) else {
+            finish(error: .cannotExportFile)
+            return
         }
         if let cropRect = cropRect, cropRect.isEmpty == false, cropRect.isNull == false, let videoTrack = composition.mn.track(with: .video) {
             // 渲染尺寸
@@ -219,12 +193,99 @@ public class MNAssetExportSession: NSObject {
             
             exportSession.videoComposition = videoComposition
         }
-        exportSession.addObserver(self, forKeyPath: #keyPath(AVAssetExportSession.status), options: .new, context: nil)
         self.exportSession = exportSession
-        // 开始输出
-        exportSession.exportAsynchronously {
-            self.completionHandler?(self.status, self.error)
+        if #available(iOS 18.0, *) {
+            //
+            Task {
+                for await state in exportSession.states(updateInterval: 0.1) {
+                    switch state {
+                    case .pending:
+                        self.status = .exporting
+                    case .waiting:
+                        self.status = .waiting
+                    case .exporting(progress: let progress):
+                        self.status = .waiting
+                        let fractionCompleted = CGFloat(progress.fractionCompleted)
+                        self.progress = fractionCompleted
+                        if let progressHandler = self.progressHandler {
+                            progressHandler(fractionCompleted)
+                        }
+                    default: break
+                    }
+                }
+                do {
+                    try await exportSession.export(to: outputURL, as: outputFileType)
+                    self.progress = 1.0
+                    if let progressHandler = self.progressHandler {
+                        progressHandler(1.0)
+                    }
+                    self.status = .completed
+                    if let completionHandler = self.completionHandler {
+                        completionHandler(.completed, nil)
+                    }
+                } catch {
+#if DEBUG
+                    print("资源输出失败: \(error)")
+#endif
+                    self.status = .failed
+                    self.error = MNExportError.underlyingError(error)
+                    if let completionHandler = self.completionHandler {
+                        completionHandler(self.status, self.error)
+                    }
+                }
+            }
+        } else {
+            exportSession.outputURL = outputURL
+            exportSession.outputFileType = outputFileType
+            exportSession.shouldOptimizeForNetworkUse = shouldOptimizeForNetworkUse
+            exportSession.addObserver(self, forKeyPath: #keyPath(AVAssetExportSession.status), options: .new, context: nil)
+            // 输出资源
+            exportSession.exportAsynchronously {
+                if let completionHandler = self.completionHandler {
+                    completionHandler(self.status, self.error)
+                }
+            }
         }
+    }
+    
+    private func compatiblePresetName(with asset: AVAsset) -> String {
+        let compatiblePresetNames = AVAssetExportSession.exportPresets(compatibleWith: asset)
+        if let presetName = presetName, compatiblePresetNames.contains(presetName) {
+            return presetName
+        }
+        var presetNames: [String] = []
+        if let _ = asset.mn.track(with: .video) {
+            presetNames.append(AVAssetExportPresetHighestQuality)
+            presetNames.append(AVAssetExportPreset3840x2160)
+            presetNames.append(AVAssetExportPreset1920x1080)
+            presetNames.append(AVAssetExportPreset1280x720)
+            presetNames.append(AVAssetExportPresetMediumQuality)
+            presetNames.append(AVAssetExportPresetLowQuality)
+        }
+        if let _ = asset.mn.track(with: .audio) {
+            presetNames.append(AVAssetExportPresetAppleM4A)
+        }
+        if let presetName = presetNames.first(where: { compatiblePresetNames.contains($0) }) {
+            return presetName
+        }
+        return AVAssetExportPresetPassthrough
+    }
+    
+    private func compatibility(ofExportPreset presetName: String, with asset: AVAsset, outputFileType: AVFileType) -> Bool {
+        var compatible = false
+        let semaphore = DispatchSemaphore(value: 0)
+        AVAssetExportSession.determineCompatibility(ofExportPreset: presetName, with: asset, outputFileType: outputFileType) { flag in
+            compatible = flag
+            semaphore.signal()
+        }
+        semaphore.wait()
+        return compatible
+    }
+    
+    private func finish(error: MNExportError?) {
+        self.error = error
+        status = .failed
+        completionHandler?(.failed, error)
     }
     
     /// 取消输出任务
@@ -242,7 +303,7 @@ public class MNAssetExportSession: NSObject {
         case .exporting:
             // 开启轮询
             destroyTimer()
-            timer = Timer(timeInterval: 0.2, target: self, selector: #selector(timerStrike), userInfo: nil, repeats: true)
+            timer = Timer(timeInterval: 0.1, target: self, selector: #selector(timerStrike), userInfo: nil, repeats: true)
             RunLoop.main.add(timer, forMode: .common)
         case .completed, .failed, .cancelled:
             // 结束轮询
