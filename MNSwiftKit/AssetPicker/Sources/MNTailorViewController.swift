@@ -37,7 +37,7 @@ public class MNTailorViewController: UIViewController {
     /// 视频时长
     private var duration: TimeInterval = 0.0
     /// 视频尺寸
-    private var renderSize: CGSize = CGSize(width: 1920.0, height: 1080.0)
+    private var naturalSize: CGSize = CGSize(width: 1920.0, height: 1080.0)
     /// 最小裁剪时长
     public var minTailorDuration: TimeInterval = 0.0
     /// 最大裁剪时长
@@ -109,9 +109,9 @@ public class MNTailorViewController: UIViewController {
         modalPresentationStyle = .fullScreen
         self.duration = MNAssetExportSession.seconds(fileAtPath: videoPath)
         self.cover = MNAssetExportSession.generateImage(fileAtPath: videoPath)
-        let renderSize = MNAssetExportSession.renderSize(fileAtPath: videoPath)
-        if renderSize != .zero {
-            self.renderSize = renderSize
+        let naturalSize = MNAssetExportSession.naturalSize(fileAtPath: videoPath)
+        if naturalSize != .zero {
+            self.naturalSize = naturalSize
         }
     }
     
@@ -182,18 +182,18 @@ public class MNTailorViewController: UIViewController {
         let top: CGFloat = MN_STATUS_BAR_HEIGHT + MN_NAV_BAR_HEIGHT/2.0
         let width: CGFloat = view.frame.width
         let height: CGFloat = playControl.frame.minY - 20.0 - top
-        var renderSize: CGSize = renderSize
+        var renderSize: CGSize = naturalSize
         if renderSize.width >= renderSize.height {
             // 横向视频
             renderSize = renderSize.mn.multiplyTo(width: width)
             if floor(renderSize.height) > height {
-                renderSize = self.renderSize.mn.multiplyTo(height: height)
+                renderSize = self.naturalSize.mn.multiplyTo(height: height)
             }
         } else {
             // 纵向视频
             renderSize = renderSize.mn.multiplyTo(height: height)
             if floor(renderSize.width) > width {
-                renderSize = self.renderSize.mn.multiplyTo(width: width)
+                renderSize = self.naturalSize.mn.multiplyTo(width: width)
             }
         }
         renderSize.width = ceil(renderSize.width)
@@ -363,7 +363,7 @@ extension MNTailorViewController {
                 MNToast.showMsg("解析视频失败")
                 return
             }
-            let z = MNAssetExportSession.renderSize(fileAtPath: videoPath)
+            let z = MNAssetExportSession.naturalSize(fileAtPath: videoPath)
             let w = ceil(z.height/2.0)
             //let x = 0.0
             let x = ceil((z.width - w)/2.0)

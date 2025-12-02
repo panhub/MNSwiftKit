@@ -32,10 +32,10 @@ extension NameSpaceWrapper where Base: AVAssetTrack {
         return base.preferredTransform
     }
     
-    /// 视频轨道原始尺寸
+    /// 视频轨道原始渲染尺寸
     public var naturalSize: CGSize {
+        var naturalSize: CGSize = .zero
         if #available(iOS 16.0, *) {
-            var naturalSize: CGSize = .zero
             let semaphore = DispatchSemaphore(value: 0)
             Task {
                 do {
@@ -48,14 +48,9 @@ extension NameSpaceWrapper where Base: AVAssetTrack {
                 semaphore.signal()
             }
             semaphore.wait()
-            return naturalSize
+        } else {
+            naturalSize = base.naturalSize
         }
-        return base.naturalSize
-    }
-    
-    /// 视频轨道渲染尺寸
-    public var renderSize: CGSize {
-        let naturalSize = naturalSize
         let preferredTransform = preferredTransform
         /*
         let transformedSize = naturalSize.applying(preferredTransform)
@@ -87,6 +82,27 @@ extension NameSpaceWrapper where Base: AVAssetTrack {
             return frameRate
         }
         return CGFloat(base.nominalFrameRate)
+    }
+    
+    /// 格式说明
+    public var formatDescriptions: [Any] {
+        if #available(iOS 16.0, *) {
+            var descriptions: [Any] = []
+            let semaphore = DispatchSemaphore(value: 0)
+            Task {
+                do {
+                    descriptions = try await base.load(.formatDescriptions)
+                } catch {
+#if DEBUG
+                    print("获取轨道格式说明出错: \(error)")
+#endif
+                }
+                semaphore.signal()
+            }
+            semaphore.wait()
+            return descriptions
+        }
+        return base.formatDescriptions
     }
     
     /// 获取视频轨道形变

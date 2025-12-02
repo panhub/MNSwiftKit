@@ -85,6 +85,7 @@ public class MNAssetExportSession: NSObject {
         }
         error = nil
         progress = 0.0
+        status = .waiting
         exportSession = nil
         self.progressHandler = progressHandler
         self.completionHandler = completionHandler
@@ -173,29 +174,45 @@ public class MNAssetExportSession: NSObject {
             finish(error: .cannotExportFile)
             return
         }
-        if let cropRect = cropRect, cropRect.isEmpty == false, cropRect.isNull == false, let videoTrack = composition.mn.track(with: .video) {
-            // 渲染尺寸
-            var renderSize = cropRect.size
-            if let size = self.renderSize {
-                renderSize = size
+        if let videoTrack = composition.mn.track(with: .video) {
+            var cropVideo = false
+            if let cropRect = cropRect, cropRect.isEmpty == false, cropRect.isNull == false {
+                cropVideo = true
+            } else if let renderSize = renderSize, min(renderSize.width, renderSize.height) > 0.0 {
+                cropVideo = true
             }
-            //renderSize.width = floor(ceil(renderSize.width)/16.0)*16.0
-            //renderSize.height = floor(ceil(renderSize.height)/16.0)*16.0
-            // 配置画面设置
-            let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: videoTrack)
-            layerInstruction.setOpacity(1.0, at: .zero)
-            layerInstruction.setTransform(videoTrack.mn.transform(for: cropRect, renderSize: renderSize), at: .zero)
-            
-            let instruction = AVMutableVideoCompositionInstruction()
-            instruction.timeRange = CMTimeRange(start: .zero, duration: composition.duration)
-            instruction.layerInstructions = [layerInstruction]
-            
-            let videoComposition = AVMutableVideoComposition(propertiesOf: composition)
-            videoComposition.renderSize = renderSize
-            videoComposition.instructions = [instruction]
-            videoComposition.frameDuration = CMTime(value: 1, timescale: CMTimeScale(videoTrack.mn.nominalFrameRate))
-            
-            exportSession.videoComposition = videoComposition
+            if cropVideo {
+                var cropRect = CGRect(origin: .zero, size: videoTrack.mn.naturalSize)
+                if let rect = self.cropRect {
+                    cropRect = cropRect.intersection(rect)
+                }
+                var renderSize = cropRect.size
+                if let size = self.renderSize {
+                    renderSize = size
+                }
+                //renderSize.width = floor(ceil(renderSize.width)/16.0)*16.0
+                //renderSize.height = floor(ceil(renderSize.height)/16.0)*16.0
+                // 配置画面设置
+                let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: videoTrack)
+                layerInstruction.setOpacity(1.0, at: .zero)
+                layerInstruction.setTransform(videoTrack.mn.transform(for: cropRect, renderSize: renderSize), at: .zero)
+                
+                let instruction = AVMutableVideoCompositionInstruction()
+                instruction.timeRange = CMTimeRange(start: .zero, duration: composition.duration)
+                instruction.layerInstructions = [layerInstruction]
+                
+                let videoComposition = AVMutableVideoComposition(propertiesOf: composition)
+                videoComposition.renderSize = renderSize
+                videoComposition.instructions = [instruction]
+                let frameRate = videoTrack.mn.nominalFrameRate
+                if frameRate > 0 {
+                    videoComposition.frameDuration = CMTime(value: 1, timescale: CMTimeScale(frameRate))
+                } else {
+                    videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
+                }
+                
+                exportSession.videoComposition = videoComposition
+            }
         }
         exportSession.shouldOptimizeForNetworkUse = shouldOptimizeForNetworkUse
         self.exportSession = exportSession

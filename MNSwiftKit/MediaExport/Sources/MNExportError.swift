@@ -26,6 +26,16 @@ public enum MNExportError: Swift.Error {
     case fileDoesExist(String)
     /// 无法输出轨道
     case cannotExportTrack(AVMediaType)
+    /// 无法读取资源
+    case cannotReadAsset(Error)
+    /// 无法读写入文件
+    case cannotWritFile(URL, fileType: AVFileType, underlying: Error)
+    /// 无法添加Output
+    case cannotAddOutput(AVMediaType)
+    /// 无法输出设置
+    case cannotExportSetting(AVMediaType, fileType: AVFileType)
+    /// 无法添加Input
+    case cannotAddInput(AVMediaType)
     /// 底层错误
     case underlyingError(Swift.Error)
 }

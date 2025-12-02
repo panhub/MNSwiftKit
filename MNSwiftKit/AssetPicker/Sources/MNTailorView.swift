@@ -164,8 +164,8 @@ class MNTailorView: UIView {
         
         let videoPath: String = videoPath
         
-        var renderSize = MNAssetExportSession.renderSize(fileAtPath: videoPath)
-        guard renderSize != .zero else {
+        var naturalSize = MNAssetExportSession.naturalSize(fileAtPath: videoPath)
+        guard naturalSize != .zero else {
             delegate?.tailorViewLoadThumbnailFailed(self)
             return
         }
@@ -205,11 +205,11 @@ class MNTailorView: UIView {
         let widthByDuration: CGFloat = contentSize.width/duration
         let durationByWidth: TimeInterval = duration/contentSize.width
         tailorHandler.spacing = max(pointer.frame.width, ceil(minTailorDuration*widthByDuration))
-        renderSize = renderSize.mn.multiplyTo(height: contentSize.height)
-        let thumbnailCount: Int = Int(ceil(duration/(durationByWidth*renderSize.width)))
-        renderSize.width *= UIScreen.main.scale
-        renderSize.height *= UIScreen.main.scale
-        renderSize.width = ceil(renderSize.width)
+        naturalSize = naturalSize.mn.multiplyTo(height: contentSize.height)
+        let thumbnailCount: Int = Int(ceil(duration/(durationByWidth*naturalSize.width)))
+        naturalSize.width *= UIScreen.main.scale
+        naturalSize.height *= UIScreen.main.scale
+        naturalSize.width = ceil(naturalSize.width)
         // 生成截图
         thumbnailView.alpha = 0.0
         indicatorView.startAnimating()
@@ -220,7 +220,7 @@ class MNTailorView: UIView {
             generator.appliesPreferredTrackTransform = true
             generator.requestedTimeToleranceBefore = .zero
             generator.requestedTimeToleranceAfter = .zero
-            generator.maximumSize = renderSize
+            generator.maximumSize = naturalSize
             for idx in 0..<thumbnailCount {
                 let progress: Double = Double(idx)/Double(thumbnailCount)
                 var imageRef: CGImage
