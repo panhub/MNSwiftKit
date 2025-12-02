@@ -1,5 +1,5 @@
 //
-//  HTTPContentAdaptor.swift
+//  HTTPUploadAdaptor.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2025/11/20.
@@ -12,7 +12,7 @@ import CoreServices
 import UniformTypeIdentifiers
 
 /// 网络请求内容适配器
-public class HTTPContentAdaptor {
+public class HTTPUploadAdaptor {
     
     /// 边界标记
     public let boundary: String
@@ -131,7 +131,7 @@ public class HTTPContentAdaptor {
 #endif
             return false
         }
-        let mimeType = HTTPContentAdaptor.mimeType(pathExtension: url.pathExtension)
+        let mimeType = HTTPUploadAdaptor.mimeType(withExtension: url.pathExtension)
         return append(data: fileData, name: name, mime: mimeType, filename: url.lastPathComponent)
     }
     
@@ -158,15 +158,15 @@ public class HTTPContentAdaptor {
     }
     
     /// 根据文件扩展名获取文件MIME
-    /// - Parameter pathExtension: 扩展名
-    /// - Returns: MIME
-    public class func mimeType(pathExtension: String) -> String {
+    /// - Parameter pathExtension: 文件扩展名
+    /// - Returns: 文件MIME
+    public class func mimeType(withExtension fileExtension: String) -> String {
         if #available(iOS 14.0, *) {
-            if let type = UTType(filenameExtension: pathExtension), let mime = type.preferredMIMEType {
+            if let type = UTType(filenameExtension: fileExtension), let mime = type.preferredMIMEType {
                 return mime
             }
         }
-        if let uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, pathExtension as CFString, nil)?.takeRetainedValue(), let mime = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue() {
+        if let uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension as CFString, nil)?.takeRetainedValue(), let mime = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue() {
             return mime as String
         }
         return "application/octet-stream"

@@ -11,7 +11,7 @@ import Foundation
 //#endif
 
 /// 询问下载位置回调
-public typealias HTTPRequestLocationHandler = HTTPSessionLocationHandler
+public typealias HTTPDownloadLocationHandler = HTTPSessionLocationHandler
 
 /// 下载请求
 @objc public class HTTPDownloadRequest: HTTPRequest {
@@ -22,7 +22,7 @@ public typealias HTTPRequestLocationHandler = HTTPSessionLocationHandler
      */
     @objc public var resumeData: Data?
     /// 询问下载位置回调 可能会触发多次回调 下载前检查文件是否存在
-    public var locationHandler: HTTPRequestLocationHandler?
+    public var locationHandler: HTTPDownloadLocationHandler?
     /// 下载选项
     public var downloadOptions: HTTPDownloadOptions = [.createIntermediateDirectories, .removeExistsFile]
     /// 请求产生的Task
@@ -50,7 +50,7 @@ public typealias HTTPRequestLocationHandler = HTTPSessionLocationHandler
     ///   - location: 下载位置
     ///   - progress: 进度回调
     ///   - completion: 结束回调
-    @objc open func start(_ start: HTTPRequestStartHandler? = nil, location: @escaping HTTPRequestLocationHandler, progress: HTTPRequestProgressHandler? = nil, completion: HTTPRequestCompletionHandler?) {
+    @objc open func start(_ start: HTTPRequestStartHandler? = nil, location: @escaping HTTPDownloadLocationHandler, progress: HTTPRequestProgressHandler? = nil, completion: HTTPRequestCompletionHandler?) {
         resumeData = nil
         startHandler = start
         locationHandler = location

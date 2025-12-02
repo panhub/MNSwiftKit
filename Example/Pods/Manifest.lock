@@ -20,17 +20,6 @@ PODS:
     - MNSwiftKit/Refresh
     - MNSwiftKit/Slider
     - MNSwiftKit/Toast
-  - MNSwiftKit/Base (0.1.1):
-    - MNSwiftKit/CollectionLayout
-    - MNSwiftKit/Definition
-    - MNSwiftKit/EmptyView
-    - MNSwiftKit/Extension
-    - MNSwiftKit/Layout
-    - MNSwiftKit/Refresh
-    - MNSwiftKit/Request
-    - MNSwiftKit/Toast
-    - MNSwiftKit/Transitioning
-  - MNSwiftKit/CollectionLayout (0.1.1)
   - MNSwiftKit/Definition (0.1.1):
     - MNSwiftKit/NameSpace
   - MNSwiftKit/EmptyView (0.1.1):
@@ -51,12 +40,10 @@ PODS:
   - MNSwiftKit/Slider (0.1.1)
   - MNSwiftKit/Toast (0.1.1):
     - MNSwiftKit/NameSpace
-  - MNSwiftKit/Transitioning (0.1.1):
-    - MNSwiftKit/NameSpace
 
 DEPENDENCIES:
   - MNSwiftKit/AssetPicker (from `../`)
-  - MNSwiftKit/Base (from `../`)
+  - MNSwiftKit/Request (from `../`)
 
 EXTERNAL SOURCES:
   MNSwiftKit:
@@ -65,6 +52,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   MNSwiftKit: 6ea68c148199a1d5359dd0ac971e480449d09b9d
 
-PODFILE CHECKSUM: 73414907836947914ff11d366f237384a22a7f03
+PODFILE CHECKSUM: 149120fec8bef8e9debe9cd505d2e2cdb597f251
 
 COCOAPODS: 1.16.2
