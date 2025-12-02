@@ -18,7 +18,7 @@ public class MNAssetExportSession: NSObject {
     /// 预设质量
     public var presetName: String?
     /// 输出路径
-    public var outputURL: URL?
+    public var outputURL: URL!
     /// 输出分辨率outputRect有效时有效
     public var renderSize: CGSize?
     /// 裁剪片段
@@ -29,12 +29,14 @@ public class MNAssetExportSession: NSObject {
     public var exportAudioTrack: Bool = true
     /// 是否输出视频内容
     public var exportVideoTrack: Bool = true
+    /// 进度更新时间间隔
+    public var progressUpdateInterval: TimeInterval = 0.15
     /// 是否针对网络使用进行优化
     public var shouldOptimizeForNetworkUse: Bool = true
-    /// 查询进度
-    private var timer: Timer!
     /// 系统输出
     private weak var exportSession: AVAssetExportSession?
+    /// 查询进度
+    private var timer: Timer!
     /// 错误信息
     public private(set) var error: Error?
     /// 进度
@@ -55,14 +57,14 @@ public class MNAssetExportSession: NSObject {
     /// 构造资源输出会话
     /// - Parameter filePath: 媒体资源路径
     public convenience init?(fileAtPath filePath: String) {
-        guard let asset = AVURLAsset(for: filePath) else { return nil }
+        guard let asset = AVURLAsset(fileAtPath: filePath) else { return nil }
         self.init(asset: asset)
     }
     
     /// 构造资源输出会话
     /// - Parameter fileURL: 媒体资源定位器
     public convenience init(fileOfURL fileURL: URL) {
-        let asset = AVURLAsset(for: fileURL)
+        let asset = AVURLAsset(mediaOfURL: fileURL)
         self.init(asset: asset)
     }
     
@@ -75,10 +77,13 @@ public class MNAssetExportSession: NSObject {
     
     /// 异步导出资源
     /// - Parameters:
-    ///   - progressHandler: 进度回调
+    ///   - progressHandler: 进度回调(iOS18之前在主队列回调进度, 之后依赖于内部进度回调队列)
     ///   - completionHandler: 导出结束回调
-    public func exportAsynchronously(progressHandler: ((CGFloat)->Void)? = nil, completionHandler: ((AVAssetExportSession.Status, Error?)->Void)?) {
-        if status == .waiting || status == .exporting { return }
+    public func exportAsynchronously(progressHandler: ((_ progress: CGFloat)->Void)? = nil, completionHandler: ((_ status: AVAssetExportSession.Status, _ error: Error?)->Void)?) {
+        if status == .waiting || status == .exporting {
+            completionHandler?(.failed, MNExportError.unavailable)
+            return
+        }
         error = nil
         progress = 0.0
         exportSession = nil
@@ -89,7 +94,7 @@ public class MNAssetExportSession: NSObject {
         }
     }
     
-    /// 以配置输出
+    /// 开始输出资源
     private func export() {
         
         guard let outputURL = outputURL, outputURL.isFileURL else {
@@ -98,7 +103,7 @@ public class MNAssetExportSession: NSObject {
         }
         
         // 检查文件类型
-        guard let outputFileType = MNAssetExportSession.fileType(for: outputURL.pathExtension) else {
+        guard let outputFileType = MNAssetExportSession.fileType(withExtension: outputURL.pathExtension) else {
             finish(error: .unknownFileType(outputURL.pathExtension))
             return
         }
@@ -193,18 +198,19 @@ public class MNAssetExportSession: NSObject {
             
             exportSession.videoComposition = videoComposition
         }
+        exportSession.shouldOptimizeForNetworkUse = shouldOptimizeForNetworkUse
         self.exportSession = exportSession
         if #available(iOS 18.0, *) {
             //
             Task {
-                for await state in exportSession.states(updateInterval: 0.1) {
+                for await state in exportSession.states(updateInterval: self.progressUpdateInterval) {
                     switch state {
                     case .pending:
-                        self.status = .exporting
+                        self.status = .unknown
                     case .waiting:
                         self.status = .waiting
                     case .exporting(progress: let progress):
-                        self.status = .waiting
+                        self.status = .exporting
                         let fractionCompleted = CGFloat(progress.fractionCompleted)
                         self.progress = fractionCompleted
                         if let progressHandler = self.progressHandler {
@@ -213,6 +219,8 @@ public class MNAssetExportSession: NSObject {
                     default: break
                     }
                 }
+            }
+            Task {
                 do {
                     try await exportSession.export(to: outputURL, as: outputFileType)
                     self.progress = 1.0
@@ -230,14 +238,13 @@ public class MNAssetExportSession: NSObject {
                     self.status = .failed
                     self.error = MNExportError.underlyingError(error)
                     if let completionHandler = self.completionHandler {
-                        completionHandler(self.status, self.error)
+                        completionHandler(.failed, self.error)
                     }
                 }
             }
         } else {
             exportSession.outputURL = outputURL
             exportSession.outputFileType = outputFileType
-            exportSession.shouldOptimizeForNetworkUse = shouldOptimizeForNetworkUse
             exportSession.addObserver(self, forKeyPath: #keyPath(AVAssetExportSession.status), options: .new, context: nil)
             // 输出资源
             exportSession.exportAsynchronously {
@@ -248,6 +255,9 @@ public class MNAssetExportSession: NSObject {
         }
     }
     
+    /// 查找可用的输出预设名称(质量从高到低)
+    /// - Parameter asset: 待输出资源
+    /// - Returns: 可用预设名称
     private func compatiblePresetName(with asset: AVAsset) -> String {
         let compatiblePresetNames = AVAssetExportSession.exportPresets(compatibleWith: asset)
         if let presetName = presetName, compatiblePresetNames.contains(presetName) {
@@ -271,6 +281,12 @@ public class MNAssetExportSession: NSObject {
         return AVAssetExportPresetPassthrough
     }
     
+    /// 检查输出条件是否可用
+    /// - Parameters:
+    ///   - presetName: 预设输出名称
+    ///   - asset: 待输出资源
+    ///   - outputFileType: 文件类型
+    /// - Returns: 是否可输出
     private func compatibility(ofExportPreset presetName: String, with asset: AVAsset, outputFileType: AVFileType) -> Bool {
         var compatible = false
         let semaphore = DispatchSemaphore(value: 0)
@@ -282,6 +298,7 @@ public class MNAssetExportSession: NSObject {
         return compatible
     }
     
+    /// 结束任务
     private func finish(error: MNExportError?) {
         self.error = error
         status = .failed
@@ -303,12 +320,13 @@ public class MNAssetExportSession: NSObject {
         case .exporting:
             // 开启轮询
             destroyTimer()
-            timer = Timer(timeInterval: 0.1, target: self, selector: #selector(timerStrike), userInfo: nil, repeats: true)
+            timer = Timer(timeInterval: progressUpdateInterval, target: self, selector: #selector(timerStrike), userInfo: nil, repeats: true)
             RunLoop.main.add(timer, forMode: .common)
         case .completed, .failed, .cancelled:
             // 结束轮询
             destroyTimer()
             if let exportSession = exportSession {
+                self.exportSession = nil
                 if let error = exportSession.error {
                     self.error = MNExportError.underlyingError(error)
                 }
@@ -333,6 +351,7 @@ extension MNAssetExportSession {
     
     /// 定时器事件
     @objc private func timerStrike() {
+        guard status == .exporting else { return }
         guard let exportSession = exportSession else { return }
         progress = CGFloat(exportSession.progress)
         if let progressHandler = progressHandler {

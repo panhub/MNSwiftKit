@@ -10,7 +10,8 @@ import AVFoundation
 
 /// 媒体输出错误信息
 public enum MNExportError: Swift.Error {
-    
+    /// 不可用
+    case unavailable
     /// 未知输出目录
     case unknownOutputDirectory
     /// 无法输出文件
@@ -40,6 +41,7 @@ extension MNExportError {
     /// 错误信息
     public var msg: String {
         switch self {
+        case .unavailable: return "输出会话使用中"
         case .unknownOutputDirectory: return "未知输出目录"
         case .cannotExportFile: return "无法输出文件"
         case .unknownFileType: return "未知输出文件类型"
@@ -69,6 +71,7 @@ extension MNExportError: CustomNSError {
     
     public var errorCode: Int {
         switch self {
+        case .unavailable: return -181376
         case .unknownOutputDirectory: return -181377
         case .cannotExportFile: return -181378
         case .unknownFileType: return -181379
@@ -93,6 +96,8 @@ extension MNExportError: CustomDebugStringConvertible {
     
     public var debugDescription: String {
         switch self {
+        case .unavailable:
+            return "有输出任务正在进行"
         case .unknownOutputDirectory:
             return "输出目录为空"
         case .cannotExportFile:

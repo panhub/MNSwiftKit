@@ -33,11 +33,11 @@ extension NameSpaceWrapper where Base: AVMutableComposition {
 extension NameSpaceWrapper where Base: AVMutableComposition {
     
     /// 拼接媒体资源内音视频轨道
-    /// - Parameter string: 媒体资源路径或远程地址
+    /// - Parameter path: 媒体资源路径或远程地址
     /// - Returns: 是否拼接成功
     @discardableResult
-    public func appendAsset(for string: String) -> Bool {
-        guard let asset = AVURLAsset(for: string) else { return false }
+    public func appendAsset(fileAtPath path: String) -> Bool {
+        guard let asset = AVURLAsset(fileAtPath: path) else { return false }
         return append(asset: asset)
     }
     
@@ -45,8 +45,8 @@ extension NameSpaceWrapper where Base: AVMutableComposition {
     /// - Parameter url: 媒体资源定位器
     /// - Returns: 是否拼接成功
     @discardableResult
-    public func appendAsset(for url: URL) -> Bool {
-        let asset = AVURLAsset(for: url)
+    public func appendAsset(mediaOfURL url: URL) -> Bool {
+        let asset = AVURLAsset(mediaOfURL: url)
         return append(asset: asset)
     }
     

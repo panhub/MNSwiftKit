@@ -17,34 +17,34 @@ extension MNAssetExportSession: MNMetadataExportSupported {}
 extension MNMetadataExportSupported {
     
     /// 获取媒体资源时长
-    /// - Parameter string: 媒体文件路径或远程连接
+    /// - Parameter path: 媒体文件路径或远程连接
     /// - Returns: 获取到的时长
-    static func seconds(for string: String) -> TimeInterval {
-        guard let asset = AVURLAsset(for: string) else { return 0.0 }
+    static func seconds(fileAtPath path: String) -> TimeInterval {
+        guard let asset = AVURLAsset(fileAtPath: path) else { return 0.0 }
         return asset.mn.seconds
     }
     
     /// 获取视频资源时长
     /// - Parameter url: 媒体文件定位器
     /// - Returns: 获取到的时长
-    static func seconds(for url: URL) -> TimeInterval {
-        let asset = AVURLAsset(for: url)
+    static func seconds(mediaOfURL url: URL) -> TimeInterval {
+        let asset = AVURLAsset(mediaOfURL: url)
         return asset.mn.seconds
     }
     
     /// 获取视频资源的原始尺寸
-    /// - Parameter string: 视频文件路径或远程连接
+    /// - Parameter path: 视频文件路径或远程连接
     /// - Returns: 获取到的原始尺寸
-    static func renderSize(for string: String) -> CGSize {
-        guard let asset = AVURLAsset(for: string) else { return .zero }
+    static func renderSize(fileAtPath path: String) -> CGSize {
+        guard let asset = AVURLAsset(fileAtPath: path) else { return .zero }
         return renderSize(for: asset)
     }
     
     /// 获取视频资源的原始尺寸
     /// - Parameter url: 视频文件定位器
     /// - Returns: 获取到的原始尺寸
-    static func renderSize(for url: URL) -> CGSize {
-        let asset = AVURLAsset(for: url)
+    static func renderSize(mediaOfURL url: URL) -> CGSize {
+        let asset = AVURLAsset(mediaOfURL: url)
         return renderSize(for: asset)
     }
     
@@ -58,12 +58,12 @@ extension MNMetadataExportSupported {
     
     /// 依据媒体资源类型获取截图
     /// - Parameters:
-    ///   - string: 文件路径或远程链接
+    ///   - path: 文件路径或远程链接
     ///   - seconds: 秒数(视频资源有效)
     ///   - size: 期望最大尺寸(视频资源有效)
     /// - Returns: 获取到的截图(音频则返回插图)
-    static func generateImage(for string: String, at seconds: any BinaryFloatingPoint = 0.0, maximum size: CGSize = .init(width: 300.0, height: 300.0)) -> UIImage? {
-        guard let asset = AVURLAsset(for: string) else { return nil }
+    static func generateImage(fileAtPath path: String, at seconds: any BinaryFloatingPoint = 0.0, maximum size: CGSize = .init(width: 300.0, height: 300.0)) -> UIImage? {
+        guard let asset = AVURLAsset(fileAtPath: path) else { return nil }
         return generateImage(for: asset, at: seconds, maximum: size)
     }
     
@@ -73,8 +73,8 @@ extension MNMetadataExportSupported {
     ///   - seconds: 秒数(视频资源有效)
     ///   - size: 期望最大尺寸(视频资源有效)
     /// - Returns: 获取到的截图(音频则返回插图)
-    static func generateImage(for url: URL, at seconds: any BinaryFloatingPoint = 0.0, maximum size: CGSize = .init(width: 300.0, height: 300.0)) -> UIImage? {
-        let asset = AVURLAsset(for: url)
+    static func generateImage(mediaOfURL url: URL, at seconds: any BinaryFloatingPoint = 0.0, maximum size: CGSize = .init(width: 300.0, height: 300.0)) -> UIImage? {
+        let asset = AVURLAsset(mediaOfURL: url)
         return generateImage(for: asset, at: seconds, maximum: size)
     }
     
@@ -98,7 +98,7 @@ extension MNMetadataExportSupported {
     /// 依据文件后缀获取文件类型
     /// - Parameter fileExtension: 文件后缀
     /// - Returns: 文件类型
-    static func fileType(for fileExtension: String) -> AVFileType? {
+    static func fileType(withExtension fileExtension: String) -> AVFileType? {
         let ext = fileExtension.lowercased()
         if #available(iOS 14.0, *), let type = UTType(filenameExtension: ext) {
             // 根据 UTType 返回对应的 AVFileType

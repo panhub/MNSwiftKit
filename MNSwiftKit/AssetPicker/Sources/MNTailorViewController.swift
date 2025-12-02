@@ -104,9 +104,9 @@ class MNTailorViewController: UIViewController {
         self.init(nibName: nil, bundle: nil)
         self.videoPath = videoPath
         modalPresentationStyle = .fullScreen
-        self.duration = MNAssetExportSession.seconds(for: videoPath)
-        self.cover = MNAssetExportSession.generateImage(for: videoPath)
-        let renderSize = MNAssetExportSession.renderSize(for: videoPath)
+        self.duration = MNAssetExportSession.seconds(fileAtPath: videoPath)
+        self.cover = MNAssetExportSession.generateImage(fileAtPath: videoPath)
+        let renderSize = MNAssetExportSession.renderSize(fileAtPath: videoPath)
         if renderSize != .zero {
             self.renderSize = renderSize
         }
@@ -360,10 +360,7 @@ extension MNTailorViewController {
                 MNToast.showMsg("解析视频失败")
                 return
             }
-            MNToast.showProgress("正在导出", style: .line)
-            exportSession.outputFileType = .mp4
-            exportSession.shouldOptimizeForNetworkUse = true
-            let z = MNAssetExportSession.renderSize(for: videoPath)
+            let z = MNAssetExportSession.renderSize(fileAtPath: videoPath)
             let w = ceil(z.height/2.0)
             //let x = 0.0
             let x = ceil((z.width - w)/2.0)
@@ -388,6 +385,7 @@ extension MNTailorViewController {
             let croppRect = CGRect(x: cropX, y: cropY, width: cropW, height: cropH)
             
             exportSession.cropRect = cropRect
+            exportSession.shouldOptimizeForNetworkUse = true
             exportSession.renderSize = .init(width: 1080.0, height: 1080.0)
             exportSession.timeRange = exportSession.asset.mn.timeRange(withProgress: begin, to: end)
             if #available(iOS 16.0, *) {
@@ -395,6 +393,11 @@ extension MNTailorViewController {
             } else {
                 exportSession.outputURL = URL(fileURLWithPath: exportingPath)
             }
+            MNToast.showProgress("正在导出", style: .line, cancellation: true) { [weak exportSession] cancellation in
+                guard cancellation else { return }
+                guard let exportSession = exportSession else { return }
+                exportSession.cancel()
+             }
             exportSession.exportAsynchronously { value in
                 MNToast.showProgress(value: value)
             } completionHandler: { [weak self] status, error in

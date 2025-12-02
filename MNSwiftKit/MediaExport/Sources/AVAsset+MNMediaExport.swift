@@ -14,18 +14,18 @@ extension AVURLAsset {
     
     /// 构造媒体资源
     /// - Parameter path: 文件路径或远程链接
-    public convenience init?(for string: String) {
+    public convenience init?(fileAtPath path: String) {
         var isDirectory: ObjCBool = true
-        if FileManager.default.fileExists(atPath: string, isDirectory: &isDirectory) {
+        if FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory) {
             // 本地路径
             guard isDirectory.boolValue == false else { return nil }
             if #available(iOS 16.0, *) {
-                self.init(for: URL(filePath: string))
+                self.init(mediaOfURL: URL(filePath: path))
             } else {
-                self.init(for: URL(fileURLWithPath: string))
+                self.init(mediaOfURL: URL(fileURLWithPath: path))
             }
-        } else if let url = URL(string: string) {
-            self.init(for: url)
+        } else if let url = URL(string: path) {
+            self.init(mediaOfURL: url)
         } else {
             return nil
         }
@@ -33,7 +33,7 @@ extension AVURLAsset {
     
     /// 构造媒体资源
     /// - Parameter url: 资源定位器
-    public convenience init(for url: URL) {
+    public convenience init(mediaOfURL url: URL) {
         self.init(url: url, options: [AVURLAssetPreferPreciseDurationAndTimingKey: url.isFileURL])
     }
 }
