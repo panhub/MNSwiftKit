@@ -14,6 +14,8 @@ public protocol MNMetadataExportSupported {}
 
 extension MNAssetExportSession: MNMetadataExportSupported {}
 
+extension MNMediaExportSession: MNMetadataExportSupported {}
+
 extension MNMetadataExportSupported {
     
     /// 获取媒体资源时长
@@ -91,9 +93,6 @@ extension MNMetadataExportSupported {
         }
         return asset.mn.artwork
     }
-}
-
-extension MNMetadataExportSupported {
     
     /// 依据文件后缀获取文件类型
     /// - Parameter fileExtension: 文件后缀

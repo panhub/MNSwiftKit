@@ -8,25 +8,28 @@
 import UIKit
 import AVFoundation
 
-@objc protocol MNTailorViewControllerDelegate: NSObjectProtocol {
+@objc public protocol MNTailorViewControllerDelegate: NSObjectProtocol {
+    
     /// 取消裁剪控制器
-    @objc optional func tailorControllerDidCancel(_ tailorController: MNTailorViewController) -> Void
+    @objc optional func tailorControllerDidCancel(_ tailorController: MNTailorViewController)
+    
     /// 没有改变视频资源 请求复制
     /// - Parameter tailorController: 裁剪控制器
     /// - Returns: 是否复制视频
     @objc optional func tailorControllerShouldCopyVideo(_ tailorController: MNTailorViewController) -> Bool
+    
     /// 裁剪结束回调
     /// - Parameters:
     ///   - tailorController: 裁剪控制器
     ///   - videoPath: 视频路径
-    func tailorController(_ tailorController: MNTailorViewController, didTailorVideoAtPath videoPath: String) -> Void
+    func tailorController(_ tailorController: MNTailorViewController, didOutputVideoAtPath videoPath: String)
 }
 
-class MNTailorViewController: UIViewController {
+public class MNTailorViewController: UIViewController {
     /// 事件代理
-    weak var delegate: MNTailorViewControllerDelegate?
+    public weak var delegate: MNTailorViewControllerDelegate?
     /// 视频导出路径
-    var exportingPath: String?
+    public var outputPath: String?
     /// 视频绝对路径
     private var videoPath: String = ""
     /// 视频封面
@@ -36,9 +39,9 @@ class MNTailorViewController: UIViewController {
     /// 视频尺寸
     private var renderSize: CGSize = CGSize(width: 1920.0, height: 1080.0)
     /// 最小裁剪时长
-    var minTailorDuration: TimeInterval = 0.0
+    public var minTailorDuration: TimeInterval = 0.0
     /// 最大裁剪时长
-    var maxTailorDuration: TimeInterval = 0.0
+    public var maxTailorDuration: TimeInterval = 0.0
     /// 关闭按钮
     private let closeButton = UIButton(type: .custom)
     /// 确定按钮
@@ -60,11 +63,11 @@ class MNTailorViewController: UIViewController {
     /// 默认白色
     private let WhiteColor: UIColor = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
     /// 状态栏显示
-    override var prefersStatusBarHidden: Bool { false }
+    public override var prefersStatusBarHidden: Bool { false }
     /// 白色状态栏
-    override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
+    public override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
     /// 状态栏动态更新
-    override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation { .fade }
+    public override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation { .fade }
     /// 裁剪视图
     private lazy var tailorView: MNTailorView = {
         let tailorView: MNTailorView = MNTailorView(frame: CGRect(x: playControl.frame.maxX + 1.5, y: playControl.frame.minY, width: doneButton.frame.maxX - playControl.frame.maxX - 1.5, height: playControl.frame.height))
@@ -120,7 +123,7 @@ class MNTailorViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
@@ -224,7 +227,7 @@ class MNTailorViewController: UIViewController {
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
+    public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         guard player.isPlaying else { return }
         player.pause()
@@ -295,14 +298,14 @@ extension MNTailorViewController {
         let begin = tailorView.begin
         let end = tailorView.end
         let videoPath = videoPath
-        let exportingPath: String = exportingPath ?? "\(NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!)/videos/\(NSNumber(value: Int64(Date().timeIntervalSince1970*1000.0)).stringValue).mp4"
+        let outputPath: String = outputPath ?? "\(NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!)/videos/\(NSNumber(value: Int64(Date().timeIntervalSince1970*1000.0)).stringValue).mp4"
         if (end - begin) >= 0.99 {
             // 询问是否可以复制视频
             guard (delegate?.tailorControllerShouldCopyVideo?(self) ?? true) == true else { return }
             // 原视频 拷贝视频即可
             MNToast.showActivity("视频导出中")
             DispatchQueue.global().async { [weak self] in
-                let url: URL = URL(fileAtPath: exportingPath)
+                let url: URL = URL(fileAtPath: outputPath)
                 do {
                     try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
                 } catch {
@@ -315,7 +318,7 @@ extension MNTailorViewController {
                     return
                 }
                 do {
-                    try FileManager.default.copyItem(atPath: videoPath, toPath: exportingPath)
+                    try FileManager.default.copyItem(atPath: videoPath, toPath: outputPath)
                 } catch {
 #if DEBUG
                     print("拷贝视频失败:\(error)")
@@ -328,7 +331,7 @@ extension MNTailorViewController {
                 // 回调结果
                 MNToast.close { _ in
                     guard let self = self else { return }
-                    self.delegate?.tailorController(self, didTailorVideoAtPath: exportingPath)
+                    self.delegate?.tailorController(self, didOutputVideoAtPath: outputPath)
                 }
             }
         } else {
@@ -347,7 +350,7 @@ extension MNTailorViewController {
                 if status == .completed {
                     MNToast.close {
                         guard let self = self else { return }
-                        self.delegate?.tailorController(self, didTailorVideoAtPath: exportingPath)
+                        self.delegate?.tailorController(self, didOutputVideoAtPath: exportingPath)
                     }
                 } else if let error = error {
                     MNToast.showMsg(error.localizedDescription)
@@ -389,9 +392,9 @@ extension MNTailorViewController {
             exportSession.renderSize = .init(width: 1080.0, height: 1080.0)
             exportSession.timeRange = exportSession.asset.mn.timeRange(withProgress: begin, to: end)
             if #available(iOS 16.0, *) {
-                exportSession.outputURL = URL(filePath: exportingPath)
+                exportSession.outputURL = URL(filePath: outputPath)
             } else {
-                exportSession.outputURL = URL(fileURLWithPath: exportingPath)
+                exportSession.outputURL = URL(fileURLWithPath: outputPath)
             }
             MNToast.showProgress("正在导出", style: .line, cancellation: true) { [weak exportSession] cancellation in
                 guard cancellation else { return }
@@ -404,7 +407,7 @@ extension MNTailorViewController {
                 if status == .completed {
                     MNToast.close { _ in
                         guard let self = self else { return }
-                        self.delegate?.tailorController(self, didTailorVideoAtPath: exportingPath)
+                        self.delegate?.tailorController(self, didOutputVideoAtPath: outputPath)
                     }
                 } else if let error = error {
                     MNToast.showMsg(error.localizedDescription)
@@ -538,7 +541,7 @@ extension MNTailorViewController: MNTailorViewDelegate {
 // MARK: - MNPlayerDelegate
 extension MNTailorViewController: MNPlayerDelegate {
     
-    func playerDidChangeStatus(_ player: MNPlayer) {
+    public func playerDidChangeStatus(_ player: MNPlayer) {
         if player.isPlaying {
             badgeView.isHighlighted = true
             if playView.coverView.alpha == 1.0 {
@@ -556,14 +559,14 @@ extension MNTailorViewController: MNPlayerDelegate {
         }
     }
     
-    func playerDidPlayTimeInterval(_ player: MNPlayer) {
+    public func playerDidPlayTimeInterval(_ player: MNPlayer) {
         guard player.isPlaying else { return }
         tailorView.progress = Double(player.progress)
         guard let components = timeLabel.text?.components(separatedBy: "/"), components.count == 2 else { return }
         timeLabel.text = "\(Date(timeIntervalSince1970: ceil(player.timeInterval)).mn.playTime)/\(components.last!)"
     }
     
-    func player(_ player: MNPlayer, didPlayFail error: Error) {
+    public func player(_ player: MNPlayer, didPlayFail error: Error) {
         indicatorView.stopAnimating()
         failure(error.localizedDescription)
     }

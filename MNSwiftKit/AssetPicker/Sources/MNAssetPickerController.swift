@@ -476,7 +476,7 @@ extension MNAssetPickerController: UICollectionViewDelegate, UICollectionViewDat
                     guard let self = self else { return }
                     let vc = MNTailorViewController(videoPath: videoPath)
                     vc.delegate = self
-                    vc.exportingPath = self.options.videoExportURL?.mn.path
+                    vc.outputPath = self.options.videoExportURL?.mn.path
                     vc.minTailorDuration = self.options.minExportDuration
                     vc.maxTailorDuration = self.options.maxExportDuration
                     self.navigationController?.pushViewController(vc, animated: true)
@@ -613,7 +613,7 @@ extension MNAssetPickerController: MNTailorViewControllerDelegate {
         tailorController.navigationController?.popViewController(animated: true)
     }
     
-    func tailorController(_ tailorController: MNTailorViewController, didTailorVideoAtPath videoPath: String) {
+    func tailorController(_ tailorController: MNTailorViewController, didOutputVideoAtPath videoPath: String) {
         guard let asset = MNAsset(contents: videoPath, options: options) else {
             try? FileManager.default.removeItem(atPath: videoPath)
             MNToast.showMsg("视频导出失败")

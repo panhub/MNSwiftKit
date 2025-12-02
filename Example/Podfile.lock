@@ -31,19 +31,15 @@ PODS:
     - MNSwiftKit/NameSpace
   - MNSwiftKit/MediaExport (0.1.1)
   - MNSwiftKit/NameSpace (0.1.1)
-  - MNSwiftKit/Networking (0.1.1)
   - MNSwiftKit/Player (0.1.1)
   - MNSwiftKit/Refresh (0.1.1):
     - MNSwiftKit/NameSpace
-  - MNSwiftKit/Request (0.1.1):
-    - MNSwiftKit/Networking
   - MNSwiftKit/Slider (0.1.1)
   - MNSwiftKit/Toast (0.1.1):
     - MNSwiftKit/NameSpace
 
 DEPENDENCIES:
   - MNSwiftKit/AssetPicker (from `../`)
-  - MNSwiftKit/Request (from `../`)
 
 EXTERNAL SOURCES:
   MNSwiftKit:
@@ -52,6 +48,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   MNSwiftKit: 6ea68c148199a1d5359dd0ac971e480449d09b9d
 
-PODFILE CHECKSUM: 149120fec8bef8e9debe9cd505d2e2cdb597f251
+PODFILE CHECKSUM: 2a2da5cb8b4f7675160b41138a733d6b31a34187
 
 COCOAPODS: 1.16.2

@@ -7,9 +7,8 @@
 
 import Foundation
 import AVFoundation
-import QuartzCore.CADisplayLink
 
-/// 音/视频转码切割
+/// 媒体资源输出会话
 public class MNAssetExportSession: NSObject {
     /// 获取资源信息
     public let asset: AVAsset
@@ -62,9 +61,9 @@ public class MNAssetExportSession: NSObject {
     }
     
     /// 构造资源输出会话
-    /// - Parameter fileURL: 媒体资源定位器
-    public convenience init(fileOfURL fileURL: URL) {
-        let asset = AVURLAsset(mediaOfURL: fileURL)
+    /// - Parameter url: 媒体资源定位器
+    public convenience init(assetOfURL url: URL) {
+        let asset = AVURLAsset(mediaOfURL: url)
         self.init(asset: asset)
     }
     
