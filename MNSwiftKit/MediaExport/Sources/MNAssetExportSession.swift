@@ -80,7 +80,7 @@ public class MNAssetExportSession: NSObject {
     ///   - completionHandler: 导出结束回调
     public func exportAsynchronously(progressHandler: ((_ progress: CGFloat)->Void)? = nil, completionHandler: ((_ status: AVAssetExportSession.Status, _ error: Error?)->Void)?) {
         if status == .waiting || status == .exporting {
-            completionHandler?(.failed, MNExportError.unavailable)
+            completionHandler?(.failed, MNExportError.exporting)
             return
         }
         error = nil
@@ -98,7 +98,7 @@ public class MNAssetExportSession: NSObject {
     private func export() {
         
         guard let outputURL = outputURL, outputURL.isFileURL else {
-            finish(error: .unknownOutputDirectory)
+            finish(error: .unknownExportDirectory)
             return
         }
         
@@ -155,8 +155,8 @@ public class MNAssetExportSession: NSObject {
         }
         
         // 检查输出项
-        guard composition.tracks.isEmpty == false else {
-            finish(error: .trackIsEmpty)
+        guard composition.isExportable else {
+            finish(error: .unexportable)
             return
         }
         

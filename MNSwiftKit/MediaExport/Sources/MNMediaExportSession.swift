@@ -12,6 +12,17 @@ import AVFoundation
 
 /// 媒体资源输出会话
 public class MNMediaExportSession: NSObject {
+    
+    /// 输出质量
+    public enum Quality {
+        /// 低质量
+        case low
+        /// 中等质量
+        case medium
+        /// 高质量
+        case high
+    }
+    
     /// 获取资源信息
     public let asset: AVAsset
     /// 裁剪画面矩形
@@ -30,6 +41,8 @@ public class MNMediaExportSession: NSObject {
     public var exportAudioTrack: Bool = true
     /// 是否输出视频内容
     public var exportVideoTrack: Bool = true
+    /// 默认高质量输出策略
+    public var quality: MNMediaExportSession.Quality = .high
     /// 错误信息
     public private(set) var error: Error?
     /// 进度
@@ -80,7 +93,7 @@ public class MNMediaExportSession: NSObject {
     ///   - completionHandler: 导出结束回调
     public func exportAsynchronously(progressHandler: ((_ progress: CGFloat)->Void)? = nil, completionHandler: ((_ status: AVAssetExportSession.Status, _ error: Error?)->Void)?) {
         if status == .waiting || status == .exporting {
-            completionHandler?(.failed, MNExportError.unavailable)
+            completionHandler?(.failed, MNExportError.exporting)
             return
         }
         error = nil
@@ -97,7 +110,7 @@ public class MNMediaExportSession: NSObject {
     private func export() {
         
         guard let outputURL = outputURL, outputURL.isFileURL else {
-            finish(error: .unknownOutputDirectory)
+            finish(error: .unknownExportDirectory)
             return
         }
         
@@ -153,9 +166,15 @@ public class MNMediaExportSession: NSObject {
             }
         }
         
-        // 检查输出项
-        guard composition.tracks.isEmpty == false else {
-            finish(error: .trackIsEmpty)
+        // 检查是否可读
+        guard composition.isReadable else {
+            finish(error: .unreadable)
+            return
+        }
+        
+        // 检查是否可输出
+        guard composition.isExportable == false else {
+            finish(error: .unexportable)
             return
         }
         
@@ -209,8 +228,11 @@ public class MNMediaExportSession: NSObject {
                 videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
             }
             
-            let videoSettings = [kCVPixelBufferPixelFormatTypeKey as String:kCVPixelFormatType_420YpCbCr8BiPlanarFullRange]
-            
+            let videoSettings: [String: Any] = [
+                kCVPixelBufferWidthKey as String: Int(renderSize.width),
+                kCVPixelBufferHeightKey as String: Int(renderSize.height),
+                kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+            ]
             videoOutput = AVAssetReaderVideoCompositionOutput(videoTracks: [videoTrack], videoSettings: videoSettings)
             videoOutput.videoComposition = videoComposition
             videoOutput.alwaysCopiesSampleData = false
@@ -287,7 +309,7 @@ public class MNMediaExportSession: NSObject {
     private func videoOutputSettings(for videoTrack: AVAssetTrack, fileType: AVFileType, renderSize: CGSize) -> [String:Any]? {
         // 分析源视频设置 avc1 avc1 hvc1 ap4h
         let sourceSettings = videoSettings(for: videoTrack)
-        let sourceCodecType = sourceSettings?["codecType"] as? FourCharCode
+        let sourceCodecType = sourceSettings[AVVideoCodecKey] as? FourCharCode
         // 根据文件类型选择编码格式
         let codecType: AVVideoCodecType
         switch fileType {
@@ -374,7 +396,7 @@ public class MNMediaExportSession: NSObject {
                 guard mediaType == kCMMediaType_Video else { continue }
                 // 获取编码类型
                 let codecType = CMFormatDescriptionGetMediaSubType(formatDescription)
-                videoSettings[AVVideoCodecKey] = codecType
+                videoSettings[AVVideoCodecKey] = videoCodecType(for: videoTrack)
                 // 获取视频尺寸
                 let dimensions = CMVideoFormatDescriptionGetDimensions(formatDescription)
                 videoSettings[AVVideoWidthKey] = dimensions.width
@@ -417,6 +439,7 @@ public class MNMediaExportSession: NSObject {
                         videoSettings[AVVideoPixelAspectRatioHorizontalSpacingKey] = horizontalSpacing
                     }
                 }
+                // 
                 break
             }
         }
@@ -424,8 +447,8 @@ public class MNMediaExportSession: NSObject {
     }
     
     /// 原始编码类型
-    private func codecType(for track: AVAssetTrack) -> AVVideoCodecType {
-        if let formatDescriptions = track.mn.formatDescriptions as? [CMFormatDescription], let formatDescription = formatDescriptions.first {
+    private func videoCodecType(for videoTrack: AVAssetTrack) -> AVVideoCodecType {
+        if let formatDescriptions = videoTrack.mn.formatDescriptions as? [CMFormatDescription], let formatDescription = formatDescriptions.first {
             let codecType = CMFormatDescriptionGetMediaSubType(formatDescription)
             switch codecType {
             case kCMVideoCodecType_H264:

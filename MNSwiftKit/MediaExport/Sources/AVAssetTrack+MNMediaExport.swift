@@ -84,6 +84,28 @@ extension NameSpaceWrapper where Base: AVAssetTrack {
         return CGFloat(base.nominalFrameRate)
     }
     
+    /// 预估比特率
+    public var estimatedDataRate: CGFloat {
+        if #available(iOS 16.0, *) {
+            var bitrate: CGFloat = 0.0
+            let semaphore = DispatchSemaphore(value: 0)
+            Task {
+                do {
+                    let value = try await base.load(.estimatedDataRate)
+                    bitrate = CGFloat(value)
+                } catch {
+#if DEBUG
+                    print("获取轨道预估比特率出错: \(error)")
+#endif
+                }
+                semaphore.signal()
+            }
+            semaphore.wait()
+            return bitrate
+        }
+        return CGFloat(base.estimatedDataRate)
+    }
+    
     /// 格式说明
     public var formatDescriptions: [Any] {
         if #available(iOS 16.0, *) {

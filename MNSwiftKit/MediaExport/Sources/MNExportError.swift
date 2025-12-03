@@ -10,10 +10,14 @@ import AVFoundation
 
 /// 媒体输出错误信息
 public enum MNExportError: Swift.Error {
-    /// 不可用
-    case unavailable
+    /// 繁忙
+    case exporting
+    /// 资源不可用
+    case unexportable
+    /// 资源不可读
+    case unreadable
     /// 未知输出目录
-    case unknownOutputDirectory
+    case unknownExportDirectory
     /// 无法输出文件
     case cannotExportFile
     /// 未知文件类型
