@@ -29,7 +29,7 @@ public enum MNExportError: Swift.Error {
     /// 无法读取资源
     case cannotReadAsset(Error)
     /// 无法读写入文件
-    case cannotWritFile(URL, fileType: AVFileType, underlying: Error)
+    case cannotWritFile(URL, fileType: AVFileType, underlyingError: Error)
     /// 无法添加Output
     case cannotAddOutput(AVMediaType)
     /// 无法输出设置

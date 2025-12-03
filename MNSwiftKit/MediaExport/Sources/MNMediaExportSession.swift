@@ -174,7 +174,7 @@ public class MNMediaExportSession: NSObject {
         do {
             writer = try AVAssetWriter(outputURL: outputURL, fileType: outputFileType)
         } catch {
-            finish(error: .cannotWritFile(outputURL, fileType: outputFileType, underlying: error))
+            finish(error: .cannotWritFile(outputURL, fileType: outputFileType, underlyingError: error))
             return
         }
         
@@ -203,7 +203,7 @@ public class MNMediaExportSession: NSObject {
             videoComposition.renderSize = renderSize
             videoComposition.instructions = [instruction]
             let frameRate = videoTrack.mn.nominalFrameRate
-            if frameRate > 0 {
+            if frameRate > 0.0 {
                 videoComposition.frameDuration = CMTime(value: 1, timescale: CMTimeScale(frameRate))
             } else {
                 videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
@@ -272,6 +272,9 @@ public class MNMediaExportSession: NSObject {
         }
         
         
+        
+        
+        
     }
     
     /// 结束任务
@@ -282,7 +285,7 @@ public class MNMediaExportSession: NSObject {
     }
     
     private func videoOutputSettings(for videoTrack: AVAssetTrack, fileType: AVFileType, renderSize: CGSize) -> [String:Any]? {
-        // 分析源视频设置
+        // 分析源视频设置 avc1 avc1 hvc1 ap4h
         let sourceSettings = videoSettings(for: videoTrack)
         let sourceCodecType = sourceSettings?["codecType"] as? FourCharCode
         // 根据文件类型选择编码格式
@@ -363,33 +366,116 @@ public class MNMediaExportSession: NSObject {
         return videoSettings
     }
     
-    private func videoSettings(for videoTrack: AVAssetTrack) -> [String:Any]? {
-        guard let first = videoTrack.mn.formatDescriptions.first else { return nil }
-        let formatDescription = first as! CMFormatDescription
-        // 获取编码格式
-        let codecType = CMFormatDescriptionGetMediaSubType(formatDescription)
-        // 获取视频尺寸
-        let dimensions = CMVideoFormatDescriptionGetDimensions(formatDescription)
-        let width = CGFloat(dimensions.width)
-        let height = CGFloat(dimensions.height)
-        // 获取帧率
-        let frameRate = videoTrack.mn.nominalFrameRate
-        var videoSettings: [String:Any] = ["codecType":codecType, "width":width, "height":height, "frameRate":frameRate]
-        // 获取像素宽高比
-        if let pixelAspectRatioDict = CMFormatDescriptionGetExtension(formatDescription, extensionKey: kCMFormatDescriptionExtension_PixelAspectRatio) as? [String: Any], let horizontalSpacing = pixelAspectRatioDict[kCVImageBufferPixelAspectRatioHorizontalSpacingKey as String] as? CGFloat, let verticalSpacing = pixelAspectRatioDict[kCVImageBufferPixelAspectRatioVerticalSpacingKey as String] as? CGFloat, verticalSpacing > 0.0 {
-            videoSettings["pixelAspectRatio"] = horizontalSpacing/verticalSpacing
-        }
-        // 获取颜色空间
-        if let colorPrimariesValue = CMFormatDescriptionGetExtension(formatDescription, extensionKey: kCMFormatDescriptionExtension_ColorPrimaries) as? String {
-            videoSettings["colorPrimaries"] = colorPrimariesValue
-        }
-        if let transferFunctionValue = CMFormatDescriptionGetExtension(formatDescription, extensionKey: kCMFormatDescriptionExtension_TransferFunction) as? String {
-            videoSettings["transferFunction"] = transferFunctionValue
-        }
-        if let yCbCrMatrixValue = CMFormatDescriptionGetExtension(formatDescription, extensionKey: kCMFormatDescriptionExtension_YCbCrMatrix) as? String {
-            videoSettings["yCbCrMatrix"] = yCbCrMatrixValue
+    private func videoSettings(for videoTrack: AVAssetTrack) -> [String:Any] {
+        var videoSettings: [String:Any] = [:]
+        if let formatDescriptions = videoTrack.mn.formatDescriptions as? [CMFormatDescription] {
+            for formatDescription in formatDescriptions {
+                let mediaType = CMFormatDescriptionGetMediaType(formatDescription)
+                guard mediaType == kCMMediaType_Video else { continue }
+                // 获取编码类型
+                let codecType = CMFormatDescriptionGetMediaSubType(formatDescription)
+                videoSettings[AVVideoCodecKey] = codecType
+                // 获取视频尺寸
+                let dimensions = CMVideoFormatDescriptionGetDimensions(formatDescription)
+                videoSettings[AVVideoWidthKey] = dimensions.width
+                videoSettings[AVVideoHeightKey] = dimensions.height
+                // 色彩空间 ColorPrimaries TransferFunction
+                if let colorPrimariesValue = CMFormatDescriptionGetExtension(formatDescription, extensionKey: kCMFormatDescriptionExtension_ColorPrimaries) as? String {
+                    if #available(iOS 10.0, *) {
+                        videoSettings[AVVideoColorPrimariesKey] = colorPrimariesValue
+                    } else {
+                        videoSettings["ColorPrimaries"] = colorPrimariesValue
+                    }
+                }
+                if let transferFunctionValue = CMFormatDescriptionGetExtension(formatDescription, extensionKey: kCMFormatDescriptionExtension_TransferFunction) as? String {
+                    if #available(iOS 10.0, *) {
+                        videoSettings[AVVideoTransferFunctionKey] = transferFunctionValue
+                    } else {
+                        videoSettings["TransferFunction"] = transferFunctionValue
+                    }
+                    // 是否是HDR
+                    if transferFunctionValue.contains("PQ") || transferFunctionValue.contains("HLG") {
+                        videoSettings["HDR"] = true
+                    }
+                }
+                if let yCbCrMatrixValue = CMFormatDescriptionGetExtension(formatDescription, extensionKey: kCMFormatDescriptionExtension_YCbCrMatrix) as? String {
+                    if #available(iOS 10.0, *) {
+                        videoSettings[AVVideoYCbCrMatrixKey] = yCbCrMatrixValue
+                    } else {
+                        videoSettings["YCbCrMatrix"] = yCbCrMatrixValue
+                    }
+                }
+                // 是否有Alpha通道
+                if #available(iOS 13.0, *), let yCbCrMatrixValue = CMFormatDescriptionGetExtension(formatDescription, extensionKey: kCMFormatDescriptionExtension_ContainsAlphaChannel) as? Bool {
+                    videoSettings["ContainsAlphaChannel"] = true
+                }
+                // 像素宽高比
+                if let pixelAspectRatio = CMFormatDescriptionGetExtension(formatDescription, extensionKey: kCMFormatDescriptionExtension_PixelAspectRatio) as? [String: Any] {
+                    videoSettings[AVVideoPixelAspectRatioKey] = pixelAspectRatio
+                    if let horizontalSpacing = pixelAspectRatio[kCVImageBufferPixelAspectRatioHorizontalSpacingKey as String] as? CGFloat, horizontalSpacing > 0.0, let verticalSpacing = pixelAspectRatio[kCVImageBufferPixelAspectRatioVerticalSpacingKey as String] as? CGFloat, verticalSpacing > 0.0 {
+                        videoSettings[AVVideoPixelAspectRatioVerticalSpacingKey] = verticalSpacing
+                        videoSettings[AVVideoPixelAspectRatioHorizontalSpacingKey] = horizontalSpacing
+                    }
+                }
+                break
+            }
         }
         return videoSettings
+    }
+    
+    /// 原始编码类型
+    private func codecType(for track: AVAssetTrack) -> AVVideoCodecType {
+        if let formatDescriptions = track.mn.formatDescriptions as? [CMFormatDescription], let formatDescription = formatDescriptions.first {
+            let codecType = CMFormatDescriptionGetMediaSubType(formatDescription)
+            switch codecType {
+            case kCMVideoCodecType_H264:
+                if #available(iOS 11.0, *) {
+                    return .h264
+                }
+                return .init(rawValue: AVVideoCodecH264)
+            case kCMVideoCodecType_HEVC:
+                if #available(iOS 11.0, *) {
+                    return .hevc
+                }
+                return .init(rawValue: "hvc1")
+            case kCMVideoCodecType_JPEG:
+                if #available(iOS 11.0, *) {
+                    return .jpeg
+                }
+                return .init(rawValue: AVVideoCodecJPEG)
+            case kCMVideoCodecType_AppleProRes4444:
+                if #available(iOS 11.0, *) {
+                    return .proRes4444
+                }
+                return .init(rawValue: "ap4h")
+            case kCMVideoCodecType_AppleProRes422:
+                if #available(iOS 11.0, *) {
+                    return .proRes422
+                }
+                return .init(rawValue: "proRes422")
+            case kCMVideoCodecType_AppleProRes422HQ:
+                if #available(iOS 13.0, *) {
+                    return .proRes422HQ
+                }
+                return .init(rawValue: "proRes422HQ")
+            case kCMVideoCodecType_AppleProRes422LT:
+                if #available(iOS 13.0, *) {
+                    return .proRes422LT
+                }
+                return .init(rawValue: "proRes422LT")
+            case kCMVideoCodecType_AppleProRes422Proxy:
+                if #available(iOS 13.0, *) {
+                    return .proRes422Proxy
+                }
+                return .init(rawValue: "proRes422Proxy")
+            default: break
+            }
+        }
+        // 默认使用H.264编码
+        if #available(iOS 11.0, *) {
+            return .h264
+        }
+        return .init(rawValue: AVVideoCodecH264)
     }
     
     private func audioOutputSettings(for audioTrack: AVAssetTrack, fileType: AVFileType) -> [String:Any]? {
@@ -449,29 +535,40 @@ public class MNMediaExportSession: NSObject {
     }
     
     private func audioSettings(for audioTrack: AVAssetTrack) -> [String:Any]? {
-        guard let first = audioTrack.mn.formatDescriptions.first else { return nil }
-        let formatDescription = first as! CMFormatDescription
-        // 获取音频格式ID
-        let formatID = CMFormatDescriptionGetMediaSubType(formatDescription)
-        // 从 AudioStreamBasicDescription 获取音频参数
-        var sampleRate: Double = 44100.0
-        var channels: Int = 2
-        var bitDepth: Int = 16
-        guard let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(formatDescription) else {
-            return ["formatID": formatID, "sampleRate": sampleRate, "channels": channels, "bitDepth": bitDepth]
+        guard let formatDescriptions = audioTrack.mn.formatDescriptions as? [CMFormatDescription] else { return nil }
+        var audioSettings: [String: Any] = [:]
+        for formatDescription in formatDescriptions {
+            let mediaType = CMFormatDescriptionGetMediaType(formatDescription)
+            guard mediaType == kCMMediaType_Audio else { continue }
+            // 获取音频格式ID
+            let formatID = CMFormatDescriptionGetMediaSubType(formatDescription)
+            audioSettings[AVFormatIDKey] = formatID
+            // 获取音频流基本描述
+            if let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(formatDescription) {
+                // 采样率
+                let sampleRate = asbd.pointee.mSampleRate
+                // 声道数量
+                let channels = asbd.pointee.mChannelsPerFrame
+                // 位深
+                let bitDepth = asbd.pointee.mBitsPerChannel
+                // 计算比特率（仅对未压缩格式有效）
+                if formatID == kAudioFormatLinearPCM {
+                    let channelBitRate = sampleRate*Double(bitDepth)
+                    let bitRate = Int(channelBitRate*Double(channels))
+                    audioSettings[AVEncoderBitRateKey] = bitRate
+                    audioSettings[AVEncoderBitRatePerChannelKey] = channelBitRate
+                }
+                audioSettings[AVSampleRateKey] = sampleRate
+                audioSettings[AVNumberOfChannelsKey] = channels
+                audioSettings[AVLinearPCMBitDepthKey] = bitDepth
+            }
+            // 声道布局
+            var channelLayoutSize: Int = 0
+            if let channelLayout = CMAudioFormatDescriptionGetChannelLayout(formatDescription, sizeOut: &channelLayoutSize) {
+                audioSettings[AVChannelLayoutKey] = Data(bytes: channelLayout, count: channelLayoutSize)
+            }
+            break
         }
-        sampleRate = Double(asbd.pointee.mSampleRate)
-        channels = Int(asbd.pointee.mChannelsPerFrame)
-        bitDepth = Int(asbd.pointee.mBitsPerChannel)
-        let bytesPerPacket = asbd.pointee.mBytesPerPacket
-        let framesPerPacket = asbd.pointee.mFramesPerPacket
-        let bytesPerFrame = asbd.pointee.mBytesPerFrame
-        // 计算比特率（仅对未压缩格式有效）
-        var bitRate: Int?
-        if formatID == kAudioFormatLinearPCM {
-            // PCM 格式：采样率 × 声道数 × 位深度
-            bitRate = Int(sampleRate*Double(channels)*Double(bitDepth))
-        }
-        return ["formatID": formatID, "sampleRate": sampleRate, "channels": channels, "bitDepth": bitDepth, "bytesPerPacket": bytesPerPacket, "framesPerPacket": framesPerPacket, "bytesPerFrame": bytesPerFrame, "bitRate": bitRate as Any]
+        return audioSettings
     }
 }
