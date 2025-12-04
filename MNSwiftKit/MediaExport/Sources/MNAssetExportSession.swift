@@ -122,7 +122,7 @@ public class MNAssetExportSession: NSObject {
 #if DEBUG
                 print("删除旧文件失败: \(error)")
 #endif
-                finish(error: .fileDoesExist(outputPath))
+                finish(error: .fileDoesExist(outputURL))
                 return
             }
         }
@@ -134,7 +134,7 @@ public class MNAssetExportSession: NSObject {
 #if DEBUG
                 print("创建输出目录失败: \(error)")
 #endif
-                finish(error: .cannotCreateDirectory(outputDirectory))
+                finish(error: .cannotCreateDirectory(error))
                 return
             }
         }
@@ -143,13 +143,13 @@ public class MNAssetExportSession: NSObject {
         let composition = AVMutableComposition()
         if exportVideoTrack, let videoTrack = asset.mn.track(with: .video) {
             guard composition.mn.append(track: videoTrack, range: timeRange) else {
-                finish(error: .cannotExportTrack(.video))
+                finish(error: .cannotAppendTrack(.video))
                 return
             }
         }
         if exportAudioTrack, let audioTrack = asset.mn.track(with: .audio) {
             guard composition.mn.append(track: audioTrack, range: timeRange) else {
-                finish(error: .cannotExportTrack(.audio))
+                finish(error: .cannotAppendTrack(.audio))
                 return
             }
         }
@@ -174,14 +174,18 @@ public class MNAssetExportSession: NSObject {
             finish(error: .cannotExportFile)
             return
         }
+        self.exportSession = exportSession
+        if shouldOptimizeForNetworkUse, outputFileType != .m4v {
+            exportSession.shouldOptimizeForNetworkUse = true
+        }
         if let videoTrack = composition.mn.track(with: .video) {
-            var cropVideo = false
+            var createVideoComposition = false
             if let cropRect = cropRect, cropRect.isEmpty == false, cropRect.isNull == false {
-                cropVideo = true
+                createVideoComposition = true
             } else if let renderSize = renderSize, min(renderSize.width, renderSize.height) > 0.0 {
-                cropVideo = true
+                createVideoComposition = true
             }
-            if cropVideo {
+            if createVideoComposition {
                 var cropRect = CGRect(origin: .zero, size: videoTrack.mn.naturalSize)
                 if let rect = self.cropRect {
                     cropRect = cropRect.intersection(rect)
@@ -214,8 +218,6 @@ public class MNAssetExportSession: NSObject {
                 exportSession.videoComposition = videoComposition
             }
         }
-        exportSession.shouldOptimizeForNetworkUse = shouldOptimizeForNetworkUse
-        self.exportSession = exportSession
         if #available(iOS 18.0, *) {
             //
             Task {
@@ -316,9 +318,17 @@ public class MNAssetExportSession: NSObject {
     
     /// 结束任务
     private func finish(error: MNExportError?) {
-        self.error = error
-        status = .failed
-        completionHandler?(.failed, error)
+        if let error = error {
+            self.error = error
+            if self.status != .cancelled {
+                self.status = .failed
+            }
+        } else {
+            self.status = .completed
+        }
+        if let completionHandler = completionHandler {
+            completionHandler(self.status, error)
+        }
     }
     
     /// 取消输出任务

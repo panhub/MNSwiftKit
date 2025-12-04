@@ -15,6 +15,8 @@ public class MNMediaExportSession: NSObject {
     
     /// 输出质量
     public enum Quality {
+        /// 自动选择输出质量
+        case auto
         /// 低质量
         case low
         /// 中等质量
@@ -43,20 +45,24 @@ public class MNMediaExportSession: NSObject {
     public var exportVideoTrack: Bool = true
     /// 默认高质量输出策略
     public var quality: MNMediaExportSession.Quality = .high
+    /// 是否针对网络使用进行优化
+    public var shouldOptimizeForNetworkUse: Bool = true
     /// 错误信息
     public private(set) var error: Error?
     /// 进度
     public private(set) var progress: CGFloat = 0.0
     /// 状态
     public private(set) var status: AVAssetExportSession.Status = .unknown
+    /// 是否已取消导出操作
+    public private(set) var isCancelled = false
     /// 视频输入
-    private var videoInput: AVAssetWriterInput?
+    private weak var videoInput: AVAssetWriterInput?
     /// 音频输入
-    private var audioInput: AVAssetWriterInput?
+    private weak var audioInput: AVAssetWriterInput?
     /// 视频输出
-    private var videoOutput: AVAssetReaderOutput?
+    private weak var videoOutput: AVAssetReaderOutput?
     /// 音频输出
-    private var audioOutput: AVAssetReaderOutput?
+    private weak var audioOutput: AVAssetReaderOutput?
     /// 进度回调
     private var progressHandler: ((CGFloat)->Void)?
     /// 结束回调
@@ -134,7 +140,7 @@ public class MNMediaExportSession: NSObject {
 #if DEBUG
                 print("删除旧文件失败: \(error)")
 #endif
-                finish(error: .fileDoesExist(outputPath))
+                finish(error: .fileDoesExist(outputURL))
                 return
             }
         }
@@ -146,7 +152,7 @@ public class MNMediaExportSession: NSObject {
 #if DEBUG
                 print("创建输出目录失败: \(error)")
 #endif
-                finish(error: .cannotCreateDirectory(outputDirectory))
+                finish(error: .cannotCreateDirectory(error))
                 return
             }
         }
@@ -155,13 +161,13 @@ public class MNMediaExportSession: NSObject {
         let composition = AVMutableComposition()
         if exportVideoTrack, let videoTrack = asset.mn.track(with: .video) {
             guard composition.mn.append(track: videoTrack, range: timeRange) else {
-                finish(error: .cannotExportTrack(.video))
+                finish(error: .cannotAppendTrack(.video))
                 return
             }
         }
         if exportAudioTrack, let audioTrack = asset.mn.track(with: .audio) {
             guard composition.mn.append(track: audioTrack, range: timeRange) else {
-                finish(error: .cannotExportTrack(.audio))
+                finish(error: .cannotAppendTrack(.audio))
                 return
             }
         }
@@ -193,8 +199,11 @@ public class MNMediaExportSession: NSObject {
         do {
             writer = try AVAssetWriter(outputURL: outputURL, fileType: outputFileType)
         } catch {
-            finish(error: .cannotWritFile(outputURL, fileType: outputFileType, underlyingError: error))
+            finish(error: .cannotWritToFile(outputURL, uti: outputFileType, error: error))
             return
+        }
+        if shouldOptimizeForNetworkUse, outputFileType != .m4v {
+            writer.shouldOptimizeForNetworkUse = true
         }
         
         // 配置视频输入输出
@@ -244,7 +253,7 @@ public class MNMediaExportSession: NSObject {
             reader.add(videoOutput)
             
             guard let outputSettings = videoOutputSettings(for: videoTrack, fileType: outputFileType, renderSize: renderSize) else {
-                finish(error: .cannotExportSetting(.video, fileType: outputFileType))
+                finish(error: .cannotExportSetting(.video, uti: outputFileType))
                 return
             }
             videoInput = AVAssetWriterInput(mediaType: .video, outputSettings: outputSettings)
@@ -262,13 +271,14 @@ public class MNMediaExportSession: NSObject {
         var audioOutput: AVAssetReaderOutput!
         if let audioTrack = composition.mn.track(with: .audio) {
             // 创建 Audio Output
-            let audioSettings: [String: Any] = [
-                AVFormatIDKey: kAudioFormatLinearPCM,
-                AVLinearPCMBitDepthKey: 16,
-                AVLinearPCMIsBigEndianKey: false,
-                AVLinearPCMIsFloatKey: false,
-                AVLinearPCMIsNonInterleaved: false
-            ]
+//            let audioSettings: [String: Any] = [
+//                AVFormatIDKey: kAudioFormatLinearPCM,
+//                AVLinearPCMBitDepthKey: 16,
+//                AVLinearPCMIsBigEndianKey: false,
+//                AVLinearPCMIsFloatKey: false,
+//                AVLinearPCMIsNonInterleaved: false
+//            ]
+            let audioSettings = audioSettings(for: audioTrack)
             audioOutput = AVAssetReaderTrackOutput(track: audioTrack, outputSettings: audioSettings)
             audioOutput.alwaysCopiesSampleData = false
             
@@ -280,7 +290,7 @@ public class MNMediaExportSession: NSObject {
             
             // 创建 Audio Input
             guard let audioOutputSettings = audioOutputSettings(for: audioTrack, fileType: outputFileType) else {
-                finish(error: .cannotExportSetting(.audio, fileType: outputFileType))
+                finish(error: .cannotExportSetting(.audio, uti: outputFileType))
                 return
             }
             audioInput = AVAssetWriterInput(mediaType: .audio, outputSettings: audioOutputSettings)
@@ -293,35 +303,232 @@ public class MNMediaExportSession: NSObject {
             writer.add(audioInput)
         }
         
+        // 输出资源
+        guard reader.startReading() else {
+            finish(error: .cannotStartReading)
+            return
+        }
         
+        guard writer.startWriting() else {
+            reader.cancelReading()
+            finish(error: .cannotStartWriting)
+            return
+        }
+        writer.startSession(atSourceTime: .zero)
         
-        
-        
+        status = .exporting
+        let seconds = composition.duration.seconds
+        let group = DispatchGroup()
+        if let videoInput = videoInput, let videoOutput = videoOutput {
+            group.enter()
+            self.videoInput = videoInput
+            self.videoOutput = videoOutput
+            videoInput.requestMediaDataWhenReady(on: DispatchQueue(label: "com.mn.video.exporting", qos: .userInitiated)) {
+                guard self.status == .exporting else {
+                    videoInput.markAsFinished()
+                    group.leave()
+                    return
+                }
+                while videoInput.isReadyForMoreMediaData {
+                    if let sampleBuffer = videoOutput.copyNextSampleBuffer() {
+                        
+                        let presentationTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+                        let progress = presentationTime.seconds/seconds
+                        
+                        if videoInput.append(sampleBuffer) == false {
+                            // 操作失败了
+                            videoInput.markAsFinished()
+                            group.leave()
+                            break
+                        }
+                    } else {
+                        // 读取结束
+                        videoInput.markAsFinished()
+                        group.leave()
+                        break
+                    }
+                }
+            }
+        }
+        if let audioInput = audioInput, let audioOutput = audioOutput {
+            group.enter()
+            self.audioInput = audioInput
+            self.audioOutput = audioOutput
+            audioInput.requestMediaDataWhenReady(on: DispatchQueue(label: "com.mn.audio.exporting", qos: .userInitiated)) {
+                guard self.status == .exporting else {
+                    audioInput.markAsFinished()
+                    group.leave()
+                    return
+                }
+                while audioInput.isReadyForMoreMediaData {
+                    if let sampleBuffer = audioOutput.copyNextSampleBuffer() {
+                        
+                        let presentationTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+                        let progress = presentationTime.seconds/seconds
+                        
+                        if audioInput.append(sampleBuffer) == false {
+                            // 操作失败了
+                            audioInput.markAsFinished()
+                            group.leave()
+                            break
+                        }
+                    } else {
+                        // 读取结束
+                        audioInput.markAsFinished()
+                        group.leave()
+                        break
+                    }
+                }
+            }
+        }
+        group.notify(qos: .userInitiated, queue: .main) {
+            if self.status == .cancelled {
+                // 取消
+                writer.cancelWriting()
+                self.finish(error: .cancelled)
+                return
+            }
+            writer.finishWriting {
+                DispatchQueue.main.async {
+                    switch writer.status {
+                    case .completed:
+                        // 成功
+                        if let progressHandler = self.progressHandler {
+                            progressHandler(1.0)
+                        }
+                        self.finish(error: nil)
+                    default:
+                        if let error = writer.error {
+                            self.finish(error: .underlyingError(error))
+                        } else {
+                            self.finish(error: .unknown)
+                        }
+                    }
+                }
+            }
+        }
     }
     
     /// 结束任务
     private func finish(error: MNExportError?) {
-        self.error = error
-        status = .failed
-        completionHandler?(.failed, error)
+        if let error = error {
+            self.error = error
+            if self.status != .cancelled {
+                self.status = .failed
+            }
+        } else {
+            self.status = .completed
+        }
+        if let completionHandler = completionHandler {
+            completionHandler(self.status, error)
+        }
+    }
+    
+    private func preferredVideoOutputPreset(useH264 useH264CodecType: Bool, renderSize: CGSize, containsAlphaChannel: Bool) -> AVOutputSettingsPreset {
+        let dimension = renderSize.width*renderSize.height
+        var exportQuality: MNMediaExportSession.Quality = quality
+        if exportQuality == .auto {
+            if dimension <= 960*540 {
+                exportQuality = .low
+            } else if dimension <= 1920*1080 {
+                exportQuality = .medium
+            } else {
+                exportQuality = .high
+            }
+        }
+        switch exportQuality {
+        case .low:
+            // 低
+            if dimension <= 640*480 {
+                return .preset640x480
+            }
+            return .preset960x540
+        case .medium:
+            // 中
+            if dimension <= 1280*720 {
+                return .preset1280x720
+            }
+            if useH264CodecType {
+                return .preset1920x1080
+            } else if #available(iOS 13.0, *), containsAlphaChannel {
+                return .hevc1920x1080WithAlpha
+            } else if #available(iOS 11.0, *) {
+                return .hevc1920x1080
+            }
+            return .preset1920x1080
+        case .high:
+            // 高
+            if useH264CodecType {
+                return .preset3840x2160
+            } else if #available(iOS 13.0, *), containsAlphaChannel {
+                return .hevc3840x2160WithAlpha
+            } else if #available(iOS 11.0, *) {
+                return .hevc3840x2160
+            }
+            return .preset3840x2160
+        default: return .preset1920x1080
+        }
     }
     
     private func videoOutputSettings(for videoTrack: AVAssetTrack, fileType: AVFileType, renderSize: CGSize) -> [String:Any]? {
-        // 分析源视频设置 avc1 avc1 hvc1 ap4h
-        let sourceSettings = videoSettings(for: videoTrack)
-        let sourceCodecType = sourceSettings[AVVideoCodecKey] as? FourCharCode
+        guard let formatDescriptions = videoTrack.mn.formatDescriptions as? [CMFormatDescription], let formatDescription = formatDescriptions.first else { return nil }
+        guard CMFormatDescriptionGetMediaType(formatDescription) == kCMMediaType_Video else { return nil }
+        let subType = CMFormatDescriptionGetMediaSubType(formatDescription)
+        // 是否有Alpha通道
+        var containsAlphaChannel = false
+        if #available(iOS 13.0, *), let containsAlphaChannelValue = CMFormatDescriptionGetExtension(formatDescription, extensionKey: kCMFormatDescriptionExtension_ContainsAlphaChannel) as? Bool, containsAlphaChannelValue {
+            containsAlphaChannel = true
+        } else {
+            let alphaSupportedFormats: [FourCharCode] = [
+                kCVPixelFormatType_32BGRA,
+                kCVPixelFormatType_32RGBA,
+                kCVPixelFormatType_32ABGR,
+                kCVPixelFormatType_32ARGB,
+                kCVPixelFormatType_64ARGB,
+                kCVPixelFormatType_128RGBAFloat,
+                kCMVideoCodecType_AppleProRes4444,
+                kCMVideoCodecType_AppleProRes4444XQ,
+                kCMVideoCodecType_HEVCWithAlpha,
+                kCMVideoCodecType_Animation
+            ]
+            if alphaSupportedFormats.contains(subType) {
+                containsAlphaChannel = true
+            }
+        }
+        // 选择编码方式
+        var useH264CodecType = true
+        if fileType != .m4v, #available(iOS 11.0, *), shouldOptimizeForNetworkUse == false {
+            useH264CodecType = false
+        }
+        // 使用推荐
+        let preset = preferredVideoOutputPreset(useH264: useH264CodecType, renderSize: renderSize, containsAlphaChannel: containsAlphaChannel)
+        guard AVOutputSettingsAssistant.availableOutputSettingsPresets().contains(preset) else { return nil }
+        guard let assistant = AVOutputSettingsAssistant(preset: preset) else { return nil }
+        assistant.sourceVideoFormat = formatDescription
+        assistant.sourceVideoAverageFrameDuration = CMTimeCodeFormatDescriptionGetFrameDuration(formatDescription)
+        // 也可以自定义一下压缩参数
+        return assistant.videoSettings
+        /*
         // 根据文件类型选择编码格式
         let codecType: AVVideoCodecType
         switch fileType {
-        case .mp4, .m4v:
-            // MP4/M4V 通常使用 H.264
-            if #available(iOS 11.0, *) {
-                codecType = .h264
+        case .mp4:
+            if shouldOptimizeForNetworkUse {
+                // 首选H.264 (AVC), 100% 浏览器兼容，支持流式传输
+                if #available(iOS 11.0, *) {
+                    codecType = .h264
+                } else {
+                    codecType = .init(rawValue: AVVideoCodecH264)
+                }
+            } else if #available(iOS 11.0, *) {
+                // 空间效率高, 同等画质, 甚至节省50%空间
+                codecType = .hevc
             } else {
+                // 安全默认值
                 codecType = .init(rawValue: AVVideoCodecH264)
             }
         case .mov:
-            // MOV 支持更多格式，优先使用源格式或 H.264
+            // MOV 支持更多格式
             if #available(iOS 11.0, *), let sourceCodec = sourceCodecType, sourceCodec == kCMVideoCodecType_HEVC {
                 codecType = .hevc
             } else if #available(iOS 11.0, *) {
@@ -329,8 +536,36 @@ public class MNMediaExportSession: NSObject {
             } else {
                 codecType = .init(rawValue: AVVideoCodecH264)
             }
+        case .m4v:
+            // Apple专有的视频容器格式, 带DRM保护或特殊元数据的MP4
         default: return nil
         }
+        
+        
+        
+        // 分析源视频设置 avc1 avc1 hvc1 ap4h
+        let sourceSettings = videoSettings(for: videoTrack)
+        
+        var sourceCodecType: AVVideoCodecType
+        if #available(iOS 11.0, *) {
+            sourceCodecType = .h264
+        } else {
+            sourceCodecType = .init(rawValue: AVVideoCodecH264)
+        }
+        if let codecType = sourceSettings[AVVideoCodecKey] as? AVVideoCodecType {
+            sourceCodecType = codecType
+        }
+        
+        var sourceBitrate: Int
+        if let bitrate = sourceSettings[AVVideoAverageBitRateKey] as? Int {
+            sourceBitrate = bitrate
+        } else {
+            let estimatedDataRate = videoTrack.mn.estimatedDataRate
+            sourceBitrate = Int(estimatedDataRate)
+        }
+        
+        
+        
         // 视频设置
         var videoSettings: [String: Any] = [:]
         videoSettings[AVVideoCodecKey] = codecType
@@ -386,113 +621,152 @@ public class MNMediaExportSession: NSObject {
         }
         videoSettings[AVVideoCompressionPropertiesKey] = compressionProperties
         return videoSettings
+        */
+        /**
+         [
+                 AVOutputSettingsPresetKey: AVOutputSettingsPreset.preset3840x2160,
+                 AVFileTypeKey: AVFileType.m4v,
+                 
+                 // 视频编码设置
+                 AVVideoCodecKey: AVVideoCodecType.hevc,
+                 AVVideoWidthKey: 3840,
+                 AVVideoHeightKey: 2160,
+                 
+                 // M4V 特有设置
+                 "ShouldOptimizeForNetworkUse": false,
+                 "Metadata": [
+                     // iTunes 风格元数据
+                     "com.apple.quicktime.artist": "你的作品名称",
+                     "com.apple.quicktime.chapter": true
+                 ],
+                 
+                 // 多轨道支持
+                 "AudioTracks": [
+                     ["LanguageCode": "eng", "Title": "英语"],
+                     ["LanguageCode": "chi", "Title": "中文"]
+                 ],
+                 
+                 // 字幕轨道
+                 "SubtitleTracks": [
+                     ["Format": "tx3g", "LanguageCode": "eng"],
+                     ["Format": "tx3g", "LanguageCode": "chi"]
+                 ]
+             ]
+         */
     }
     
     private func videoSettings(for videoTrack: AVAssetTrack) -> [String:Any] {
         var videoSettings: [String:Any] = [:]
-        if let formatDescriptions = videoTrack.mn.formatDescriptions as? [CMFormatDescription] {
-            for formatDescription in formatDescriptions {
-                let mediaType = CMFormatDescriptionGetMediaType(formatDescription)
-                guard mediaType == kCMMediaType_Video else { continue }
-                // 获取编码类型
-                let codecType = CMFormatDescriptionGetMediaSubType(formatDescription)
-                videoSettings[AVVideoCodecKey] = videoCodecType(for: videoTrack)
-                // 获取视频尺寸
-                let dimensions = CMVideoFormatDescriptionGetDimensions(formatDescription)
-                videoSettings[AVVideoWidthKey] = dimensions.width
-                videoSettings[AVVideoHeightKey] = dimensions.height
-                // 色彩空间 ColorPrimaries TransferFunction
-                if let colorPrimariesValue = CMFormatDescriptionGetExtension(formatDescription, extensionKey: kCMFormatDescriptionExtension_ColorPrimaries) as? String {
-                    if #available(iOS 10.0, *) {
-                        videoSettings[AVVideoColorPrimariesKey] = colorPrimariesValue
-                    } else {
-                        videoSettings["ColorPrimaries"] = colorPrimariesValue
-                    }
+        if let formatDescriptions = videoTrack.mn.formatDescriptions as? [CMFormatDescription], let formatDescription = formatDescriptions.first {
+            // 获取编码类型
+            let subType = CMFormatDescriptionGetMediaSubType(formatDescription)
+            videoSettings[AVVideoCodecKey] = videoCodecType(for: subType)
+            // 获取视频尺寸
+            let dimensions = CMVideoFormatDescriptionGetDimensions(formatDescription)
+            videoSettings[AVVideoWidthKey] = dimensions.width
+            videoSettings[AVVideoHeightKey] = dimensions.height
+            // 色彩空间 ColorPrimaries TransferFunction
+            if #available(iOS 10.0, *), let colorPrimariesValue = CMFormatDescriptionGetExtension(formatDescription, extensionKey: kCMFormatDescriptionExtension_ColorPrimaries) as? String {
+                videoSettings[AVVideoColorPrimariesKey] = colorPrimariesValue
+            }
+            if #available(iOS 10.0, *), let transferFunctionValue = CMFormatDescriptionGetExtension(formatDescription, extensionKey: kCMFormatDescriptionExtension_TransferFunction) as? String {
+                videoSettings[AVVideoTransferFunctionKey] = transferFunctionValue
+                // 是否是HDR
+                if transferFunctionValue.contains("PQ") || transferFunctionValue.contains("HLG") {
+                    videoSettings["HDR"] = true
                 }
-                if let transferFunctionValue = CMFormatDescriptionGetExtension(formatDescription, extensionKey: kCMFormatDescriptionExtension_TransferFunction) as? String {
-                    if #available(iOS 10.0, *) {
-                        videoSettings[AVVideoTransferFunctionKey] = transferFunctionValue
-                    } else {
-                        videoSettings["TransferFunction"] = transferFunctionValue
-                    }
-                    // 是否是HDR
-                    if transferFunctionValue.contains("PQ") || transferFunctionValue.contains("HLG") {
-                        videoSettings["HDR"] = true
-                    }
-                }
-                if let yCbCrMatrixValue = CMFormatDescriptionGetExtension(formatDescription, extensionKey: kCMFormatDescriptionExtension_YCbCrMatrix) as? String {
-                    if #available(iOS 10.0, *) {
-                        videoSettings[AVVideoYCbCrMatrixKey] = yCbCrMatrixValue
-                    } else {
-                        videoSettings["YCbCrMatrix"] = yCbCrMatrixValue
-                    }
-                }
-                // 是否有Alpha通道
-                if #available(iOS 13.0, *), let yCbCrMatrixValue = CMFormatDescriptionGetExtension(formatDescription, extensionKey: kCMFormatDescriptionExtension_ContainsAlphaChannel) as? Bool {
+            }
+            if #available(iOS 10.0, *), let yCbCrMatrixValue = CMFormatDescriptionGetExtension(formatDescription, extensionKey: kCMFormatDescriptionExtension_YCbCrMatrix) as? String {
+                videoSettings[AVVideoYCbCrMatrixKey] = yCbCrMatrixValue
+            }
+            // 是否有Alpha通道
+            if #available(iOS 13.0, *), let containsAlphaChannelValue = CMFormatDescriptionGetExtension(formatDescription, extensionKey: kCMFormatDescriptionExtension_ContainsAlphaChannel) as? Bool, containsAlphaChannelValue {
+                videoSettings["ContainsAlphaChannel"] = true
+            } else {
+                let alphaSupportedFormats: [FourCharCode] = [
+                    kCVPixelFormatType_32BGRA,
+                    kCVPixelFormatType_32RGBA,
+                    kCVPixelFormatType_32ABGR,
+                    kCVPixelFormatType_32ARGB,
+                    kCVPixelFormatType_64ARGB,
+                    kCVPixelFormatType_128RGBAFloat,
+                    kCMVideoCodecType_AppleProRes4444,
+                    kCMVideoCodecType_AppleProRes4444XQ,
+                    kCMVideoCodecType_HEVCWithAlpha,
+                    kCMVideoCodecType_Animation
+                ]
+                if alphaSupportedFormats.contains(subType) {
                     videoSettings["ContainsAlphaChannel"] = true
                 }
-                // 像素宽高比
-                if let pixelAspectRatio = CMFormatDescriptionGetExtension(formatDescription, extensionKey: kCMFormatDescriptionExtension_PixelAspectRatio) as? [String: Any] {
-                    videoSettings[AVVideoPixelAspectRatioKey] = pixelAspectRatio
-                    if let horizontalSpacing = pixelAspectRatio[kCVImageBufferPixelAspectRatioHorizontalSpacingKey as String] as? CGFloat, horizontalSpacing > 0.0, let verticalSpacing = pixelAspectRatio[kCVImageBufferPixelAspectRatioVerticalSpacingKey as String] as? CGFloat, verticalSpacing > 0.0 {
-                        videoSettings[AVVideoPixelAspectRatioVerticalSpacingKey] = verticalSpacing
-                        videoSettings[AVVideoPixelAspectRatioHorizontalSpacingKey] = horizontalSpacing
-                    }
+            }
+            // 像素宽高比
+            if let pixelAspectRatio = CMFormatDescriptionGetExtension(formatDescription, extensionKey: kCMFormatDescriptionExtension_PixelAspectRatio) as? [String: Any] {
+                videoSettings[AVVideoPixelAspectRatioKey] = pixelAspectRatio
+                if let horizontalSpacing = pixelAspectRatio[kCVImageBufferPixelAspectRatioHorizontalSpacingKey as String] as? CGFloat, horizontalSpacing > 0.0, let verticalSpacing = pixelAspectRatio[kCVImageBufferPixelAspectRatioVerticalSpacingKey as String] as? CGFloat, verticalSpacing > 0.0 {
+                    videoSettings[AVVideoPixelAspectRatioVerticalSpacingKey] = verticalSpacing
+                    videoSettings[AVVideoPixelAspectRatioHorizontalSpacingKey] = horizontalSpacing
                 }
-                // 
-                break
+            }
+            // 比特率
+            if let extensions = CMFormatDescriptionGetExtensions(formatDescription) as? [String:Any] {
+                let bitrateKeys = ["BitRate", "AverageBitRate", "NominalBitRate", "bitsPerSecond", "DataRate", AVVideoAverageBitRateKey]
+                for bitrateKey in bitrateKeys {
+                    guard let bitrate = extensions[bitrateKey] as? NSNumber else { continue }
+                    videoSettings[AVVideoAverageBitRateKey] = bitrate.intValue
+                    break
+                }
             }
         }
         return videoSettings
     }
     
     /// 原始编码类型
-    private func videoCodecType(for videoTrack: AVAssetTrack) -> AVVideoCodecType {
-        if let formatDescriptions = videoTrack.mn.formatDescriptions as? [CMFormatDescription], let formatDescription = formatDescriptions.first {
-            let codecType = CMFormatDescriptionGetMediaSubType(formatDescription)
-            switch codecType {
-            case kCMVideoCodecType_H264:
-                if #available(iOS 11.0, *) {
-                    return .h264
-                }
-                return .init(rawValue: AVVideoCodecH264)
-            case kCMVideoCodecType_HEVC:
-                if #available(iOS 11.0, *) {
-                    return .hevc
-                }
-                return .init(rawValue: "hvc1")
-            case kCMVideoCodecType_JPEG:
-                if #available(iOS 11.0, *) {
-                    return .jpeg
-                }
-                return .init(rawValue: AVVideoCodecJPEG)
-            case kCMVideoCodecType_AppleProRes4444:
-                if #available(iOS 11.0, *) {
-                    return .proRes4444
-                }
-                return .init(rawValue: "ap4h")
-            case kCMVideoCodecType_AppleProRes422:
-                if #available(iOS 11.0, *) {
-                    return .proRes422
-                }
-                return .init(rawValue: "proRes422")
-            case kCMVideoCodecType_AppleProRes422HQ:
-                if #available(iOS 13.0, *) {
-                    return .proRes422HQ
-                }
-                return .init(rawValue: "proRes422HQ")
-            case kCMVideoCodecType_AppleProRes422LT:
-                if #available(iOS 13.0, *) {
-                    return .proRes422LT
-                }
-                return .init(rawValue: "proRes422LT")
-            case kCMVideoCodecType_AppleProRes422Proxy:
-                if #available(iOS 13.0, *) {
-                    return .proRes422Proxy
-                }
-                return .init(rawValue: "proRes422Proxy")
-            default: break
+    private func videoCodecType(for codecType: FourCharCode) -> AVVideoCodecType {
+        switch codecType {
+        case kCMVideoCodecType_H264:
+            // 在mp4封装下, 100%浏览器兼容，支持流式传输
+            if #available(iOS 11.0, *) {
+                return .h264
             }
+            return .init(rawValue: AVVideoCodecH264)
+        case kCMVideoCodecType_HEVC:
+            // h265
+            if #available(iOS 11.0, *) {
+                return .hevc
+            }
+            return .init(rawValue: "hvc1")
+        case kCMVideoCodecType_JPEG:
+            if #available(iOS 11.0, *) {
+                return .jpeg
+            }
+            return .init(rawValue: AVVideoCodecJPEG)
+        case kCMVideoCodecType_AppleProRes4444:
+            /// 支持 Alpha 通道
+            if #available(iOS 11.0, *) {
+                return .proRes4444
+            }
+            return .init(rawValue: "ap4h")
+        case kCMVideoCodecType_AppleProRes422:
+            if #available(iOS 11.0, *) {
+                return .proRes422
+            }
+            return .init(rawValue: "proRes422")
+        case kCMVideoCodecType_AppleProRes422HQ:
+            if #available(iOS 13.0, *) {
+                return .proRes422HQ
+            }
+            return .init(rawValue: "proRes422HQ")
+        case kCMVideoCodecType_AppleProRes422LT:
+            if #available(iOS 13.0, *) {
+                return .proRes422LT
+            }
+            return .init(rawValue: "proRes422LT")
+        case kCMVideoCodecType_AppleProRes422Proxy:
+            if #available(iOS 13.0, *) {
+                return .proRes422Proxy
+            }
+            return .init(rawValue: "proRes422Proxy")
+        default: break
         }
         // 默认使用H.264编码
         if #available(iOS 11.0, *) {
@@ -501,7 +775,35 @@ public class MNMediaExportSession: NSObject {
         return .init(rawValue: AVVideoCodecH264)
     }
     
+    private func preferredAudioOutputPreset(for audioTrack: AVAssetTrack) -> AVOutputSettingsPreset {
+        switch quality {
+        case .auto:
+            // 根据声道数选择
+            if let audioSettings = audioSettings(for: audioTrack), let numberOfChannels = audioSettings[AVNumberOfChannelsKey] as? Int {
+                return numberOfChannels > 2 ? .preset1920x1080 : .preset1280x720
+            } else {
+                return .preset1280x720
+            }
+        case .low:
+            return .preset960x540
+        case .medium:
+            return .preset1280x720
+        case .high:
+            return .preset1920x1080
+        }
+    }
+    
     private func audioOutputSettings(for audioTrack: AVAssetTrack, fileType: AVFileType) -> [String:Any]? {
+        guard let formatDescriptions = audioTrack.mn.formatDescriptions as? [CMFormatDescription], let formatDescription = formatDescriptions.first else { return nil }
+        guard CMFormatDescriptionGetMediaType(formatDescription) == kCMMediaType_Audio else { return nil }
+        // 寻找合适的预设
+        let preset = preferredAudioOutputPreset(for: audioTrack)
+        guard AVOutputSettingsAssistant.availableOutputSettingsPresets().contains(preset) else { return nil }
+        guard let assistant = AVOutputSettingsAssistant(preset: preset) else { return nil }
+        assistant.sourceAudioFormat = formatDescription
+        // 也可以自定义一下压缩参数
+        return assistant.audioSettings
+        /*
         // 分析源音频设置
         let sourceSettings = audioSettings(for: audioTrack)
         let sourceFormatID = sourceSettings?["formatID"] as? AudioFormatID
@@ -555,42 +857,39 @@ public class MNMediaExportSession: NSObject {
             audioSettings[AVEncoderAudioQualityKey] = AVAudioQuality.high.rawValue
         }
         return audioSettings
+        */
     }
     
     private func audioSettings(for audioTrack: AVAssetTrack) -> [String:Any]? {
-        guard let formatDescriptions = audioTrack.mn.formatDescriptions as? [CMFormatDescription] else { return nil }
+        guard let formatDescriptions = audioTrack.mn.formatDescriptions as? [CMFormatDescription], let formatDescription = formatDescriptions.first else { return nil }
+        guard CMFormatDescriptionGetMediaType(formatDescription) == kCMMediaType_Audio else { return nil }
         var audioSettings: [String: Any] = [:]
-        for formatDescription in formatDescriptions {
-            let mediaType = CMFormatDescriptionGetMediaType(formatDescription)
-            guard mediaType == kCMMediaType_Audio else { continue }
-            // 获取音频格式ID
-            let formatID = CMFormatDescriptionGetMediaSubType(formatDescription)
-            audioSettings[AVFormatIDKey] = formatID
-            // 获取音频流基本描述
-            if let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(formatDescription) {
-                // 采样率
-                let sampleRate = asbd.pointee.mSampleRate
-                // 声道数量
-                let channels = asbd.pointee.mChannelsPerFrame
-                // 位深
-                let bitDepth = asbd.pointee.mBitsPerChannel
-                // 计算比特率（仅对未压缩格式有效）
-                if formatID == kAudioFormatLinearPCM {
-                    let channelBitRate = sampleRate*Double(bitDepth)
-                    let bitRate = Int(channelBitRate*Double(channels))
-                    audioSettings[AVEncoderBitRateKey] = bitRate
-                    audioSettings[AVEncoderBitRatePerChannelKey] = channelBitRate
-                }
-                audioSettings[AVSampleRateKey] = sampleRate
-                audioSettings[AVNumberOfChannelsKey] = channels
-                audioSettings[AVLinearPCMBitDepthKey] = bitDepth
+        // 获取音频格式ID
+        let formatID = CMFormatDescriptionGetMediaSubType(formatDescription)
+        audioSettings[AVFormatIDKey] = formatID
+        // 获取音频流基本描述
+        if let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(formatDescription) {
+            // 采样率
+            let sampleRate = asbd.pointee.mSampleRate
+            // 声道数量
+            let channels = asbd.pointee.mChannelsPerFrame
+            // 位深
+            let bitDepth = asbd.pointee.mBitsPerChannel
+            // 计算比特率（仅对未压缩格式有效）
+            if formatID == kAudioFormatLinearPCM {
+                let channelBitRate = sampleRate*Double(bitDepth)
+                let bitRate = Int(channelBitRate*Double(channels))
+                audioSettings[AVEncoderBitRateKey] = bitRate
+                audioSettings[AVEncoderBitRatePerChannelKey] = channelBitRate
             }
-            // 声道布局
-            var channelLayoutSize: Int = 0
-            if let channelLayout = CMAudioFormatDescriptionGetChannelLayout(formatDescription, sizeOut: &channelLayoutSize) {
-                audioSettings[AVChannelLayoutKey] = Data(bytes: channelLayout, count: channelLayoutSize)
-            }
-            break
+            audioSettings[AVSampleRateKey] = sampleRate
+            audioSettings[AVNumberOfChannelsKey] = channels
+            audioSettings[AVLinearPCMBitDepthKey] = bitDepth
+        }
+        // 声道布局
+        var channelLayoutSize: Int = 0
+        if let channelLayout = CMAudioFormatDescriptionGetChannelLayout(formatDescription, sizeOut: &channelLayoutSize) {
+            audioSettings[AVChannelLayoutKey] = Data(bytes: channelLayout, count: channelLayoutSize)
         }
         return audioSettings
     }

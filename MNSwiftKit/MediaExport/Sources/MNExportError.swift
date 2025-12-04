@@ -10,6 +10,10 @@ import AVFoundation
 
 /// 媒体输出错误信息
 public enum MNExportError: Swift.Error {
+    /// 未知错误
+    case unknown
+    /// 已取消
+    case cancelled
     /// 繁忙
     case exporting
     /// 资源不可用
@@ -22,24 +26,26 @@ public enum MNExportError: Swift.Error {
     case cannotExportFile
     /// 未知文件类型
     case unknownFileType(String)
-    /// 无资源轨道
-    case trackIsEmpty
     /// 无法创建输出目录
-    case cannotCreateDirectory(String)
+    case cannotCreateDirectory(Error)
     /// 文件已存在
-    case fileDoesExist(String)
-    /// 无法输出轨道
-    case cannotExportTrack(AVMediaType)
+    case fileDoesExist(URL)
+    /// 无法添加资源轨道
+    case cannotAppendTrack(AVMediaType)
     /// 无法读取资源
     case cannotReadAsset(Error)
     /// 无法读写入文件
-    case cannotWritFile(URL, fileType: AVFileType, underlyingError: Error)
+    case cannotWritToFile(URL, uti: AVFileType, error: Error)
     /// 无法添加Output
     case cannotAddOutput(AVMediaType)
     /// 无法输出设置
-    case cannotExportSetting(AVMediaType, fileType: AVFileType)
+    case cannotExportSetting(AVMediaType, uti: AVFileType)
     /// 无法添加Input
     case cannotAddInput(AVMediaType)
+    /// 无法开始读取
+    case cannotStartReading
+    /// 无法开始写入
+    case cannotStartWriting
     /// 底层错误
     case underlyingError(Swift.Error)
 }
@@ -55,14 +61,24 @@ extension MNExportError {
     /// 错误信息
     public var msg: String {
         switch self {
-        case .unavailable: return "输出会话使用中"
-        case .unknownOutputDirectory: return "未知输出目录"
+        case .unknown: return "发生未知错误"
+        case .cancelled: return "已取消任务"
+        case .exporting: return "输出会话繁忙, 请稍后重试"
+        case .unreadable: return "无法读取资源"
+        case .unexportable: return "无法输出资源"
+        case .unknownExportDirectory: return "未知输出目录"
         case .cannotExportFile: return "无法输出文件"
         case .unknownFileType: return "未知输出文件类型"
-        case .trackIsEmpty: return "媒体资源为空"
         case .cannotCreateDirectory: return "无法创建输出目录"
         case .fileDoesExist: return "文件已存在"
-        case .cannotExportTrack: return "无法添加媒体轨道"
+        case .cannotAppendTrack(let mediaType): return "添加\(mediaType == .audio ? "音频" : "视频")轨道失败"
+        case .cannotReadAsset: return "构建资源读取器失败"
+        case .cannotWritToFile: return "构建资源写入器失败"
+        case .cannotAddOutput(let mediaType): return "添加\(mediaType == .audio ? "音频" : "视频")输出失败"
+        case .cannotExportSetting(let mediaType, _): return "获取\(mediaType == .audio ? "音频" : "视频")输出配置失败"
+        case .cannotAddInput(let mediaType): return "添加\(mediaType == .audio ? "音频" : "视频")输入失败"
+        case .cannotStartReading: return "无法开始读取资源"
+        case .cannotStartWriting: return "无法开始写入资源"
         case .underlyingError(let error): return error.localizedDescription
         }
     }
@@ -70,6 +86,9 @@ extension MNExportError {
     /// 内部错误
     public var underlyingError: Error? {
         switch self {
+        case .cannotCreateDirectory(let error): return error
+        case .cannotReadAsset(let error): return error
+        case .cannotWritToFile(_, _, let error): return error
         case .underlyingError(let error): return error
         default: return nil
         }
@@ -85,15 +104,25 @@ extension MNExportError: CustomNSError {
     
     public var errorCode: Int {
         switch self {
-        case .unavailable: return -181376
-        case .unknownOutputDirectory: return -181377
-        case .cannotExportFile: return -181378
-        case .unknownFileType: return -181379
-        case .trackIsEmpty: return -181380
-        case .cannotCreateDirectory: return -181381
-        case .fileDoesExist: return -181382
-        case .cannotExportTrack: return -181383
-        case .underlyingError(let error): return error._code
+        case .unknown: return -133303
+        case .cancelled: return -181377
+        case .exporting: return -181378
+        case .unexportable: return -181379
+        case .unreadable: return -181380
+        case .unknownExportDirectory: return -181381
+        case .cannotExportFile: return -181382
+        case .unknownFileType: return -181383
+        case .cannotCreateDirectory: return -181384
+        case .fileDoesExist: return -181385
+        case .cannotAppendTrack: return -181386
+        case .cannotReadAsset: return -181387
+        case .cannotWritToFile: return -181388
+        case .cannotAddOutput: return -181389
+        case .cannotExportSetting: return -181390
+        case .cannotAddInput: return -181391
+        case .cannotStartReading: return -181392
+        case .cannotStartWriting: return -181393
+        case .underlyingError: return -181394
         }
     }
     
@@ -110,24 +139,25 @@ extension MNExportError: CustomDebugStringConvertible {
     
     public var debugDescription: String {
         switch self {
-        case .unavailable:
-            return "有输出任务正在进行"
-        case .unknownOutputDirectory:
-            return "输出目录为空"
-        case .cannotExportFile:
-            return "创建输出会话失败"
-        case .unknownFileType(let pathExtension):
-            return "未知文件类型: \(pathExtension)"
-        case .trackIsEmpty:
-            return "未插入任何资源轨道"
-        case .cannotCreateDirectory(let directory):
-            return "无法创建创建输出目录: \(directory)"
-        case .fileDoesExist(let filePath):
-            return "文件已经存在: \(filePath)"
-        case .cannotExportTrack(let mediaType):
-            return "无法导入\(mediaType == .video ? "视频" : "音频")轨道"
-        case .underlyingError(let error):
-            return "\(error)"
+        case .unknown: return "发生未知错误"
+        case .cancelled: return "已取消操作"
+        case .exporting: return "正在输出操作"
+        case .unexportable: return "检查导出操作失败"
+        case .unreadable: return "检查可读性失败"
+        case .unknownExportDirectory: return "输出路径为空"
+        case .cannotExportFile: return "输出前检查不通过"
+        case .unknownFileType(let string): return "分析文件类型失败: \(string)"
+        case .cannotCreateDirectory(let error): return "创建输出文件夹失败: \(error)"
+        case .fileDoesExist(let filePath): return "输出文件已存在: \(filePath)"
+        case .cannotAppendTrack(let mediaType): return "添加\(mediaType == .audio ? "音频" : "视频")轨道失败"
+        case .cannotReadAsset(let error): return "构建资源读取器失败: \(error)"
+        case .cannotWritToFile(let url, let uti, let error): return "构建资源写入器失败: \(url)\n文件类型: \(uti)\n错误信息: \(error)"
+        case .cannotAddOutput(let mediaType): return "添加\(mediaType == .audio ? "音频" : "视频")输出失败"
+        case .cannotExportSetting(let mediaType, _): return "获取\(mediaType == .audio ? "音频" : "视频")输出配置失败"
+        case .cannotAddInput(let mediaType): return "添加\(mediaType == .audio ? "音频" : "视频")输入失败"
+        case .cannotStartReading: return "开启读取操作失败"
+        case .cannotStartWriting: return "开启写入操作失败"
+        case .underlyingError(let error): return "\(error)"
         }
     }
 }

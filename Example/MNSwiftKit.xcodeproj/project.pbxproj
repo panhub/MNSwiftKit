@@ -8,13 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		1B8149E15645165DB29C2A0A /* Pods_MNSwiftKit_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E008DD44303699B59A3A447D /* Pods_MNSwiftKit_Tests.framework */; };
-		3BB5A9E52EE07CC9009EB762 /* VideoCropper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BB5A9E42EE07CC9009EB762 /* VideoCropper.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		CD670549A4B91C374612AE13 /* Pods_MNSwiftKit_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E874295FCAA74BC1B328F42B /* Pods_MNSwiftKit_Example.framework */; };
-		E90AC3372EE0096B00B82A5B /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90AC3362EE0096B00B82A5B /* File.swift */; };
 		E92C80152ECF3AAE0088CA5A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92C80132ECF3AAE0088CA5A /* ViewController.swift */; };
 		E92C80162ECF3AAE0088CA5A /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = E92C80142ECF3AAE0088CA5A /* ViewController.xib */; };
 /* End PBXBuildFile section */
@@ -31,7 +29,6 @@
 
 /* Begin PBXFileReference section */
 		186285F5101E22CF12A04EF0 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
-		3BB5A9E42EE07CC9009EB762 /* VideoCropper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCropper.swift; sourceTree = "<group>"; };
 		4FDE7F146C4E78F15CAF908F /* Pods-MNSwiftKit_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MNSwiftKit_Example.release.xcconfig"; path = "Target Support Files/Pods-MNSwiftKit_Example/Pods-MNSwiftKit_Example.release.xcconfig"; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* MNSwiftKit_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MNSwiftKit_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -48,7 +45,6 @@
 		CEAB5A5875679D9CEAFCE12C /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		E008DD44303699B59A3A447D /* Pods_MNSwiftKit_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MNSwiftKit_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E874295FCAA74BC1B328F42B /* Pods_MNSwiftKit_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MNSwiftKit_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E90AC3362EE0096B00B82A5B /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		E92C80132ECF3AAE0088CA5A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		E92C80142ECF3AAE0088CA5A /* ViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ViewController.xib; sourceTree = "<group>"; };
 		E9F4F5782EB46DDA00B52798 /* AVFAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFAudio.framework; path = System/Library/Frameworks/AVFAudio.framework; sourceTree = SDKROOT; };
@@ -119,14 +115,12 @@
 		607FACD21AFB9204008FA782 /* Example for MNSwiftKit */ = {
 			isa = PBXGroup;
 			children = (
-				3BB5A9E42EE07CC9009EB762 /* VideoCropper.swift */,
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				E92C80132ECF3AAE0088CA5A /* ViewController.swift */,
 				E92C80142ECF3AAE0088CA5A /* ViewController.xib */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
-				E90AC3362EE0096B00B82A5B /* File.swift */,
 			);
 			name = "Example for MNSwiftKit";
 			path = MNSwiftKit;
@@ -340,9 +334,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E92C80152ECF3AAE0088CA5A /* ViewController.swift in Sources */,
-				E90AC3372EE0096B00B82A5B /* File.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
-				3BB5A9E52EE07CC9009EB762 /* VideoCropper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
