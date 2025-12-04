@@ -335,34 +335,6 @@ extension MNTailorViewController {
                 }
             }
         } else {
-            /*
-            guard let exporter = MNAssetExporter(fileAtPath: videoPath) else {
-                MNToast.showMsg("解析视频失败")
-                return
-            }
-            MNToast.showProgress("正在导出", style: .fill)
-            exporter.outputURL = URL(fileURLWithPath: exportingPath)
-            exporter.timeRange = exporter.asset.progressRange(from: begin, to: end)
-            //exporter.presetName = AVAssetExportPresetMediumQuality
-            exporter.exportAsynchronously { value in
-                MNToast.showProgress(nil, style: .fill, value: value)
-            } completionHandler: { [weak self] status, error in
-                if status == .completed {
-                    MNToast.close {
-                        guard let self = self else { return }
-                        self.delegate?.tailorController(self, didOutputVideoAtPath: exportingPath)
-                    }
-                } else if let error = error {
-                    MNToast.showMsg(error.localizedDescription)
-                } else {
-                    MNToast.showMsg("视频导出失败")
-                }
-            }
-             */
-            guard let exportSession = MNAssetExportSession(fileAtPath: videoPath) else {
-                MNToast.showMsg("解析视频失败")
-                return
-            }
             let z = MNAssetExportSession.naturalSize(fileAtPath: videoPath)
             let w = ceil(z.height/2.0)
             //let x = 0.0
@@ -387,6 +359,39 @@ extension MNTailorViewController {
             
             let croppRect = CGRect(x: cropX, y: cropY, width: cropW, height: cropH)
             
+            guard let exportSession = MNMediaExportSession(fileAtPath: videoPath) else {
+                MNToast.showMsg("解析视频失败")
+                return
+            }
+            exportSession.cropRect = cropRect
+            exportSession.shouldOptimizeForNetworkUse = true
+            exportSession.renderSize = .init(width: 1080.0, height: 1080.0)
+            exportSession.timeRange = exportSession.asset.mn.timeRange(withProgress: begin, to: end)
+            if #available(iOS 16.0, *) {
+                exportSession.outputURL = URL(filePath: outputPath)
+            } else {
+                exportSession.outputURL = URL(fileURLWithPath: outputPath)
+            }
+            MNToast.showProgress("正在导出", style: .fill)
+            exportSession.exportAsynchronously { value in
+                MNToast.showProgress(nil, value: value)
+            } completionHandler: { [weak self] status, error in
+                if status == .completed {
+                    MNToast.close { _ in
+                        guard let self = self else { return }
+                        self.delegate?.tailorController(self, didOutputVideoAtPath: outputPath)
+                    }
+                } else if let error = error {
+                    MNToast.showMsg(error.localizedDescription)
+                } else {
+                    MNToast.showMsg("视频导出失败")
+                }
+            }
+            /*
+            guard let exportSession = MNAssetExportSession(fileAtPath: videoPath) else {
+                MNToast.showMsg("解析视频失败")
+                return
+            }
             exportSession.cropRect = cropRect
             exportSession.shouldOptimizeForNetworkUse = true
             exportSession.renderSize = .init(width: 1080.0, height: 1080.0)
@@ -415,6 +420,7 @@ extension MNTailorViewController {
                     MNToast.showMsg("视频导出失败")
                 }
             }
+             */
         }
     }
 }

@@ -44,7 +44,7 @@ public class MNMediaExportSession: NSObject {
     /// 是否输出视频内容
     public var exportVideoTrack: Bool = true
     /// 默认高质量输出策略
-    public var quality: MNMediaExportSession.Quality = .high
+    public var quality: MNMediaExportSession.Quality = .auto
     /// 是否针对网络使用进行优化
     public var shouldOptimizeForNetworkUse: Bool = true
     /// 错误信息
@@ -179,7 +179,7 @@ public class MNMediaExportSession: NSObject {
         }
         
         // 检查是否可输出
-        guard composition.isExportable == false else {
+        guard composition.isExportable else {
             finish(error: .unexportable)
             return
         }
@@ -271,14 +271,14 @@ public class MNMediaExportSession: NSObject {
         var audioOutput: AVAssetReaderOutput!
         if let audioTrack = composition.mn.track(with: .audio) {
             // 创建 Audio Output
-//            let audioSettings: [String: Any] = [
-//                AVFormatIDKey: kAudioFormatLinearPCM,
-//                AVLinearPCMBitDepthKey: 16,
-//                AVLinearPCMIsBigEndianKey: false,
-//                AVLinearPCMIsFloatKey: false,
-//                AVLinearPCMIsNonInterleaved: false
-//            ]
-            let audioSettings = audioSettings(for: audioTrack)
+            let audioSettings: [String: Any] = [
+                AVFormatIDKey: kAudioFormatLinearPCM,
+                AVLinearPCMBitDepthKey: 16,
+                AVLinearPCMIsBigEndianKey: false,
+                AVLinearPCMIsFloatKey: false,
+                AVLinearPCMIsNonInterleaved: false
+            ]
+            //let audioSettings = audioSettings(for: audioTrack)
             audioOutput = AVAssetReaderTrackOutput(track: audioTrack, outputSettings: audioSettings)
             audioOutput.alwaysCopiesSampleData = false
             
@@ -334,7 +334,7 @@ public class MNMediaExportSession: NSObject {
                         
                         let presentationTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
                         let progress = presentationTime.seconds/seconds
-                        
+                        print("===视频: \(progress)")
                         if videoInput.append(sampleBuffer) == false {
                             // 操作失败了
                             videoInput.markAsFinished()
@@ -365,7 +365,7 @@ public class MNMediaExportSession: NSObject {
                         
                         let presentationTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
                         let progress = presentationTime.seconds/seconds
-                        
+                        print("===音频: \(progress)")
                         if audioInput.append(sampleBuffer) == false {
                             // 操作失败了
                             audioInput.markAsFinished()
@@ -505,7 +505,7 @@ public class MNMediaExportSession: NSObject {
         guard AVOutputSettingsAssistant.availableOutputSettingsPresets().contains(preset) else { return nil }
         guard let assistant = AVOutputSettingsAssistant(preset: preset) else { return nil }
         assistant.sourceVideoFormat = formatDescription
-        assistant.sourceVideoAverageFrameDuration = CMTimeCodeFormatDescriptionGetFrameDuration(formatDescription)
+        //assistant.sourceVideoAverageFrameDuration = CMTimeCodeFormatDescriptionGetFrameDuration(formatDescription)
         // 也可以自定义一下压缩参数
         return assistant.videoSettings
         /*
