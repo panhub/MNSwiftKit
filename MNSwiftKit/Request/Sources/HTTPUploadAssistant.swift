@@ -1,18 +1,18 @@
 //
-//  HTTPUploadAdaptor.swift
+//  HTTPUploadAssistant.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2025/11/20.
 //  Copyright © 2025 CocoaPods. All rights reserved.
-//
+//  上传内容表单辅助
 
 import ImageIO
 import Foundation
 import CoreServices
 import UniformTypeIdentifiers
 
-/// 网络请求内容适配器
-public class HTTPUploadAdaptor {
+/// 上传内容表单辅助
+public class HTTPUploadAssistant {
     
     /// 边界标记
     public let boundary: String
@@ -131,7 +131,7 @@ public class HTTPUploadAdaptor {
 #endif
             return false
         }
-        let mimeType = HTTPUploadAdaptor.mimeType(withExtension: url.pathExtension)
+        let mimeType = HTTPUploadAssistant.mimeType(withExtension: url.pathExtension)
         return append(data: fileData, name: name, mime: mimeType, filename: url.lastPathComponent)
     }
     

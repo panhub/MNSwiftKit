@@ -137,14 +137,14 @@ public class MNTailorViewController: UIViewController {
             automaticallyAdjustsScrollViewInsets = false
         }
         
-        closeButton.mn.size = CGSize(width: 30.0, height: 30.0)
+        closeButton.mn.size = CGSize(width: 27.0, height: 27.0)
         closeButton.mn.minX = 15.0
         closeButton.mn.maxY = view.frame.height - max(15.0, MN_BOTTOM_SAFE_HEIGHT)
         closeButton.setBackgroundImage(AssetPickerResource.image(named: "player_close"), for: .normal)
         closeButton.addTarget(self, action: #selector(closeButtonTouchUpInside(_:)), for: .touchUpInside)
         view.addSubview(closeButton)
         
-        doneButton.mn.size = CGSize(width: 28.0, height: 28.0)
+        doneButton.mn.size = CGSize(width: 25.0, height: 25.0)
         doneButton.mn.midY = closeButton.frame.midY
         doneButton.mn.maxX = view.frame.width - closeButton.frame.minX
         doneButton.isUserInteractionEnabled = false
@@ -340,7 +340,7 @@ extension MNTailorViewController {
             //let x = 0.0
             let x = ceil((z.width - w)/2.0)
             //let x = z.width - w
-            let cropRect = CGRect(origin: .init(x: x, y: z.height - w), size: .init(width: w, height: w))
+            let cropRect = CGRect(origin: .init(x: 0.0, y: 0.0), size: .init(width: 300.0, height: 300.0))
             
             let playerLayer = playView.layer as! AVPlayerLayer
             let playerVideoRect = playerLayer.videoRect
@@ -372,9 +372,9 @@ extension MNTailorViewController {
             } else {
                 exportSession.outputURL = URL(fileURLWithPath: outputPath)
             }
-            MNToast.showProgress("正在导出", style: .fill)
+            MNToast.showProgress("正在导出", style: .line)
             exportSession.exportAsynchronously { value in
-                MNToast.showProgress(nil, value: value)
+                MNToast.showProgress(value: value)
             } completionHandler: { [weak self] status, error in
                 if status == .completed {
                     MNToast.close { _ in
@@ -420,7 +420,7 @@ extension MNTailorViewController {
                     MNToast.showMsg("视频导出失败")
                 }
             }
-             */
+            */
         }
     }
 }

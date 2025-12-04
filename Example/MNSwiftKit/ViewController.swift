@@ -51,7 +51,7 @@ class ViewController: UIViewController {
             let picker = MNAssetPicker()
             picker.options.maxPickingCount = 1
             picker.options.allowsPreview = true
-            picker.options.maxExportDuration = 20.0
+            picker.options.maxExportDuration = 10.0
             //picker.options.presentationStyle = .pageSheet
             picker.cancel { picker in
                 

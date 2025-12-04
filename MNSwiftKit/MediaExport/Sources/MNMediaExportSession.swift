@@ -53,16 +53,10 @@ public class MNMediaExportSession: NSObject {
     public private(set) var progress: CGFloat = 0.0
     /// 状态
     public private(set) var status: AVAssetExportSession.Status = .unknown
-    /// 是否已取消导出操作
-    public private(set) var isCancelled = false
-    /// 视频输入
-    private weak var videoInput: AVAssetWriterInput?
-    /// 音频输入
-    private weak var audioInput: AVAssetWriterInput?
-    /// 视频输出
-    private weak var videoOutput: AVAssetReaderOutput?
-    /// 音频输出
-    private weak var audioOutput: AVAssetReaderOutput?
+    /// 视频输出进度
+    private var videoExportProgress: CGFloat?
+    /// 音频输出进度
+    private var audioExportProgress: CGFloat?
     /// 进度回调
     private var progressHandler: ((CGFloat)->Void)?
     /// 结束回调
@@ -95,16 +89,20 @@ public class MNMediaExportSession: NSObject {
     
     /// 异步导出资源
     /// - Parameters:
-    ///   - progressHandler: 进度回调(iOS18之前在主队列回调进度, 之后依赖于内部进度回调队列)
-    ///   - completionHandler: 导出结束回调
+    ///   - progressHandler: 进度回调(主队列回调)
+    ///   - completionHandler: 导出结束回调(主队列回调)
     public func exportAsynchronously(progressHandler: ((_ progress: CGFloat)->Void)? = nil, completionHandler: ((_ status: AVAssetExportSession.Status, _ error: Error?)->Void)?) {
         if status == .waiting || status == .exporting {
-            completionHandler?(.failed, MNExportError.exporting)
+            DispatchQueue.main.async {
+                completionHandler?(.failed, MNExportError.exporting)
+            }
             return
         }
         error = nil
-        progress = 0.0
-        status = .waiting
+        update(status: .waiting)
+        update(progress: 0.0)
+        videoExportProgress = nil
+        audioExportProgress = nil
         self.progressHandler = progressHandler
         self.completionHandler = completionHandler
         DispatchQueue(label: "com.mn.media.export.session.queue", qos: .userInitiated).async {
@@ -127,7 +125,7 @@ public class MNMediaExportSession: NSObject {
         }
         
         // 删除本地文件
-        var outputPath: String = ""
+        var outputPath: String
         if #available(iOS 16.0, *) {
             outputPath = outputURL.path(percentEncoded: false)
         } else {
@@ -236,12 +234,9 @@ public class MNMediaExportSession: NSObject {
             } else {
                 videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
             }
-            
-            let videoSettings: [String: Any] = [
-                kCVPixelBufferWidthKey as String: Int(renderSize.width),
-                kCVPixelBufferHeightKey as String: Int(renderSize.height),
-                kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
-            ]
+            //kCVPixelBufferWidthKey as String: Int(renderSize.width),
+            //kCVPixelBufferHeightKey as String: Int(renderSize.height),
+            let videoSettings: [String: Any] = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange]
             videoOutput = AVAssetReaderVideoCompositionOutput(videoTracks: [videoTrack], videoSettings: videoSettings)
             videoOutput.videoComposition = videoComposition
             videoOutput.alwaysCopiesSampleData = false
@@ -316,14 +311,12 @@ public class MNMediaExportSession: NSObject {
         }
         writer.startSession(atSourceTime: .zero)
         
-        status = .exporting
-        let seconds = composition.duration.seconds
+        update(status: .exporting)
+        let seconds = CMTimeGetSeconds(composition.duration)
         let group = DispatchGroup()
         if let videoInput = videoInput, let videoOutput = videoOutput {
             group.enter()
-            self.videoInput = videoInput
-            self.videoOutput = videoOutput
-            videoInput.requestMediaDataWhenReady(on: DispatchQueue(label: "com.mn.video.exporting", qos: .userInitiated)) {
+            videoInput.requestMediaDataWhenReady(on: DispatchQueue(label: "com.mn.media.video.exporting")) {
                 guard self.status == .exporting else {
                     videoInput.markAsFinished()
                     group.leave()
@@ -331,10 +324,15 @@ public class MNMediaExportSession: NSObject {
                 }
                 while videoInput.isReadyForMoreMediaData {
                     if let sampleBuffer = videoOutput.copyNextSampleBuffer() {
-                        
                         let presentationTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-                        let progress = presentationTime.seconds/seconds
-                        print("===视频: \(progress)")
+                        let value = CMTimeGetSeconds(presentationTime)/seconds
+                        self.updateVideoProgress(value)
+                        if let progressHandler = self.progressHandler {
+                            let progress = self.progress
+                            DispatchQueue.main.async {
+                                progressHandler(progress)
+                            }
+                        }
                         if videoInput.append(sampleBuffer) == false {
                             // 操作失败了
                             videoInput.markAsFinished()
@@ -342,7 +340,13 @@ public class MNMediaExportSession: NSObject {
                             break
                         }
                     } else {
-                        // 读取结束
+                        // 读取结束 这里也为了强引用reader
+                        if let error = reader.error {
+                            self.update(status: .failed)
+#if DEBUG
+                            print("读取视频数据失败: \(error)")
+#endif
+                        }
                         videoInput.markAsFinished()
                         group.leave()
                         break
@@ -352,9 +356,7 @@ public class MNMediaExportSession: NSObject {
         }
         if let audioInput = audioInput, let audioOutput = audioOutput {
             group.enter()
-            self.audioInput = audioInput
-            self.audioOutput = audioOutput
-            audioInput.requestMediaDataWhenReady(on: DispatchQueue(label: "com.mn.audio.exporting", qos: .userInitiated)) {
+            audioInput.requestMediaDataWhenReady(on: DispatchQueue(label: "com.mn.media.audio.exporting")) {
                 guard self.status == .exporting else {
                     audioInput.markAsFinished()
                     group.leave()
@@ -362,10 +364,15 @@ public class MNMediaExportSession: NSObject {
                 }
                 while audioInput.isReadyForMoreMediaData {
                     if let sampleBuffer = audioOutput.copyNextSampleBuffer() {
-                        
                         let presentationTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-                        let progress = presentationTime.seconds/seconds
-                        print("===音频: \(progress)")
+                        let value = CMTimeGetSeconds(presentationTime)/seconds
+                        self.updateAudioProgress(value)
+                        if let progressHandler = self.progressHandler {
+                            let progress = self.progress
+                            DispatchQueue.main.async {
+                                progressHandler(progress)
+                            }
+                        }
                         if audioInput.append(sampleBuffer) == false {
                             // 操作失败了
                             audioInput.markAsFinished()
@@ -373,7 +380,13 @@ public class MNMediaExportSession: NSObject {
                             break
                         }
                     } else {
-                        // 读取结束
+                        // 读取结束 这里也为了强引用reader
+                        if let error = reader.error {
+                            self.update(status: .failed)
+#if DEBUG
+                            print("读取音频数据失败: \(error)")
+#endif
+                        }
                         audioInput.markAsFinished()
                         group.leave()
                         break
@@ -381,11 +394,16 @@ public class MNMediaExportSession: NSObject {
                 }
             }
         }
-        group.notify(qos: .userInitiated, queue: .main) {
+        group.notify(queue: .main) {
             if self.status == .cancelled {
                 // 取消
                 writer.cancelWriting()
                 self.finish(error: .cancelled)
+                return
+            }
+            if let error = reader.error {
+                writer.cancelWriting()
+                self.finish(error: .underlyingError(error))
                 return
             }
             writer.finishWriting {
@@ -393,9 +411,8 @@ public class MNMediaExportSession: NSObject {
                     switch writer.status {
                     case .completed:
                         // 成功
-                        if let progressHandler = self.progressHandler {
-                            progressHandler(1.0)
-                        }
+                        self.update(progress: 1.0)
+                        self.progressHandler?(1.0)
                         self.finish(error: nil)
                     default:
                         if let error = writer.error {
@@ -413,15 +430,70 @@ public class MNMediaExportSession: NSObject {
     private func finish(error: MNExportError?) {
         if let error = error {
             self.error = error
-            if self.status != .cancelled {
-                self.status = .failed
+            if status != .cancelled {
+                update(status: .failed)
             }
         } else {
-            self.status = .completed
+            update(status: .completed)
         }
         if let completionHandler = completionHandler {
-            completionHandler(self.status, error)
+            let status = status
+            DispatchQueue.main.async {
+                completionHandler(status, error)
+            }
         }
+    }
+    
+    /// 更新当前输出状态
+    /// - Parameter status: 状态
+    private func update(status: AVAssetExportSession.Status) {
+        objc_sync_enter(self)
+        self.status = status
+        objc_sync_exit(self)
+    }
+    
+    /// 更新当前输出进度
+    /// - Parameter progress: 进度值
+    private func update(progress: CGFloat) {
+        objc_sync_enter(self)
+        self.progress = progress
+        objc_sync_exit(self)
+    }
+    
+    /// 更新音频输出进度
+    /// - Parameter value: 进度值
+    private func updateAudioProgress(_ value: CGFloat) {
+        var progress: CGFloat
+        objc_sync_enter(self)
+        audioExportProgress = value
+        if let videoExportProgress = videoExportProgress {
+            progress = min(value, videoExportProgress)
+        } else {
+            progress = value
+        }
+        objc_sync_exit(self)
+        update(progress: progress)
+    }
+    
+    /// 更新视频输出进度
+    /// - Parameter value: 进度值
+    private func updateVideoProgress(_ value: CGFloat) {
+        var progress: CGFloat
+        objc_sync_enter(self)
+        videoExportProgress = value
+        if let audioExportProgress = audioExportProgress {
+            progress = min(value, audioExportProgress)
+        } else {
+            progress = value
+        }
+        objc_sync_exit(self)
+        update(progress: progress)
+    }
+    
+    /// 取消输出任务
+    public func cancel() {
+        guard status == .exporting else { return }
+        update(status: .cancelled)
     }
     
     private func preferredVideoOutputPreset(useH264 useH264CodecType: Bool, renderSize: CGSize, containsAlphaChannel: Bool) -> AVOutputSettingsPreset {
@@ -507,42 +579,11 @@ public class MNMediaExportSession: NSObject {
         assistant.sourceVideoFormat = formatDescription
         //assistant.sourceVideoAverageFrameDuration = CMTimeCodeFormatDescriptionGetFrameDuration(formatDescription)
         // 也可以自定义一下压缩参数
-        return assistant.videoSettings
+        guard var videoSettings = assistant.videoSettings else { return nil }
+        videoSettings[AVVideoWidthKey] = Int(renderSize.width)
+        videoSettings[AVVideoHeightKey] = Int(renderSize.height)
+        return videoSettings
         /*
-        // 根据文件类型选择编码格式
-        let codecType: AVVideoCodecType
-        switch fileType {
-        case .mp4:
-            if shouldOptimizeForNetworkUse {
-                // 首选H.264 (AVC), 100% 浏览器兼容，支持流式传输
-                if #available(iOS 11.0, *) {
-                    codecType = .h264
-                } else {
-                    codecType = .init(rawValue: AVVideoCodecH264)
-                }
-            } else if #available(iOS 11.0, *) {
-                // 空间效率高, 同等画质, 甚至节省50%空间
-                codecType = .hevc
-            } else {
-                // 安全默认值
-                codecType = .init(rawValue: AVVideoCodecH264)
-            }
-        case .mov:
-            // MOV 支持更多格式
-            if #available(iOS 11.0, *), let sourceCodec = sourceCodecType, sourceCodec == kCMVideoCodecType_HEVC {
-                codecType = .hevc
-            } else if #available(iOS 11.0, *) {
-                codecType = .h264
-            } else {
-                codecType = .init(rawValue: AVVideoCodecH264)
-            }
-        case .m4v:
-            // Apple专有的视频容器格式, 带DRM保护或特殊元数据的MP4
-        default: return nil
-        }
-        
-        
-        
         // 分析源视频设置 avc1 avc1 hvc1 ap4h
         let sourceSettings = videoSettings(for: videoTrack)
         
@@ -563,9 +604,7 @@ public class MNMediaExportSession: NSObject {
             let estimatedDataRate = videoTrack.mn.estimatedDataRate
             sourceBitrate = Int(estimatedDataRate)
         }
-        
-        
-        
+         
         // 视频设置
         var videoSettings: [String: Any] = [:]
         videoSettings[AVVideoCodecKey] = codecType

@@ -76,17 +76,19 @@ public class MNAssetExportSession: NSObject {
     
     /// 异步导出资源
     /// - Parameters:
-    ///   - progressHandler: 进度回调(iOS18之前在主队列回调进度, 之后依赖于内部进度回调队列)
-    ///   - completionHandler: 导出结束回调
+    ///   - progressHandler: 进度回调(主队列回调)
+    ///   - completionHandler: 导出结束回调(主队列回调)
     public func exportAsynchronously(progressHandler: ((_ progress: CGFloat)->Void)? = nil, completionHandler: ((_ status: AVAssetExportSession.Status, _ error: Error?)->Void)?) {
         if status == .waiting || status == .exporting {
-            completionHandler?(.failed, MNExportError.exporting)
+            DispatchQueue.main.async {
+                completionHandler?(.failed, MNExportError.exporting)
+            }
             return
         }
         error = nil
-        progress = 0.0
-        status = .waiting
         exportSession = nil
+        update(status: .waiting)
+        update(progress: 0.0)
         self.progressHandler = progressHandler
         self.completionHandler = completionHandler
         DispatchQueue(label: "com.mn.asset.export.session.queue", qos: .userInitiated).async {
@@ -223,16 +225,16 @@ public class MNAssetExportSession: NSObject {
             Task {
                 for await state in exportSession.states(updateInterval: self.progressUpdateInterval) {
                     switch state {
-                    case .pending:
-                        self.status = .unknown
                     case .waiting:
-                        self.status = .waiting
+                        self.update(status: .waiting)
                     case .exporting(progress: let progress):
-                        self.status = .exporting
+                        self.update(status: .exporting)
                         let fractionCompleted = CGFloat(progress.fractionCompleted)
-                        self.progress = fractionCompleted
+                        self.update(progress: fractionCompleted)
                         if let progressHandler = self.progressHandler {
-                            progressHandler(fractionCompleted)
+                            DispatchQueue.main.async {
+                                progressHandler(fractionCompleted)
+                            }
                         }
                     default: break
                     }
@@ -241,22 +243,28 @@ public class MNAssetExportSession: NSObject {
             Task {
                 do {
                     try await exportSession.export(to: outputURL, as: outputFileType)
-                    self.progress = 1.0
+                    self.update(progress: 1.0)
                     if let progressHandler = self.progressHandler {
-                        progressHandler(1.0)
+                        DispatchQueue.main.async {
+                            progressHandler(1.0)
+                        }
                     }
-                    self.status = .completed
+                    self.update(status: .completed)
                     if let completionHandler = self.completionHandler {
-                        completionHandler(.completed, nil)
+                        DispatchQueue.main.async {
+                            completionHandler(.completed, nil)
+                        }
                     }
                 } catch {
 #if DEBUG
                     print("资源输出失败: \(error)")
 #endif
-                    self.status = .failed
+                    self.update(status: .failed)
                     self.error = MNExportError.underlyingError(error)
-                    if let completionHandler = self.completionHandler {
-                        completionHandler(.failed, self.error)
+                    if let error = self.error, let completionHandler = self.completionHandler {
+                        DispatchQueue.main.async {
+                            completionHandler(.failed, error)
+                        }
                     }
                 }
             }
@@ -267,7 +275,11 @@ public class MNAssetExportSession: NSObject {
             // 输出资源
             exportSession.exportAsynchronously {
                 if let completionHandler = self.completionHandler {
-                    completionHandler(self.status, self.error)
+                    let error = self.error
+                    let status = self.status
+                    DispatchQueue.main.async {
+                        completionHandler(status, error)
+                    }
                 }
             }
         }
@@ -320,15 +332,34 @@ public class MNAssetExportSession: NSObject {
     private func finish(error: MNExportError?) {
         if let error = error {
             self.error = error
-            if self.status != .cancelled {
-                self.status = .failed
+            if status != .cancelled {
+                update(status: .failed)
             }
         } else {
-            self.status = .completed
+            update(status: .completed)
         }
-        if let completionHandler = completionHandler {
-            completionHandler(self.status, error)
+        if let completionHandler = self.completionHandler {
+            let status = status
+            DispatchQueue.main.async {
+                completionHandler(status, error)
+            }
         }
+    }
+    
+    /// 更新当前输出状态
+    /// - Parameter status: 状态
+    private func update(status: AVAssetExportSession.Status) {
+        objc_sync_enter(self)
+        self.status = status
+        objc_sync_exit(self)
+    }
+    
+    /// 更新当前输出进度
+    /// - Parameter progress: 进度值
+    private func update(progress: CGFloat) {
+        objc_sync_enter(self)
+        self.progress = progress
+        objc_sync_exit(self)
     }
     
     /// 取消输出任务
@@ -338,10 +369,9 @@ public class MNAssetExportSession: NSObject {
     }
     
     public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        guard let keyPath = keyPath, keyPath == #keyPath(AVAssetExportSession.status) else { return }
-        guard let rawValue = change?[.newKey] as? Int else { return }
+        guard let change = change, let rawValue = change[.newKey] as? Int else { return }
         guard let status = AVAssetExportSession.Status(rawValue: rawValue) else { return }
-        self.status = status
+        update(status: status)
         switch status {
         case .exporting:
             // 开启轮询
@@ -359,10 +389,9 @@ public class MNAssetExportSession: NSObject {
                 exportSession.removeObserver(self, forKeyPath: #keyPath(AVAssetExportSession.status))
             }
             if status == .completed {
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    self.progress = 1.0
-                    if let progressHandler = self.progressHandler {
+                update(progress: 1.0)
+                if let progressHandler = progressHandler {
+                    DispatchQueue.main.async {
                         progressHandler(1.0)
                     }
                 }
@@ -379,10 +408,8 @@ extension MNAssetExportSession {
     @objc private func timerStrike() {
         guard status == .exporting else { return }
         guard let exportSession = exportSession else { return }
-        progress = CGFloat(exportSession.progress)
-        if let progressHandler = progressHandler {
-            progressHandler(progress)
-        }
+        update(progress: CGFloat(exportSession.progress))
+        progressHandler?(progress)
     }
     
     /// 销毁定时器
