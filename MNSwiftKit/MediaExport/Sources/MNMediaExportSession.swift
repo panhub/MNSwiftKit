@@ -216,6 +216,9 @@ public class MNMediaExportSession: NSObject {
             if let size = self.renderSize {
                 renderSize = size
             }
+            // 渲染尺寸最好是偶数, 避免出错
+            renderSize.width = CGFloat((Int(renderSize.width) + 1) & ~1)
+            renderSize.height = CGFloat((Int(renderSize.height) + 1) & ~1)
             
             let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: videoTrack)
             layerInstruction.setOpacity(1.0, at: .zero)
@@ -234,13 +237,13 @@ public class MNMediaExportSession: NSObject {
             } else {
                 videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
             }
-            //kCVPixelBufferWidthKey as String: Int(renderSize.width),
-            //kCVPixelBufferHeightKey as String: Int(renderSize.height),
             // 通用视频格式
             let videoSettings: [String: Any] = [
-                kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
+                //kCVPixelBufferWidthKey as String: Int(renderSize.width),
+                //kCVPixelBufferHeightKey as String: Int(renderSize.height),
                 kCVPixelBufferMetalCompatibilityKey as String: true,
-                kCVPixelBufferOpenGLCompatibilityKey as String: true
+                kCVPixelBufferOpenGLCompatibilityKey as String: true,
+                kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
             ]
             videoOutput = AVAssetReaderVideoCompositionOutput(videoTracks: [videoTrack], videoSettings: videoSettings)
             videoOutput.videoComposition = videoComposition
