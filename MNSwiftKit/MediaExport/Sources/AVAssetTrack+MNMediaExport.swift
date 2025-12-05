@@ -63,14 +63,13 @@ extension NameSpaceWrapper where Base: AVAssetTrack {
     }
     
     /// 轨道帧率
-    public var nominalFrameRate: CGFloat {
+    public var nominalFrameRate: Float {
         if #available(iOS 16.0, *) {
-            var frameRate: CGFloat = 0.0
+            var frameRate: Float = 0.0
             let semaphore = DispatchSemaphore(value: 0)
             Task {
                 do {
-                    let value = try await base.load(.nominalFrameRate)
-                    frameRate = CGFloat(value)
+                    frameRate = try await base.load(.nominalFrameRate)
                 } catch {
 #if DEBUG
                     print("获取轨道帧率出错: \(error)")
@@ -81,18 +80,38 @@ extension NameSpaceWrapper where Base: AVAssetTrack {
             semaphore.wait()
             return frameRate
         }
-        return CGFloat(base.nominalFrameRate)
+        return base.nominalFrameRate
     }
     
-    /// 预估比特率
-    public var estimatedDataRate: CGFloat {
+    /// 最小帧率持续时间
+    public var minFrameDuration: CMTime {
         if #available(iOS 16.0, *) {
-            var bitrate: CGFloat = 0.0
+            var time: CMTime = .invalid
             let semaphore = DispatchSemaphore(value: 0)
             Task {
                 do {
-                    let value = try await base.load(.estimatedDataRate)
-                    bitrate = CGFloat(value)
+                    time = try await base.load(.minFrameDuration)
+                } catch {
+#if DEBUG
+                    print("获取轨道最小帧率持续时间出错: \(error)")
+#endif
+                }
+                semaphore.signal()
+            }
+            semaphore.wait()
+            return time
+        }
+        return base.minFrameDuration
+    }
+    
+    /// 预估比特率
+    public var estimatedDataRate: Float {
+        if #available(iOS 16.0, *) {
+            var bitrate: Float = 0.0
+            let semaphore = DispatchSemaphore(value: 0)
+            Task {
+                do {
+                    bitrate = try await base.load(.estimatedDataRate)
                 } catch {
 #if DEBUG
                     print("获取轨道预估比特率出错: \(error)")
@@ -103,7 +122,7 @@ extension NameSpaceWrapper where Base: AVAssetTrack {
             semaphore.wait()
             return bitrate
         }
-        return CGFloat(base.estimatedDataRate)
+        return base.estimatedDataRate
     }
     
     /// 格式说明

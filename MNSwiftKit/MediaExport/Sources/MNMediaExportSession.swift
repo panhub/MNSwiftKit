@@ -42,7 +42,7 @@ public class MNMediaExportSession: NSObject {
     /// 是否输出音频内容
     public var exportAudioTrack: Bool = true
     /// 是否输出视频内容
-    public var exportVideoTrack: Bool = true
+    public var exportVideoTrack: Bool = false
     /// 默认高质量输出策略
     public var quality: MNMediaExportSession.Quality = .auto
     /// 是否针对网络使用进行优化
@@ -545,7 +545,6 @@ public class MNMediaExportSession: NSObject {
     
     private func videoOutputSettings(for videoTrack: AVAssetTrack, fileType: AVFileType, renderSize: CGSize) -> [String:Any]? {
         guard let formatDescriptions = videoTrack.mn.formatDescriptions as? [CMFormatDescription], let formatDescription = formatDescriptions.first else { return nil }
-        guard CMFormatDescriptionGetMediaType(formatDescription) == kCMMediaType_Video else { return nil }
         let subType = CMFormatDescriptionGetMediaSubType(formatDescription)
         // 是否有Alpha通道
         var containsAlphaChannel = false
@@ -568,9 +567,10 @@ public class MNMediaExportSession: NSObject {
                 containsAlphaChannel = true
             }
         }
-        // 选择编码方式
+        // 选择编码方式, 默认兼容性最好
         var useH264CodecType = true
         if fileType != .m4v, #available(iOS 11.0, *), shouldOptimizeForNetworkUse == false {
+            // 使用压缩更好的hevc
             useH264CodecType = false
         }
         // 使用推荐
@@ -578,7 +578,13 @@ public class MNMediaExportSession: NSObject {
         guard AVOutputSettingsAssistant.availableOutputSettingsPresets().contains(preset) else { return nil }
         guard let assistant = AVOutputSettingsAssistant(preset: preset) else { return nil }
         assistant.sourceVideoFormat = formatDescription
-        //assistant.sourceVideoAverageFrameDuration = CMTimeCodeFormatDescriptionGetFrameDuration(formatDescription)
+        let minFrameDuration = videoTrack.mn.minFrameDuration
+        if minFrameDuration.isValid, minFrameDuration.isIndefinite == false {
+            assistant.sourceVideoAverageFrameDuration = minFrameDuration
+        } else {
+            // 默认30帧输出
+            assistant.sourceVideoAverageFrameDuration = CMTime(value: 1, timescale: 30)
+        }
         // 也可以自定义一下压缩参数
         guard var videoSettings = assistant.videoSettings else { return nil }
         videoSettings[AVVideoWidthKey] = Int(renderSize.width)
@@ -842,8 +848,20 @@ public class MNMediaExportSession: NSObject {
         guard AVOutputSettingsAssistant.availableOutputSettingsPresets().contains(preset) else { return nil }
         guard let assistant = AVOutputSettingsAssistant(preset: preset) else { return nil }
         assistant.sourceAudioFormat = formatDescription
+        guard var audioSettings = assistant.audioSettings else { return nil }
+        audioSettings[AVFormatIDKey] = kAudioFormatMPEGLayer3
         // 也可以自定义一下压缩参数
-        return assistant.audioSettings
+        let p = kAudioFormatLinearPCM
+        let z = kAudioFormatAppleIMA4
+        let tz = kAudioFormatMPEG4AAC
+        let pz = kAudioFormatAMR
+        let zx = kAudioFormatMPEGLayer3
+        let uu = kAudioFormatMPEGLayer2
+        let cc = kAudioFormatMPEGLayer1
+        if tz == 1633772320 {
+            print("")
+        }
+        return audioSettings
         /*
         // 分析源音频设置
         let sourceSettings = audioSettings(for: audioTrack)

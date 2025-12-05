@@ -298,7 +298,8 @@ extension MNTailorViewController {
         let begin = tailorView.begin
         let end = tailorView.end
         let videoPath = videoPath
-        let outputPath: String = outputPath ?? "\(NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!)/videos/\(NSNumber(value: Int64(Date().timeIntervalSince1970*1000.0)).stringValue).mp4"
+        //let outputPath: String = outputPath ?? "\(NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!)/videos/\(NSNumber(value: Int64(Date().timeIntervalSince1970*1000.0)).stringValue).mp4"
+        let outputPath: String = "\(NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!)/videos/\(NSNumber(value: Int64(Date().timeIntervalSince1970*1000.0)).stringValue).mp3"
         if (end - begin) >= 0.99 {
             // 询问是否可以复制视频
             guard (delegate?.tailorControllerShouldCopyVideo?(self) ?? true) == true else { return }
@@ -335,37 +336,10 @@ extension MNTailorViewController {
                 }
             }
         } else {
-            let z = MNAssetExportSession.naturalSize(fileAtPath: videoPath)
-            let w = ceil(z.height/2.0)
-            //let x = 0.0
-            let x = ceil((z.width - w)/2.0)
-            //let x = z.width - w
-            let cropRect = CGRect(origin: .init(x: 0.0, y: 0.0), size: .init(width: 300.0, height: 300.0))
-            
-            let playerLayer = playView.layer as! AVPlayerLayer
-            let playerVideoRect = playerLayer.videoRect
-            
-            let cropInPlayerW = ceil(playView.frame.height/2.0)
-            let cropInPlayerX = ceil((playView.frame.width - cropInPlayerW)/2.0)
-            let cropInPlayer = CGRect(origin: .init(x: cropInPlayerX, y: playView.frame.height - cropInPlayerW), size: .init(width: cropInPlayerW, height: cropInPlayerW))
-            
-            let scaleX = z.width / playerVideoRect.width
-            let scaleY = z.height / playerVideoRect.height
-
-            let cropX = (cropInPlayer.origin.x - playerVideoRect.origin.x) * scaleX
-            let cropY = (cropInPlayer.origin.y - playerVideoRect.origin.y) * scaleY
-            let cropW = cropInPlayer.width * scaleX
-            let cropH = cropInPlayer.height * scaleY
-            
-            let croppRect = CGRect(x: cropX, y: cropY, width: cropW, height: cropH)
-            
             guard let exportSession = MNMediaExportSession(fileAtPath: videoPath) else {
                 MNToast.showMsg("解析视频失败")
                 return
             }
-            exportSession.cropRect = cropRect
-            exportSession.shouldOptimizeForNetworkUse = true
-            exportSession.renderSize = .init(width: 1080.0, height: 1080.0)
             exportSession.timeRange = exportSession.asset.mn.timeRange(withProgress: begin, to: end)
             if #available(iOS 16.0, *) {
                 exportSession.outputURL = URL(filePath: outputPath)
@@ -392,9 +366,6 @@ extension MNTailorViewController {
                 MNToast.showMsg("解析视频失败")
                 return
             }
-            exportSession.cropRect = cropRect
-            exportSession.shouldOptimizeForNetworkUse = true
-            exportSession.renderSize = .init(width: 1080.0, height: 1080.0)
             exportSession.timeRange = exportSession.asset.mn.timeRange(withProgress: begin, to: end)
             if #available(iOS 16.0, *) {
                 exportSession.outputURL = URL(filePath: outputPath)
