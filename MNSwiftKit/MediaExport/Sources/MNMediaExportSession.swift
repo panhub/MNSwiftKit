@@ -236,7 +236,12 @@ public class MNMediaExportSession: NSObject {
             }
             //kCVPixelBufferWidthKey as String: Int(renderSize.width),
             //kCVPixelBufferHeightKey as String: Int(renderSize.height),
-            let videoSettings: [String: Any] = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange]
+            // 通用视频格式
+            let videoSettings: [String: Any] = [
+                kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
+                kCVPixelBufferMetalCompatibilityKey as String: true,
+                kCVPixelBufferOpenGLCompatibilityKey as String: true
+            ]
             videoOutput = AVAssetReaderVideoCompositionOutput(videoTracks: [videoTrack], videoSettings: videoSettings)
             videoOutput.videoComposition = videoComposition
             videoOutput.alwaysCopiesSampleData = false
@@ -266,14 +271,7 @@ public class MNMediaExportSession: NSObject {
         var audioOutput: AVAssetReaderOutput!
         if let audioTrack = composition.mn.track(with: .audio) {
             // 创建 Audio Output
-            let audioSettings: [String: Any] = [
-                AVFormatIDKey: kAudioFormatLinearPCM,
-                AVLinearPCMBitDepthKey: 16,
-                AVLinearPCMIsBigEndianKey: false,
-                AVLinearPCMIsFloatKey: false,
-                AVLinearPCMIsNonInterleaved: false
-            ]
-            //let audioSettings = audioSettings(for: audioTrack)
+            let audioSettings = audioSettings(for: audioTrack)
             audioOutput = AVAssetReaderTrackOutput(track: audioTrack, outputSettings: audioSettings)
             audioOutput.alwaysCopiesSampleData = false
             
@@ -818,7 +816,8 @@ public class MNMediaExportSession: NSObject {
         switch quality {
         case .auto:
             // 根据声道数选择
-            if let audioSettings = audioSettings(for: audioTrack), let numberOfChannels = audioSettings[AVNumberOfChannelsKey] as? Int {
+            let audioSettings = audioSettings(for: audioTrack)
+            if let numberOfChannels = audioSettings[AVNumberOfChannelsKey] as? Int {
                 return numberOfChannels > 2 ? .preset1920x1080 : .preset1280x720
             } else {
                 return .preset1280x720
@@ -899,36 +898,48 @@ public class MNMediaExportSession: NSObject {
         */
     }
     
-    private func audioSettings(for audioTrack: AVAssetTrack) -> [String:Any]? {
-        guard let formatDescriptions = audioTrack.mn.formatDescriptions as? [CMFormatDescription], let formatDescription = formatDescriptions.first else { return nil }
-        guard CMFormatDescriptionGetMediaType(formatDescription) == kCMMediaType_Audio else { return nil }
+    /// 读取音频轨道设置参数
+    /// - Parameter audioTrack: 音频轨道
+    /// - Returns: 设置参数
+    private func audioSettings(for audioTrack: AVAssetTrack) -> [String:Any] {
         var audioSettings: [String: Any] = [:]
-        // 获取音频格式ID
-        let formatID = CMFormatDescriptionGetMediaSubType(formatDescription)
-        audioSettings[AVFormatIDKey] = formatID
-        // 获取音频流基本描述
-        if let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(formatDescription) {
-            // 采样率
-            let sampleRate = asbd.pointee.mSampleRate
-            // 声道数量
-            let channels = asbd.pointee.mChannelsPerFrame
-            // 位深
-            let bitDepth = asbd.pointee.mBitsPerChannel
-            // 计算比特率（仅对未压缩格式有效）
-            if formatID == kAudioFormatLinearPCM {
-                let channelBitRate = sampleRate*Double(bitDepth)
-                let bitRate = Int(channelBitRate*Double(channels))
-                audioSettings[AVEncoderBitRateKey] = bitRate
-                audioSettings[AVEncoderBitRatePerChannelKey] = channelBitRate
+        if let formatDescriptions = audioTrack.mn.formatDescriptions as? [CMFormatDescription], let formatDescription = formatDescriptions.first {
+            // 音频格式ID
+            let formatID = CMFormatDescriptionGetMediaSubType(formatDescription)
+            if formatID == kAudioFormatLinearPCM, let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(formatDescription) {
+                // 如果是PCM格式，尽量保持原样
+                audioSettings[AVFormatIDKey] = kAudioFormatLinearPCM
+                // 采样率
+                audioSettings[AVSampleRateKey] = asbd.pointee.mSampleRate
+                // 声道数量
+                audioSettings[AVNumberOfChannelsKey] = Int(asbd.pointee.mChannelsPerFrame)
+                if asbd.pointee.mFormatFlags & kLinearPCMFormatFlagIsFloat != 0 {
+                    // 浮点PCM
+                    audioSettings[AVLinearPCMIsFloatKey] = true
+                    audioSettings[AVLinearPCMBitDepthKey] = 32
+                } else {
+                    // 整数PCM
+                    let bitDepth = asbd.pointee.mBitsPerChannel
+                    audioSettings[AVLinearPCMIsFloatKey] = false
+                    audioSettings[AVLinearPCMBitDepthKey] = bitDepth > 0 ? bitDepth : 16
+                }
+                // 声道布局
+                var channelLayoutSize: Int = 0
+                if let channelLayout = CMAudioFormatDescriptionGetChannelLayout(formatDescription, sizeOut: &channelLayoutSize) {
+                    audioSettings[AVChannelLayoutKey] = Data(bytes: channelLayout, count: channelLayoutSize)
+                }
             }
-            audioSettings[AVSampleRateKey] = sampleRate
-            audioSettings[AVNumberOfChannelsKey] = channels
-            audioSettings[AVLinearPCMBitDepthKey] = bitDepth
         }
-        // 声道布局
-        var channelLayoutSize: Int = 0
-        if let channelLayout = CMAudioFormatDescriptionGetChannelLayout(formatDescription, sizeOut: &channelLayoutSize) {
-            audioSettings[AVChannelLayoutKey] = Data(bytes: channelLayout, count: channelLayoutSize)
+        if audioSettings.isEmpty {
+            // 安全默认16位整数PCM 大部分音频可使用
+            audioSettings[AVFormatIDKey] = kAudioFormatLinearPCM // 解压为PCM
+            audioSettings[AVSampleRateKey] = 44100.0 // 标准采样率
+            audioSettings[AVNumberOfChannelsKey] = 2 // 立体声
+            audioSettings[AVLinearPCMBitDepthKey] = 16 // CD音质
+            audioSettings[AVLinearPCMIsFloatKey] = false // 非浮点型
+            // 通用设置
+            audioSettings[AVLinearPCMIsBigEndianKey] = false
+            audioSettings[AVLinearPCMIsNonInterleaved] = false // 交错处理
         }
         return audioSettings
     }
