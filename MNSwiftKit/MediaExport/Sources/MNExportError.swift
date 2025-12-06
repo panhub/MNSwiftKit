@@ -147,7 +147,7 @@ extension MNExportError: CustomDebugStringConvertible {
         case .unexportable: return "检查导出操作失败"
         case .unreadable: return "检查可读性失败"
         case .unknownExportDirectory: return "输出路径为空"
-        case .cannotExportFile(let url, let fileType): return "不支持输出该类型的文件(请参考对于'outputURL'对文件类型解释): \(fileType) \(url)"
+        case .cannotExportFile(let url, let fileType): return "不支持输出该类型的文件(请参考'outputURL'对于文件类型的解释): \(fileType) \(url)"
         case .unknownFileType(let string): return "分析文件类型失败: \(string)"
         case .cannotCreateDirectory(let error): return "创建输出文件夹失败: \(error)"
         case .fileDoesExist(let path): return "输出文件已存在: \(path)"
