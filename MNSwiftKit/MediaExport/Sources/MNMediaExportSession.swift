@@ -31,18 +31,24 @@ public class MNMediaExportSession: NSObject {
     public var cropRect: CGRect?
     /// 预设质量
     public var presetName: String?
-    /// 输出路径
+    /// 输出文件路径
+    /// - 支持的文件UTI: public.aiff-audio, com.apple.m4v-video, org.3gpp.adaptive-multi-rate-audio, com.apple.m4a-audio, com.microsoft.waveform-audio, com.apple.coreaudio-format, public.3gpp, public.mpeg-4, com.apple.quicktime-movie, public.aifc-audio
+    /// - 支持的视频文件类型: .mp4, .m4v, .mov, .mobile3GPP
+    /// - 支持的音频文件类型: .wav, .m4a, .caf, .amr, .aiff, .aifc
+    /// - 以下文件UTI虽内部支持读写, 但由于本输出会话旨在输出广泛支持的开放格式音视频, 故不支持。
+    /// - org.w3.webvtt: .vtt文件, 是一种现代的、基于纯文本的字幕和音轨描述文件格式。
+    /// - com.scenarist.closed-caption: .scc文件, 是一种封闭式字幕文件, 主要用于存储视频中的字幕文本、时间码和显示位置等信息。
+    /// - com.apple.immersive-video: .immersivevideo文件, 是一个苹果私有的封装格式, 主要用于 Apple Vision Pro 的“电视”应用中播放的专用内容。
+    /// - com.apple.itunes-timed-text: .itt文件, 是苹果公司推出的一种支持丰富文本样式的XML字幕格式, 主要用于其自家的内容分发平台和专业视频编辑软件中。
     public var outputURL: URL!
     /// 输出分辨率outputRect有效时有效
     public var renderSize: CGSize?
     /// 裁剪片段
     public var timeRange: CMTimeRange?
-    /// 输出格式
-    public var outputFileType: AVFileType?
     /// 是否输出音频内容
     public var exportAudioTrack: Bool = true
     /// 是否输出视频内容
-    public var exportVideoTrack: Bool = false
+    public var exportVideoTrack: Bool = true
     /// 默认高质量输出策略
     public var quality: MNMediaExportSession.Quality = .auto
     /// 是否针对网络使用进行优化
@@ -124,7 +130,40 @@ public class MNMediaExportSession: NSObject {
             return
         }
         
-        // 删除本地文件
+        // 合成器
+        let composition = AVMutableComposition()
+        if exportVideoTrack, let videoTrack = asset.mn.track(with: .video) {
+            guard composition.mn.append(track: videoTrack, range: timeRange) else {
+                finish(error: .cannotAppendTrack(.video))
+                return
+            }
+        }
+        if exportAudioTrack, let audioTrack = asset.mn.track(with: .audio) {
+            guard composition.mn.append(track: audioTrack, range: timeRange) else {
+                finish(error: .cannotAppendTrack(.audio))
+                return
+            }
+        }
+        
+        // 检查是否可读
+        guard composition.isReadable else {
+            finish(error: .unreadable)
+            return
+        }
+        
+        // 检查是否可输出
+        guard composition.isExportable else {
+            finish(error: .unexportable)
+            return
+        }
+        
+        // 检查是否支持输出文件类型
+        guard compatibility(export: composition, outputFileType: outputFileType) else {
+            finish(error: .cannotExportFile(outputURL, fileType: outputFileType))
+            return
+        }
+        
+        // 确保本地文件可输出
         var outputPath: String
         if #available(iOS 16.0, *) {
             outputPath = outputURL.path(percentEncoded: false)
@@ -155,49 +194,22 @@ public class MNMediaExportSession: NSObject {
             }
         }
         
-        // 合成器
-        let composition = AVMutableComposition()
-        if exportVideoTrack, let videoTrack = asset.mn.track(with: .video) {
-            guard composition.mn.append(track: videoTrack, range: timeRange) else {
-                finish(error: .cannotAppendTrack(.video))
-                return
-            }
-        }
-        if exportAudioTrack, let audioTrack = asset.mn.track(with: .audio) {
-            guard composition.mn.append(track: audioTrack, range: timeRange) else {
-                finish(error: .cannotAppendTrack(.audio))
-                return
-            }
-        }
-        
-        // 检查是否可读
-        guard composition.isReadable else {
-            finish(error: .unreadable)
-            return
-        }
-        
-        // 检查是否可输出
-        guard composition.isExportable else {
-            finish(error: .unexportable)
-            return
-        }
-        
         // 创建 AVAssetReader
         let reader: AVAssetReader
         do {
             reader = try AVAssetReader(asset: composition)
-            reader.timeRange = CMTimeRange(start: .zero, duration: composition.duration)
         } catch {
             finish(error: .cannotReadAsset(error))
             return
         }
+        reader.timeRange = CMTimeRange(start: .zero, duration: composition.duration)
         
         // 创建 AVAssetWriter
         let writer: AVAssetWriter
         do {
             writer = try AVAssetWriter(outputURL: outputURL, fileType: outputFileType)
         } catch {
-            finish(error: .cannotWritToFile(outputURL, uti: outputFileType, error: error))
+            finish(error: .cannotWritToFile(outputURL, fileType: outputFileType, error: error))
             return
         }
         if shouldOptimizeForNetworkUse, outputFileType != .m4v {
@@ -231,10 +243,11 @@ public class MNMediaExportSession: NSObject {
             let videoComposition = AVMutableVideoComposition(propertiesOf: composition)
             videoComposition.renderSize = renderSize
             videoComposition.instructions = [instruction]
-            let frameRate = videoTrack.mn.nominalFrameRate
-            if frameRate > 0.0 {
-                videoComposition.frameDuration = CMTime(value: 1, timescale: CMTimeScale(frameRate))
+            let minFrameDuration = videoTrack.mn.minFrameDuration
+            if minFrameDuration.isValid, minFrameDuration.isIndefinite == false {
+                videoComposition.frameDuration = minFrameDuration
             } else {
+                // 默认30帧输出
                 videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
             }
             // 通用视频格式
@@ -256,7 +269,7 @@ public class MNMediaExportSession: NSObject {
             reader.add(videoOutput)
             
             guard let outputSettings = videoOutputSettings(for: videoTrack, fileType: outputFileType, renderSize: renderSize) else {
-                finish(error: .cannotExportSetting(.video, uti: outputFileType))
+                finish(error: .cannotExportSetting(.video, fileType: outputFileType))
                 return
             }
             videoInput = AVAssetWriterInput(mediaType: .video, outputSettings: outputSettings)
@@ -286,7 +299,7 @@ public class MNMediaExportSession: NSObject {
             
             // 创建 Audio Input
             guard let audioOutputSettings = audioOutputSettings(for: audioTrack, fileType: outputFileType) else {
-                finish(error: .cannotExportSetting(.audio, uti: outputFileType))
+                finish(error: .cannotExportSetting(.audio, fileType: outputFileType))
                 return
             }
             audioInput = AVAssetWriterInput(mediaType: .audio, outputSettings: audioOutputSettings)
@@ -301,13 +314,15 @@ public class MNMediaExportSession: NSObject {
         
         // 输出资源
         guard reader.startReading() else {
-            finish(error: .cannotStartReading)
+            let error = reader.error ?? NSError(domain: AVFoundationErrorDomain, code: -1020, userInfo: [NSLocalizedDescriptionKey:"启动读写器失败"])
+            finish(error: .cannotStartReading(error))
             return
         }
         
         guard writer.startWriting() else {
             reader.cancelReading()
-            finish(error: .cannotStartWriting)
+            let error = writer.error ?? NSError(domain: AVFoundationErrorDomain, code: -1021, userInfo: [NSLocalizedDescriptionKey:"启动写入器失败"])
+            finish(error: .cannotStartWriting(error))
             return
         }
         writer.startSession(atSourceTime: .zero)
@@ -495,6 +510,25 @@ public class MNMediaExportSession: NSObject {
     public func cancel() {
         guard status == .exporting else { return }
         update(status: .cancelled)
+    }
+    
+    /// 判断是否支持输出资源
+    /// - Parameters:
+    ///   - asset: 资源
+    ///   - fileType: 文件UTI类型
+    /// - Returns: 是否支持输出
+    private func compatibility(export asset: AVAsset, outputFileType fileType: AVFileType) -> Bool {
+        if let _ = asset.mn.track(with: .video) {
+            // 视频格式
+            let videoFileTypes: [AVFileType] = [.mp4, .m4v, .mov, .mobile3GPP]
+            return videoFileTypes.contains(fileType)
+        }
+        if let _ = asset.mn.track(with: .audio) {
+            // 音频格式
+            let audioFileTypes: [AVFileType] = [.wav, .m4a, .caf, .amr, .aiff, .aifc]
+            return audioFileTypes.contains(fileType)
+        }
+        return false
     }
     
     private func preferredVideoOutputPreset(useH264 useH264CodecType: Bool, renderSize: CGSize, containsAlphaChannel: Bool) -> AVOutputSettingsPreset {
@@ -849,18 +883,7 @@ public class MNMediaExportSession: NSObject {
         guard let assistant = AVOutputSettingsAssistant(preset: preset) else { return nil }
         assistant.sourceAudioFormat = formatDescription
         guard var audioSettings = assistant.audioSettings else { return nil }
-        audioSettings[AVFormatIDKey] = kAudioFormatMPEGLayer3
-        // 也可以自定义一下压缩参数
-        let p = kAudioFormatLinearPCM
-        let z = kAudioFormatAppleIMA4
-        let tz = kAudioFormatMPEG4AAC
-        let pz = kAudioFormatAMR
-        let zx = kAudioFormatMPEGLayer3
-        let uu = kAudioFormatMPEGLayer2
-        let cc = kAudioFormatMPEGLayer1
-        if tz == 1633772320 {
-            print("")
-        }
+        //audioSettings[AVFormatIDKey] = kAudioFormatMPEGLayer3
         return audioSettings
         /*
         // 分析源音频设置

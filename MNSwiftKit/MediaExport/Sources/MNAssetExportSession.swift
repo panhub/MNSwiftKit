@@ -16,7 +16,15 @@ public class MNAssetExportSession: NSObject {
     public var cropRect: CGRect?
     /// 预设质量
     public var presetName: String?
-    /// 输出路径
+    /// 输出文件路径
+    /// - 支持的文件UTI: public.aiff-audio, com.apple.m4v-video, org.3gpp.adaptive-multi-rate-audio, com.apple.m4a-audio, com.microsoft.waveform-audio, com.apple.coreaudio-format, public.3gpp, public.mpeg-4, com.apple.quicktime-movie, public.aifc-audio
+    /// - 支持的视频文件类型: .mp4, .m4v, .mov, .mobile3GPP
+    /// - 支持的音频文件类型: .wav, .m4a, .caf, .amr, .aiff, .aifc
+    /// - 以下文件UTI虽内部支持读写, 但由于本输出会话旨在输出广泛支持的开放格式音视频, 故不支持。
+    /// - org.w3.webvtt: .vtt文件, 是一种现代的、基于纯文本的字幕和音轨描述文件格式。
+    /// - com.scenarist.closed-caption: .scc文件, 是一种封闭式字幕文件, 主要用于存储视频中的字幕文本、时间码和显示位置等信息。
+    /// - com.apple.immersive-video: .immersivevideo文件, 是一个苹果私有的封装格式, 主要用于 Apple Vision Pro 的“电视”应用中播放的专用内容。
+    /// - com.apple.itunes-timed-text: .itt文件, 是苹果公司推出的一种支持丰富文本样式的XML字幕格式, 主要用于其自家的内容分发平台和专业视频编辑软件中。
     public var outputURL: URL!
     /// 输出分辨率outputRect有效时有效
     public var renderSize: CGSize?
@@ -110,6 +118,36 @@ public class MNAssetExportSession: NSObject {
             return
         }
         
+        // 合成器
+        let composition = AVMutableComposition()
+        if exportVideoTrack, let videoTrack = asset.mn.track(with: .video) {
+            guard composition.mn.append(track: videoTrack, range: timeRange) else {
+                finish(error: .cannotAppendTrack(.video))
+                return
+            }
+        }
+        if exportAudioTrack, let audioTrack = asset.mn.track(with: .audio) {
+            guard composition.mn.append(track: audioTrack, range: timeRange) else {
+                finish(error: .cannotAppendTrack(.audio))
+                return
+            }
+        }
+        
+        // 检查输出项
+        guard composition.isExportable else {
+            finish(error: .unexportable)
+            return
+        }
+        
+        // 寻找合适的预设质量
+        let presetName = compatiblePresetName(with: composition)
+        
+        // 检查设置是否可以输出
+        guard compatibility(ofExportPreset: presetName, with: composition, outputFileType: outputFileType) else {
+            finish(error: .cannotExportFile(outputURL, fileType: outputFileType))
+            return
+        }
+        
         // 删除本地文件
         var outputPath: String = ""
         if #available(iOS 16.0, *) {
@@ -141,39 +179,9 @@ public class MNAssetExportSession: NSObject {
             }
         }
         
-        // 合成器
-        let composition = AVMutableComposition()
-        if exportVideoTrack, let videoTrack = asset.mn.track(with: .video) {
-            guard composition.mn.append(track: videoTrack, range: timeRange) else {
-                finish(error: .cannotAppendTrack(.video))
-                return
-            }
-        }
-        if exportAudioTrack, let audioTrack = asset.mn.track(with: .audio) {
-            guard composition.mn.append(track: audioTrack, range: timeRange) else {
-                finish(error: .cannotAppendTrack(.audio))
-                return
-            }
-        }
-        
-        // 检查输出项
-        guard composition.isExportable else {
-            finish(error: .unexportable)
-            return
-        }
-        
-        // 寻找合适的预设质量
-        let presetName = compatiblePresetName(with: composition)
-        
-        // 检查设置是否可以输出
-        guard compatibility(ofExportPreset: presetName, with: composition, outputFileType: outputFileType) else {
-            finish(error: .cannotExportFile)
-            return
-        }
-        
         // 开始输出
         guard let exportSession = AVAssetExportSession(asset: composition, presetName: presetName) else {
-            finish(error: .cannotExportFile)
+            finish(error: .cannotExportFile(outputURL, fileType: outputFileType))
             return
         }
         self.exportSession = exportSession
@@ -196,8 +204,9 @@ public class MNAssetExportSession: NSObject {
                 if let size = self.renderSize {
                     renderSize = size
                 }
-                //renderSize.width = floor(ceil(renderSize.width)/16.0)*16.0
-                //renderSize.height = floor(ceil(renderSize.height)/16.0)*16.0
+                // 渲染尺寸最好是偶数, 避免出错
+                renderSize.width = CGFloat((Int(renderSize.width) + 1) & ~1)
+                renderSize.height = CGFloat((Int(renderSize.height) + 1) & ~1)
                 // 配置画面设置
                 let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: videoTrack)
                 layerInstruction.setOpacity(1.0, at: .zero)
@@ -210,13 +219,13 @@ public class MNAssetExportSession: NSObject {
                 let videoComposition = AVMutableVideoComposition(propertiesOf: composition)
                 videoComposition.renderSize = renderSize
                 videoComposition.instructions = [instruction]
-                let frameRate = videoTrack.mn.nominalFrameRate
-                if frameRate > 0 {
-                    videoComposition.frameDuration = CMTime(value: 1, timescale: CMTimeScale(frameRate))
+                let minFrameDuration = videoTrack.mn.minFrameDuration
+                if minFrameDuration.isValid, minFrameDuration.isIndefinite == false {
+                    videoComposition.frameDuration = minFrameDuration
                 } else {
+                    // 默认30帧输出
                     videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
                 }
-                
                 exportSession.videoComposition = videoComposition
             }
         }

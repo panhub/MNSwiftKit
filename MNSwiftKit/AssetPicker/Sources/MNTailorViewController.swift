@@ -298,8 +298,8 @@ extension MNTailorViewController {
         let begin = tailorView.begin
         let end = tailorView.end
         let videoPath = videoPath
-        //let outputPath: String = outputPath ?? "\(NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!)/videos/\(NSNumber(value: Int64(Date().timeIntervalSince1970*1000.0)).stringValue).mp4"
-        let outputPath: String = "\(NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!)/videos/\(NSNumber(value: Int64(Date().timeIntervalSince1970*1000.0)).stringValue).mp3"
+        //let outputPath: String = outputPath ?? "\(NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!)/videos/dr/\(NSNumber(value: Int64(Date().timeIntervalSince1970*1000.0)).stringValue).mp4"
+        let outputPath: String = "\(NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!)/videos/hhu/\(NSNumber(value: Int64(Date().timeIntervalSince1970*1000.0)).stringValue).mp4"
         if (end - begin) >= 0.99 {
             // 询问是否可以复制视频
             guard (delegate?.tailorControllerShouldCopyVideo?(self) ?? true) == true else { return }
@@ -340,6 +340,8 @@ extension MNTailorViewController {
                 MNToast.showMsg("解析视频失败")
                 return
             }
+            exportSession.cropRect = .init(x: 0.0, y: 0.0, width: 300.0, height: 300.0)
+            exportSession.renderSize = .init(width: 1080.0, height: 1080.0)
             exportSession.timeRange = exportSession.asset.mn.timeRange(withProgress: begin, to: end)
             if #available(iOS 16.0, *) {
                 exportSession.outputURL = URL(filePath: outputPath)

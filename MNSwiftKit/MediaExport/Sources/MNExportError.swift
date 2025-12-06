@@ -23,7 +23,7 @@ public enum MNExportError: Swift.Error {
     /// 未知输出目录
     case unknownExportDirectory
     /// 无法输出文件
-    case cannotExportFile
+    case cannotExportFile(URL, fileType: AVFileType)
     /// 未知文件类型
     case unknownFileType(String)
     /// 无法创建输出目录
@@ -35,17 +35,17 @@ public enum MNExportError: Swift.Error {
     /// 无法读取资源
     case cannotReadAsset(Error)
     /// 无法读写入文件
-    case cannotWritToFile(URL, uti: AVFileType, error: Error)
+    case cannotWritToFile(URL, fileType: AVFileType, error: Error)
     /// 无法添加Output
     case cannotAddOutput(AVMediaType)
     /// 无法输出设置
-    case cannotExportSetting(AVMediaType, uti: AVFileType)
+    case cannotExportSetting(AVMediaType, fileType: AVFileType)
     /// 无法添加Input
     case cannotAddInput(AVMediaType)
     /// 无法开始读取
-    case cannotStartReading
+    case cannotStartReading(Error)
     /// 无法开始写入
-    case cannotStartWriting
+    case cannotStartWriting(Error)
     /// 底层错误
     case underlyingError(Swift.Error)
 }
@@ -67,7 +67,7 @@ extension MNExportError {
         case .unreadable: return "无法读取资源"
         case .unexportable: return "无法输出资源"
         case .unknownExportDirectory: return "未知输出目录"
-        case .cannotExportFile: return "无法输出文件"
+        case .cannotExportFile: return "不支持输出文件类型"
         case .unknownFileType: return "未知输出文件类型"
         case .cannotCreateDirectory: return "无法创建输出目录"
         case .fileDoesExist: return "文件已存在"
@@ -77,8 +77,8 @@ extension MNExportError {
         case .cannotAddOutput(let mediaType): return "添加\(mediaType == .audio ? "音频" : "视频")输出失败"
         case .cannotExportSetting(let mediaType, _): return "获取\(mediaType == .audio ? "音频" : "视频")输出配置失败"
         case .cannotAddInput(let mediaType): return "添加\(mediaType == .audio ? "音频" : "视频")输入失败"
-        case .cannotStartReading: return "无法开始读取资源"
-        case .cannotStartWriting: return "无法开始写入资源"
+        case .cannotStartReading: return "启动读取器失败"
+        case .cannotStartWriting: return "启动写入器失败"
         case .underlyingError(let error): return error.localizedDescription
         }
     }
@@ -89,6 +89,8 @@ extension MNExportError {
         case .cannotCreateDirectory(let error): return error
         case .cannotReadAsset(let error): return error
         case .cannotWritToFile(_, _, let error): return error
+        case .cannotStartReading(let error): return error
+        case .cannotStartWriting(let error): return error
         case .underlyingError(let error): return error
         default: return nil
         }
@@ -145,18 +147,18 @@ extension MNExportError: CustomDebugStringConvertible {
         case .unexportable: return "检查导出操作失败"
         case .unreadable: return "检查可读性失败"
         case .unknownExportDirectory: return "输出路径为空"
-        case .cannotExportFile: return "输出前检查不通过"
+        case .cannotExportFile(let url, let fileType): return "不支持输出该类型的文件(请参考对于'outputURL'对文件类型解释): \(fileType) \(url)"
         case .unknownFileType(let string): return "分析文件类型失败: \(string)"
         case .cannotCreateDirectory(let error): return "创建输出文件夹失败: \(error)"
-        case .fileDoesExist(let filePath): return "输出文件已存在: \(filePath)"
+        case .fileDoesExist(let path): return "输出文件已存在: \(path)"
         case .cannotAppendTrack(let mediaType): return "添加\(mediaType == .audio ? "音频" : "视频")轨道失败"
         case .cannotReadAsset(let error): return "构建资源读取器失败: \(error)"
-        case .cannotWritToFile(let url, let uti, let error): return "构建资源写入器失败: \(url)\n文件类型: \(uti)\n错误信息: \(error)"
+        case .cannotWritToFile(let url, let fileType, let error): return "构建资源写入器失败: \(url)\n文件类型: \(fileType)\n错误信息: \(error)"
         case .cannotAddOutput(let mediaType): return "添加\(mediaType == .audio ? "音频" : "视频")输出失败"
         case .cannotExportSetting(let mediaType, _): return "获取\(mediaType == .audio ? "音频" : "视频")输出配置失败"
         case .cannotAddInput(let mediaType): return "添加\(mediaType == .audio ? "音频" : "视频")输入失败"
-        case .cannotStartReading: return "开启读取操作失败"
-        case .cannotStartWriting: return "开启写入操作失败"
+        case .cannotStartReading(let error): return "开启读取操作失败: \(error)"
+        case .cannotStartWriting(let error): return "开启写入操作失败: \(error)"
         case .underlyingError(let error): return "\(error)"
         }
     }
