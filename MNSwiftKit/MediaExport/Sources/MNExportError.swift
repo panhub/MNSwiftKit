@@ -74,11 +74,11 @@ extension MNExportError {
         case .cannotAppendTrack(let mediaType): return "添加\(mediaType == .audio ? "音频" : "视频")轨道失败"
         case .cannotReadAsset: return "构建资源读取器失败"
         case .cannotWritToFile: return "构建资源写入器失败"
-        case .cannotAddOutput(let mediaType): return "添加\(mediaType == .audio ? "音频" : "视频")输出失败"
+        case .cannotAddOutput(let mediaType): return "添加\(mediaType == .audio ? "音频" : "视频")读取配置失败"
         case .cannotExportSetting(let mediaType, _): return "获取\(mediaType == .audio ? "音频" : "视频")输出配置失败"
-        case .cannotAddInput(let mediaType): return "添加\(mediaType == .audio ? "音频" : "视频")输入失败"
-        case .cannotStartReading: return "启动读取器失败"
-        case .cannotStartWriting: return "启动写入器失败"
+        case .cannotAddInput(let mediaType): return "添加\(mediaType == .audio ? "音频" : "视频")输入配置失败"
+        case .cannotStartReading(let error): return error.localizedDescription
+        case .cannotStartWriting(let error): return error.localizedDescription
         case .underlyingError(let error): return error.localizedDescription
         }
     }

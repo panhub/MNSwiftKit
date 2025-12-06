@@ -25,6 +25,7 @@ public class MNAssetExportSession: NSObject {
     /// - com.scenarist.closed-caption: .scc文件, 是一种封闭式字幕文件, 主要用于存储视频中的字幕文本、时间码和显示位置等信息。
     /// - com.apple.immersive-video: .immersivevideo文件, 是一个苹果私有的封装格式, 主要用于 Apple Vision Pro 的“电视”应用中播放的专用内容。
     /// - com.apple.itunes-timed-text: .itt文件, 是苹果公司推出的一种支持丰富文本样式的XML字幕格式, 主要用于其自家的内容分发平台和专业视频编辑软件中。
+    /// - org.3gpp.adaptive-multi-rate-audio: .amr文件, 系统仅支持解码, 编码需要第三方库, 故不支持编辑
     public var outputURL: URL!
     /// 输出分辨率outputRect有效时有效
     public var renderSize: CGSize?
