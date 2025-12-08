@@ -1,7 +1,8 @@
 PODS:
   - MNSwiftKit (0.1.2):
     - MNSwiftKit/Full (= 0.1.2)
-  - MNSwiftKit/AnimatedImage (0.1.2)
+  - MNSwiftKit/AnimatedImage (0.1.2):
+    - MNSwiftKit/NameSpace
   - MNSwiftKit/AssetBrowser (0.1.2):
     - MNSwiftKit/AnimatedImage
     - MNSwiftKit/Definition
@@ -106,7 +107,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: 05ee1a0f2115a4f773a9c9e5fc8ac0192f8c82f6
+  MNSwiftKit: d7a0f55b0e507d212842b1831df04dd89edc30dc
 
 PODFILE CHECKSUM: 03cb55eaa6ebed2175b581c2491b5926c86d3615
 

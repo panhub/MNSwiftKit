@@ -376,7 +376,10 @@
         "CoreServices",
         "UniformTypeIdentifiers"
       ],
-      "source_files": "MNSwiftKit/AnimatedImage/Sources/**/*.swift"
+      "source_files": "MNSwiftKit/AnimatedImage/Sources/**/*.swift",
+      "dependencies": {
+        "MNSwiftKit/NameSpace": []
+      }
     },
     {
       "name": "CollectionLayout",

@@ -1,5 +1,5 @@
 //
-//  UIImage+MNAnimated.swift
+//  UIImage+MNAnimatedSupported.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2021/10/27.

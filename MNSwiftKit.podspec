@@ -243,6 +243,7 @@ Pod::Spec.new do |s|
   s.subspec 'AnimatedImage' do |a|
     a.frameworks = 'UIKit', 'Foundation', 'CoreGraphics', 'ImageIO', 'CoreServices', 'UniformTypeIdentifiers'
     a.source_files = 'MNSwiftKit/AnimatedImage/Sources/**/*.swift'
+    a.dependency 'MNSwiftKit/NameSpace'
   end
   
   # CollectionLayout <UICollectionView布局对象>
