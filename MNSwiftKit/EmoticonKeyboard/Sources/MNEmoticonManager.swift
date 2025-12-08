@@ -27,7 +27,7 @@ public class MNEmoticonManager {
     /// 用户缓存目录
     public let userEmoticonDirectory = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first! + "/MNSwiftKit/emoticons"
     /// 收藏夹路径
-    public private(set) lazy var favoritesDirectory = userEmoticonDirectory.appendingPathComponent(MNEmoticon.Packet.Name.favorites.rawValue.mn.md5)
+    public private(set) lazy var favoritesDirectory = userEmoticonDirectory.mn.appendingPathComponent(MNEmoticon.Packet.Name.favorites.rawValue.mn.md5)
     
     /// 构造表情管理者
     private init() {
@@ -37,8 +37,8 @@ public class MNEmoticonManager {
         }
         if let subpaths = FileManager.default.subpaths(atPath: userEmoticonDirectory) {
             for subpath in subpaths {
-                guard subpath.pathExtension == "json" else { continue }
-                let jsonPath = userEmoticonDirectory.appendingPathComponent(subpath)
+                guard subpath.mn.pathExtension == "json" else { continue }
+                let jsonPath = userEmoticonDirectory.mn.appendingPathComponent(subpath)
                 if #available(iOS 16.0, *) {
                     urls.append(URL(filePath: jsonPath))
                 } else {
@@ -70,7 +70,7 @@ extension MNEmoticonManager {
                 urls.append(url)
                 continue
             }
-            let jsonPath = userEmoticonDirectory.appendingPathComponent(name.mn.md5 + ".json")
+            let jsonPath = userEmoticonDirectory.mn.appendingPathComponent(name.mn.md5 + ".json")
             var jsonURL: URL!
             if #available(iOS 16.0, *) {
                 jsonURL = URL(filePath: jsonPath)
@@ -144,7 +144,7 @@ extension MNEmoticonManager {
 #endif
             return false
         }
-        let packetDirectory = userEmoticonDirectory.appendingPathComponent(name.mn.md5)
+        let packetDirectory = userEmoticonDirectory.mn.appendingPathComponent(name.mn.md5)
         let jsonPath = packetDirectory + ".json"
         if FileManager.default.fileExists(atPath: jsonPath) { return true }
         // 不存在就创建文件夹
@@ -222,7 +222,7 @@ extension MNEmoticonManager {
 #endif
             return false
         }
-        let packetDirectory = userEmoticonDirectory.appendingPathComponent(name.mn.md5)
+        let packetDirectory = userEmoticonDirectory.mn.appendingPathComponent(name.mn.md5)
         let jsonPath = packetDirectory + ".json"
         guard FileManager.default.fileExists(atPath: jsonPath) else {
 #if DEBUG
@@ -288,7 +288,7 @@ extension MNEmoticonManager {
         }
         // 创建表情包
         guard createEmoticonPacket(name: name) else { return false }
-        let packetDirectory = userEmoticonDirectory.appendingPathComponent(name.mn.md5)
+        let packetDirectory = userEmoticonDirectory.mn.appendingPathComponent(name.mn.md5)
         let jsonPath = packetDirectory + ".json"
         var jsonURL: URL!
         if #available(iOS 16.0, *) {
@@ -310,7 +310,7 @@ extension MNEmoticonManager {
             return false
         }
         // 复制图片到文件夹
-        guard let targetPath = packetDirectory.appendingPathComponent(imagePath.lastPathComponent).absolutePath else {
+        guard let targetPath = packetDirectory.mn.appendingPathComponent(imagePath.mn.lastPathComponent).mn.availablePath else {
 #if DEBUG
             print("计算表情图片目标路径失败: \(imagePath)")
 #endif
@@ -324,11 +324,11 @@ extension MNEmoticonManager {
 #endif
             return false
         }
-        var emoticonDesc = targetPath.deletingPathExtension.lastPathComponent
+        var emoticonDesc = targetPath.mn.deletingPathExtension.mn.lastPathComponent
         if let desc = desc, desc.isEmpty == false {
             emoticonDesc = desc
         }
-        let emoticon: [String:String] = [MNEmoticon.Key.img.rawValue:targetPath.lastPathComponent,MNEmoticon.Key.desc.rawValue:emoticonDesc]
+        let emoticon: [String:String] = [MNEmoticon.Key.img.rawValue: targetPath.mn.lastPathComponent, MNEmoticon.Key.desc.rawValue: emoticonDesc]
         var emoticons = json[MNEmoticon.Packet.Key.emoticons.rawValue] as? [[String:String]] ?? []
         emoticons.insert(emoticon, at: 0)
         json[MNEmoticon.Packet.Key.emoticons.rawValue] = emoticons
@@ -381,7 +381,7 @@ extension MNEmoticonManager {
     @discardableResult public func addEmoticon(image: UIImage, desc: String? = nil, to name: String) -> Bool {
         // 创建表情包
         guard createEmoticonPacket(name: name) else { return false }
-        let packetDirectory = userEmoticonDirectory.appendingPathComponent(name.mn.md5)
+        let packetDirectory = userEmoticonDirectory.mn.appendingPathComponent(name.mn.md5)
         let jsonPath = packetDirectory + ".json"
         var jsonURL: URL!
         if #available(iOS 16.0, *) {
@@ -403,20 +403,20 @@ extension MNEmoticonManager {
             return false
         }
         // 写入图片
-        guard let imagePath = packetDirectory.appendingPathComponent("\(Int(Date().timeIntervalSince1970*1000.0)).png").absolutePath else {
+        guard let imagePath = packetDirectory.mn.appendingPathComponent("\(Int(Date().timeIntervalSince1970*1000.0)).png").mn.availablePath else {
 #if DEBUG
             print("计算表情图片目标路径失败")
 #endif
             return false
         }
-        var ext = imagePath.pathExtension
-        guard let imageData = Data(image: image, compression: 0.75, extension: &ext) else {
+        var ext = imagePath.mn.pathExtension
+        guard let imageData = image.mn.data(compression: 0.75, extension: &ext) else {
 #if DEBUG
             print("解压表情图片失败")
 #endif
             return false
         }
-        let targetPath = imagePath.deletingPathExtension + "." + ext
+        let targetPath = imagePath.mn.deletingPathExtension + "." + ext
         var targetURL: URL!
         if #available(iOS 16.0, *) {
             targetURL = URL(filePath: targetPath)
@@ -432,11 +432,11 @@ extension MNEmoticonManager {
             return false
         }
         // 更新json
-        var emoticonDesc = targetPath.deletingPathExtension.lastPathComponent
+        var emoticonDesc = targetPath.mn.deletingPathExtension.mn.lastPathComponent
         if let desc = desc, desc.isEmpty == false {
             emoticonDesc = desc
         }
-        let emoticon: [String:String] = [MNEmoticon.Key.img.rawValue:targetPath.lastPathComponent,MNEmoticon.Key.desc.rawValue:emoticonDesc]
+        let emoticon: [String:String] = [MNEmoticon.Key.img.rawValue: targetPath.mn.lastPathComponent, MNEmoticon.Key.desc.rawValue: emoticonDesc]
         var emoticons = json[MNEmoticon.Packet.Key.emoticons.rawValue] as? [[String:String]] ?? []
         emoticons.insert(emoticon, at: 0)
         json[MNEmoticon.Packet.Key.emoticons.rawValue] = emoticons
@@ -555,7 +555,7 @@ extension MNEmoticonManager {
 #endif
             return false
         }
-        let packetDirectory = userEmoticonDirectory.appendingPathComponent(name.mn.md5)
+        let packetDirectory = userEmoticonDirectory.mn.appendingPathComponent(name.mn.md5)
         let jsonPath = packetDirectory + ".json"
         guard FileManager.default.fileExists(atPath: jsonPath) else {
 #if DEBUG
@@ -607,7 +607,7 @@ extension MNEmoticonManager {
             return false
         }
         for img in imgs {
-            let imagePath = packetDirectory.appendingPathComponent(img)
+            let imagePath = packetDirectory.mn.appendingPathComponent(img)
             do {
                 try FileManager.default.removeItem(atPath: imagePath)
             } catch {
@@ -692,7 +692,7 @@ extension MNEmoticonManager {
 #endif
             return false
         }
-        let packetDirectory = userEmoticonDirectory.appendingPathComponent(name.mn.md5)
+        let packetDirectory = userEmoticonDirectory.mn.appendingPathComponent(name.mn.md5)
         let jsonPath = packetDirectory + ".json"
         guard FileManager.default.fileExists(atPath: jsonPath) else {
 #if DEBUG
@@ -720,7 +720,7 @@ extension MNEmoticonManager {
             return false
         }
         // 复制图片到文件夹
-        guard let targetPath = packetDirectory.appendingPathComponent(imagePath.lastPathComponent).absolutePath else {
+        guard let targetPath = packetDirectory.mn.appendingPathComponent(imagePath.mn.lastPathComponent).mn.availablePath else {
 #if DEBUG
             print("计算封面目标路径失败: \(imagePath)")
 #endif
@@ -735,7 +735,7 @@ extension MNEmoticonManager {
             return false
         }
         let oldCoverName = json[MNEmoticon.Packet.Key.cover.rawValue] as? String
-        json[MNEmoticon.Packet.Key.cover.rawValue] = targetPath.lastPathComponent
+        json[MNEmoticon.Packet.Key.cover.rawValue] = targetPath.mn.lastPathComponent
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
             try jsonData.write(to: jsonURL, options: .atomic)
@@ -747,8 +747,8 @@ extension MNEmoticonManager {
             return false
         }
         // 删除原封面
-        if let oldCoverName = oldCoverName, oldCoverName.pathExtension.isEmpty == false {
-            let coverPath = packetDirectory.appendingPathComponent(oldCoverName)
+        if let oldCoverName = oldCoverName, oldCoverName.mn.pathExtension.isEmpty == false {
+            let coverPath = packetDirectory.mn.appendingPathComponent(oldCoverName)
             if FileManager.default.fileExists(atPath: coverPath) {
                 do {
                     try FileManager.default.removeItem(atPath: coverPath)
@@ -805,7 +805,7 @@ extension MNEmoticonManager {
 #endif
             return false
         }
-        let packetDirectory = userEmoticonDirectory.appendingPathComponent(name.mn.md5)
+        let packetDirectory = userEmoticonDirectory.mn.appendingPathComponent(name.mn.md5)
         let jsonPath = packetDirectory + ".json"
         var jsonURL: URL!
         if #available(iOS 16.0, *) {
@@ -827,20 +827,20 @@ extension MNEmoticonManager {
             return false
         }
         // 写入图片
-        guard let imagePath = packetDirectory.appendingPathComponent("\(Int(Date().timeIntervalSince1970*1000.0)).png").absolutePath else {
+        guard let imagePath = packetDirectory.mn.appendingPathComponent("\(Int(Date().timeIntervalSince1970*1000.0)).png").mn.availablePath else {
 #if DEBUG
             print("计算封面图片目标路径失败")
 #endif
             return false
         }
-        var ext = imagePath.pathExtension
-        guard let imageData = Data(image: image, compression: 0.75, extension: &ext) else {
+        var ext = imagePath.mn.pathExtension
+        guard let imageData = image.mn.data(compression: 0.75, extension: &ext) else {
 #if DEBUG
             print("解压封面图片失败")
 #endif
             return false
         }
-        let targetPath = imagePath.deletingPathExtension + "." + ext
+        let targetPath = imagePath.mn.deletingPathExtension + "." + ext
         var targetURL: URL!
         if #available(iOS 16.0, *) {
             targetURL = URL(filePath: targetPath)
@@ -857,7 +857,7 @@ extension MNEmoticonManager {
         }
         // 更新json
         let oldCoverName = json[MNEmoticon.Packet.Key.cover.rawValue] as? String
-        json[MNEmoticon.Packet.Key.cover.rawValue] = targetPath.lastPathComponent
+        json[MNEmoticon.Packet.Key.cover.rawValue] = targetPath.mn.lastPathComponent
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
             try jsonData.write(to: jsonURL, options: .atomic)
@@ -869,8 +869,8 @@ extension MNEmoticonManager {
             return false
         }
         // 删除原封面
-        if let oldCoverName = oldCoverName, oldCoverName.pathExtension.isEmpty == false {
-            let coverPath = packetDirectory.appendingPathComponent(oldCoverName)
+        if let oldCoverName = oldCoverName, oldCoverName.mn.pathExtension.isEmpty == false {
+            let coverPath = packetDirectory.mn.appendingPathComponent(oldCoverName)
             if FileManager.default.fileExists(atPath: coverPath) {
                 do {
                     try FileManager.default.removeItem(atPath: coverPath)

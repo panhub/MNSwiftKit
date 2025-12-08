@@ -53,11 +53,6 @@ extension NameSpaceWrapper where Base: NSAttributedString {
         return color
     }
     
-    /// 获取全部范围
-    public var rangeOfAll: NSRange {
-        NSRange(location: 0, length: base.length)
-    }
-    
     /// 去除表情后的简单字符串
     public var plainString: String {
         plainString(in: NSRange(location: 0, length: base.length))

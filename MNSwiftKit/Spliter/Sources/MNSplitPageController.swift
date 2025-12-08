@@ -570,10 +570,10 @@ extension MNSplitPageController {
                 toViewStartX += offsetX
                 let toViewEndX: CGFloat = toViewStartX - offsetX
                 let fromViewEndX: CGFloat = fromViewStartX - offsetX
-                toView.mn_layout.minX = toViewStartX
+                toView.mn.minX = toViewStartX
                 UIView.animate(withDuration: options.transitionDuration, delay: 0.0, options: .curveEaseInOut, animations: {
-                    fromView.mn_layout.minX = fromViewEndX
-                    toView.mn_layout.minX = toViewEndX
+                    fromView.mn.minX = fromViewEndX
+                    toView.mn.minX = toViewEndX
                 }, completion: completionHandler)
             default:
                 // 纵向布局
@@ -583,10 +583,10 @@ extension MNSplitPageController {
                 toViewStartY += offsetY
                 let toViewEndY: CGFloat = toViewStartY - offsetY
                 let fromViewEndY: CGFloat = fromViewStartY - offsetY
-                toView.mn_layout.minY = toViewStartY
+                toView.mn.minY = toViewStartY
                 UIView.animate(withDuration: options.transitionDuration, delay: 0.0, options: .curveEaseInOut, animations: {
-                    fromView.mn_layout.minY = fromViewEndY
-                    toView.mn_layout.minY = toViewEndY
+                    fromView.mn.minY = fromViewEndY
+                    toView.mn.minY = toViewEndY
                 }, completion: completionHandler)
             }
         } else {

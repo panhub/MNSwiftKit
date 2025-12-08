@@ -153,11 +153,11 @@ class MNSplitView: UIView {
     override func layoutSubviews() {
         switch axis {
         case .horizontal:
-            headSeparator.mn_layout.minY = 0.0
-            tailSeparator.mn_layout.maxY = frame.height
+            headSeparator.mn.minY = 0.0
+            tailSeparator.mn.maxY = frame.height
         default:
-            headSeparator.mn_layout.minX = 0.0
-            tailSeparator.mn_layout.maxX = frame.width
+            headSeparator.mn.minX = 0.0
+            tailSeparator.mn.maxX = frame.width
         }
     }
     
@@ -166,14 +166,14 @@ class MNSplitView: UIView {
         switch keyPath {
         case #keyPath(UIScrollView.contentSize):
             guard let contentSize = change[.newKey] as? CGSize else { break }
-            backgroundContentView.mn_layout.size = contentSize
+            backgroundContentView.mn.size = contentSize
         case #keyPath(UIScrollView.contentOffset):
             guard let contentOffset = change[.newKey] as? CGPoint else { break }
             switch axis {
             case .horizontal:
-                backgroundContentView.mn_layout.minX = -contentOffset.x
+                backgroundContentView.mn.minX = -contentOffset.x
             default:
-                backgroundContentView.mn_layout.minY = -contentOffset.y
+                backgroundContentView.mn.minY = -contentOffset.y
             }
         default:
             // 一般不会走到这里
@@ -233,13 +233,13 @@ extension MNSplitView {
         set {
             switch axis {
             case .horizontal:
-                headSeparator.mn_layout.height = 0.7
-                headSeparator.mn_layout.minX = newValue.left
-                headSeparator.mn_layout.width = frame.width - newValue.left - newValue.right
+                headSeparator.mn.height = 0.7
+                headSeparator.mn.minX = newValue.left
+                headSeparator.mn.width = frame.width - newValue.left - newValue.right
             default:
-                headSeparator.mn_layout.width = 0.7
-                headSeparator.mn_layout.minY = newValue.top
-                headSeparator.mn_layout.height = frame.height - newValue.top - newValue.bottom
+                headSeparator.mn.width = 0.7
+                headSeparator.mn.minY = newValue.top
+                headSeparator.mn.height = frame.height - newValue.top - newValue.bottom
             }
             tailSeparator.frame = headSeparator.frame
             setNeedsLayout()

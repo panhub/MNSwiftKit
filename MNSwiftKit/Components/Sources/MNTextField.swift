@@ -6,9 +6,6 @@
 //  定制输入框
 
 import UIKit
-//#if canImport(MNSwiftKitLayout)
-//import MNSwiftKitLayout
-//#endif
 
 public class MNTextField: UITextField {
     

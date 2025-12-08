@@ -45,11 +45,11 @@ class MNEmoticonPacketCell: UICollectionViewCell {
     ///   - options: 配置信息
     ///   - highlighted: 是否高亮
     func updatePacket(_ packet: MNEmoticon.Packet, options: MNEmoticonKeyboard.Options, highlighted: Bool) {
-        let imagePath = packet.directory.appendingPathComponent(packet.cover)
+        let imagePath = packet.directory.mn.appendingPathComponent(packet.cover)
         if FileManager.default.fileExists(atPath: imagePath) {
             imageView.image = UIImage(contentsOfFile: imagePath)
         } else {
-            imageView.image = EmoticonResource.image(named: packet.cover.deletingPathExtension)
+            imageView.image = EmoticonResource.image(named: packet.cover.mn.deletingPathExtension)
         }
         imageView.frame = contentView.bounds.inset(by: options.packetItemInset)
         borderView.backgroundColor = highlighted ? options.packetHighlightedColor : nil

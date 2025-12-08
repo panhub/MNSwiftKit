@@ -117,10 +117,14 @@ extension NameSpaceWrapper where Base == String {
             let last = components.removeLast()
             let digitCharacterSet: CharacterSet = .decimalDigits
             let isAllDigits = last.unicodeScalars.allSatisfy { digitCharacterSet.contains($0) }
-            let number = NSDecimalNumber(string: last).intValue + 1
-            let string = NSNumber(value: number).stringValue
-            components.append(string)
-            name = components.joined(separator: "_")
+            if isAllDigits {
+                let number = NSDecimalNumber(string: last).intValue + 1
+                let string = NSNumber(value: number).stringValue
+                components.append(string)
+                name = components.joined(separator: "_")
+            } else {
+                name.append("_2")
+            }
         } else {
             name.append("_2")
         }

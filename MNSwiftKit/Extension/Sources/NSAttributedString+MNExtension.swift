@@ -12,7 +12,9 @@ import CoreGraphics
 extension NameSpaceWrapper where Base: NSAttributedString {
     
     /// 自身范围
-    var rangeOfAll: NSRange { NSRange(location: 0, length: base.length) }
+    public var rangeOfAll: NSRange {
+        NSRange(location: 0, length: base.length)
+    }
     
     /// 富文本尺寸
     /// - Parameter width: 最大宽度

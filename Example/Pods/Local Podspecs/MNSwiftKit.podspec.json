@@ -157,7 +157,8 @@
       "frameworks": [
         "Foundation",
         "AVFoundation",
-        "QuartzCore"
+        "CoreFoundation",
+        "CoreMedia"
       ],
       "source_files": "MNSwiftKit/MediaExport/Sources/**/*.swift"
     },

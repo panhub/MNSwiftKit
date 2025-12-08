@@ -202,7 +202,7 @@ extension MNMenuView {
     public func show(in superview: UIView? = nil, target targetView: UIView, animated: Bool = true, touched touchHandler: ((_ sender: UIControl) -> Void)? = nil) {
         guard self.superview == nil else { return }
         guard stackView.frame.size.width > 0.0, stackView.frame.size.height > 0.0 else { return }
-        guard let superview = superview ?? UIWindow.current else { return }
+        guard let superview = superview ?? UIWindow.mn.current else { return }
         guard let rect = targetView.superview?.convert(targetView.frame, to: superview) else { return }
         
         frame = superview.bounds

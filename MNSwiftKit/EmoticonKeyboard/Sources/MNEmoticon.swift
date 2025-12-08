@@ -54,8 +54,8 @@ public class MNEmoticon: NSObject {
                 img = String(character)
             }
         } else {
-            let imagePath = directory.appendingPathComponent(img)
-            guard let image = UIImage.image(contentsAtFile: imagePath) else { return nil }
+            let imagePath = (directory as NSString).appendingPathComponent(img)
+            guard let image = UIImage.mn.image(contentsAtFile: imagePath) else { return nil }
             self.image = image
         }
         self.img = img

@@ -574,7 +574,7 @@ extension MNSplitViewController: MNSplitPageControllerDelegate {
         let minY: CGFloat = min(0.0, max(-maxOffsetY, -offsetY))
         let oldY: CGFloat = profileView.frame.minY
         if abs(oldY - minY) >= 0.01 {
-            profileView.mn_layout.minY = minY
+            profileView.mn.minY = minY
             // 告知页头变化
             let change: [NSKeyValueChangeKey:CGPoint] = [.oldKey:CGPoint(x: headerView.frame.minX, y: abs(oldY)),.newKey:CGPoint(x: headerView.frame.minX, y: abs(minY))]
             delegate?.splitViewController?(self, headerOffsetChanged: change)

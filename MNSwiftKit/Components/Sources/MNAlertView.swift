@@ -563,7 +563,7 @@ extension MNAlertView {
     /// 展示
     public func show() {
         guard superview == nil, actions.count > 0 else { return }
-        guard let superview = UIWindow.current else { return }
+        guard let superview = UIWindow.mn.current else { return }
         // 注销键盘
         superview.endEditing(true)
         // 取消当前
