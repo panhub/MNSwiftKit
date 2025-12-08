@@ -36,7 +36,7 @@ Pod::Spec.new do |s|
   
   # Base <控制器基类>
   s.subspec 'Base' do |b|
-    b.frameworks = 'UIKit', 'Foundation', 'CoreGraphics', 'WebKit'
+    b.frameworks = 'UIKit', 'WebKit', 'Foundation', 'CoreGraphics'
     b.source_files = 'MNSwiftKit/Base/Sources/**/*.swift'
     b.resource_bundles = {
         'MNSwiftKit_Base' => ['MNSwiftKit/Base/Resources/*']
@@ -76,7 +76,7 @@ Pod::Spec.new do |s|
   
   # Player <播放器>
   s.subspec 'Player' do |p|
-    p.frameworks = 'UIKit', 'Foundation', 'AVFAudio', 'AVFoundation', 'AudioToolbox'
+    p.frameworks = 'UIKit', 'AVFAudio', 'Foundation', 'AudioToolbox', 'AVFoundation'
     p.source_files = 'MNSwiftKit/Player/Sources/**/*.swift'
   end
   
@@ -103,21 +103,21 @@ Pod::Spec.new do |s|
   
   # Request <网络请求封装>
   s.subspec 'Request' do |r|
-    r.frameworks = 'UIKit', 'Foundation', 'ImageIO', 'CoreServices', 'CoreGraphics', 'UniformTypeIdentifiers'
+    r.frameworks = 'UIKit', 'ImageIO', 'Foundation', 'CoreServices', 'CoreGraphics', 'UniformTypeIdentifiers'
     r.source_files = 'MNSwiftKit/Request/Sources/**/*.swift'
     r.dependency 'MNSwiftKit/Networking'
   end
   
   # MediaExport <媒体资源输出>
   s.subspec 'MediaExport' do |m|
-    m.frameworks = 'Foundation', 'AVFoundation', 'CoreFoundation', 'CoreMedia'
+    m.frameworks = 'CoreMedia', 'Foundation', 'AVFoundation', 'CoreFoundation'
     m.source_files = 'MNSwiftKit/MediaExport/Sources/**/*.swift'
     m.dependency 'MNSwiftKit/NameSpace'
   end
   
   # Purchase <内购支持>
   s.subspec 'Purchase' do |p|
-    p.frameworks = 'UIKit', 'Foundation', 'StoreKit'
+    p.frameworks = 'UIKit', 'StoreKit', 'Foundation'
     p.source_files = 'MNSwiftKit/Purchase/Sources/**/*.swift'
   end
   
@@ -137,7 +137,7 @@ Pod::Spec.new do |s|
   
   # Extension <基础扩展>
   s.subspec 'Extension' do |e|
-    e.frameworks = 'Foundation', 'CoreFoundation', 'CoreGraphics'
+    e.frameworks = 'UIKit', 'Foundation', 'CoreGraphics', 'CoreFoundation'
     e.source_files = 'MNSwiftKit/Extension/Sources/**/*.swift'
     e.dependency 'MNSwiftKit/NameSpace'
     e.dependency 'MNSwiftKit/AnimatedImage'
@@ -152,7 +152,7 @@ Pod::Spec.new do |s|
   
   # Networking <网络请求>
   s.subspec 'Networking' do |n|
-    n.frameworks = 'Foundation', 'SystemConfiguration', 'CoreTelephony', 'CoreAudio', 'Security', 'CoreFoundation', 'CoreGraphics'
+    n.frameworks = 'Security', 'CoreAudio', 'Foundation', 'CoreGraphics', 'CoreTelephony', 'CoreFoundation', 'SystemConfiguration'
     n.source_files = 'MNSwiftKit/Networking/Sources/**/*.swift'
     n.resource_bundles = {
         'MNSwiftKit_Networking' => ['MNSwiftKit/Networking/Resources/**/*.json']
@@ -161,7 +161,7 @@ Pod::Spec.new do |s|
   
   # AssetPicker <资源选择器>
   s.subspec 'AssetPicker' do |p|
-    p.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'Photos', 'CoreFoundation', 'CoreGraphics', 'UniformTypeIdentifiers'
+    p.frameworks = 'UIKit', 'Photos', 'PhotosUI', 'Foundation', 'CoreGraphics', 'AVFoundation', 'CoreFoundation', 'UniformTypeIdentifiers'
     p.source_files = 'MNSwiftKit/AssetPicker/Sources/*'
     p.resource_bundles = {
         'MNSwiftKit_AssetPicker' => ['MNSwiftKit/AssetPicker/Resources/*']
@@ -182,7 +182,7 @@ Pod::Spec.new do |s|
   
   # AssetBrowser <资源浏览器>
   s.subspec 'AssetBrowser' do |a|
-    a.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'Photos', 'CoreFoundation', 'CoreGraphics'
+    a.frameworks = 'UIKit', 'Photos', 'Foundation', 'CoreGraphics', 'AVFoundation', 'CoreFoundation'
     a.source_files = 'MNSwiftKit/AssetBrowser/Sources/*'
     a.resource_bundles = {
         'MNSwiftKit_AssetBrowser' => ['MNSwiftKit/AssetBrowser/Resources/*']
@@ -209,7 +209,7 @@ Pod::Spec.new do |s|
   
   # Components <基础控件>
   s.subspec 'Components' do |c|
-    c.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'CoreGraphics', 'QuartzCore', 'ImageIO', 'CoreServices', 'UniformTypeIdentifiers'
+    c.frameworks = 'UIKit', 'ImageIO', 'Foundation', 'QuartzCore', 'CoreServices', 'CoreGraphics', 'AVFoundation', 'CoreFoundation', 'UniformTypeIdentifiers'
     c.source_files = 'MNSwiftKit/Components/Sources/**/*.swift'
     c.resource_bundles = {
         'MNSwiftKit_Components' => ['MNSwiftKit/Components/Resources/**/*.{png,jpg,jpeg}']
@@ -241,7 +241,7 @@ Pod::Spec.new do |s|
   
   # AnimatedImage <动图支持>
   s.subspec 'AnimatedImage' do |a|
-    a.frameworks = 'UIKit', 'Foundation', 'CoreGraphics', 'ImageIO', 'CoreServices', 'UniformTypeIdentifiers'
+    a.frameworks = 'UIKit', 'ImageIO', 'Foundation', 'CoreServices', 'CoreGraphics', 'UniformTypeIdentifiers'
     a.source_files = 'MNSwiftKit/AnimatedImage/Sources/**/*.swift'
     a.dependency 'MNSwiftKit/NameSpace'
   end

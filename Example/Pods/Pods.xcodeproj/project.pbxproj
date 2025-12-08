@@ -64,7 +64,7 @@
 		2BDEC74DDE2E8D60DC047D05494D010F /* MNAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 962A44812345FBCE9B1519373B69F546 /* MNAssetCell.swift */; };
 		2C40BE7167745E377BC61BF5FCCAF334 /* MNTailorTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90FC88E78EAB46C02937AE807839CE4 /* MNTailorTimeView.swift */; };
 		2C6CB65297B56BEE6271B680415015B9 /* MNNibSupported.swift in Sources */ = {isa = PBXBuildFile; fileRef = 792E70326D7EABDCE56B52281CCA3EC2 /* MNNibSupported.swift */; };
-		2CFF70895270E537686BAA8E0917EC18 /* MNSwiftKit-MNSwiftKit_Base in Resources */ = {isa = PBXBuildFile; fileRef = 93B88892473024393D00ED46452BD043 /* MNSwiftKit-MNSwiftKit_Base */; };
+		2CFF70895270E537686BAA8E0917EC18 /* MNSwiftKit_Base.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 93B88892473024393D00ED46452BD043 /* MNSwiftKit_Base.bundle */; };
 		2DF81D92C0857073DAB0D797AF6773D0 /* MNSegmentedControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA6036673D638D370F171752E24F76D /* MNSegmentedControl.swift */; };
 		2E02CA81907DDBD3BED55EEB025493A4 /* UIApplication+MNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F212E9173F3E2C9B71563CCA174189BB /* UIApplication+MNHelper.swift */; };
 		2E1909886D231F2390E638171BC8018A /* MNSuccessToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4206414C0618DD0F8C0BB2FCE8E038 /* MNSuccessToast.swift */; };
@@ -86,8 +86,8 @@
 		3B2CA55702139E046110DEC3339CEFB2 /* NameSpaceWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1159B5AF5D0AC44EEE5C9E9AF7D7AD19 /* NameSpaceWrapper.swift */; };
 		3B9C76911535C5C6EF6AF822D5C11F74 /* NSAttributedString+MNEmoticonSupported.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9074AF8740FB9C790DD129C04720E0E1 /* NSAttributedString+MNEmoticonSupported.swift */; };
 		3D07521E5F057EA4AA7150015F73927D /* MNNotificationCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5289C060361731B6C97C50AA407D819D /* MNNotificationCenter.swift */; };
-		3D0FFE34C72625561B217BD577E8C415 /* MNSwiftKit-MNSwiftKit_Components in Resources */ = {isa = PBXBuildFile; fileRef = E601A851F1B02DCCD7465BDD3DB902BE /* MNSwiftKit-MNSwiftKit_Components */; };
-		3DD27C59ECCCAF990B33B2FC0166BDAC /* MNSwiftKit-MNSwiftKit_Toast in Resources */ = {isa = PBXBuildFile; fileRef = 4A26A6944A062388F54FE4FA4B700F62 /* MNSwiftKit-MNSwiftKit_Toast */; };
+		3D0FFE34C72625561B217BD577E8C415 /* MNSwiftKit_Components.bundle in Resources */ = {isa = PBXBuildFile; fileRef = E601A851F1B02DCCD7465BDD3DB902BE /* MNSwiftKit_Components.bundle */; };
+		3DD27C59ECCCAF990B33B2FC0166BDAC /* MNSwiftKit_Toast.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4A26A6944A062388F54FE4FA4B700F62 /* MNSwiftKit_Toast.bundle */; };
 		3FCBAB3E4CF3B8046DEA7FA179821DFD /* MNTailorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13CBAE6128BB8E62D01FBB766E969300 /* MNTailorViewController.swift */; };
 		403AC24B28D4C4FA1E76A4F9255F41F8 /* MNEmoticonAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2E9378A327109FB5E592B969BF0321 /* MNEmoticonAttachment.swift */; };
 		415DB78F2F77F0FEF48B01A9C52FFF6E /* MNSplitOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1226B5BA08DE3B8773FD5D7ED29AE4E /* MNSplitOptions.swift */; };
@@ -171,7 +171,7 @@
 		7C4288ACEE19402121D1F15F3595782D /* back@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = DAE055CBBAD39CF5C7DA7D45B9844752 /* back@3x.png */; };
 		7C6D7433774DA08102CA97800B059997 /* emotion.png in Resources */ = {isa = PBXBuildFile; fileRef = 5279886E4B2B907879574CF5D673E77B /* emotion.png */; };
 		7C9D5D9AB0B1DBBF4F9DA42912CB3C7D /* UIScroll+MNSplitting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91273B22DCD5B18AB9818EC680093076 /* UIScroll+MNSplitting.swift */; };
-		7DEAFD8BC7721173472E065CA4B5B887 /* MNSwiftKit-MNSwiftKit_Networking in Resources */ = {isa = PBXBuildFile; fileRef = 36FDD52880348A4DFDC381E663E19C53 /* MNSwiftKit-MNSwiftKit_Networking */; };
+		7DEAFD8BC7721173472E065CA4B5B887 /* MNSwiftKit_Networking.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 36FDD52880348A4DFDC381E663E19C53 /* MNSwiftKit_Networking.bundle */; };
 		7ECD628AC237BAA7CB7314B4F562D518 /* bottom@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = E15CCAF8C6D8AF38755004E93BD5423E /* bottom@3x.png */; };
 		7F0DB09FC88CA95C8958F20F8FA0F7A9 /* HTTPRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB18A9DD78B9D606472B4F3CFF8A68E1 /* HTTPRequest.swift */; };
 		7F3EF9A65572DE123542C26822D56E04 /* MNAssetAlbumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3C95BE3F09C11EA1B60DBDF8C3E6A74 /* MNAssetAlbumView.swift */; };
@@ -248,10 +248,10 @@
 		BF1CC5D18DCD6E5CD830928A752BE06C /* loading@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CF5C3C1B07A6150B83B945D706B5A5FF /* loading@3x.png */; };
 		BF4C6D90F51EF8E124589E8FFD6A1682 /* selected@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = A4274D4336470FF8152893DC68782B99 /* selected@3x.png */; };
 		BF7160DC82960DDDB50E38C6220302E1 /* AssetBrowserResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = A16A2A5759719EB4D934458E2B74F730 /* AssetBrowserResource.swift */; };
-		BF7D423789826682DDD8EFBA1D75174F /* MNSwiftKit-MNSwiftKit_EmoticonKeyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6850F0CE6A6A27D1104753F9CF8CC6F /* MNSwiftKit-MNSwiftKit_EmoticonKeyboard */; };
+		BF7D423789826682DDD8EFBA1D75174F /* MNSwiftKit_EmoticonKeyboard.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A6850F0CE6A6A27D1104753F9CF8CC6F /* MNSwiftKit_EmoticonKeyboard.bundle */; };
 		BF981B765EA6E7E96AF5938D6A5F5C73 /* AVMutableComposition+MNMediaExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F3DD229C168096CF9FCAACB25667FFB /* AVMutableComposition+MNMediaExport.swift */; };
 		C08FCB81B80D8B9E3EAAE383034E5AA0 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69449A51EFA6A76318CD879D0842B336 /* HapticFeedback.swift */; };
-		C16D467BD7A59AAD43E48553BF5D18AE /* MNSwiftKit-MNSwiftKit_AssetPicker in Resources */ = {isa = PBXBuildFile; fileRef = F8239024DB72675A7E11F681A9EB2B07 /* MNSwiftKit-MNSwiftKit_AssetPicker */; };
+		C16D467BD7A59AAD43E48553BF5D18AE /* MNSwiftKit_AssetPicker.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F8239024DB72675A7E11F681A9EB2B07 /* MNSwiftKit_AssetPicker.bundle */; };
 		C1B3C0C2ED1032C36EC13B5E68468D91 /* Data+MNImageFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A401624B28080C74001E9C5CE41CEBE7 /* Data+MNImageFormat.swift */; };
 		C3CA1AB23F6DC9F4470CDB07525039AE /* MNInfoToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7197B5814540B27F0BB8CFCA195E962A /* MNInfoToast.swift */; };
 		C44EA316B021CB449A06DDD4AAC1A849 /* MNNumberKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE41A9405940AC00942DF775754DE277 /* MNNumberKeyboard.swift */; };
@@ -281,7 +281,7 @@
 		D646A3322E64531CF2C5CF80B8D8E99A /* player_done@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 24C853CDE5B1FD0D15ADE854F041AE26 /* player_done@3x.png */; };
 		D666AFAD565B8C68BD90BD3B46640D66 /* HTTPProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73368F1AD52294D172B748C3AB344592 /* HTTPProxy.swift */; };
 		D674F5A584CB543AEA03F039EE8EFA4C /* MNAssetPickerFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2402B1E66492E3E05080AE5AC6C65A2C /* MNAssetPickerFooter.swift */; };
-		D6F086032D4F27308261F747DA95DFF6 /* MNSwiftKit-MNSwiftKit_AssetBrowser in Resources */ = {isa = PBXBuildFile; fileRef = AD97F9CC1AB2025C2D0ED4C8AA013A20 /* MNSwiftKit-MNSwiftKit_AssetBrowser */; };
+		D6F086032D4F27308261F747DA95DFF6 /* MNSwiftKit_AssetBrowser.bundle in Resources */ = {isa = PBXBuildFile; fileRef = AD97F9CC1AB2025C2D0ED4C8AA013A20 /* MNSwiftKit_AssetBrowser.bundle */; };
 		D803B61E02B6DA3AA58D4A78F9490AC1 /* MNTransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91DD513F7EEBB18BC3972EA870DA5FBA /* MNTransitionAnimator.swift */; };
 		D975D5940EF4F6EF1E1D11B041E93D29 /* pause@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A930A4E8F43173D008B7BD5C7467C1 /* pause@3x.png */; };
 		D9C5ED74F3A0073B2D9545B92ADFDC29 /* empty@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5CF2645F67166510A9B8BBC0739581FD /* empty@2x.png */; };
@@ -433,7 +433,7 @@
 		185C901814D5AC8E96A52C19D94B898C /* Pods-MNSwiftKit_Tests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MNSwiftKit_Tests-dummy.m"; sourceTree = "<group>"; };
 		188F8BA2A45CD982F3A4B0F0FDF4E765 /* MNLocalAuthentication.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNLocalAuthentication.swift; path = MNSwiftKit/Utility/Sources/MNLocalAuthentication.swift; sourceTree = "<group>"; };
 		19A31E8BB7BA1EEA110AFCE2F96BB946 /* MNScanner.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNScanner.swift; path = MNSwiftKit/Utility/Sources/MNScanner.swift; sourceTree = "<group>"; };
-		1A9C698D29A53FA9316335BFAA119A91 /* vehicle.json */ = {isa = PBXFileReference; includeInIndex = 1; name = vehicle.json; path = MNSwiftKit/EmoticonKeyboard/Resources/vehicle.json; sourceTree = "<group>"; };
+		1A9C698D29A53FA9316335BFAA119A91 /* vehicle.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; name = vehicle.json; path = MNSwiftKit/EmoticonKeyboard/Resources/vehicle.json; sourceTree = "<group>"; };
 		1B11EC50DE0A76DB8858A529D7DC578D /* String+MNExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "String+MNExtension.swift"; path = "MNSwiftKit/Extension/Sources/String+MNExtension.swift"; sourceTree = "<group>"; };
 		1B35FCCF78CF82393BF4461FAF37AE00 /* MNSwiftKit-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MNSwiftKit-prefix.pch"; sourceTree = "<group>"; };
 		1C09997C4FD44BF4035FB7DABB178D86 /* MNAlertView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNAlertView.swift; path = MNSwiftKit/Components/Sources/MNAlertView.swift; sourceTree = "<group>"; };
@@ -444,7 +444,7 @@
 		1EA808F94568124AF832D51334DE6922 /* mask-light@3x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "mask-light@3x.png"; path = "MNSwiftKit/Toast/Resources/mask-light@3x.png"; sourceTree = "<group>"; };
 		21817699DE33CA3CD4A05CD6987893BC /* MNWebPayController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNWebPayController.swift; path = MNSwiftKit/Base/Sources/MNWebPayController.swift; sourceTree = "<group>"; };
 		22003567957E49A91F4DE27D6CE2EB35 /* UIViewController+MNInterface.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIViewController+MNInterface.swift"; path = "MNSwiftKit/Base/Sources/UIViewController+MNInterface.swift"; sourceTree = "<group>"; };
-		2246CA0957FF41CACEA1FC3178CFA44F /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		2246CA0957FF41CACEA1FC3178CFA44F /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		22520080DD29C2F62501692DB93F431E /* MNWebViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNWebViewController.swift; path = MNSwiftKit/Base/Sources/MNWebViewController.swift; sourceTree = "<group>"; };
 		22E4B10FD2F263D1CADD0B91CAD1B094 /* checkmark@3x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "checkmark@3x.png"; path = "MNSwiftKit/AssetPicker/Resources/checkmark@3x.png"; sourceTree = "<group>"; };
 		2402B1E66492E3E05080AE5AC6C65A2C /* MNAssetPickerFooter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNAssetPickerFooter.swift; path = MNSwiftKit/AssetPicker/Sources/MNAssetPickerFooter.swift; sourceTree = "<group>"; };
@@ -478,7 +478,7 @@
 		36AB55A3A2F895B6C56234857260D1D6 /* Pods-MNSwiftKit_Tests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MNSwiftKit_Tests-acknowledgements.markdown"; sourceTree = "<group>"; };
 		36ABD90A0246305328F19AD6D4ACCC26 /* MNAssetPickerController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNAssetPickerController.swift; path = MNSwiftKit/AssetPicker/Sources/MNAssetPickerController.swift; sourceTree = "<group>"; };
 		36C18D9E16CE703FA87CCD881A1595D1 /* MNMetadataExportSupported.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNMetadataExportSupported.swift; path = MNSwiftKit/MediaExport/Sources/MNMetadataExportSupported.swift; sourceTree = "<group>"; };
-		36FDD52880348A4DFDC381E663E19C53 /* MNSwiftKit-MNSwiftKit_Networking */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "MNSwiftKit-MNSwiftKit_Networking"; path = MNSwiftKit_Networking.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		36FDD52880348A4DFDC381E663E19C53 /* MNSwiftKit_Networking.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MNSwiftKit_Networking.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		370893AE805EB63EB4982895CAABC589 /* AVAsset+MNMediaExport.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "AVAsset+MNMediaExport.swift"; path = "MNSwiftKit/MediaExport/Sources/AVAsset+MNMediaExport.swift"; sourceTree = "<group>"; };
 		38132383FDD98A6FF4969F7525776D57 /* BinaryFloatingPoint+MNExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "BinaryFloatingPoint+MNExtension.swift"; path = "MNSwiftKit/Extension/Sources/BinaryFloatingPoint+MNExtension.swift"; sourceTree = "<group>"; };
 		38FF4C585FDAF939A7F5F067C511E026 /* MNScriptMessageHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNScriptMessageHandler.swift; path = MNSwiftKit/Base/Sources/MNScriptMessageHandler.swift; sourceTree = "<group>"; };
@@ -495,9 +495,9 @@
 		43233FEFF03CBD2A0E4416BC0DC4AC44 /* NSObject+MNExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "NSObject+MNExtension.swift"; path = "MNSwiftKit/Extension/Sources/NSObject+MNExtension.swift"; sourceTree = "<group>"; };
 		44AC86F546FAB6A89C462D9864B0DAC1 /* Pods-MNSwiftKit_Example-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MNSwiftKit_Example-Info.plist"; sourceTree = "<group>"; };
 		44DC0E84276FA2143E2F04952154C830 /* favorites.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = favorites.png; path = MNSwiftKit/EmoticonKeyboard/Resources/favorites.png; sourceTree = "<group>"; };
-		489A700E2499E8451AF6989A8C8A939D /* HTTPResponseCode.json */ = {isa = PBXFileReference; includeInIndex = 1; name = HTTPResponseCode.json; path = MNSwiftKit/Networking/Resources/HTTPResponseCode.json; sourceTree = "<group>"; };
-		4A26A6944A062388F54FE4FA4B700F62 /* MNSwiftKit-MNSwiftKit_Toast */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "MNSwiftKit-MNSwiftKit_Toast"; path = MNSwiftKit_Toast.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
-		4AC875870626C082485D42ABE081A5ED /* Pods-MNSwiftKit_Tests */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-MNSwiftKit_Tests"; path = Pods_MNSwiftKit_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		489A700E2499E8451AF6989A8C8A939D /* HTTPResponseCode.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; name = HTTPResponseCode.json; path = MNSwiftKit/Networking/Resources/HTTPResponseCode.json; sourceTree = "<group>"; };
+		4A26A6944A062388F54FE4FA4B700F62 /* MNSwiftKit_Toast.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MNSwiftKit_Toast.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		4AC875870626C082485D42ABE081A5ED /* Pods_MNSwiftKit_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MNSwiftKit_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BB9947E968920EF037B5075CA9F1141 /* MNMenuView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNMenuView.swift; path = MNSwiftKit/Components/Sources/MNMenuView.swift; sourceTree = "<group>"; };
 		4BF5247AEA828D76057498208E32ED1F /* hdr@3x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "hdr@3x.png"; path = "MNSwiftKit/AssetPicker/Resources/hdr@3x.png"; sourceTree = "<group>"; };
 		4C003838DDFFB8B212AF115CB9D3637F /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/AdSupport.framework; sourceTree = DEVELOPER_DIR; };
@@ -530,11 +530,11 @@
 		660CCA821C335192A9A5B991DBD53A24 /* MNAssetPickerNavBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNAssetPickerNavBar.swift; path = MNSwiftKit/AssetPicker/Sources/MNAssetPickerNavBar.swift; sourceTree = "<group>"; };
 		66770CA62010123DF19D5CA3C2EC52B4 /* play@3x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "play@3x.png"; path = "MNSwiftKit/AssetBrowser/Resources/play@3x.png"; sourceTree = "<group>"; };
 		6702D7EBACB78C1C7D8BA446F34EA3EA /* AppleLoginHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppleLoginHelper.swift; path = MNSwiftKit/Utility/Sources/AppleLoginHelper.swift; sourceTree = "<group>"; };
-		6852D4318CC047869265083A403571C6 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		6852D4318CC047869265083A403571C6 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		68D2B1A48D42C4C935597E93325A18CD /* UIViewController+MNExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIViewController+MNExtension.swift"; path = "MNSwiftKit/Extension/Sources/UIViewController+MNExtension.swift"; sourceTree = "<group>"; };
 		69449A51EFA6A76318CD879D0842B336 /* HapticFeedback.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HapticFeedback.swift; path = MNSwiftKit/Utility/Sources/HapticFeedback.swift; sourceTree = "<group>"; };
 		69EA227137F215FC53F9AC560216E091 /* MNRefreshComponent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNRefreshComponent.swift; path = MNSwiftKit/Refresh/Sources/MNRefreshComponent.swift; sourceTree = "<group>"; };
-		6A19BC0D11A6510F247DA868FB51B06B /* Pods-MNSwiftKit_Example */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-MNSwiftKit_Example"; path = Pods_MNSwiftKit_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6A19BC0D11A6510F247DA868FB51B06B /* Pods_MNSwiftKit_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MNSwiftKit_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A3827DA20899EFCE065CEBE12FA211D /* FileManager+MNExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "FileManager+MNExtension.swift"; path = "MNSwiftKit/Extension/Sources/FileManager+MNExtension.swift"; sourceTree = "<group>"; };
 		6AC24F6D62294DC21F12FCB65F47F00B /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
 		6B306241B05C5F7792CE493BF609AB46 /* top@3x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "top@3x.png"; path = "MNSwiftKit/AssetPicker/Resources/top@3x.png"; sourceTree = "<group>"; };
@@ -598,7 +598,7 @@
 		91273B22DCD5B18AB9818EC680093076 /* UIScroll+MNSplitting.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIScroll+MNSplitting.swift"; path = "MNSwiftKit/Spliter/Sources/UIScroll+MNSplitting.swift"; sourceTree = "<group>"; };
 		91DD513F7EEBB18BC3972EA870DA5FBA /* MNTransitionAnimator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNTransitionAnimator.swift; path = MNSwiftKit/Transitioning/Sources/MNTransitionAnimator.swift; sourceTree = "<group>"; };
 		92C0A1CB98AC3EF293EDE68F39AAA86C /* preview@3x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "preview@3x.png"; path = "MNSwiftKit/AssetPicker/Resources/preview@3x.png"; sourceTree = "<group>"; };
-		93B88892473024393D00ED46452BD043 /* MNSwiftKit-MNSwiftKit_Base */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "MNSwiftKit-MNSwiftKit_Base"; path = MNSwiftKit_Base.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		93B88892473024393D00ED46452BD043 /* MNSwiftKit_Base.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MNSwiftKit_Base.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		94053314955532FAD6775DF65A370DB7 /* BinaryInteger+MNExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "BinaryInteger+MNExtension.swift"; path = "MNSwiftKit/Extension/Sources/BinaryInteger+MNExtension.swift"; sourceTree = "<group>"; };
 		94E815F24292AB70D0E3D2165C1D7D54 /* player_back@2x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "player_back@2x.png"; path = "MNSwiftKit/AssetPicker/Resources/player_back@2x.png"; sourceTree = "<group>"; };
 		954D706EC2DE14D31D4DEC5A5589F21C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/CoreGraphics.framework; sourceTree = DEVELOPER_DIR; };
@@ -606,13 +606,13 @@
 		962A44812345FBCE9B1519373B69F546 /* MNAssetCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNAssetCell.swift; path = MNSwiftKit/AssetPicker/Sources/MNAssetCell.swift; sourceTree = "<group>"; };
 		96D6BFE51B19A033E74767E15BC29C60 /* MNCollectionViewWordLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNCollectionViewWordLayout.swift; path = MNSwiftKit/CollectionLayout/Sources/MNCollectionViewWordLayout.swift; sourceTree = "<group>"; };
 		9766FB06D83EF6877DDAF2D3146B37C5 /* MNEmoticonPacketView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPacketView.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPacketView.swift; sourceTree = "<group>"; };
-		97D5F3548F6666CBE0C7305544F06C5D /* food.json */ = {isa = PBXFileReference; includeInIndex = 1; name = food.json; path = MNSwiftKit/EmoticonKeyboard/Resources/food.json; sourceTree = "<group>"; };
+		97D5F3548F6666CBE0C7305544F06C5D /* food.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; name = food.json; path = MNSwiftKit/EmoticonKeyboard/Resources/food.json; sourceTree = "<group>"; };
 		98A5C778979D9BBF8305896A3F5A1C93 /* CALayer+MNAnimation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "CALayer+MNAnimation.swift"; path = "MNSwiftKit/Extension/Sources/CALayer+MNAnimation.swift"; sourceTree = "<group>"; };
 		98DD01A30D75FF736B9FFA3365C7CBEB /* MNListViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNListViewController.swift; path = MNSwiftKit/Base/Sources/MNListViewController.swift; sourceTree = "<group>"; };
 		9925839D0BC6455964126357396E5155 /* MNTailorView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNTailorView.swift; path = MNSwiftKit/AssetPicker/Sources/MNTailorView.swift; sourceTree = "<group>"; };
 		99CD3278122453A2A30111A009F6259C /* HTTPParam.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HTTPParam.swift; path = MNSwiftKit/Networking/Sources/HTTPParam.swift; sourceTree = "<group>"; };
 		9A032113C4C4EB47641440072111BEC1 /* mask-dark.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "mask-dark.png"; path = "MNSwiftKit/Toast/Resources/mask-dark.png"; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		9DF949AA7316FBE465D071CB595120B6 /* MNNavigationController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNNavigationController.swift; path = MNSwiftKit/Base/Sources/MNNavigationController.swift; sourceTree = "<group>"; };
 		9E22FFCBE04628F7316CF05B5E0C3169 /* MNAssetSelectCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNAssetSelectCell.swift; path = MNSwiftKit/AssetPicker/Sources/MNAssetSelectCell.swift; sourceTree = "<group>"; };
 		9E8365458443FE47658045B91136DE1F /* CGSize+MNExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "CGSize+MNExtension.swift"; path = "MNSwiftKit/Extension/Sources/CGSize+MNExtension.swift"; sourceTree = "<group>"; };
@@ -625,7 +625,7 @@
 		A401624B28080C74001E9C5CE41CEBE7 /* Data+MNImageFormat.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Data+MNImageFormat.swift"; path = "MNSwiftKit/Extension/Sources/Data+MNImageFormat.swift"; sourceTree = "<group>"; };
 		A4274D4336470FF8152893DC68782B99 /* selected@3x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "selected@3x.png"; path = "MNSwiftKit/AssetPicker/Resources/selected@3x.png"; sourceTree = "<group>"; };
 		A5362F070C687D927D70AE696222DC2B /* MNEmoticonElementView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonElementView.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonElementView.swift; sourceTree = "<group>"; };
-		A6850F0CE6A6A27D1104753F9CF8CC6F /* MNSwiftKit-MNSwiftKit_EmoticonKeyboard */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "MNSwiftKit-MNSwiftKit_EmoticonKeyboard"; path = MNSwiftKit_EmoticonKeyboard.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		A6850F0CE6A6A27D1104753F9CF8CC6F /* MNSwiftKit_EmoticonKeyboard.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MNSwiftKit_EmoticonKeyboard.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		A69337B9A5F2466F4F8A0EE6B99E393D /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/StoreKit.framework; sourceTree = DEVELOPER_DIR; };
 		A7298892ADA9E516A1E829E11B3076D9 /* MNAssetPicker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNAssetPicker.swift; path = MNSwiftKit/AssetPicker/Sources/MNAssetPicker.swift; sourceTree = "<group>"; };
 		A84357ADDBA598631254183A425DD140 /* MNRefreshFooter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MNRefreshFooter.swift; sourceTree = "<group>"; };
@@ -633,7 +633,7 @@
 		AABC10A0D2D4BAA22A1E0604FFB34713 /* MNSplitView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNSplitView.swift; path = MNSwiftKit/Spliter/Sources/MNSplitView.swift; sourceTree = "<group>"; };
 		AB898D86935182FE19CB5B74AB61A428 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		AC9B96DBE8026F27C2F950158B6E2338 /* CGRect+MNExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "CGRect+MNExtension.swift"; path = "MNSwiftKit/Extension/Sources/CGRect+MNExtension.swift"; sourceTree = "<group>"; };
-		AD97F9CC1AB2025C2D0ED4C8AA013A20 /* MNSwiftKit-MNSwiftKit_AssetBrowser */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "MNSwiftKit-MNSwiftKit_AssetBrowser"; path = MNSwiftKit_AssetBrowser.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		AD97F9CC1AB2025C2D0ED4C8AA013A20 /* MNSwiftKit_AssetBrowser.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MNSwiftKit_AssetBrowser.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		AEDDCBD681683DEB4DD749DE0B090D83 /* mask-light@2x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "mask-light@2x.png"; path = "MNSwiftKit/Toast/Resources/mask-light@2x.png"; sourceTree = "<group>"; };
 		AFA76DE1D79FEC017F7B013F6902AC54 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Photos.framework; sourceTree = DEVELOPER_DIR; };
 		AFEEBFE081C902459DC4000963E0EDB5 /* UIScrollView+MNExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIScrollView+MNExtension.swift"; path = "MNSwiftKit/Extension/Sources/UIScrollView+MNExtension.swift"; sourceTree = "<group>"; };
@@ -643,7 +643,7 @@
 		B2D8215912A2E47DE3BBF9C94C83A673 /* HTTPDatabase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HTTPDatabase.swift; path = MNSwiftKit/Request/Sources/HTTPDatabase.swift; sourceTree = "<group>"; };
 		B34899A0298A82491A97A81955D72DBA /* UIWindow+MNExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIWindow+MNExtension.swift"; path = "MNSwiftKit/Extension/Sources/UIWindow+MNExtension.swift"; sourceTree = "<group>"; };
 		B3F98818B221998D552F656517C9DDA4 /* HTTPUploadRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HTTPUploadRequest.swift; path = MNSwiftKit/Request/Sources/HTTPUploadRequest.swift; sourceTree = "<group>"; };
-		B497AF8834FCB57F35F08D4C93D18688 /* MNSwiftKit.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = MNSwiftKit.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		B497AF8834FCB57F35F08D4C93D18688 /* MNSwiftKit.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = MNSwiftKit.podspec; sourceTree = "<group>"; tabWidth = 2; };
 		B5CB076501F66A186149ABAD4E4D0412 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/QuartzCore.framework; sourceTree = DEVELOPER_DIR; };
 		B63677D5A8E9606D6E0C60E8E52B5110 /* MNAssetAlbum.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNAssetAlbum.swift; path = MNSwiftKit/AssetPicker/Sources/MNAssetAlbum.swift; sourceTree = "<group>"; };
 		B6E84B9FAFC2F39342E1A7EE36F59667 /* MNEmoticonKeyboardOptions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonKeyboardOptions.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonKeyboardOptions.swift; sourceTree = "<group>"; };
@@ -685,7 +685,7 @@
 		D1D19AA102FAAA258748B9B4A4C3CE6C /* MNAssetHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNAssetHelper.swift; path = MNSwiftKit/AssetPicker/Sources/MNAssetHelper.swift; sourceTree = "<group>"; };
 		D288F63D287589E2540E3E0EA1013DDD /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/CoreServices.framework; sourceTree = DEVELOPER_DIR; };
 		D2E6279B2884A192CBFB83E131B54F48 /* MNToast+Extension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "MNToast+Extension.swift"; path = "MNSwiftKit/Toast/Sources/MNToast+Extension.swift"; sourceTree = "<group>"; };
-		D54F740FFF9AB0B6D0A409EDE59C6789 /* wechat */ = {isa = PBXFileReference; includeInIndex = 1; name = wechat; path = MNSwiftKit/EmoticonKeyboard/Resources/wechat; sourceTree = "<group>"; };
+		D54F740FFF9AB0B6D0A409EDE59C6789 /* wechat */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; name = wechat; path = MNSwiftKit/EmoticonKeyboard/Resources/wechat; sourceTree = "<group>"; };
 		D622D38DE778A56BB6F9E614470859B9 /* info.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = info.png; path = MNSwiftKit/Toast/Resources/info.png; sourceTree = "<group>"; };
 		D704C324435B8394C20648B940BC9DE5 /* bottom_shadow@2x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "bottom_shadow@2x.png"; path = "MNSwiftKit/AssetPicker/Resources/bottom_shadow@2x.png"; sourceTree = "<group>"; };
 		D736B8B60D7EC6920A883AE99F37C2A4 /* UIWindow+MNHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIWindow+MNHelper.swift"; path = "MNSwiftKit/Definition/Sources/UIWindow+MNHelper.swift"; sourceTree = "<group>"; };
@@ -707,14 +707,14 @@
 		E1226B5BA08DE3B8773FD5D7ED29AE4E /* MNSplitOptions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNSplitOptions.swift; path = MNSwiftKit/Spliter/Sources/MNSplitOptions.swift; sourceTree = "<group>"; };
 		E15CCAF8C6D8AF38755004E93BD5423E /* bottom@3x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "bottom@3x.png"; path = "MNSwiftKit/AssetBrowser/Resources/bottom@3x.png"; sourceTree = "<group>"; };
 		E18FCC83CDF5ED041FE2B7826262DACB /* MNCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNCollectionViewFlowLayout.swift; path = MNSwiftKit/CollectionLayout/Sources/MNCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
-		E1C240075777C47D2D1C8371FD00628B /* symbol.json */ = {isa = PBXFileReference; includeInIndex = 1; name = symbol.json; path = MNSwiftKit/EmoticonKeyboard/Resources/symbol.json; sourceTree = "<group>"; };
+		E1C240075777C47D2D1C8371FD00628B /* symbol.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; name = symbol.json; path = MNSwiftKit/EmoticonKeyboard/Resources/symbol.json; sourceTree = "<group>"; };
 		E2492169A7A90522C2A2B47DD9839769 /* player_pause@3x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "player_pause@3x.png"; path = "MNSwiftKit/AssetPicker/Resources/player_pause@3x.png"; sourceTree = "<group>"; };
-		E28AEA68D7E0140981D40CF9DE100D75 /* animal.json */ = {isa = PBXFileReference; includeInIndex = 1; name = animal.json; path = MNSwiftKit/EmoticonKeyboard/Resources/animal.json; sourceTree = "<group>"; };
+		E28AEA68D7E0140981D40CF9DE100D75 /* animal.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; name = animal.json; path = MNSwiftKit/EmoticonKeyboard/Resources/animal.json; sourceTree = "<group>"; };
 		E29F5DD2A7D96CEC2965C6C8C41C4B88 /* back@3x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "back@3x.png"; path = "MNSwiftKit/AssetPicker/Resources/back@3x.png"; sourceTree = "<group>"; };
 		E3C95BE3F09C11EA1B60DBDF8C3E6A74 /* MNAssetAlbumView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNAssetAlbumView.swift; path = MNSwiftKit/AssetPicker/Sources/MNAssetAlbumView.swift; sourceTree = "<group>"; };
 		E4D91077A75FDCB026B7C1336802BE75 /* CAAnimation+MNExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "CAAnimation+MNExtension.swift"; path = "MNSwiftKit/Extension/Sources/CAAnimation+MNExtension.swift"; sourceTree = "<group>"; };
 		E54E4361AF8EA46B93CAB001D1CE74B3 /* UIApplication+MNExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIApplication+MNExtension.swift"; path = "MNSwiftKit/Extension/Sources/UIApplication+MNExtension.swift"; sourceTree = "<group>"; };
-		E601A851F1B02DCCD7465BDD3DB902BE /* MNSwiftKit-MNSwiftKit_Components */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "MNSwiftKit-MNSwiftKit_Components"; path = MNSwiftKit_Components.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		E601A851F1B02DCCD7465BDD3DB902BE /* MNSwiftKit_Components.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MNSwiftKit_Components.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		EAC5FACCFBF0219414D6A85C98E20651 /* Pods-MNSwiftKit_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-MNSwiftKit_Example.modulemap"; sourceTree = "<group>"; };
 		EBA1F53120525616B0E8F7765D0B586E /* AssetPickerResource.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AssetPickerResource.swift; path = MNSwiftKit/AssetPicker/Sources/AssetPickerResource.swift; sourceTree = "<group>"; };
 		EBF7FEA4E22E5949283374DEEA3701C8 /* player_back@3x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "player_back@3x.png"; path = "MNSwiftKit/AssetPicker/Resources/player_back@3x.png"; sourceTree = "<group>"; };
@@ -722,7 +722,7 @@
 		EDD77334C8504A02726F6F82A600F512 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/CoreFoundation.framework; sourceTree = DEVELOPER_DIR; };
 		EE973FFC77221F59C3474135783FB9FA /* EmoticonResource.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EmoticonResource.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/EmoticonResource.swift; sourceTree = "<group>"; };
 		EFC4CCAEE08F5D21DE73BBF01D24997F /* UINavigationController+MNExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UINavigationController+MNExtension.swift"; path = "MNSwiftKit/Extension/Sources/UINavigationController+MNExtension.swift"; sourceTree = "<group>"; };
-		F047C2B429DC53EC8350D54F69D7EFC5 /* wechat.json */ = {isa = PBXFileReference; includeInIndex = 1; name = wechat.json; path = MNSwiftKit/EmoticonKeyboard/Resources/wechat.json; sourceTree = "<group>"; };
+		F047C2B429DC53EC8350D54F69D7EFC5 /* wechat.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; name = wechat.json; path = MNSwiftKit/EmoticonKeyboard/Resources/wechat.json; sourceTree = "<group>"; };
 		F131BC77C20F31B62F2E7464A3420DDE /* HTTPDataRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HTTPDataRequest.swift; path = MNSwiftKit/Request/Sources/HTTPDataRequest.swift; sourceTree = "<group>"; };
 		F1DF06A3ABBD3DF7D4AD5DE02C312882 /* Pods-MNSwiftKit_Example-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MNSwiftKit_Example-dummy.m"; sourceTree = "<group>"; };
 		F212E9173F3E2C9B71563CCA174189BB /* UIApplication+MNHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIApplication+MNHelper.swift"; path = "MNSwiftKit/Definition/Sources/UIApplication+MNHelper.swift"; sourceTree = "<group>"; };
@@ -734,19 +734,19 @@
 		F68CA541A83CE1EF678EC05D96575425 /* MNEmoticonBackedString.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonBackedString.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonBackedString.swift; sourceTree = "<group>"; };
 		F798A8E33D55C8D31DB4C38680DA7B3D /* HTTPParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HTTPParser.swift; path = MNSwiftKit/Networking/Sources/HTTPParser.swift; sourceTree = "<group>"; };
 		F7DB51C72A9114DEC82BC5587FCFE38B /* player_play@2x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "player_play@2x.png"; path = "MNSwiftKit/AssetPicker/Resources/player_play@2x.png"; sourceTree = "<group>"; };
-		F8239024DB72675A7E11F681A9EB2B07 /* MNSwiftKit-MNSwiftKit_AssetPicker */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "MNSwiftKit-MNSwiftKit_AssetPicker"; path = MNSwiftKit_AssetPicker.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		F8239024DB72675A7E11F681A9EB2B07 /* MNSwiftKit_AssetPicker.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MNSwiftKit_AssetPicker.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		F983EB63FC73E058C38368FD7A1257FD /* MNReceiptBase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNReceiptBase.swift; path = MNSwiftKit/Purchase/Sources/MNReceiptBase.swift; sourceTree = "<group>"; };
 		FA7BE18F23664ED8B134A26D602E5B28 /* ToastResource.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ToastResource.swift; path = MNSwiftKit/Toast/Sources/ToastResource.swift; sourceTree = "<group>"; };
 		FAE2C49EF53DDC23B20ECD22C294931E /* BaseResource.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BaseResource.swift; path = MNSwiftKit/Base/Sources/BaseResource.swift; sourceTree = "<group>"; };
 		FB1BF9C1022BD395F6C26B89C0BF6F8D /* MNActivityToast.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNActivityToast.swift; path = MNSwiftKit/Toast/Sources/MNActivityToast.swift; sourceTree = "<group>"; };
 		FC25A52763FEE5DF32FD74160418A932 /* UIResponder+MNHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIResponder+MNHelper.swift"; path = "MNSwiftKit/Definition/Sources/UIResponder+MNHelper.swift"; sourceTree = "<group>"; };
 		FC362D175A81AC473E1C6677F1486040 /* shadow.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = shadow.png; path = MNSwiftKit/EmoticonKeyboard/Resources/shadow.png; sourceTree = "<group>"; };
-		FC7D69C66074802BED7887E9A074B200 /* MNSwiftKit */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = MNSwiftKit; path = MNSwiftKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FC7D69C66074802BED7887E9A074B200 /* MNSwiftKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MNSwiftKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC8FC0F719E922A008F11F984165D0B4 /* UIImageView+MNExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIImageView+MNExtension.swift"; path = "MNSwiftKit/Extension/Sources/UIImageView+MNExtension.swift"; sourceTree = "<group>"; };
 		FDCE2CE8E6C3479E6D4C6D33F6D510D3 /* MNEmoticonPreview.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPreview.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPreview.swift; sourceTree = "<group>"; };
 		FDE88F3051F8A49015527100997296C6 /* HTTPSession.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HTTPSession.swift; path = MNSwiftKit/Networking/Sources/HTTPSession.swift; sourceTree = "<group>"; };
 		FDFD23C0DD9A5280FD089E6049C5C508 /* MNEmoticonPacketCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MNEmoticonPacketCell.swift; path = MNSwiftKit/EmoticonKeyboard/Sources/MNEmoticonPacketCell.swift; sourceTree = "<group>"; };
-		FE85B6F49F7118AB5AB7F328E9D40E21 /* emotion.json */ = {isa = PBXFileReference; includeInIndex = 1; name = emotion.json; path = MNSwiftKit/EmoticonKeyboard/Resources/emotion.json; sourceTree = "<group>"; };
+		FE85B6F49F7118AB5AB7F328E9D40E21 /* emotion.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; name = emotion.json; path = MNSwiftKit/EmoticonKeyboard/Resources/emotion.json; sourceTree = "<group>"; };
 		FE9A2282C5E17DDFEA50F757C67D045A /* UIBezierPath+MNExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIBezierPath+MNExtension.swift"; path = "MNSwiftKit/Extension/Sources/UIBezierPath+MNExtension.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1205,16 +1205,16 @@
 		7CA42FFFEE69C4D4E4604B701BCA465F /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				FC7D69C66074802BED7887E9A074B200 /* MNSwiftKit */,
-				AD97F9CC1AB2025C2D0ED4C8AA013A20 /* MNSwiftKit-MNSwiftKit_AssetBrowser */,
-				F8239024DB72675A7E11F681A9EB2B07 /* MNSwiftKit-MNSwiftKit_AssetPicker */,
-				93B88892473024393D00ED46452BD043 /* MNSwiftKit-MNSwiftKit_Base */,
-				E601A851F1B02DCCD7465BDD3DB902BE /* MNSwiftKit-MNSwiftKit_Components */,
-				A6850F0CE6A6A27D1104753F9CF8CC6F /* MNSwiftKit-MNSwiftKit_EmoticonKeyboard */,
-				36FDD52880348A4DFDC381E663E19C53 /* MNSwiftKit-MNSwiftKit_Networking */,
-				4A26A6944A062388F54FE4FA4B700F62 /* MNSwiftKit-MNSwiftKit_Toast */,
-				6A19BC0D11A6510F247DA868FB51B06B /* Pods-MNSwiftKit_Example */,
-				4AC875870626C082485D42ABE081A5ED /* Pods-MNSwiftKit_Tests */,
+				FC7D69C66074802BED7887E9A074B200 /* MNSwiftKit.framework */,
+				AD97F9CC1AB2025C2D0ED4C8AA013A20 /* MNSwiftKit_AssetBrowser.bundle */,
+				F8239024DB72675A7E11F681A9EB2B07 /* MNSwiftKit_AssetPicker.bundle */,
+				93B88892473024393D00ED46452BD043 /* MNSwiftKit_Base.bundle */,
+				E601A851F1B02DCCD7465BDD3DB902BE /* MNSwiftKit_Components.bundle */,
+				A6850F0CE6A6A27D1104753F9CF8CC6F /* MNSwiftKit_EmoticonKeyboard.bundle */,
+				36FDD52880348A4DFDC381E663E19C53 /* MNSwiftKit_Networking.bundle */,
+				4A26A6944A062388F54FE4FA4B700F62 /* MNSwiftKit_Toast.bundle */,
+				6A19BC0D11A6510F247DA868FB51B06B /* Pods_MNSwiftKit_Example.framework */,
+				4AC875870626C082485D42ABE081A5ED /* Pods_MNSwiftKit_Tests.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1551,7 +1551,7 @@
 			);
 			name = "MNSwiftKit-MNSwiftKit_Networking";
 			productName = MNSwiftKit_Networking;
-			productReference = 36FDD52880348A4DFDC381E663E19C53 /* MNSwiftKit-MNSwiftKit_Networking */;
+			productReference = 36FDD52880348A4DFDC381E663E19C53 /* MNSwiftKit_Networking.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
 		21CE195DAB5760AE3081E84CA608C23C /* Pods-MNSwiftKit_Example */ = {
@@ -1570,7 +1570,7 @@
 			);
 			name = "Pods-MNSwiftKit_Example";
 			productName = Pods_MNSwiftKit_Example;
-			productReference = 6A19BC0D11A6510F247DA868FB51B06B /* Pods-MNSwiftKit_Example */;
+			productReference = 6A19BC0D11A6510F247DA868FB51B06B /* Pods_MNSwiftKit_Example.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		2853C564F044FF8754C09711B8B8F2A7 /* Pods-MNSwiftKit_Tests */ = {
@@ -1589,7 +1589,7 @@
 			);
 			name = "Pods-MNSwiftKit_Tests";
 			productName = Pods_MNSwiftKit_Tests;
-			productReference = 4AC875870626C082485D42ABE081A5ED /* Pods-MNSwiftKit_Tests */;
+			productReference = 4AC875870626C082485D42ABE081A5ED /* Pods_MNSwiftKit_Tests.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		28AE01AF53D226743D264098F077DBFE /* MNSwiftKit-MNSwiftKit_Toast */ = {
@@ -1606,7 +1606,7 @@
 			);
 			name = "MNSwiftKit-MNSwiftKit_Toast";
 			productName = MNSwiftKit_Toast;
-			productReference = 4A26A6944A062388F54FE4FA4B700F62 /* MNSwiftKit-MNSwiftKit_Toast */;
+			productReference = 4A26A6944A062388F54FE4FA4B700F62 /* MNSwiftKit_Toast.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
 		3D2CCAAF8D17EC61FB00C727F764E865 /* MNSwiftKit-MNSwiftKit_Base */ = {
@@ -1623,7 +1623,7 @@
 			);
 			name = "MNSwiftKit-MNSwiftKit_Base";
 			productName = MNSwiftKit_Base;
-			productReference = 93B88892473024393D00ED46452BD043 /* MNSwiftKit-MNSwiftKit_Base */;
+			productReference = 93B88892473024393D00ED46452BD043 /* MNSwiftKit_Base.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
 		44175BA3038286B71BDF4ED00AD7D682 /* MNSwiftKit */ = {
@@ -1648,7 +1648,7 @@
 			);
 			name = MNSwiftKit;
 			productName = MNSwiftKit;
-			productReference = FC7D69C66074802BED7887E9A074B200 /* MNSwiftKit */;
+			productReference = FC7D69C66074802BED7887E9A074B200 /* MNSwiftKit.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		52E39E8CBB2893119C3A574F658ED5A3 /* MNSwiftKit-MNSwiftKit_EmoticonKeyboard */ = {
@@ -1665,7 +1665,7 @@
 			);
 			name = "MNSwiftKit-MNSwiftKit_EmoticonKeyboard";
 			productName = MNSwiftKit_EmoticonKeyboard;
-			productReference = A6850F0CE6A6A27D1104753F9CF8CC6F /* MNSwiftKit-MNSwiftKit_EmoticonKeyboard */;
+			productReference = A6850F0CE6A6A27D1104753F9CF8CC6F /* MNSwiftKit_EmoticonKeyboard.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
 		7237FDD2BA14154A0534E4027646C380 /* MNSwiftKit-MNSwiftKit_Components */ = {
@@ -1682,7 +1682,7 @@
 			);
 			name = "MNSwiftKit-MNSwiftKit_Components";
 			productName = MNSwiftKit_Components;
-			productReference = E601A851F1B02DCCD7465BDD3DB902BE /* MNSwiftKit-MNSwiftKit_Components */;
+			productReference = E601A851F1B02DCCD7465BDD3DB902BE /* MNSwiftKit_Components.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
 		9447CDA72A2F30D0069F4A3F1F4F06E6 /* MNSwiftKit-MNSwiftKit_AssetPicker */ = {
@@ -1699,7 +1699,7 @@
 			);
 			name = "MNSwiftKit-MNSwiftKit_AssetPicker";
 			productName = MNSwiftKit_AssetPicker;
-			productReference = F8239024DB72675A7E11F681A9EB2B07 /* MNSwiftKit-MNSwiftKit_AssetPicker */;
+			productReference = F8239024DB72675A7E11F681A9EB2B07 /* MNSwiftKit_AssetPicker.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
 		ED04415FA6A4AE1EDA77E181FCFA89E6 /* MNSwiftKit-MNSwiftKit_AssetBrowser */ = {
@@ -1716,7 +1716,7 @@
 			);
 			name = "MNSwiftKit-MNSwiftKit_AssetBrowser";
 			productName = MNSwiftKit_AssetBrowser;
-			productReference = AD97F9CC1AB2025C2D0ED4C8AA013A20 /* MNSwiftKit-MNSwiftKit_AssetBrowser */;
+			productReference = AD97F9CC1AB2025C2D0ED4C8AA013A20 /* MNSwiftKit_AssetBrowser.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
@@ -1737,8 +1737,6 @@
 				en,
 			);
 			mainGroup = CF1408CF629C7361332E53B88F7BD30C;
-			minimizedProjectReferenceProxies = 0;
-			preferredProjectObjectVersion = 77;
 			productRefGroup = 7CA42FFFEE69C4D4E4604B701BCA465F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1762,13 +1760,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D6F086032D4F27308261F747DA95DFF6 /* MNSwiftKit-MNSwiftKit_AssetBrowser in Resources */,
-				C16D467BD7A59AAD43E48553BF5D18AE /* MNSwiftKit-MNSwiftKit_AssetPicker in Resources */,
-				2CFF70895270E537686BAA8E0917EC18 /* MNSwiftKit-MNSwiftKit_Base in Resources */,
-				3D0FFE34C72625561B217BD577E8C415 /* MNSwiftKit-MNSwiftKit_Components in Resources */,
-				BF7D423789826682DDD8EFBA1D75174F /* MNSwiftKit-MNSwiftKit_EmoticonKeyboard in Resources */,
-				7DEAFD8BC7721173472E065CA4B5B887 /* MNSwiftKit-MNSwiftKit_Networking in Resources */,
-				3DD27C59ECCCAF990B33B2FC0166BDAC /* MNSwiftKit-MNSwiftKit_Toast in Resources */,
+				D6F086032D4F27308261F747DA95DFF6 /* MNSwiftKit_AssetBrowser.bundle in Resources */,
+				C16D467BD7A59AAD43E48553BF5D18AE /* MNSwiftKit_AssetPicker.bundle in Resources */,
+				2CFF70895270E537686BAA8E0917EC18 /* MNSwiftKit_Base.bundle in Resources */,
+				3D0FFE34C72625561B217BD577E8C415 /* MNSwiftKit_Components.bundle in Resources */,
+				BF7D423789826682DDD8EFBA1D75174F /* MNSwiftKit_EmoticonKeyboard.bundle in Resources */,
+				7DEAFD8BC7721173472E065CA4B5B887 /* MNSwiftKit_Networking.bundle in Resources */,
+				3DD27C59ECCCAF990B33B2FC0166BDAC /* MNSwiftKit_Toast.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2667,8 +2665,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};

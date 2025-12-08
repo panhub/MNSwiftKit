@@ -71,12 +71,6 @@ let package = Package(
             ]
         ),
         .library(
-            name: "MNSwiftKitExporter",
-            targets: [
-                "Exporter"
-            ]
-        ),
-        .library(
             name: "MNSwiftKitPurchase",
             targets: [
                 "Purchase"
@@ -92,12 +86,6 @@ let package = Package(
             name: "MNSwiftKitDefinition",
             targets: [
                 "Definition"
-            ]
-        ),
-        .library(
-            name: "MNSwiftKitExtension",
-            targets: [
-                "Extension"
             ]
         ),
         .library(
@@ -119,9 +107,27 @@ let package = Package(
             ]
         ),
         .library(
+            name: "MNSwiftKitNameSpace",
+            targets: [
+                "NameSpace"
+            ]
+        ),
+        .library(
+            name: "MNSwiftKitPageControl",
+            targets: [
+                "PageControl"
+            ]
+        ),
+        .library(
             name: "MNSwiftKitComponents",
             targets: [
                 "Components"
+            ]
+        ),
+        .library(
+            name: "MNSwiftKitMediaExport",
+            targets: [
+                "MediaExport"
             ]
         ),
         .library(
@@ -131,9 +137,27 @@ let package = Package(
             ]
         ),
         .library(
+            name: "MNSwiftKitAssetBrowser",
+            targets: [
+                "AssetBrowser"
+            ]
+        ),
+        .library(
             name: "MNSwiftKitAnimatedImage",
             targets: [
                 "AnimatedImage"
+            ]
+        ),
+        .library(
+            name: "MNSwiftKitCollectionLayout",
+            targets: [
+                "CollectionLayout"
+            ]
+        ),
+        .library(
+            name: "MNSwiftKitEmoticonKeyboard",
+            targets: [
+                "EmoticonKeyboard"
             ]
         )
     ],
@@ -143,7 +167,7 @@ let package = Package(
         .target(
             name: "MNSwiftKit",
             dependencies: [
-                "Base","Toast","Utility","Slider","Player","Spliter","Layout","Refresh","Request","Exporter","Purchase","Database","Definition","Extension","EmptyView","Networking","AssetPicker","Components","Transitioning","AnimatedImage"
+                "Base", "Toast", "Slider", "Utility", "Player", "Spliter", "Layout", "Refresh", "Request", "Purchase", "Database", "Definition", "Extension", "EmptyView", "Networking", "AssetPicker", "NameSpace", "PageControl", "Components", "MediaExport", "Transitioning", "AssetBrowser", "AnimatedImage", "CollectionLayout", "EmoticonKeyboard"
             ],
             path: "MNSwiftKit/Full",
             swiftSettings: [
@@ -156,7 +180,7 @@ let package = Package(
         .target(
             name: "Base",
             dependencies: [
-                "Toast","Layout","Refresh","Request","Definition","EmptyView","Transitioning"
+                "Toast", "Layout", "Refresh", "Request", "Definition", "Extension", "EmptyView", "Transitioning", "CollectionLayout"
             ],
             path: "MNSwiftKit/Base",
             resources: [
@@ -167,13 +191,16 @@ let package = Package(
             ],
             linkerSettings: [
                 .linkedFramework("UIKit"),
+                .linkedFramework("WebKit"),
                 .linkedFramework("Foundation"),
-                .linkedFramework("CoreGraphics"),
-                .linkedFramework("WebKit")
+                .linkedFramework("CoreGraphics")
             ]
         ),
         .target(
             name: "Toast",
+            dependencies: [
+                "NameSpace"
+            ],
             path: "MNSwiftKit/Toast",
             resources: [
                 .process("Resources")
@@ -190,6 +217,9 @@ let package = Package(
         .target(
             name: "Utility",
             path: "MNSwiftKit/Utility",
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"])
+            ],
             linkerSettings: [
                 .linkedFramework("UIKit"),
                 .linkedFramework("Foundation"),
@@ -224,13 +254,17 @@ let package = Package(
             ],
             linkerSettings: [
                 .linkedFramework("UIKit"),
+                .linkedFramework("AVFAudio"),
                 .linkedFramework("Foundation"),
-                .linkedFramework("AVFoundation"),
-                .linkedFramework("AudioToolbox")
+                .linkedFramework("AudioToolbox"),
+                .linkedFramework("AVFoundation")
             ]
         ),
         .target(
             name: "Spliter",
+            dependencies: [
+                "Layout"
+            ],
             path: "MNSwiftKit/Spliter",
             swiftSettings: [
                 .unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"])
@@ -243,6 +277,9 @@ let package = Package(
         ),
         .target(
             name: "Layout",
+            dependencies: [
+                "NameSpace"
+            ],
             path: "MNSwiftKit/Layout",
             swiftSettings: [
                 .unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"])
@@ -255,6 +292,9 @@ let package = Package(
         ),
         .target(
             name: "Refresh",
+            dependencies: [
+                "NameSpace"
+            ],
             path: "MNSwiftKit/Refresh",
             swiftSettings: [
                 .unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"])
@@ -267,27 +307,36 @@ let package = Package(
         ),
         .target(
             name: "Request",
-            dependencies: ["Networking"],
+            dependencies: [
+                "Networking"
+            ],
             path: "MNSwiftKit/Request",
             swiftSettings: [
                 .unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"])
             ],
             linkerSettings: [
                 .linkedFramework("UIKit"),
+                .linkedFramework("ImageIO"),
                 .linkedFramework("Foundation"),
-                .linkedFramework("CoreGraphics")
+                .linkedFramework("CoreServices"),
+                .linkedFramework("CoreGraphics"),
+                .linkedFramework("UniformTypeIdentifiers")
             ]
         ),
         .target(
-            name: "Exporter",
-            path: "MNSwiftKit/Exporter",
+            name: "MediaExport",
+            dependencies: [
+                "NameSpace"
+            ],
+            path: "MNSwiftKit/MediaExport",
             swiftSettings: [
                 .unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"])
             ],
             linkerSettings: [
-                .linkedFramework("UIKit"),
+                .linkedFramework("CoreMedia"),
+                .linkedFramework("Foundation"),
                 .linkedFramework("AVFoundation"),
-                .linkedFramework("CoreGraphics")
+                .linkedFramework("CoreFoundation")
             ]
         ),
         .target(
@@ -299,8 +348,7 @@ let package = Package(
             linkerSettings: [
                 .linkedFramework("UIKit"),
                 .linkedFramework("StoreKit"),
-                .linkedFramework("Foundation"),
-                .linkedFramework("CoreGraphics")
+                .linkedFramework("Foundation")
             ]
         ),
         .target(
@@ -310,14 +358,17 @@ let package = Package(
                 .unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"])
             ],
             linkerSettings: [
+                .linkedLibrary("sqlite3"),
                 .linkedFramework("Foundation"),
                 .linkedFramework("AVFoundation"),
-                .linkedFramework("CoreGraphics"),
-                .linkedLibrary("sqlite3")
+                .linkedFramework("CoreGraphics")
             ]
         ),
         .target(
             name: "Definition",
+            dependencies: [
+                "NameSpace"
+            ],
             path: "MNSwiftKit/Definition",
             swiftSettings: [
                 .unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"])
@@ -330,19 +381,25 @@ let package = Package(
         ),
         .target(
             name: "Extension",
-            dependencies: ["AnimatedImage"],
+            dependencies: [
+                "NameSpace", "AnimatedImage"
+            ],
             path: "MNSwiftKit/Extension",
             swiftSettings: [
                 .unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"])
             ],
             linkerSettings: [
+                .linkedFramework("UIKit"),
                 .linkedFramework("Foundation"),
-                .linkedFramework("CoreFoundation"),
-                .linkedFramework("CoreGraphics")
+                .linkedFramework("CoreGraphics"),
+                .linkedFramework("CoreFoundation")
             ]
         ),
         .target(
             name: "EmptyView",
+            dependencies: [
+                "NameSpace"
+            ],
             path: "MNSwiftKit/EmptyView",
             swiftSettings: [
                 .unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"])
@@ -364,18 +421,18 @@ let package = Package(
             ],
             linkerSettings: [
                 .linkedFramework("Security"),
+                .linkedFramework("CoreAudio"),
                 .linkedFramework("Foundation"),
                 .linkedFramework("CoreGraphics"),
-                .linkedFramework("CoreAudio"),
-                .linkedFramework("SystemConfiguration"),
                 .linkedFramework("CoreTelephony"),
-                .linkedFramework("CoreFoundation")
+                .linkedFramework("CoreFoundation"),
+                .linkedFramework("SystemConfiguration")
             ]
         ),
         .target(
             name: "AssetPicker",
             dependencies: [
-                "Toast","Slider","Player","Layout","Refresh","Exporter","Definition","EmptyView","AnimatedImage"
+                "Toast", "Slider", "Player", "Layout", "Refresh", "Definition", "Extension", "EmptyView", "NameSpace", "MediaExport", "AssetBrowser", "AnimatedImage"
             ],
             path: "MNSwiftKit/AssetPicker",
             resources: [
@@ -389,15 +446,59 @@ let package = Package(
                 .linkedFramework("Photos"),
                 .linkedFramework("PhotosUI"),
                 .linkedFramework("Foundation"),
+                .linkedFramework("CoreGraphics"),
                 .linkedFramework("AVFoundation"),
                 .linkedFramework("CoreFoundation"),
+                .linkedFramework("UniformTypeIdentifiers")
+            ]
+        ),
+        .target(
+            name: "AssetBrowser",
+            dependencies: [
+                "Slider", "Player", "Layout", "Definition", "Extension", "AnimatedImage"
+            ],
+            path: "MNSwiftKit/AssetBrowser",
+            resources: [
+                .process("Resources")
+            ],
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"])
+            ],
+            linkerSettings: [
+                .linkedFramework("UIKit"),
+                .linkedFramework("Photos"),
+                .linkedFramework("Foundation"),
+                .linkedFramework("CoreGraphics"),
+                .linkedFramework("AVFoundation"),
+                .linkedFramework("CoreFoundation")
+            ]
+        ),
+        .target(
+            name: "NameSpace",
+            path: "MNSwiftKit/NameSpace",
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"])
+            ],
+            linkerSettings: [
+                .linkedFramework("Foundation")
+            ]
+        ),
+        .target(
+            name: "PageControl",
+            path: "MNSwiftKit/PageControl",
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"])
+            ],
+            linkerSettings: [
+                .linkedFramework("UIKit"),
+                .linkedFramework("Foundation"),
                 .linkedFramework("CoreGraphics")
             ]
         ),
         .target(
             name: "Components",
             dependencies: [
-                "Layout","Extension"
+                "Layout", "Extension"
             ],
             path: "MNSwiftKit/Components",
             resources: [
@@ -420,6 +521,9 @@ let package = Package(
         ),
         .target(
             name: "Transitioning",
+            dependencies: [
+                "NameSpace"
+            ],
             path: "MNSwiftKit/Transitioning",
             swiftSettings: [
                 .unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"])
@@ -431,7 +535,28 @@ let package = Package(
             ]
         ),
         .target(
+            name: "EmoticonKeyboard",
+            dependencies: [
+                "Definition", "Extension", "NameSpace", "PageControl", "AnimatedImage"
+            ],
+            path: "MNSwiftKit/EmoticonKeyboard",
+            resources: [
+                .process("Resources")
+            ],
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"])
+            ],
+            linkerSettings: [
+                .linkedFramework("UIKit"),
+                .linkedFramework("Foundation"),
+                .linkedFramework("CoreGraphics")
+            ]
+        ),
+        .target(
             name: "AnimatedImage",
+            dependencies: [
+                "NameSpace"
+            ],
             path: "MNSwiftKit/AnimatedImage",
             swiftSettings: [
                 .unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"])
@@ -443,6 +568,18 @@ let package = Package(
                 .linkedFramework("CoreServices"),
                 .linkedFramework("CoreGraphics"),
                 .linkedFramework("UniformTypeIdentifiers")
+            ]
+        ),
+        .target(
+            name: "CollectionLayout",
+            path: "MNSwiftKit/CollectionLayout",
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"])
+            ],
+            linkerSettings: [
+                .linkedFramework("UIKit"),
+                .linkedFramework("Foundation"),
+                .linkedFramework("CoreGraphics")
             ]
         )
         //.testTarget(name: "testTests", dependencies: ["test"])

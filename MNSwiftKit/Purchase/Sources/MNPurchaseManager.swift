@@ -23,24 +23,29 @@ import Foundation
 }
 
 /// 内购结果key
-public let MNPurchaseResultNotificationKey: String = "com.mnkit.purchase.result"
+public let MNPurchaseResultNotificationKey: String = "com.mn.purchase.result"
 
 /// 内购结束通知
-public let MNPurchaseDidFinishNotification: NSNotification.Name = NSNotification.Name(rawValue: "com.mnkit.purchase.finish")
+public let MNPurchaseDidFinishNotification: NSNotification.Name = NSNotification.Name(rawValue: "com.mn.purchase.finish")
 
 /// 内购管理者
 public class MNPurchaseManager: NSObject {
     
-    /// 封装内购操作记录
-    private struct Operation {
-        var index: Int
-        var count: Int
-        var code: MNPurchaseResult.Code
-        static let none: Operation = Operation(index: 0, count: 0, code: .failed)
+    /// 记录任务情况
+    private struct Task {
+        /// 当前操作索引
+        var index: Int = 0
+        /// 需要操作的总数
+        var count: Int = 0
+        /// 操作结果码
+        var code: MNPurchaseResult.Code = .failed
+        
+        /// 无任务
+        nonisolated(unsafe) static let none = Task()
     }
     
     /// 唯一实例化入口
-    public static let `default`: MNPurchaseManager = MNPurchaseManager()
+    nonisolated(unsafe) public static let `default`: MNPurchaseManager = MNPurchaseManager()
     /// 凭据校验最大次数 超过次数的收据会从本地删除 0则不限制
     public var maxCheckoutCount: Int = 3
     /// 利于苹果后台对收据的验证
@@ -54,7 +59,7 @@ public class MNPurchaseManager: NSObject {
     /// 此时内购请求
     private var request: MNPurchaseRequest!
     /// 操作
-    private var operation: Operation = .none
+    private var task: Task = .none
     /// 内购凭据存储
     private let database: MNReceiptBase = MNReceiptBase()
     /// 处理队列
@@ -99,8 +104,8 @@ public class MNPurchaseManager: NSObject {
             request.completionHandler = completionHandler
             request.update(status: .checking)
             self.request = request
-            operation = .none
-            operation.count = 1
+            task = .none
+            task.count = 1
             queue.async { [weak self] in
                 guard let self = self else { return }
                 self.checkout(receipt)
@@ -113,8 +118,8 @@ public class MNPurchaseManager: NSObject {
             self.request.statusHandler = statusHandler
             self.request.completionHandler = completionHandler
             self.request.update(status: .checking)
-            operation = .none
-            operation.count = receipts.count
+            task = .none
+            task.count = receipts.count
             for receipt in receipts {
                 queue.async { [weak self] in
                     guard let self = self else { return }
@@ -132,7 +137,7 @@ public class MNPurchaseManager: NSObject {
             return
         }
         // 保存请求
-        operation = .none
+        task = .none
         self.request = request
         request.statusHandler = statusHandler
         request.completionHandler = completionHandler
@@ -155,15 +160,15 @@ public class MNPurchaseManager: NSObject {
         switch request.action {
         case .restore, .checkout:
             // 恢复购买或校验订单请求
-            if (operation.index + 1) < operation.count {
+            if (task.index + 1) < task.count {
                 // 还没处理完
-                operation.index += 1
+                task.index += 1
                 if responseCode == .succeed {
-                    operation.code = .succeed
+                    task.code = .succeed
                 }
                 return
             }
-            if operation.code == .succeed {
+            if task.code == .succeed {
                 code = .succeed
             }
         default: break
@@ -173,7 +178,7 @@ public class MNPurchaseManager: NSObject {
             result.receipt = receipt
         }
         self.request = nil
-        operation = .none
+        task = .none
         request.finish(result: result)
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -432,7 +437,7 @@ extension MNPurchaseManager: SKProductsRequestDelegate {
         let payment = SKMutablePayment(product: product)
         payment.quantity = 1
         payment.applicationUsername = applicationUsername
-        operation = .none
+        task = .none
         paymentQueue.add(payment)
     }
     
@@ -472,8 +477,8 @@ extension MNPurchaseManager: SKPaymentTransactionObserver {
     
     public func paymentQueueRestoreCompletedTransactionsFinished(_ queue: SKPaymentQueue) {
         let transactions = queue.transactions.filter { $0.transactionState == .restored }
-        operation = .none
-        operation.count = transactions.count
+        task = .none
+        task.count = transactions.count
         if transactions.isEmpty {
             self.queue.async { [weak self] in
                 guard let self = self else { return }
@@ -483,7 +488,7 @@ extension MNPurchaseManager: SKPaymentTransactionObserver {
     }
     
     public func paymentQueue(_ queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: Error) {
-        operation = .none
+        task = .none
         self.queue.async { [weak self] in
             guard let self = self else { return }
             self.finish(nil, code: MNPurchaseResult.Code(error: error) ?? .failed)
