@@ -437,13 +437,19 @@ extension MNAssetBrowserCell {
 // MARK: - 当前视图
 extension MNAssetBrowserCell {
     
-    /// 获取当前截图
-    var currentImage: UIImage? {
+    /// 获取当前显示的图片
+    var displayedImage: UIImage? {
         guard let asset = asset else { return nil }
-        if asset.type == .video || asset.type == .livePhoto { return asset.cover }
-        guard let image = asset.contents as? UIImage else { return asset.cover }
-        guard let images = image.images, images.count > 1 else { return image }
-        return images.first
+        switch asset.type {
+        case .gif:
+            guard let image = asset.cover else { return nil }
+            guard let images = image.images, images.count > 1 else { return image }
+            return images.first
+        case .photo, .livePhoto: return asset.cover
+        case .video:
+            if #available(iOS 16.0, *), let image = scrollView.playView.displayedImage { return image }
+            return asset.cover
+        }
     }
 }
 

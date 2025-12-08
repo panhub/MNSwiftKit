@@ -13,6 +13,7 @@ public class AssetPickerResource {
     
     /// 资源束
     private class var bundle: Bundle {
+        
         // 尝试从 CocoaPods 生成的 bundle 中加载（库作为 Pod 使用时）
         if let url = Bundle.main.url(forResource: "MNSwiftKit_AssetPicker", withExtension: "bundle"), let bundle = Bundle(url: url) {
             return bundle

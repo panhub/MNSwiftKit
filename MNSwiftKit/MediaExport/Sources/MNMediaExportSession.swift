@@ -2,7 +2,7 @@
 //  MNMediaExportSession.swift
 //  MNSwiftKit
 //
-//  Created by panhub on 2025/12/2.
+//  Created by panhub on 2021/10/30.
 //  Copyright © 2025 CocoaPods. All rights reserved.
 //  媒体资源输会话
 
@@ -268,7 +268,7 @@ public class MNMediaExportSession: NSObject {
             reader.add(videoOutput)
             
             guard let outputSettings = videoOutputSettings(for: videoTrack, fileType: outputFileType, renderSize: renderSize) else {
-                finish(error: .cannotExportSetting(.video, fileType: outputFileType))
+                finish(error: .unknownExportSetting(.video, fileType: outputFileType))
                 return
             }
             videoInput = AVAssetWriterInput(mediaType: .video, outputSettings: outputSettings)
@@ -298,7 +298,7 @@ public class MNMediaExportSession: NSObject {
             
             // 创建 Audio Input
             guard let audioOutputSettings = audioOutputSettings(for: audioTrack, fileType: outputFileType) else {
-                finish(error: .cannotExportSetting(.audio, fileType: outputFileType))
+                finish(error: .unknownExportSetting(.audio, fileType: outputFileType))
                 return
             }
             audioInput = AVAssetWriterInput(mediaType: .audio, outputSettings: audioOutputSettings)

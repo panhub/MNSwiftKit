@@ -110,6 +110,21 @@ public class MNPlayView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    /// 正在显示的图片
+    @available(iOS 16.0, *)
+    public var displayedImage: UIImage? {
+        let layer = layer as! AVPlayerLayer
+        guard let pixelBuffer = layer.displayedPixelBuffer() else { return nil }
+        CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
+        defer {
+            CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly)
+        }
+        let context = CIContext(options: nil)
+        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+        guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return nil }
+        return UIImage(cgImage: cgImage)
+    }
 }
 
 // MARK: - Event

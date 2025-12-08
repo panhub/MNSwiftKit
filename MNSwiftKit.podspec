@@ -110,7 +110,7 @@ Pod::Spec.new do |s|
   
   # MediaExport <媒体资源输出>
   s.subspec 'MediaExport' do |e|
-    e.frameworks = 'Foundation', 'AVFoundation', 'QuartzCore'
+    e.frameworks = 'Foundation', 'AVFoundation', 'CoreFoundation', 'CoreMedia'
     e.source_files = 'MNSwiftKit/MediaExport/Sources/**/*.swift'
   end
   

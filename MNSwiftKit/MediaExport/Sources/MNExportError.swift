@@ -38,8 +38,8 @@ public enum MNExportError: Swift.Error {
     case cannotWritToFile(URL, fileType: AVFileType, error: Error)
     /// 无法添加Output
     case cannotAddOutput(AVMediaType)
-    /// 无法输出设置
-    case cannotExportSetting(AVMediaType, fileType: AVFileType)
+    /// 未知输出设置
+    case unknownExportSetting(AVMediaType, fileType: AVFileType)
     /// 无法添加Input
     case cannotAddInput(AVMediaType)
     /// 无法开始读取
@@ -75,7 +75,7 @@ extension MNExportError {
         case .cannotReadAsset: return "构建资源读取器失败"
         case .cannotWritToFile: return "构建资源写入器失败"
         case .cannotAddOutput(let mediaType): return "添加\(mediaType == .audio ? "音频" : "视频")读取配置失败"
-        case .cannotExportSetting(let mediaType, _): return "获取\(mediaType == .audio ? "音频" : "视频")输出配置失败"
+        case .unknownExportSetting(let mediaType, _): return "获取\(mediaType == .audio ? "音频" : "视频")输出配置失败"
         case .cannotAddInput(let mediaType): return "添加\(mediaType == .audio ? "音频" : "视频")输入配置失败"
         case .cannotStartReading(let error): return error.localizedDescription
         case .cannotStartWriting(let error): return error.localizedDescription
@@ -120,7 +120,7 @@ extension MNExportError: CustomNSError {
         case .cannotReadAsset: return -181387
         case .cannotWritToFile: return -181388
         case .cannotAddOutput: return -181389
-        case .cannotExportSetting: return -181390
+        case .unknownExportSetting: return -181390
         case .cannotAddInput: return -181391
         case .cannotStartReading: return -181392
         case .cannotStartWriting: return -181393
@@ -155,7 +155,7 @@ extension MNExportError: CustomDebugStringConvertible {
         case .cannotReadAsset(let error): return "构建资源读取器失败: \(error)"
         case .cannotWritToFile(let url, let fileType, let error): return "构建资源写入器失败: \(url)\n文件类型: \(fileType)\n错误信息: \(error)"
         case .cannotAddOutput(let mediaType): return "添加\(mediaType == .audio ? "音频" : "视频")输出失败"
-        case .cannotExportSetting(let mediaType, _): return "获取\(mediaType == .audio ? "音频" : "视频")输出配置失败"
+        case .unknownExportSetting(let mediaType, _): return "获取\(mediaType == .audio ? "音频" : "视频")输出配置失败"
         case .cannotAddInput(let mediaType): return "添加\(mediaType == .audio ? "音频" : "视频")输入失败"
         case .cannotStartReading(let error): return "开启读取操作失败: \(error)"
         case .cannotStartWriting(let error): return "开启写入操作失败: \(error)"

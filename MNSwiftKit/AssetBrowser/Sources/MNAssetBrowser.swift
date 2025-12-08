@@ -640,7 +640,7 @@ extension MNAssetBrowser {
             let button = toView as! UIButton
             animatedImage = button.currentBackgroundImage ?? button.currentImage
         } else if let cell = cell {
-            animatedImage = cell.currentImage
+            animatedImage = cell.displayedImage
         }
         if let image = animatedImage, let images = image.images, images.count > 1 {
             animatedImage = images.first
@@ -897,7 +897,7 @@ extension MNAssetBrowser: UIGestureRecognizerDelegate {
             
             collectionView.isHidden = true
             interactiveView.isHidden = false
-            interactiveView.image = cell.currentImage
+            interactiveView.image = cell.displayedImage
             interactiveView.frame = cell.scrollView.convert(cell.scrollView.contentView.frame, to: self)
             interactiveFrame = interactiveView.frame
             
