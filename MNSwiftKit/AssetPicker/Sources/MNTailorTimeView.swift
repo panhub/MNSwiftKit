@@ -12,9 +12,9 @@ import UIKit
 
 class MNTailorTimeView: UIView {
     
-    private let timeLabel: UILabel = UILabel()
+    private let divider: UIView = UIView()
     
-    private let separator: UIView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 1.0, height: 11.0))
+    private let timeLabel: UILabel = UILabel()
     
     var textColor: UIColor? {
         get { timeLabel.textColor }
@@ -27,8 +27,8 @@ class MNTailorTimeView: UIView {
     }
     
     override var tintColor: UIColor! {
-        get { separator.backgroundColor }
-        set { separator.backgroundColor = newValue }
+        get { divider.backgroundColor }
+        set { divider.backgroundColor = newValue }
     }
     
     override init(frame: CGRect) {
@@ -37,33 +37,39 @@ class MNTailorTimeView: UIView {
         timeLabel.text = "00:00"
         timeLabel.numberOfLines = 1
         timeLabel.textAlignment = .center
-        timeLabel.font = .systemFont(ofSize: 11.0)
+        timeLabel.clipsToBounds = true
+        timeLabel.layer.cornerRadius = 3.0
+        timeLabel.font = .systemFont(ofSize: 10.0, weight: .medium)
         timeLabel.textColor = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
         timeLabel.backgroundColor = UIColor(red: 51.0/255.0, green: 51.0/255.0, blue: 51.0/255.0, alpha: 1.0)
-        timeLabel.sizeToFit()
-        timeLabel.mn.width = ceil(timeLabel.frame.width)
-        timeLabel.mn.height = ceil(timeLabel.frame.height)
-        timeLabel.mn.size = timeLabel.bounds.inset(by: UIEdgeInsets(top: -4.0, left: -8.0, bottom: -3.0, right: -8.0)).size
-        timeLabel.layer.cornerRadius = 3.0
-        timeLabel.clipsToBounds = true
+        timeLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(timeLabel)
+        NSLayoutConstraint.activate([
+            timeLabel.topAnchor.constraint(equalTo: topAnchor),
+            timeLabel.leftAnchor.constraint(equalTo: leftAnchor),
+            timeLabel.rightAnchor.constraint(equalTo: rightAnchor),
+            timeLabel.heightAnchor.constraint(equalToConstant: 16.0)
+        ])
         
-        mn.width = timeLabel.frame.width
-        
-        separator.mn.minY = timeLabel.frame.maxY + 5.0
-        separator.mn.midX = timeLabel.frame.midX
-        separator.backgroundColor = timeLabel.textColor
-        addSubview(separator)
-        
-        mn.height = separator.frame.maxY + 5.0
+        divider.backgroundColor = timeLabel.textColor
+        divider.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(divider)
+        NSLayoutConstraint.activate([
+            divider.widthAnchor.constraint(equalToConstant: 1.0),
+            divider.topAnchor.constraint(equalTo: timeLabel.bottomAnchor, constant: 3.0),
+            divider.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -3.0),
+            divider.centerXAnchor.constraint(equalTo: centerXAnchor)
+        ])
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func update(duration: TimeInterval) {
+    /// 更新时间
+    /// - Parameter time: 时间
+    func update(time: TimeInterval) {
         
-        timeLabel.text = Date(timeIntervalSince1970: duration).mn.playTime
+        timeLabel.text = Date(timeIntervalSince1970: time).mn.playTime
     }
 }

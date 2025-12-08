@@ -609,10 +609,6 @@ extension MNAssetPickerController: MNDataEmptyDelegate {
 // MARK: - MNTailorViewControllerDelegate
 extension MNAssetPickerController: MNTailorViewControllerDelegate {
     
-    func tailorControllerDidCancel(_ tailorController: MNTailorViewController) {
-        tailorController.navigationController?.popViewController(animated: true)
-    }
-    
     func tailorController(_ tailorController: MNTailorViewController, didOutputVideoAtPath videoPath: String) {
         guard let asset = MNAsset(contents: videoPath, options: options) else {
             try? FileManager.default.removeItem(atPath: videoPath)

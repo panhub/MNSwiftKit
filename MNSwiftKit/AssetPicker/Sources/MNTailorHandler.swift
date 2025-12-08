@@ -6,9 +6,6 @@
 //  视频裁剪把手
 
 import UIKit
-//#if canImport(MNSwiftKitLayout)
-//import MNSwiftKitLayout
-//#endif
 
 /// 滑动代理
 protocol MNTailorHandlerDelegate: NSObjectProtocol {

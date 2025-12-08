@@ -101,6 +101,15 @@ class MNTailorView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        guard bounds.isNull == false, bounds.isEmpty == false, subviews.isEmpty else { return }
         
         let contentInset = UIEdgeInsets(top: 3.5, left: 23.0, bottom: 3.5, right: 23.0)
         
@@ -154,10 +163,8 @@ class MNTailorView: UIView {
         indicatorView.center = scrollView.center
         indicatorView.color = WhiteColor
         addSubview(indicatorView)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        
+        layer.mn.setRadius(5.0, by: [.topRight, .bottomRight])
     }
     
     func reloadFrames() {

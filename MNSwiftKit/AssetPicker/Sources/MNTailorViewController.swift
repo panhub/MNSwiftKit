@@ -36,28 +36,26 @@ public class MNTailorViewController: UIViewController {
     private var cover: UIImage!
     /// 视频时长
     private var duration: TimeInterval = 0.0
+    /// 时间中心点约束
+    private var timeCenterXConstraint: NSLayoutConstraint!
     /// 视频尺寸
     private var naturalSize: CGSize = CGSize(width: 1920.0, height: 1080.0)
     /// 最小裁剪时长
     public var minTailorDuration: TimeInterval = 0.0
     /// 最大裁剪时长
     public var maxTailorDuration: TimeInterval = 0.0
-    /// 关闭按钮
-    private let closeButton = UIButton(type: .custom)
-    /// 确定按钮
-    private let doneButton = UIButton(type: .custom)
     /// 时间显示
     private let timeLabel: UILabel = UILabel()
     /// 播放/暂停标记
-    private let badgeView: UIImageView = UIImageView(image: AssetPickerResource.image(named: "player_play"))
+    private let badgeView: UIImageView = UIImageView()
     /// 视频播放视图
     private let playView: MNPlayView = MNPlayView()
     /// 时间显示
     private let timeView: MNTailorTimeView = MNTailorTimeView()
-    /// 动画时长
-    private let AnimationDuration: TimeInterval = 0.2
     /// 播放/暂停控制
-    private let playControl: UIControl = UIControl(frame: CGRect(x: 0.0, y: 0.0, width: 48.0, height: 48.0))
+    private let playControl: UIControl = UIControl()
+    /// 裁剪视图
+    private let tailorView: MNTailorView = MNTailorView()
     /// 默认黑色
     private let BlackColor: UIColor = UIColor(red: 51.0/255.0, green: 51.0/255.0, blue: 51.0/255.0, alpha: 1.0)
     /// 默认白色
@@ -68,16 +66,7 @@ public class MNTailorViewController: UIViewController {
     public override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
     /// 状态栏动态更新
     public override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation { .fade }
-    /// 裁剪视图
-    private lazy var tailorView: MNTailorView = {
-        let tailorView: MNTailorView = MNTailorView(frame: CGRect(x: playControl.frame.maxX + 1.5, y: playControl.frame.minY, width: doneButton.frame.maxX - playControl.frame.maxX - 1.5, height: playControl.frame.height))
-        tailorView.delegate = self
-        tailorView.videoPath = videoPath
-        tailorView.minTailorDuration = minTailorDuration
-        tailorView.maxTailorDuration = maxTailorDuration
-        tailorView.layer.mn.setRadius(5.0, by: [.topRight, .bottomRight])
-        return tailorView
-    }()
+    
     /// 加载指示图
     private let indicatorView: UIActivityIndicatorView = {
         var style: UIActivityIndicatorView.Style
@@ -110,7 +99,7 @@ public class MNTailorViewController: UIViewController {
         self.duration = MNAssetExportSession.seconds(fileAtPath: videoPath)
         self.cover = MNAssetExportSession.generateImage(fileAtPath: videoPath)
         let naturalSize = MNAssetExportSession.naturalSize(fileAtPath: videoPath)
-        if naturalSize != .zero {
+        if naturalSize.width > 0.0, naturalSize.height > 0.0 {
             self.naturalSize = naturalSize
         }
     }
@@ -136,94 +125,194 @@ public class MNTailorViewController: UIViewController {
         } else {
             automaticallyAdjustsScrollViewInsets = false
         }
+    }
+    
+    /// 创建子视图
+    private func createSubview() {
         
-        closeButton.mn.size = CGSize(width: 27.0, height: 27.0)
-        closeButton.mn.minX = 15.0
-        closeButton.mn.maxY = view.frame.height - max(15.0, MN_BOTTOM_SAFE_HEIGHT)
-        closeButton.setBackgroundImage(AssetPickerResource.image(named: "player_close"), for: .normal)
-        closeButton.addTarget(self, action: #selector(closeButtonTouchUpInside(_:)), for: .touchUpInside)
-        view.addSubview(closeButton)
+        // 导航栏 适配资源选择器
+        var statusBarHeight = 0.0
+        var navigationViewHeight = 55.0
+        if let window = UIWindow.mn.current, view.bounds == window.bounds {
+            // 全屏展示
+            statusBarHeight = MN_STATUS_BAR_HEIGHT
+            navigationViewHeight = MN_NAV_BAR_HEIGHT
+        }
         
-        doneButton.mn.size = CGSize(width: 25.0, height: 25.0)
-        doneButton.mn.midY = closeButton.frame.midY
-        doneButton.mn.maxX = view.frame.width - closeButton.frame.minX
-        doneButton.isUserInteractionEnabled = false
-        doneButton.setBackgroundImage(AssetPickerResource.image(named: "player_done"), for: .normal)
+        // 返回按钮
+        let backImage = AssetPickerResource.image(named: "back")
+        let backButton = UIButton(type: .custom)
+        backButton.translatesAutoresizingMaskIntoConstraints = false
+        backButton.addTarget(self, action: #selector(self.backButtonTouchUpInside(_:)), for: .touchUpInside)
+        if #available(iOS 15.0, *) {
+            var configuration = UIButton.Configuration.plain()
+            configuration.background.backgroundColor = .clear
+            backButton.configuration = configuration
+            backButton.configurationUpdateHandler = { button in
+                switch button.state {
+                case .normal, .highlighted:
+                    button.configuration?.background.image = backImage
+                default: break
+                }
+            }
+        } else {
+            backButton.adjustsImageWhenHighlighted = false
+            backButton.setBackgroundImage(backImage, for: .normal)
+        }
+        view.addSubview(backButton)
+        NSLayoutConstraint.activate([
+            backButton.widthAnchor.constraint(equalToConstant: 24.0),
+            backButton.heightAnchor.constraint(equalToConstant: 24.0),
+            backButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16.0),
+            backButton.topAnchor.constraint(equalTo: view.topAnchor, constant: statusBarHeight + (navigationViewHeight - 24.0)/2.0)
+        ])
+        
+        // 导航右按钮
+        let doneImage = AssetPickerResource.image(named: "done")
+        let doneButton = UIButton(type: .custom)
+        doneButton.translatesAutoresizingMaskIntoConstraints = false
         doneButton.addTarget(self, action: #selector(doneButtonTouchUpInside(_:)), for: .touchUpInside)
+        if #available(iOS 15.0, *) {
+            var configuration = UIButton.Configuration.plain()
+            configuration.background.backgroundColor = .clear
+            doneButton.configuration = configuration
+            doneButton.configurationUpdateHandler = { button in
+                switch button.state {
+                case .normal, .highlighted:
+                    button.configuration?.background.image = doneImage
+                default: break
+                }
+            }
+        } else {
+            doneButton.adjustsImageWhenHighlighted = false
+            doneButton.setBackgroundImage(doneImage, for: .normal)
+        }
         view.addSubview(doneButton)
+        NSLayoutConstraint.activate([
+            doneButton.widthAnchor.constraint(equalToConstant: 24.0),
+            doneButton.heightAnchor.constraint(equalToConstant: 24.0),
+            doneButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -16.0),
+            doneButton.topAnchor.constraint(equalTo: view.topAnchor, constant:  statusBarHeight + (navigationViewHeight - 24.0)/2.0)
+        ])
         
-        timeLabel.frame = CGRect(x: closeButton.frame.maxX, y: closeButton.frame.minY, width: doneButton.frame.minX - closeButton.frame.maxX, height: closeButton.frame.height)
+        let titleLabel = UILabel()
+        titleLabel.text = "视频裁剪"
+        titleLabel.numberOfLines = 1
+        titleLabel.font = .systemFont(ofSize: 17.0, weight: .medium)
+        titleLabel.textAlignment = .center
+        titleLabel.textColor = WhiteColor
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(titleLabel)
+        NSLayoutConstraint.activate([
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            titleLabel.centerYAnchor.constraint(equalTo: backButton.centerYAnchor)
+        ])
+        
         timeLabel.numberOfLines = 1
-        timeLabel.font = .systemFont(ofSize: 13.0, weight: .medium)
-        timeLabel.textAlignment = .center
         timeLabel.textColor = WhiteColor
+        timeLabel.textAlignment = .center
+        timeLabel.font = .systemFont(ofSize: 13.0, weight: .medium)
+        timeLabel.text = "00:00/\(Date(timeIntervalSince1970: ceil(duration)).mn.playTime)"
+        timeLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(timeLabel)
+        NSLayoutConstraint.activate([
+            timeLabel.heightAnchor.constraint(equalToConstant: 13.0),
+            timeLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -max(MN_BOTTOM_SAFE_HEIGHT, 17.0)),
+            timeLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+        ])
         
-        playControl.mn.minX = closeButton.frame.minX
-        playControl.mn.maxY = closeButton.frame.minY - 20.0
         playControl.isUserInteractionEnabled = false
         playControl.backgroundColor = BlackColor
-        playControl.layer.mn.setRadius(5.0, by: [.topLeft, .bottomLeft])
         playControl.addTarget(self, action: #selector(playControlTouchUpInside(_:)), for: .touchUpInside)
+        playControl.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(playControl)
+        NSLayoutConstraint.activate([
+            playControl.widthAnchor.constraint(equalToConstant: 48.0),
+            playControl.heightAnchor.constraint(equalToConstant: 48.0),
+            playControl.leftAnchor.constraint(equalTo: backButton.leftAnchor),
+            playControl.bottomAnchor.constraint(equalTo: timeLabel.topAnchor, constant: -20.0)
+        ])
         
-        badgeView.mn.width = 25.0
-        badgeView.mn.sizeFitToWidth()
-        badgeView.isUserInteractionEnabled = false
+        badgeView.contentMode = .scaleAspectFit
+        badgeView.image = AssetPickerResource.image(named: "player_play")
         badgeView.highlightedImage = AssetPickerResource.image(named: "player_pause")
-        badgeView.center = CGPoint(x: playControl.bounds.midX, y: playControl.bounds.midY)
+        badgeView.translatesAutoresizingMaskIntoConstraints = false
         playControl.addSubview(badgeView)
+        NSLayoutConstraint.activate([
+            badgeView.widthAnchor.constraint(equalToConstant: 25.0),
+            badgeView.heightAnchor.constraint(equalToConstant: 25.0),
+            badgeView.centerXAnchor.constraint(equalTo: playControl.centerXAnchor),
+            badgeView.centerYAnchor.constraint(equalTo: playControl.centerYAnchor)
+        ])
         
-        tailorView.isUserInteractionEnabled = false
+        tailorView.delegate = self
+        tailorView.videoPath = videoPath
         tailorView.backgroundColor = BlackColor
+        tailorView.minTailorDuration = minTailorDuration
+        tailorView.maxTailorDuration = maxTailorDuration
+        tailorView.isUserInteractionEnabled = false
+        tailorView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tailorView)
+        NSLayoutConstraint.activate([
+            tailorView.topAnchor.constraint(equalTo: playControl.topAnchor),
+            tailorView.leftAnchor.constraint(equalTo: playControl.rightAnchor, constant: 1.5),
+            tailorView.rightAnchor.constraint(equalTo: doneButton.rightAnchor),
+            tailorView.heightAnchor.constraint(equalTo: playControl.heightAnchor)
+        ])
         
-        // 播放尺寸
-        let top: CGFloat = MN_STATUS_BAR_HEIGHT + MN_NAV_BAR_HEIGHT/2.0
-        let width: CGFloat = view.frame.width
-        let height: CGFloat = playControl.frame.minY - 20.0 - top
-        var renderSize: CGSize = naturalSize
-        if renderSize.width >= renderSize.height {
-            // 横向视频
-            renderSize = renderSize.mn.multiplyTo(width: width)
-            if floor(renderSize.height) > height {
-                renderSize = self.naturalSize.mn.multiplyTo(height: height)
-            }
-        } else {
-            // 纵向视频
-            renderSize = renderSize.mn.multiplyTo(height: height)
-            if floor(renderSize.width) > width {
-                renderSize = self.naturalSize.mn.multiplyTo(width: width)
-            }
-        }
-        renderSize.width = ceil(renderSize.width)
-        renderSize.height = ceil(renderSize.height)
-        playView.frame = CGRect(x: (view.frame.width - renderSize.width)/2.0, y: (height - renderSize.height)/2.0 + top, width: renderSize.width, height: renderSize.height)
-        playView.mn.minX = (view.frame.width - renderSize.width)/2.0
         playView.isTouchEnabled = false
-        playView.backgroundColor = BlackColor
+        playView.videoGravity = .resizeAspect
+        //playView.backgroundColor = BlackColor
+        playView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(playView)
+        NSLayoutConstraint.activate([
+            playView.topAnchor.constraint(equalTo: backButton.bottomAnchor, constant: 20.0),
+            playView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0.0),
+            playView.bottomAnchor.constraint(equalTo: playControl.topAnchor, constant: -20.0),
+            playView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0.0)
+        ])
         
-        indicatorView.center = playView.center
         indicatorView.color = WhiteColor
+        indicatorView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(indicatorView)
+        NSLayoutConstraint.activate([
+            indicatorView.centerXAnchor.constraint(equalTo: playView.centerXAnchor),
+            indicatorView.centerYAnchor.constraint(equalTo: playView.centerYAnchor)
+        ])
         
         timeView.isHidden = true
-        timeView.mn.minX = tailorView.frame.minX
-        timeView.mn.maxY = playControl.frame.minY
         timeView.textColor = WhiteColor
         timeView.backgroundColor = BlackColor.withAlphaComponent(0.83)
+        timeView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(timeView)
+        timeCenterXConstraint = timeView.centerXAnchor.constraint(equalTo: tailorView.leftAnchor)
+        NSLayoutConstraint.activate([
+            timeCenterXConstraint,
+            timeView.widthAnchor.constraint(equalToConstant: 40.0),
+            timeView.heightAnchor.constraint(equalToConstant: 27.0),
+            timeView.bottomAnchor.constraint(equalTo: tailorView.topAnchor)
+        ])
         
+        // 这里还没布局好视图, 先不加载截图
         if duration > 0.0, let cover = cover {
             playView.coverView.image = cover
-            timeLabel.text = "00:00/\(Date(timeIntervalSince1970: ceil(duration)).mn.playTime)"
+        }
+    }
+    
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        guard view.mn.isFirstAssociated else { return }
+        createSubview()
+    }
+    
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard mn.isFirstAssociated else { return }
+        playControl.layer.mn.setRadius(5.0, by: [.topLeft, .bottomLeft])
+        if let _ = playView.coverView.image {
             tailorView.reloadFrames()
         } else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-                guard let self = self else { return }
-                self.failure("初始化视频失败")
-            }
+            failure("视频初始化失败")
         }
     }
     
@@ -247,11 +336,11 @@ extension MNTailorViewController {
     
     /// 关闭按钮点击事件
     /// - Parameter sender: 按钮
-    @objc func closeButtonTouchUpInside(_ sender: UIButton) {
+    @objc func backButtonTouchUpInside(_ sender: UIButton) {
         if let delegate = delegate, delegate.responds(to: #selector(delegate.tailorControllerDidCancel)) {
             delegate.tailorControllerDidCancel?(self)
         } else {
-            self.mn.pop()
+            mn.pop()
         }
     }
     
@@ -266,14 +355,14 @@ extension MNTailorViewController {
         } else if tailorView.isEnding {
             // 结束已达到结束状态
             playControl.isUserInteractionEnabled = false
-            UIView.animate(withDuration: AnimationDuration, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+            UIView.animate(withDuration: 0.2, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.tailorView.pointer.alpha = 0.0
             } completion: { [weak self] _ in
                 guard let self = self else { return }
                 self.tailorView.movePointerToBegin()
                 self.player.seek(progress: self.tailorView.progress) { [weak self] _ in
-                    UIView.animate(withDuration: self?.AnimationDuration ?? 0.0, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) {
+                    UIView.animate(withDuration: 0.2, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) {
                         guard let self = self else { return }
                         self.tailorView.pointer.alpha = 1.0
                     } completion: { _ in
@@ -421,15 +510,15 @@ extension MNTailorViewController: MNTailorViewDelegate {
         tailorView.isPlaying = player.isPlaying
         player.pause()
         timeView.isHidden = false
-        timeView.update(duration: duration*tailorView.begin)
-        timeView.mn.midX = tailorView.tailorHandler.leftHandler.frame.maxX + tailorView.frame.minX
+        timeView.update(time: duration*tailorView.begin)
+        timeCenterXConstraint.constant = tailorView.tailorHandler.leftHandler.frame.maxX
     }
     
     func tailorViewLeftHandlerDidDragging(_ tailorView: MNTailorView) {
         let begin = tailorView.begin
         player.seek(progress: begin, completion: nil)
-        timeView.update(duration: duration*begin)
-        timeView.mn.midX = tailorView.tailorHandler.leftHandler.frame.maxX + tailorView.frame.minX
+        timeView.update(time: duration*begin)
+        timeCenterXConstraint.constant = tailorView.tailorHandler.leftHandler.frame.maxX
     }
     
     func tailorViewLeftHandlerEndDragging(_ tailorView: MNTailorView) {
@@ -444,15 +533,15 @@ extension MNTailorViewController: MNTailorViewDelegate {
         tailorView.isPlaying = player.isPlaying
         player.pause()
         timeView.isHidden = false
-        timeView.update(duration: duration*tailorView.end)
-        timeView.mn.midX = tailorView.tailorHandler.rightHandler.frame.minX + tailorView.frame.minX
+        timeView.update(time: duration*tailorView.end)
+        timeCenterXConstraint.constant = tailorView.tailorHandler.rightHandler.frame.minX
     }
     
     func tailorViewRightHandlerDidDragging(_ tailorView: MNTailorView) {
         let end = tailorView.end
         player.seek(progress: end, completion: nil)
-        timeView.update(duration: duration*end)
-        timeView.mn.midX = tailorView.tailorHandler.rightHandler.frame.minX + tailorView.frame.minX
+        timeView.update(time: duration*end)
+        timeCenterXConstraint.constant = tailorView.tailorHandler.rightHandler.frame.minX
     }
     
     func tailorViewRightHandlerEndDragging(_ tailorView: MNTailorView) {
@@ -467,15 +556,15 @@ extension MNTailorViewController: MNTailorViewDelegate {
         tailorView.isPlaying = player.isPlaying
         player.pause()
         timeView.isHidden = false
-        timeView.update(duration: tailorView.progress*duration)
-        timeView.mn.midX = tailorView.pointer.frame.midX + tailorView.frame.minX
+        timeView.update(time: tailorView.progress*duration)
+        timeCenterXConstraint.constant = tailorView.pointer.frame.midX
     }
     
     func tailorViewPointerDidDragging(_ tailorView: MNTailorView) {
         let progress = tailorView.progress
         player.seek(progress: progress, completion: nil)
-        timeView.update(duration: progress*duration)
-        timeView.mn.midX = tailorView.pointer.frame.midX + tailorView.frame.minX
+        timeView.update(time: progress*duration)
+        timeCenterXConstraint.constant = tailorView.pointer.frame.midX
     }
     
     func tailorViewPointerDidEndDragging(_ tailorView: MNTailorView) {
@@ -490,14 +579,14 @@ extension MNTailorViewController: MNTailorViewDelegate {
         tailorView.isPlaying = player.isPlaying
         player.pause()
         timeView.isHidden = false
-        timeView.update(duration: duration*tailorView.begin)
-        timeView.mn.midX = tailorView.tailorHandler.leftHandler.frame.maxX + tailorView.frame.minX
+        timeView.update(time: duration*tailorView.begin)
+        timeCenterXConstraint.constant = tailorView.tailorHandler.leftHandler.frame.maxX
     }
     
     func tailorViewDidDragging(_ tailorView: MNTailorView) {
         let begin = tailorView.begin
         player.seek(progress: begin, completion: nil)
-        timeView.update(duration: duration*begin)
+        timeView.update(time: duration*begin)
     }
     
     func tailorViewDidEndDragging(_ tailorView: MNTailorView) {
@@ -524,7 +613,6 @@ extension MNTailorViewController: MNPlayerDelegate {
                 indicatorView.stopAnimating()
                 tailorView.isUserInteractionEnabled = true
                 playControl.isUserInteractionEnabled = true
-                doneButton.isUserInteractionEnabled = true
                 UIView.animate(withDuration: 0.18, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
                     guard let self = self else { return }
                     self.playView.coverView.alpha = 0.0

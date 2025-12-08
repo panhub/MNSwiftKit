@@ -204,7 +204,7 @@ public class MNAssetBrowser: UIView {
     }
     
     /// 构建视图
-    private func buildView() {
+    private func createSubview() {
         // 背景
         backgroundView.contentMode = .scaleToFill
         backgroundView.translatesAutoresizingMaskIntoConstraints = false
@@ -354,7 +354,7 @@ public class MNAssetBrowser: UIView {
     }
     
     /// 设置事件
-    private func setupEvent() {
+    private func addRecognizer() {
         let doubleTap = UITapGestureRecognizer(target: self, action: #selector(tapped(_:)))
         doubleTap.numberOfTapsRequired = 2
         addGestureRecognizer(doubleTap)
@@ -493,8 +493,8 @@ extension MNAssetBrowser {
         container.isHidden = hidden
         
         superview.addSubview(self)
-        buildView()
-        setupEvent()
+        createSubview()
+        addRecognizer()
         
         layoutIfNeeded()
         collectionView.isHidden = true
