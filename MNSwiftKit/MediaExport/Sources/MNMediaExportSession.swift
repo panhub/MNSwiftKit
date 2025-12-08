@@ -131,15 +131,15 @@ public class MNMediaExportSession: NSObject {
         
         // 合成器
         let composition = AVMutableComposition()
-        if exportVideoTrack, let videoTrack = asset.mn.track(with: .video) {
+        if exportVideoTrack, let videoTrack = asset.mn.track(with: AVMediaType.video) {
             guard composition.mn.append(track: videoTrack, range: timeRange) else {
-                finish(error: .cannotAppendTrack(.video))
+                finish(error: .cannotAppendTrack(AVMediaType.video))
                 return
             }
         }
-        if exportAudioTrack, let audioTrack = asset.mn.track(with: .audio) {
+        if exportAudioTrack, let audioTrack = asset.mn.track(with: AVMediaType.audio) {
             guard composition.mn.append(track: audioTrack, range: timeRange) else {
-                finish(error: .cannotAppendTrack(.audio))
+                finish(error: .cannotAppendTrack(AVMediaType.audio))
                 return
             }
         }
@@ -201,7 +201,7 @@ public class MNMediaExportSession: NSObject {
             finish(error: .cannotReadAsset(error))
             return
         }
-        reader.timeRange = CMTimeRange(start: .zero, duration: composition.duration)
+        reader.timeRange = CMTimeRange(start: CMTime.zero, duration: composition.duration)
         
         // 创建 AVAssetWriter
         let writer: AVAssetWriter
@@ -218,8 +218,8 @@ public class MNMediaExportSession: NSObject {
         // 配置视频输入输出
         var videoInput: AVAssetWriterInput!
         var videoOutput: AVAssetReaderVideoCompositionOutput!
-        if let videoTrack = composition.mn.track(with: .video) {
-            var cropRect = CGRect(origin: .zero, size: videoTrack.mn.naturalSize)
+        if let videoTrack = composition.mn.track(with: AVMediaType.video) {
+            var cropRect = CGRect(origin: CGPoint.zero, size: videoTrack.mn.naturalSize)
             if let rect = self.cropRect {
                 cropRect = cropRect.intersection(rect)
             }
@@ -232,11 +232,11 @@ public class MNMediaExportSession: NSObject {
             renderSize.height = CGFloat((Int(renderSize.height) + 1) & ~1)
             
             let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: videoTrack)
-            layerInstruction.setOpacity(1.0, at: .zero)
-            layerInstruction.setTransform(videoTrack.mn.transform(for: cropRect, renderSize: renderSize), at: .zero)
+            layerInstruction.setOpacity(1.0, at: CMTime.zero)
+            layerInstruction.setTransform(videoTrack.mn.transform(for: cropRect, renderSize: renderSize), at: CMTime.zero)
             
             let instruction = AVMutableVideoCompositionInstruction()
-            instruction.timeRange = CMTimeRange(start: .zero, duration: composition.duration)
+            instruction.timeRange = CMTimeRange(start: CMTime.zero, duration: composition.duration)
             instruction.layerInstructions = [layerInstruction]
             
             let videoComposition = AVMutableVideoComposition(propertiesOf: composition)
@@ -262,20 +262,20 @@ public class MNMediaExportSession: NSObject {
             videoOutput.alwaysCopiesSampleData = false
             
             guard reader.canAdd(videoOutput) else {
-                finish(error: .cannotAddOutput(.video))
+                finish(error: .cannotAddOutput(AVMediaType.video))
                 return
             }
             reader.add(videoOutput)
             
             guard let outputSettings = videoOutputSettings(for: videoTrack, fileType: outputFileType, renderSize: renderSize) else {
-                finish(error: .unknownExportSetting(.video, fileType: outputFileType))
+                finish(error: .unknownExportSetting(AVMediaType.video, fileType: outputFileType))
                 return
             }
-            videoInput = AVAssetWriterInput(mediaType: .video, outputSettings: outputSettings)
+            videoInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: outputSettings)
             videoInput.expectsMediaDataInRealTime = false
             
             guard writer.canAdd(videoInput) else {
-                finish(error: .cannotAddInput(.video))
+                finish(error: .cannotAddInput(AVMediaType.video))
                 return
             }
             writer.add(videoInput)
@@ -284,28 +284,28 @@ public class MNMediaExportSession: NSObject {
         // 配置音频输入输出
         var audioInput: AVAssetWriterInput!
         var audioOutput: AVAssetReaderOutput!
-        if let audioTrack = composition.mn.track(with: .audio) {
+        if let audioTrack = composition.mn.track(with: AVMediaType.audio) {
             // 创建 Audio Output
             let audioSettings = audioSettings(for: audioTrack)
             audioOutput = AVAssetReaderTrackOutput(track: audioTrack, outputSettings: audioSettings)
             audioOutput.alwaysCopiesSampleData = false
             
             guard reader.canAdd(audioOutput) else {
-                finish(error: .cannotAddOutput(.audio))
+                finish(error: .cannotAddOutput(AVMediaType.audio))
                 return
             }
             reader.add(audioOutput)
             
             // 创建 Audio Input
             guard let audioOutputSettings = audioOutputSettings(for: audioTrack, fileType: outputFileType) else {
-                finish(error: .unknownExportSetting(.audio, fileType: outputFileType))
+                finish(error: .unknownExportSetting(AVMediaType.audio, fileType: outputFileType))
                 return
             }
-            audioInput = AVAssetWriterInput(mediaType: .audio, outputSettings: audioOutputSettings)
+            audioInput = AVAssetWriterInput(mediaType: AVMediaType.audio, outputSettings: audioOutputSettings)
             audioInput.expectsMediaDataInRealTime = false
             
             guard writer.canAdd(audioInput) else {
-                finish(error: .cannotAddInput(.audio))
+                finish(error: .cannotAddInput(AVMediaType.audio))
                 return
             }
             writer.add(audioInput)
@@ -324,7 +324,7 @@ public class MNMediaExportSession: NSObject {
             finish(error: .cannotStartWriting(error))
             return
         }
-        writer.startSession(atSourceTime: .zero)
+        writer.startSession(atSourceTime: CMTime.zero)
         
         update(status: .exporting)
         let seconds = CMTimeGetSeconds(composition.duration)
@@ -517,12 +517,12 @@ public class MNMediaExportSession: NSObject {
     ///   - fileType: 文件UTI类型
     /// - Returns: 是否支持输出
     private func compatibility(export asset: AVAsset, outputFileType fileType: AVFileType) -> Bool {
-        if let _ = asset.mn.track(with: .video) {
+        if let _ = asset.mn.track(with: AVMediaType.video) {
             // 视频格式
             let videoFileTypes: [AVFileType] = [.mp4, .m4v, .mov, .mobile3GPP]
             return videoFileTypes.contains(fileType)
         }
-        if let _ = asset.mn.track(with: .audio) {
+        if let _ = asset.mn.track(with: AVMediaType.audio) {
             // 音频格式
             let audioFileTypes: [AVFileType] = [.wav, .m4a, .caf, .aiff, .aifc]
             return audioFileTypes.contains(fileType)

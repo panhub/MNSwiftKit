@@ -54,9 +54,7 @@ extension AppleLoginError {
                 case .failed: return "授权请求失败"
                 case .notInteractive: return "非交互式授权请求"
                 case .matchedExcludedCredential: return "公钥请求失败"
-//                case .credentialImport: return "导入证书失败"
-//                case .credentialExport: return "证书导出失败"
-                @unknown default: return "授权失败"
+                default: return "授权失败"
                 }
             }
             return "授权失败"

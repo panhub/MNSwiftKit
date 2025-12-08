@@ -284,7 +284,7 @@ public class MNAssetBrowser: UIView {
         // 导航左按钮
         let leftBarItemImg = leftBarEvent.img
         if leftBarItemImg.isEmpty == false {
-            let leftBarItemImage = AssetPickerResource.image(named: leftBarItemImg)
+            let leftBarItemImage = AssetBrowserResource.image(named: leftBarItemImg)
             let button = UIButton(type: .custom)
             button.tag = leftBarEvent.rawValue
             button.translatesAutoresizingMaskIntoConstraints = false
@@ -316,7 +316,7 @@ public class MNAssetBrowser: UIView {
         // 导航右按钮
         let rightBarItemImg = rightBarEvent.img
         if rightBarItemImg.isEmpty == false {
-            let rightBarItemImage = AssetPickerResource.image(named: rightBarItemImg)
+            let rightBarItemImage = AssetBrowserResource.image(named: rightBarItemImg)
             let button = UIButton(type: .custom)
             button.tag = rightBarEvent.rawValue
             button.translatesAutoresizingMaskIntoConstraints = false

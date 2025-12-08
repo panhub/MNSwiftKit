@@ -1,6 +1,6 @@
 {
   "name": "MNSwiftKit",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "summary": "A collection of Swift components.",
   "description": "A collection of Swift components, Any module can installed.",
   "homepage": "https://github.com/panhub/MNSwiftKit",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/panhub/MNSwiftKit.git",
-    "tag": "0.1.1"
+    "tag": "0.1.2"
   },
   "swift_versions": "5.0",
   "platforms": {
@@ -160,7 +160,10 @@
         "CoreFoundation",
         "CoreMedia"
       ],
-      "source_files": "MNSwiftKit/MediaExport/Sources/**/*.swift"
+      "source_files": "MNSwiftKit/MediaExport/Sources/**/*.swift",
+      "dependencies": {
+        "MNSwiftKit/NameSpace": []
+      }
     },
     {
       "name": "Purchase",

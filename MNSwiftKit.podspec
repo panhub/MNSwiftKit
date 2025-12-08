@@ -109,9 +109,10 @@ Pod::Spec.new do |s|
   end
   
   # MediaExport <媒体资源输出>
-  s.subspec 'MediaExport' do |e|
-    e.frameworks = 'Foundation', 'AVFoundation', 'CoreFoundation', 'CoreMedia'
-    e.source_files = 'MNSwiftKit/MediaExport/Sources/**/*.swift'
+  s.subspec 'MediaExport' do |m|
+    m.frameworks = 'Foundation', 'AVFoundation', 'CoreFoundation', 'CoreMedia'
+    m.source_files = 'MNSwiftKit/MediaExport/Sources/**/*.swift'
+    m.dependency 'MNSwiftKit/NameSpace'
   end
   
   # Purchase <内购支持>

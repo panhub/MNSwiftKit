@@ -121,15 +121,15 @@ public class MNAssetExportSession: NSObject {
         
         // 合成器
         let composition = AVMutableComposition()
-        if exportVideoTrack, let videoTrack = asset.mn.track(with: .video) {
+        if exportVideoTrack, let videoTrack = asset.mn.track(with: AVMediaType.video) {
             guard composition.mn.append(track: videoTrack, range: timeRange) else {
-                finish(error: .cannotAppendTrack(.video))
+                finish(error: .cannotAppendTrack(AVMediaType.video))
                 return
             }
         }
-        if exportAudioTrack, let audioTrack = asset.mn.track(with: .audio) {
+        if exportAudioTrack, let audioTrack = asset.mn.track(with: AVMediaType.audio) {
             guard composition.mn.append(track: audioTrack, range: timeRange) else {
-                finish(error: .cannotAppendTrack(.audio))
+                finish(error: .cannotAppendTrack(AVMediaType.audio))
                 return
             }
         }
@@ -189,7 +189,7 @@ public class MNAssetExportSession: NSObject {
         if shouldOptimizeForNetworkUse, outputFileType != .m4v {
             exportSession.shouldOptimizeForNetworkUse = true
         }
-        if let videoTrack = composition.mn.track(with: .video) {
+        if let videoTrack = composition.mn.track(with: AVMediaType.video) {
             var createVideoComposition = false
             if let cropRect = cropRect, cropRect.isEmpty == false, cropRect.isNull == false {
                 createVideoComposition = true
@@ -197,7 +197,7 @@ public class MNAssetExportSession: NSObject {
                 createVideoComposition = true
             }
             if createVideoComposition {
-                var cropRect = CGRect(origin: .zero, size: videoTrack.mn.naturalSize)
+                var cropRect = CGRect(origin: CGPoint.zero, size: videoTrack.mn.naturalSize)
                 if let rect = self.cropRect {
                     cropRect = cropRect.intersection(rect)
                 }
@@ -210,11 +210,11 @@ public class MNAssetExportSession: NSObject {
                 renderSize.height = CGFloat((Int(renderSize.height) + 1) & ~1)
                 // 配置画面设置
                 let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: videoTrack)
-                layerInstruction.setOpacity(1.0, at: .zero)
-                layerInstruction.setTransform(videoTrack.mn.transform(for: cropRect, renderSize: renderSize), at: .zero)
+                layerInstruction.setOpacity(1.0, at: CMTime.zero)
+                layerInstruction.setTransform(videoTrack.mn.transform(for: cropRect, renderSize: renderSize), at: CMTime.zero)
                 
                 let instruction = AVMutableVideoCompositionInstruction()
-                instruction.timeRange = CMTimeRange(start: .zero, duration: composition.duration)
+                instruction.timeRange = CMTimeRange(start: CMTime.zero, duration: composition.duration)
                 instruction.layerInstructions = [layerInstruction]
                 
                 let videoComposition = AVMutableVideoComposition(propertiesOf: composition)
@@ -304,7 +304,7 @@ public class MNAssetExportSession: NSObject {
             return presetName
         }
         var presetNames: [String] = []
-        if let _ = asset.mn.track(with: .video) {
+        if let _ = asset.mn.track(with: AVMediaType.video) {
             presetNames.append(AVAssetExportPresetHighestQuality)
             presetNames.append(AVAssetExportPreset3840x2160)
             presetNames.append(AVAssetExportPreset1920x1080)
@@ -312,7 +312,7 @@ public class MNAssetExportSession: NSObject {
             presetNames.append(AVAssetExportPresetMediumQuality)
             presetNames.append(AVAssetExportPresetLowQuality)
         }
-        if let _ = asset.mn.track(with: .audio) {
+        if let _ = asset.mn.track(with: AVMediaType.audio) {
             presetNames.append(AVAssetExportPresetAppleM4A)
         }
         if let presetName = presetNames.first(where: { compatiblePresetNames.contains($0) }) {
