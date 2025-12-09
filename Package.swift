@@ -13,7 +13,7 @@ let package = Package(
         .library(
             name: "MNSwiftKit",
             targets: [
-                "Base", "Toast", "Slider", "Utility", "Player", "Layout", "Refresh", "Request", "Purchase", "Database", "Definition", "Extension", "EmptyView", "Networking", "AssetPicker", "NameSpace", "PageControl", "Components", "MediaExport", "Transitioning", "AssetBrowser", "SplitController", "AnimatedImage", "CollectionLayout", "EmoticonKeyboard"
+                "MNSwiftKit"
             ]
         ),
         .library(
@@ -170,15 +170,13 @@ let package = Package(
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
-	/*
         .target(
             name: "MNSwiftKit",
             dependencies: [
-                "Base", "Toast", "Slider", "Utility", "Player", "Spliter", "Layout", "Refresh", "Request", "Purchase", "Database", "Definition", "Extension", "EmptyView", "Networking", "AssetPicker", "NameSpace", "PageControl", "Components", "MediaExport", "Transitioning", "AssetBrowser", "AnimatedImage", "CollectionLayout", "EmoticonKeyboard"
+                "Base", "Toast", "Slider", "Utility", "Player", "Layout", "Refresh", "Request", "Purchase", "Database", "Definition", "Extension", "EmptyView", "Networking", "AssetPicker", "NameSpace", "PageControl", "Components", "MediaExport", "Transitioning", "AssetBrowser", "SplitController", "AnimatedImage", "CollectionLayout", "EmoticonKeyboard"
             ],
             path: "MNSwiftKit/Full"
         ),
-        */
         .target(
             name: "Base",
             dependencies: [
