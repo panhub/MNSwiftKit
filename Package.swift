@@ -169,13 +169,7 @@ let package = Package(
             dependencies: [
                 "Base", "Toast", "Slider", "Utility", "Player", "Spliter", "Layout", "Refresh", "Request", "Purchase", "Database", "Definition", "Extension", "EmptyView", "Networking", "AssetPicker", "NameSpace", "PageControl", "Components", "MediaExport", "Transitioning", "AssetBrowser", "AnimatedImage", "CollectionLayout", "EmoticonKeyboard"
             ],
-            path: "MNSwiftKit/Full",
-            swiftSettings: [
-                // 控制并发检查严格度
-                .unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"])
-                // 更宽松的设置
-                //.unsafeFlags(["-Xfrontend", "-strict-concurrency=targeted"])
-            ]
+            path: "MNSwiftKit/Full"
         ),
         .target(
             name: "Base",
