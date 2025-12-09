@@ -74,7 +74,7 @@ class MNAssetAlbumCell: UITableViewCell {
         selectedView.isHidden = true
         selectedView.isUserInteractionEnabled = false
         selectedView.translatesAutoresizingMaskIntoConstraints = false
-        selectedView.image = AssetPickerResource.image(named: "checkmark")?.mn.rendering(to: options.themeColor)
+        selectedView.image = AssetPickerResource.image(named: "picker_checkmark")?.mn.rendering(to: options.themeColor)
         contentView.addSubview(selectedView)
         NSLayoutConstraint.activate([
             selectedView.widthAnchor.constraint(equalToConstant: 23.0),
@@ -109,7 +109,7 @@ extension MNAssetAlbumCell {
         let count = album.assets.filter { $0.isSelected }.count
         countLabel.text = "(\(count)/\(album.count))"
         selectedView.isHidden = album.isSelected == false
-        coverView.image = album.cover ?? AssetPickerResource.image(named: "album")
+        coverView.image = album.cover ?? AssetPickerResource.image(named: "picker_album")
         album.coverUpdateHandler = { [weak self] album in
             guard let self = self else { return }
             guard let item = self.album, item.identifier == album.identifier else { return }

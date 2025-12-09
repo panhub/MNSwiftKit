@@ -78,7 +78,7 @@ class MNEmoticonPacketView: UIView {
         
         if style == .paging {
             // 阴影
-            if let image = EmoticonResource.image(named: "shadow") {
+            if let image = EmoticonKeyboardResource.image(named: "shadow") {
                 shadowView.image = image
                 shadowView.contentMode = .scaleToFill
                 shadowView.translatesAutoresizingMaskIntoConstraints = false

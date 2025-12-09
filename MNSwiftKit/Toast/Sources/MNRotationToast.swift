@@ -50,7 +50,7 @@ public class MNRotationToast {
             let mask = CALayer()
             mask.frame = activityLayer.bounds
             mask.contentsScale = UIScreen.main.scale
-            mask.contents = ToastResource.image(named: effectForToast == .dark ? "mask-light" : "mask-dark")?.cgImage
+            mask.contents = ToastResource.image(named: effectForToast == .dark ? "toast_mask_light" : "toast_mask_dark")?.cgImage
             activityLayer.mask = mask
             activityLayer.strokeEnd = 1.0
         }

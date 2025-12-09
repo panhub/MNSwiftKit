@@ -107,7 +107,7 @@ class MNAssetPreviewController: UIViewController {
         // 导航
         navView.contentMode = .scaleToFill
         navView.isUserInteractionEnabled = true
-        navView.image = AssetPickerResource.image(named: "top")
+        navView.image = AssetPickerResource.image(named: "picker_preview_top")
         navView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(navView)
         NSLayoutConstraint.activate([
@@ -121,7 +121,7 @@ class MNAssetPreviewController: UIViewController {
         let back = UIButton(type: .custom)
         back.translatesAutoresizingMaskIntoConstraints = false
         back.addTarget(self, action: #selector(self.back), for: .touchUpInside)
-        let backImage = AssetPickerResource.image(named: "back")
+        let backImage = AssetPickerResource.image(named: "picker_back")
         if #available(iOS 15.0, *) {
             var configuration = UIButton.Configuration.plain()
             configuration.background.backgroundColor = .clear
@@ -151,8 +151,8 @@ class MNAssetPreviewController: UIViewController {
         rightBarButton.layer.cornerRadius = 12.0
         rightBarButton.translatesAutoresizingMaskIntoConstraints = false
         rightBarButton.addTarget(self, action: #selector(rightBarButtonTouchUpInside(_:)), for: .touchUpInside)
-        let normalImage = AssetPickerResource.image(named: "unselect")
-        let selectedImage = AssetPickerResource.image(named: "selected")
+        let normalImage = AssetPickerResource.image(named: "picker_unselect")
+        let selectedImage = AssetPickerResource.image(named: "picker_selected")
         if #available(iOS 15.0, *) {
             var configuration = UIButton.Configuration.plain()
             configuration.background.backgroundColor = .clear

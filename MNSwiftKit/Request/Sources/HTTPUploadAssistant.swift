@@ -6,6 +6,7 @@
 //  Copyright © 2025 CocoaPods. All rights reserved.
 //  上传内容表单辅助
 
+import UIKit
 import ImageIO
 import Foundation
 import CoreServices

@@ -11,7 +11,7 @@ class MNAssetTypeView: UIImageView {
     
     private var attributes: [MNAssetType : UIImage] = [:]
     
-    private let hdrImage = AssetPickerResource.image(named: "hdr")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0))
+    private let hdrImage = AssetPickerResource.image(named: "picker_asset_hdr")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0))
     
     var isHDR: Bool = false {
         didSet {

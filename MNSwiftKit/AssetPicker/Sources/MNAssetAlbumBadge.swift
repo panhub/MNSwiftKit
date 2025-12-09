@@ -95,7 +95,7 @@ class MNAssetAlbumBadge: UIControl {
         imageView.contentMode = .scaleAspectFill
         imageView.isUserInteractionEnabled = false
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.image = AssetPickerResource.image(named: "down")
+        imageView.image = AssetPickerResource.image(named: "picker_album_down")
         arrowView.addSubview(imageView)
         NSLayoutConstraint.activate([
             imageView.widthAnchor.constraint(equalToConstant: 11.0),

@@ -24,7 +24,7 @@ class MNEmoticonElementView: UIView {
         deleteButton.layer.cornerRadius = 6.0
         deleteButton.backgroundColor = .white
         deleteButton.translatesAutoresizingMaskIntoConstraints = false
-        deleteButton.activate(image: EmoticonResource.image(named: "delete-ver"), height: 20.0)
+        deleteButton.activate(image: EmoticonKeyboardResource.image(named: "emoticon_delete_ver"), height: 20.0)
         addSubview(deleteButton)
         NSLayoutConstraint.activate([
             deleteButton.topAnchor.constraint(equalTo: topAnchor),
@@ -52,17 +52,6 @@ class MNEmoticonElementView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-//    override func updateConstraints() {
-//        
-//        deleteButton.constraints.forEach { constraint in
-//            if constraint.firstAttribute == .width {
-//                constraint.constant = frame.width/2.0
-//            }
-//        }
-//        
-//        super.updateConstraints()
-//    }
     
     func addTarget(_ target: Any, forReturnButtonTouchUpInside action: Selector) {
         returnButton.addTarget(target, action: action, for: .touchUpInside)

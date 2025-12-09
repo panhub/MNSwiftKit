@@ -309,7 +309,7 @@ public class MNToast: UIView {
         NSLayoutConstraint.activate([statusLabel.widthAnchor.constraint(lessThanOrEqualToConstant: MNToast.Configuration.shared.greatestFiniteStatusWidth)])
         
         if cancellation {
-            let closeImage = ToastResource.image(named: "close")?.withRenderingMode(.alwaysTemplate)
+            let closeImage = ToastResource.image(named: "toast_close")?.withRenderingMode(.alwaysTemplate)
             closeButton = UIButton(type: .custom)
             closeButton.tintColor = MNToast.Configuration.shared.color.withAlphaComponent(0.75)
             closeButton.translatesAutoresizingMaskIntoConstraints = false

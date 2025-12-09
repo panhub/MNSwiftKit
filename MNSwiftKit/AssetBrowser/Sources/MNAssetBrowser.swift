@@ -102,10 +102,10 @@ public class MNAssetBrowser: UIView {
         fileprivate var img: String {
             switch self {
             case .none: return ""
-            case .back: return "back"
-            case .done: return "done"
-            case .save: return "save"
-            case .share: return "share"
+            case .back: return "browser_back"
+            case .done: return "browser_done"
+            case .save: return "browser_save"
+            case .share: return "browser_share"
             }
         }
     }
@@ -349,7 +349,7 @@ public class MNAssetBrowser: UIView {
         if navigationView.subviews.isEmpty == false {
             navigationView.contentMode = .scaleToFill
             navigationView.isUserInteractionEnabled = true
-            navigationView.image = AssetBrowserResource.image(named: "top")
+            navigationView.image = AssetBrowserResource.image(named: "browser_top")
         }
     }
     

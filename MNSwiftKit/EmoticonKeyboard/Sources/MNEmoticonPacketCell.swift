@@ -49,7 +49,7 @@ class MNEmoticonPacketCell: UICollectionViewCell {
         if FileManager.default.fileExists(atPath: imagePath) {
             imageView.image = UIImage(contentsOfFile: imagePath)
         } else {
-            imageView.image = EmoticonResource.image(named: packet.cover.mn.deletingPathExtension)
+            imageView.image = EmoticonKeyboardResource.image(named: packet.cover.mn.deletingPathExtension)
         }
         imageView.frame = contentView.bounds.inset(by: options.packetItemInset)
         borderView.backgroundColor = highlighted ? options.packetHighlightedColor : nil

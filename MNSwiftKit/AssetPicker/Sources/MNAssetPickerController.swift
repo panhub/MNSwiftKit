@@ -539,7 +539,7 @@ extension MNAssetPickerController: MNDataEmptySource {
     }
     
     func imageForDataEmptyView(_ superview: UIView) -> UIImage? {
-        AssetPickerResource.image(named: "empty")
+        AssetPickerResource.image(named: "picker_empty")
     }
     
     func imageSizeForDataEmptyView(_ superview: UIView) -> CGSize {

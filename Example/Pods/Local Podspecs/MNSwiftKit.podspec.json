@@ -25,9 +25,9 @@
       "name": "Base",
       "frameworks": [
         "UIKit",
+        "WebKit",
         "Foundation",
-        "CoreGraphics",
-        "WebKit"
+        "CoreGraphics"
       ],
       "source_files": "MNSwiftKit/Base/Sources/**/*.swift",
       "resource_bundles": {
@@ -94,10 +94,10 @@
       "name": "Player",
       "frameworks": [
         "UIKit",
-        "Foundation",
         "AVFAudio",
-        "AVFoundation",
-        "AudioToolbox"
+        "Foundation",
+        "AudioToolbox",
+        "AVFoundation"
       ],
       "source_files": "MNSwiftKit/Player/Sources/**/*.swift"
     },
@@ -141,8 +141,8 @@
       "name": "Request",
       "frameworks": [
         "UIKit",
-        "Foundation",
         "ImageIO",
+        "Foundation",
         "CoreServices",
         "CoreGraphics",
         "UniformTypeIdentifiers"
@@ -155,10 +155,10 @@
     {
       "name": "MediaExport",
       "frameworks": [
+        "CoreMedia",
         "Foundation",
         "AVFoundation",
-        "CoreFoundation",
-        "CoreMedia"
+        "CoreFoundation"
       ],
       "source_files": "MNSwiftKit/MediaExport/Sources/**/*.swift",
       "dependencies": {
@@ -169,8 +169,8 @@
       "name": "Purchase",
       "frameworks": [
         "UIKit",
-        "Foundation",
-        "StoreKit"
+        "StoreKit",
+        "Foundation"
       ],
       "source_files": "MNSwiftKit/Purchase/Sources/**/*.swift"
     },
@@ -199,9 +199,10 @@
     {
       "name": "Extension",
       "frameworks": [
+        "UIKit",
         "Foundation",
-        "CoreFoundation",
-        "CoreGraphics"
+        "CoreGraphics",
+        "CoreFoundation"
       ],
       "source_files": "MNSwiftKit/Extension/Sources/**/*.swift",
       "dependencies": {
@@ -224,13 +225,13 @@
     {
       "name": "Networking",
       "frameworks": [
-        "Foundation",
-        "SystemConfiguration",
-        "CoreTelephony",
-        "CoreAudio",
         "Security",
+        "CoreAudio",
+        "Foundation",
+        "CoreGraphics",
+        "CoreTelephony",
         "CoreFoundation",
-        "CoreGraphics"
+        "SystemConfiguration"
       ],
       "source_files": "MNSwiftKit/Networking/Sources/**/*.swift",
       "resource_bundles": {
@@ -243,11 +244,12 @@
       "name": "AssetPicker",
       "frameworks": [
         "UIKit",
-        "Foundation",
-        "AVFoundation",
         "Photos",
-        "CoreFoundation",
+        "PhotosUI",
+        "Foundation",
         "CoreGraphics",
+        "AVFoundation",
+        "CoreFoundation",
         "UniformTypeIdentifiers"
       ],
       "source_files": "MNSwiftKit/AssetPicker/Sources/*",
@@ -275,11 +277,11 @@
       "name": "AssetBrowser",
       "frameworks": [
         "UIKit",
-        "Foundation",
-        "AVFoundation",
         "Photos",
-        "CoreFoundation",
-        "CoreGraphics"
+        "Foundation",
+        "CoreGraphics",
+        "AVFoundation",
+        "CoreFoundation"
       ],
       "source_files": "MNSwiftKit/AssetBrowser/Sources/*",
       "resource_bundles": {
@@ -314,12 +316,13 @@
       "name": "Components",
       "frameworks": [
         "UIKit",
-        "Foundation",
-        "AVFoundation",
-        "CoreGraphics",
-        "QuartzCore",
         "ImageIO",
+        "Foundation",
+        "QuartzCore",
         "CoreServices",
+        "CoreGraphics",
+        "AVFoundation",
+        "CoreFoundation",
         "UniformTypeIdentifiers"
       ],
       "source_files": "MNSwiftKit/Components/Sources/**/*.swift",
@@ -370,10 +373,10 @@
       "name": "AnimatedImage",
       "frameworks": [
         "UIKit",
-        "Foundation",
-        "CoreGraphics",
         "ImageIO",
+        "Foundation",
         "CoreServices",
+        "CoreGraphics",
         "UniformTypeIdentifiers"
       ],
       "source_files": "MNSwiftKit/AnimatedImage/Sources/**/*.swift",

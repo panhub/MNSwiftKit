@@ -32,7 +32,7 @@ public class MNEmoticonManager {
     /// 构造表情管理者
     private init() {
         var urls: [URL] = []
-        if let url = EmoticonResource.url(forResource: MNEmoticon.Packet.Name.wechat.rawValue, withExtension: "json") {
+        if let url = EmoticonKeyboardResource.url(forResource: MNEmoticon.Packet.Name.wechat.rawValue, withExtension: "json") {
             urls.append(url)
         }
         if let subpaths = FileManager.default.subpaths(atPath: userEmoticonDirectory) {
@@ -66,7 +66,7 @@ extension MNEmoticonManager {
         // 解析表情
         var urls: [URL] = []
         for name in elements {
-            if let url = EmoticonResource.url(forResource: name, withExtension: "json")  {
+            if let url = EmoticonKeyboardResource.url(forResource: name, withExtension: "json")  {
                 urls.append(url)
                 continue
             }

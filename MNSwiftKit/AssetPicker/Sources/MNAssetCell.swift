@@ -72,7 +72,7 @@ class MNAssetCell: UICollectionViewCell {
         topMask.contentMode = .scaleToFill
         topMask.isUserInteractionEnabled = false
         topMask.translatesAutoresizingMaskIntoConstraints = false
-        topMask.image = AssetPickerResource.image(named: "top_shadow")
+        topMask.image = AssetPickerResource.image(named: "picker_shadow_top")
         contentView.addSubview(topMask)
         NSLayoutConstraint.activate([
             topMask.heightAnchor.constraint(equalToConstant: 35.0),
@@ -84,7 +84,7 @@ class MNAssetCell: UICollectionViewCell {
         // 云端标记
         cloudView.contentMode = .scaleAspectFit
         cloudView.translatesAutoresizingMaskIntoConstraints = false
-        cloudView.image = AssetPickerResource.image(named: "cloud")?.mn.rendering(to: .white.withAlphaComponent(0.85))
+        cloudView.image = AssetPickerResource.image(named: "picker_asset_cloud")?.mn.rendering(to: .white.withAlphaComponent(0.85))
         contentView.addSubview(cloudView)
         NSLayoutConstraint.activate([
             cloudView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 3.0),
@@ -107,7 +107,7 @@ class MNAssetCell: UICollectionViewCell {
         let previewImageView = UIImageView()
         previewImageView.contentMode = .scaleAspectFit
         previewImageView.translatesAutoresizingMaskIntoConstraints = false
-        previewImageView.image = AssetPickerResource.image(named: "preview")?.mn.rendering(to: .white.withAlphaComponent(0.85))
+        previewImageView.image = AssetPickerResource.image(named: "picker_preview")?.mn.rendering(to: .white.withAlphaComponent(0.85))
         previewControl.addSubview(previewImageView)
         NSLayoutConstraint.activate([
             previewImageView.heightAnchor.constraint(equalToConstant: 12.0),
@@ -117,7 +117,7 @@ class MNAssetCell: UICollectionViewCell {
         ])
         
         // 底部阴影
-        bottomMask.image = AssetPickerResource.image(named: "bottom_shadow")
+        bottomMask.image = AssetPickerResource.image(named: "picker_shadow_bottom")
         bottomMask.contentMode = .scaleToFill
         bottomMask.backgroundColor = .clear
         bottomMask.isUserInteractionEnabled = false
@@ -133,9 +133,9 @@ class MNAssetCell: UICollectionViewCell {
         // 资源类型
         typeView.contentMode = .scaleAspectFit
         typeView.translatesAutoresizingMaskIntoConstraints = false
-        typeView.setImage(AssetPickerResource.image(named: "gif")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .gif)
-        typeView.setImage(AssetPickerResource.image(named: "video")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .video)
-        typeView.setImage(AssetPickerResource.image(named: "livephoto")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .livePhoto)
+        typeView.setImage(AssetPickerResource.image(named: "picker_asset_gif")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .gif)
+        typeView.setImage(AssetPickerResource.image(named: "picker_asset_video")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .video)
+        typeView.setImage(AssetPickerResource.image(named: "picker_asset_livephoto")?.mn.rendering(to: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .livePhoto)
         contentView.addSubview(typeView)
         NSLayoutConstraint.activate([
             typeView.widthAnchor.constraint(equalToConstant: 16.0),

@@ -188,7 +188,7 @@ public class MNAssetBrowserCell: UICollectionViewCell {
         
         toolBar.contentMode = .scaleToFill
         toolBar.isUserInteractionEnabled = true
-        toolBar.image = AssetBrowserResource.image(named: "bottom")
+        toolBar.image = AssetBrowserResource.image(named: "browser_bottom")
         toolBar.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(toolBar)
         NSLayoutConstraint.activate([
@@ -198,8 +198,8 @@ public class MNAssetBrowserCell: UICollectionViewCell {
             toolBar.heightAnchor.constraint(equalToConstant: MNAssetBrowserCell.ToolBarHeight)
         ])
         
-        let playImage = AssetBrowserResource.image(named: "play")
-        let pauseImage = AssetBrowserResource.image(named: "pause")
+        let playImage = AssetBrowserResource.image(named: "browser_play")
+        let pauseImage = AssetBrowserResource.image(named: "browser_pause")
         playButton.translatesAutoresizingMaskIntoConstraints = false
         playButton.addTarget(self, action: #selector(playButtonTouchUpInside), for: .touchUpInside)
         if #available(iOS 15.0, *) {

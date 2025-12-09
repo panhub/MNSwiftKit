@@ -73,7 +73,7 @@ extension MNEmoticon {
             img = "add.png"
             desc = "[添加]"
             style = .image
-            image = EmoticonResource.image(named: "add")
+            image = EmoticonKeyboardResource.image(named: "add")
         }
     }
 }

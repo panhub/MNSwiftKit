@@ -31,7 +31,7 @@ class MNInfoToast: MNToastBuilder {
         if #available(iOS 13.0, *) {
             image = UIImage(systemName: "info.circle")
         } else {
-            image = ToastResource.image(named: "info")
+            image = ToastResource.image(named: "toast_info")
         }
         let imageView = UIImageView(frame: .init(origin: .zero, size: .init(width: 40.0, height: 40.0)))
         imageView.image = image?.withRenderingMode(.alwaysTemplate)

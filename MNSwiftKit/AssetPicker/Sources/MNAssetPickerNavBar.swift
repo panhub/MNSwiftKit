@@ -59,7 +59,7 @@ class MNAssetPickerNavBar: UIView {
         let back = UIButton(type: .custom)
         back.translatesAutoresizingMaskIntoConstraints = false
         back.addTarget(self, action: #selector(backButtonTouchUpInside(_:)), for: .touchUpInside)
-        let backgroundImage = AssetPickerResource.image(named: "back")?.mn.rendering(to: options.mode == .light ? .black : UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0))
+        let backgroundImage = AssetPickerResource.image(named: "picker_back")?.mn.rendering(to: options.mode == .light ? .black : UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0))
         if #available(iOS 15.0, *) {
             var configuration = UIButton.Configuration.plain()
             configuration.background.backgroundColor = .clear

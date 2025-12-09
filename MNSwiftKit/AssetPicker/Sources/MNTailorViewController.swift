@@ -140,7 +140,7 @@ public class MNTailorViewController: UIViewController {
         }
         
         // 返回按钮
-        let backImage = AssetPickerResource.image(named: "back")
+        let backImage = AssetPickerResource.image(named: "picker_back")
         let backButton = UIButton(type: .custom)
         backButton.translatesAutoresizingMaskIntoConstraints = false
         backButton.addTarget(self, action: #selector(self.backButtonTouchUpInside(_:)), for: .touchUpInside)
@@ -168,7 +168,7 @@ public class MNTailorViewController: UIViewController {
         ])
         
         // 导航右按钮
-        let doneImage = AssetPickerResource.image(named: "done")
+        let doneImage = AssetPickerResource.image(named: "picker_crop_done")
         let doneButton = UIButton(type: .custom)
         doneButton.translatesAutoresizingMaskIntoConstraints = false
         doneButton.addTarget(self, action: #selector(doneButtonTouchUpInside(_:)), for: .touchUpInside)
