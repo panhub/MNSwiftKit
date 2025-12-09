@@ -9,7 +9,7 @@ import UIKit
 import Photos
 import PhotosUI
 
-protocol MNAssetBrowseResourceHandler: NSObjectProtocol {
+public protocol MNAssetBrowseResourceHandler: NSObjectProtocol {
     
     /// 获取封面事件
     /// - Parameter cell: 表格
@@ -43,16 +43,16 @@ public class MNAssetBrowserCell: UICollectionViewCell {
     }
     
     /// 视频控制栏高度
-    static let ToolBarHeight: CGFloat = MN_BOTTOM_SAFE_HEIGHT + 60.0
+    public static let ToolBarHeight: CGFloat = MN_BOTTOM_SAFE_HEIGHT + 60.0
     
     /// 当前状态
     private var state: State = .idle
     /// 是否允许自动播放
-    var isAllowsAutoPlaying: Bool = false
+    public var isAllowsAutoPlaying: Bool = false
     /// 资源模型
     private(set) var asset: (any MNAssetBrowseSupported)!
     /// 事件代理
-    weak var delegate: MNAssetBrowseResourceHandler!
+    public weak var delegate: MNAssetBrowseResourceHandler!
     /// 缩放比例
     var maximumZoomScale: CGFloat {
         get { scrollView.maximumZoomScale }
@@ -61,7 +61,7 @@ public class MNAssetBrowserCell: UICollectionViewCell {
         }
     }
     /// 滑动支持
-    let scrollView = MNAssetScrollView()
+    public let scrollView = MNAssetScrollView()
     /// 加载进度条
     private let progressView = MNAssetProgressView()
     /// 播放器控制栏
@@ -289,7 +289,7 @@ extension MNAssetBrowserCell {
     
     /// 即将预览资源
     /// - Parameter asset: 资源模型
-    func willDisplay(_ asset: any MNAssetBrowseSupported) {
+    public func willDisplay(_ asset: any MNAssetBrowseSupported) {
         self.asset = asset
         scrollView.imageView.image = nil
         scrollView.imageView.isHidden = asset.type == .video
@@ -316,7 +316,7 @@ extension MNAssetBrowserCell {
     }
     
     /// 已准备好预览
-    func preparedDisplay() {
+    public func preparedDisplay() {
         switch state {
         case .loading, .downloading:
             state = .prepared
@@ -357,7 +357,7 @@ extension MNAssetBrowserCell {
     }
     
     /// 结束预览
-    func endDisplaying() {
+    public func endDisplaying() {
         state = .idle
         guard let asset = asset else { return }
         self.asset = nil
@@ -376,7 +376,7 @@ extension MNAssetBrowserCell {
     }
     
     /// 暂停预览
-    func pauseDisplaying() {
+    public func pauseDisplaying() {
         guard let asset = asset else { return }
         switch asset.type {
         case .livePhoto:
@@ -396,7 +396,7 @@ extension MNAssetBrowserCell {
     /// - Parameters:
     ///   - visible: 是否可见
     ///   - animated: 是否动态展示
-    func updateToolBar(visible: Bool, animated: Bool) {
+    public func updateToolBar(visible: Bool, animated: Bool) {
         guard toolBar.isHidden == false else { return }
         updateToolBarVisible(visible, animated: animated)
     }
@@ -423,7 +423,7 @@ extension MNAssetBrowserCell {
     
     /// 播放按钮点击事件
     /// - Parameter sender: 播放按钮
-    @objc func playButtonTouchUpInside(_ sender: UIButton) {
+    @objc private func playButtonTouchUpInside(_ sender: UIButton) {
         switch player.status {
         case .failed: break
         case .playing:
@@ -438,7 +438,7 @@ extension MNAssetBrowserCell {
 extension MNAssetBrowserCell {
     
     /// 获取当前显示的图片
-    var displayedImage: UIImage? {
+    public var displayedImage: UIImage? {
         guard let asset = asset else { return nil }
         switch asset.type {
         case .gif:

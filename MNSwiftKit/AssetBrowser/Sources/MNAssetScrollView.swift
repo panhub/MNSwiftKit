@@ -10,15 +10,15 @@ import Photos
 import PhotosUI
 
 /// 资源浏览器表格内容缩放视图
-class MNAssetScrollView: UIScrollView {
+public class MNAssetScrollView: UIScrollView {
     /// 内容视图
-    let contentView = UIView()
+    public let contentView = UIView()
     /// 播放视频
     let playView = MNPlayView()
     /// 展示图片
     let imageView = UIImageView()
     /// LivePhoto标记
-    private var liveBadgeView: UIImageView!
+    var liveBadgeView: UIImageView!
     /// 展示LivePhoto
     lazy var livePhotoView: UIView? = {
         guard #available(iOS 9.1, *) else { return nil }
@@ -29,7 +29,7 @@ class MNAssetScrollView: UIScrollView {
         return livePhotoView
     }()
     
-    override init(frame: CGRect) {
+    private override init(frame: CGRect) {
         super.init(frame: frame)
         delegate = self
         bouncesZoom = true
@@ -128,11 +128,11 @@ class MNAssetScrollView: UIScrollView {
 // MARK: - UIScrollViewDelegate
 extension MNAssetScrollView: UIScrollViewDelegate {
     
-    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+    public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return contentView
     }
     
-    func scrollViewDidZoom(_ scrollView: UIScrollView) {
+    public func scrollViewDidZoom(_ scrollView: UIScrollView) {
         let offsetX: CGFloat = scrollView.bounds.width > scrollView.contentSize.width ? (scrollView.bounds.width - scrollView.contentSize.width)/2.0 : 0.0
         let offsetY: CGFloat = scrollView.bounds.height > scrollView.contentSize.height ? (scrollView.bounds.height - scrollView.contentSize.height)/2.0 : 0.0
         contentView.center = CGPoint(x: scrollView.contentSize.width/2.0 + offsetX, y: scrollView.contentSize.height/2.0 + offsetY)

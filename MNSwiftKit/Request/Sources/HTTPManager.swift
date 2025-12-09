@@ -261,12 +261,12 @@ extension HTTPManager {
 }
 
 // MARK: - 序列化
-private extension HTTPManager {
+extension HTTPManager {
     
     /// 构建请求序列化器
     /// - Parameter request: 请求体
     /// - Returns: 序列化器
-    func serializer(_ request: HTTPRequest) -> HTTPSerializer {
+    private func serializer(_ request: HTTPRequest) -> HTTPSerializer {
         let serializer = HTTPSerializer()
         serializer.param = request.param
         serializer.headerFields = request.headerFields
@@ -288,7 +288,7 @@ private extension HTTPManager {
     /// 构建数据解析器
     /// - Parameter request: 请求体
     /// - Returns: 解析器
-    func parser(_ request: HTTPRequest) -> HTTPParser {
+    private func parser(_ request: HTTPRequest) -> HTTPParser {
         let parser = HTTPParser()
         parser.contentType = request.contentType
         parser.analyticHandler = request.analyticHandler

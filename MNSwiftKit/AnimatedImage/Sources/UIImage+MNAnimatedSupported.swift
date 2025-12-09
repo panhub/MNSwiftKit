@@ -10,6 +10,9 @@ import Foundation
 import ImageIO.ImageIOBase
 import CoreServices.UTCoreTypes
 import UniformTypeIdentifiers.UTType
+#if SWIFT_PACKAGE
+import NameSpace
+#endif
 
 extension NameSpaceWrapper where Base: UIImage {
     

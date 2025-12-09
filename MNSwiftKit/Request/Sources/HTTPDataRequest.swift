@@ -6,9 +6,6 @@
 //  数据请求者
 
 import Foundation
-//#if canImport(MNSwiftKitNetworking)
-//import MNSwiftKitNetworking
-//#endif
 
 /// 请求方式
 @objc public enum HTTPMethod: Int {

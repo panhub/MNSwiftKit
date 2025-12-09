@@ -38,7 +38,7 @@ extension NameSpaceWrapper where Base: UIView {
     }
     
     /// 添加转场阴影
-    public func addTransitioningShadow() -> Void {
+    public func addTransitioningShadow() {
         base.layer.shadowOffset = .zero
         base.layer.shadowOpacity = 0.7
         base.layer.shadowColor = UIColor.black.cgColor
@@ -46,7 +46,7 @@ extension NameSpaceWrapper where Base: UIView {
     }
     
     /// 清除转场阴影
-    public func removeTransitioningShadow() -> Void {
+    public func removeTransitioningShadow() {
         base.layer.shadowPath = nil
         base.layer.shadowColor = nil
         base.layer.shadowOpacity = 0.0

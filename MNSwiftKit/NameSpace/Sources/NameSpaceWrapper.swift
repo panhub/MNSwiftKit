@@ -3,16 +3,20 @@
 //  MNSwiftKit
 //
 //  Created by panhub on 2022/11/11.
-//  MNSwiftKit命名空间
+//  MNSwiftKit命名空间支持
 
 import UIKit
 import Foundation
 import CoreGraphics
 import ObjectiveC.runtime
 
-/// 命名空间 后续扩展即可
+/// MNSwiftKit命名空间
 public class NameSpaceWrapper<Base> {
-    internal let base: Base
+    /// 元对象
+    public let base: Base
+    
+    /// 构建命名空间
+    /// - Parameter base: 元对象
     public init(base: Base) {
         self.base = base
     }

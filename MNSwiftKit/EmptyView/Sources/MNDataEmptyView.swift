@@ -8,6 +8,9 @@
 import UIKit
 import QuartzCore
 import ObjectiveC.runtime
+#if SWIFT_PACKAGE
+import NameSpace
+#endif
 
 /// 空数据视图代理
 @objc public protocol MNDataEmptyDelegate: NSObjectProtocol {

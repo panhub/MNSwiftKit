@@ -80,13 +80,6 @@ Pod::Spec.new do |s|
     p.source_files = 'MNSwiftKit/Player/Sources/**/*.swift'
   end
   
-  # Spliter <分页控制器>
-  s.subspec 'Spliter' do |s|
-    s.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
-    s.source_files = 'MNSwiftKit/Spliter/Sources/**/*.swift'
-    s.dependency 'MNSwiftKit/Layout'
-  end
-  
   # Layout <UI布局快速获取>
   s.subspec 'Layout' do |a|
     a.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
@@ -197,8 +190,16 @@ Pod::Spec.new do |s|
   
   # NameSpace <命名空间>
   s.subspec 'NameSpace' do |n|
-    n.frameworks = 'Foundation'
+    n.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
     n.source_files = 'MNSwiftKit/NameSpace/Sources/**/*.swift'
+  end
+  
+  # SplitController <分页控制器>
+  s.subspec 'SplitController' do |s|
+    s.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    s.source_files = 'MNSwiftKit/SplitController/Sources/**/*.swift'
+    s.dependency 'MNSwiftKit/Layout'
+    s.dependency 'MNSwiftKit/NameSpace'
   end
   
   # PageControl <简单的页码指示器>
@@ -261,7 +262,6 @@ Pod::Spec.new do |s|
     full.dependency 'MNSwiftKit/Slider'
     full.dependency 'MNSwiftKit/Utility'
     full.dependency 'MNSwiftKit/Player'
-    full.dependency 'MNSwiftKit/Spliter'
     full.dependency 'MNSwiftKit/Layout'
     full.dependency 'MNSwiftKit/Refresh'
     full.dependency 'MNSwiftKit/Request'
@@ -278,12 +278,10 @@ Pod::Spec.new do |s|
     full.dependency 'MNSwiftKit/MediaExport'
     full.dependency 'MNSwiftKit/Transitioning'
     full.dependency 'MNSwiftKit/AssetBrowser'
+    full.dependency 'MNSwiftKit/SplitController'
     full.dependency 'MNSwiftKit/AnimatedImage'
     full.dependency 'MNSwiftKit/CollectionLayout'
     full.dependency 'MNSwiftKit/EmoticonKeyboard'
   end
-
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  
 end

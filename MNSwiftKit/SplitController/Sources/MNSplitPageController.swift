@@ -180,7 +180,7 @@ class MNSplitPageController: UIViewController {
         super.viewWillAppear(animated)
         if let page = page(for: currentPageIndex, access: false) {
             page.beginAppearanceTransition(true, animated: animated)
-            page.preferredPageScrollView.mn_split.transitionState = .willAppear
+            page.preferredPageScrollView.mn.transitionState = .willAppear
             updateOffset(with: page)
             delegate?.contentControllerWillAppear?(page, animated: animated)
         }
@@ -190,7 +190,7 @@ class MNSplitPageController: UIViewController {
         super.viewDidAppear(animated)
         if let page = page(for: currentPageIndex, access: false) {
             page.endAppearanceTransition()
-            page.preferredPageScrollView.mn_split.transitionState = .didAppear
+            page.preferredPageScrollView.mn.transitionState = .didAppear
             delegate?.contentControllerDidAppear?(page, animated: animated)
         }
     }
@@ -199,7 +199,7 @@ class MNSplitPageController: UIViewController {
         super.viewWillDisappear(animated)
         if let page = page(for: currentPageIndex, access: false) {
             page.beginAppearanceTransition(false, animated: animated)
-            page.preferredPageScrollView.mn_split.transitionState = .willDisappear
+            page.preferredPageScrollView.mn.transitionState = .willDisappear
             delegate?.contentControllerWillDisappear?(page, animated: animated)
         }
     }
@@ -208,7 +208,7 @@ class MNSplitPageController: UIViewController {
         super.viewDidDisappear(animated)
         if let page = page(for: currentPageIndex, access: false) {
             page.endAppearanceTransition()
-            page.preferredPageScrollView.mn_split.transitionState = .didDisappear
+            page.preferredPageScrollView.mn.transitionState = .didDisappear
             delegate?.contentControllerDidDisappear?(page, animated: animated)
         }
     }
@@ -223,25 +223,25 @@ class MNSplitPageController: UIViewController {
         guard let keyPath = keyPath, let scrollView = object as? UIScrollView else { return }
         switch keyPath {
         case #keyPath(UIScrollView.contentOffset):
-            // 偏移量变化 , scrollView.mn_split.isReachedLeastSize
-            guard scrollView.mn_split.isAppear, scrollView.mn_split.pageIndex == currentPageIndex else { return }
+            // 偏移量变化 , scrollView.mn.isReachedLeastSize
+            guard scrollView.mn.isAppear, scrollView.mn.pageIndex == currentPageIndex else { return }
             guard let contentOffset = change?[.newKey] as? CGPoint else { return }
             delegate?.scrollView(scrollView, contentOffsetChanged: contentOffset)
         case #keyPath(UIScrollView.contentSize):
             // 内容尺寸变化
             guard let contentSize = change?[.newKey] as? CGSize else { return }
-            let leastContentSize = scrollView.mn_split.leastContentSize
-            if contentSize.height >= leastContentSize.height, scrollView.mn_split.isReachedLeastSize == false {
-                scrollView.mn_split.isReachedLeastSize = true
-                switch scrollView.mn_split.transitionState {
+            let leastContentSize = scrollView.mn.leastContentSize
+            if contentSize.height >= leastContentSize.height, scrollView.mn.isReachedLeastSize == false {
+                scrollView.mn.isReachedLeastSize = true
+                switch scrollView.mn.transitionState {
                 case .willAppear, .didAppear:
-                    if let page = page(for: scrollView.mn_split.pageIndex, access: false) {
+                    if let page = page(for: scrollView.mn.pageIndex, access: false) {
                         updateOffset(with: page)
                     }
                 default: break
                 }
-            } else if contentSize.height < leastContentSize.height, scrollView.mn_split.isReachedLeastSize == true {
-                scrollView.mn_split.isReachedLeastSize = false
+            } else if contentSize.height < leastContentSize.height, scrollView.mn.isReachedLeastSize == true {
+                scrollView.mn.isReachedLeastSize = false
             }
         default: break
         }
@@ -308,14 +308,14 @@ extension MNSplitPageController {
         page.view.layoutIfNeeded()
         // 设置页面
         let scrollView = page.preferredPageScrollView
-        scrollView.mn_split.pageIndex = index
-        scrollView.mn_split.transitionState = .unknown
-        scrollView.mn_split.isReachedLeastSize = false
+        scrollView.mn.pageIndex = index
+        scrollView.mn.transitionState = .unknown
+        scrollView.mn.isReachedLeastSize = false
         switch axis {
         case .horizontal:
             // 横向布局
-            if scrollView.mn_split.isObserved == false {
-                scrollView.mn_split.isObserved = true
+            if scrollView.mn.isObserved == false {
+                scrollView.mn.isObserved = true
                 scrollView.addObserver(self, forKeyPath: #keyPath(UIScrollView.contentSize), options: .new, context: nil)
                 scrollView.addObserver(self, forKeyPath: #keyPath(UIScrollView.contentOffset), options: .new, context: nil)
             }
@@ -325,14 +325,14 @@ extension MNSplitPageController {
             let inset = max(0.0, profileHeight - originY)
             var contentInset = scrollView.contentInset
             let topInset = max(contentInset.top, inset)
-            let headerInset = scrollView.mn_split.headerInset
+            let headerInset = scrollView.mn.headerInset
             if abs(topInset - headerInset) >= 0.1 {
                 if abs(contentInset.top - topInset) >= 0.1 {
                     contentInset.top = topInset
                     scrollView.contentInset = contentInset
                     page.scrollViewDidChangeContentInset?(scrollView)
                 }
-                scrollView.mn_split.headerInset = topInset
+                scrollView.mn.headerInset = topInset
             }
             // 某些情况下ScrollView未正确计算内容尺寸, 这里手动修改偏移, 会触发重新计算
             var contentOffset = scrollView.contentOffset
@@ -344,7 +344,7 @@ extension MNSplitPageController {
             var contentSize = scrollView.frame.size
             contentSize.width = max(0.0, contentSize.width - contentInset.left - contentInset.right)
             contentSize.height = max(0.0, contentSize.height - contentInset.top - contentInset.bottom + offsetY)
-            scrollView.mn_split.leastContentSize = contentSize
+            scrollView.mn.leastContentSize = contentSize
             page.scrollView?(scrollView, guessLeastNormalContent: contentSize)
         default:
             scrollView.bounces = false
@@ -381,9 +381,9 @@ extension MNSplitPageController {
         for viewController in children {
             guard let page = viewController as? MNSplitPageConvertible else { continue }
             let scrollView = page.preferredPageScrollView
-            let pageIndex = scrollView.mn_split.pageIndex
+            let pageIndex = scrollView.mn.pageIndex
             guard pageIndex >= index else { continue }
-            scrollView.mn_split.pageIndex = pageIndex + count
+            scrollView.mn.pageIndex = pageIndex + count
             layoutPageView(page.view, at: pageIndex + count)
         }
         let lastPageIndex = currentPageIndex
@@ -399,11 +399,11 @@ extension MNSplitPageController {
             // 执行控制器生命周期
             if isViewLoaded, let page = page(for: currentPageIndex, access: true), let _ = view.window {
                 page.beginAppearanceTransition(true, animated: false)
-                page.preferredPageScrollView.mn_split.transitionState = .willAppear
+                page.preferredPageScrollView.mn.transitionState = .willAppear
                 updateOffset(with: page)
                 delegate?.contentControllerWillAppear?(page, animated: false)
                 page.endAppearanceTransition()
-                page.preferredPageScrollView.mn_split.transitionState = .didAppear
+                page.preferredPageScrollView.mn.transitionState = .didAppear
                 delegate?.contentControllerDidAppear?(page, animated: false)
             }
         }
@@ -423,11 +423,11 @@ extension MNSplitPageController {
         // 回调当前页面
         if currentPageIndex == index, isViewLoaded, let _ = view.window {
             page.beginAppearanceTransition(true, animated: false)
-            page.preferredPageScrollView.mn_split.transitionState = .willAppear
+            page.preferredPageScrollView.mn.transitionState = .willAppear
             updateOffset(with: page)
             delegate?.contentControllerWillAppear?(page, animated: false)
             page.endAppearanceTransition()
-            page.preferredPageScrollView.mn_split.transitionState = .didAppear
+            page.preferredPageScrollView.mn.transitionState = .didAppear
             delegate?.contentControllerDidAppear?(page, animated: false)
         }
     }
@@ -442,11 +442,11 @@ extension MNSplitPageController {
         // 重载新界面
         if currentPageIndex == index, isViewLoaded, let page = page(for: index, access: true), let _ = view.window {
             page.beginAppearanceTransition(true, animated: false)
-            page.preferredPageScrollView.mn_split.transitionState = .willAppear
+            page.preferredPageScrollView.mn.transitionState = .willAppear
             updateOffset(with: page)
             delegate?.contentControllerWillAppear?(page, animated: false)
             page.endAppearanceTransition()
-            page.preferredPageScrollView.mn_split.transitionState = .didAppear
+            page.preferredPageScrollView.mn.transitionState = .didAppear
             delegate?.contentControllerDidAppear?(page, animated: false)
         }
     }
@@ -476,7 +476,7 @@ extension MNSplitPageController {
         if page.isAppear, isViewLoaded, let _ = view.window {
             page.beginAppearanceTransition(false, animated: false)
             page.endAppearanceTransition()
-            page.preferredPageScrollView.mn_split.transitionState = .didDisappear
+            page.preferredPageScrollView.mn.transitionState = .didDisappear
         }
         page.willMove(toParent: nil)
         page.view.removeFromSuperview()
@@ -487,8 +487,8 @@ extension MNSplitPageController {
     /// - Parameter page: 页面
     private func removeObserver(with page: MNSplitPageConvertible) {
         let scrollView = page.preferredPageScrollView
-        guard scrollView.mn_split.isObserved else { return }
-        scrollView.mn_split.isObserved = false
+        guard scrollView.mn.isObserved else { return }
+        scrollView.mn.isObserved = false
         scrollView.removeObserver(self, forKeyPath: #keyPath(UIScrollView.contentSize))
         scrollView.removeObserver(self, forKeyPath: #keyPath(UIScrollView.contentOffset))
     }
@@ -504,9 +504,9 @@ extension MNSplitPageController {
         for viewController in children {
             guard let page = viewController as? MNSplitPageConvertible else { continue }
             let scrollView = page.preferredPageScrollView
-            let pageIndex = scrollView.mn_split.pageIndex
+            let pageIndex = scrollView.mn.pageIndex
             guard pageIndex > index else { continue }
-            scrollView.mn_split.pageIndex = pageIndex - 1
+            scrollView.mn.pageIndex = pageIndex - 1
             layoutPageView(page.view, at: pageIndex - 1)
         }
         // 修改页面
@@ -522,11 +522,11 @@ extension MNSplitPageController {
         guard scrollView.numberOfPages > 0 else { return }
         if lastPageIndex == index, isViewLoaded, let page = page(for: currentPageIndex, access: true), let _ = view.window {
             page.beginAppearanceTransition(true, animated: false)
-            page.preferredPageScrollView.mn_split.transitionState = .willAppear
+            page.preferredPageScrollView.mn.transitionState = .willAppear
             updateOffset(with: page)
             delegate?.contentControllerWillAppear?(page, animated: false)
             page.endAppearanceTransition()
-            page.preferredPageScrollView.mn_split.transitionState = .didAppear
+            page.preferredPageScrollView.mn.transitionState = .didAppear
             delegate?.contentControllerDidAppear?(page, animated: false)
         }
         if lastPageIndex != currentPageIndex  {
@@ -611,7 +611,7 @@ extension MNSplitPageController {
             }
             if execute {
                 fromPage.beginAppearanceTransition(false, animated: true)
-                fromPage.preferredPageScrollView.mn_split.transitionState = .willDisappear
+                fromPage.preferredPageScrollView.mn.transitionState = .willDisappear
                 delegate?.contentControllerWillDisappear?(fromPage, animated: animated)
             }
         }
@@ -622,7 +622,7 @@ extension MNSplitPageController {
             }
             if execute {
                 toPage.beginAppearanceTransition(true, animated: true)
-                toPage.preferredPageScrollView.mn_split.transitionState = .willAppear
+                toPage.preferredPageScrollView.mn.transitionState = .willAppear
                 updateOffset(with: toPage)
                 delegate?.contentControllerWillAppear?(toPage, animated: animated)
             }
@@ -641,7 +641,7 @@ extension MNSplitPageController {
             }
             if execute {
                 fromPage.endAppearanceTransition()
-                fromPage.preferredPageScrollView.mn_split.transitionState = .didDisappear
+                fromPage.preferredPageScrollView.mn.transitionState = .didDisappear
                 delegate?.contentControllerDidDisappear?(fromPage, animated: animated)
             }
         }
@@ -652,7 +652,7 @@ extension MNSplitPageController {
             }
             if execute {
                 toPage.endAppearanceTransition()
-                toPage.preferredPageScrollView.mn_split.transitionState = .didAppear
+                toPage.preferredPageScrollView.mn.transitionState = .didAppear
                 delegate?.contentControllerDidAppear?(toPage, animated: animated)
             }
         }
@@ -706,20 +706,20 @@ extension MNSplitPageController: UIScrollViewDelegate {
             // 结束上次猜想页面
             if lastGuessIndex != currentPageIndex, let lastPage = page(for: lastGuessIndex, access: false) {
                 lastPage.beginAppearanceTransition(false, animated: false)
-                lastPage.preferredPageScrollView.mn_split.transitionState = .willDisappear
+                lastPage.preferredPageScrollView.mn.transitionState = .willDisappear
                 delegate?.contentControllerWillDisappear?(lastPage, animated: false)
                 lastPage.endAppearanceTransition()
-                lastPage.preferredPageScrollView.mn_split.transitionState = .didDisappear
+                lastPage.preferredPageScrollView.mn.transitionState = .didDisappear
                 delegate?.contentControllerDidDisappear?(lastPage, animated: false)
             }
             // 处理此次猜想页面
             if guessPageIndex != currentPageIndex, let guessPage = page(for: guessPageIndex, access: true) {
                 guessPage.beginAppearanceTransition(true, animated: false)
-                guessPage.preferredPageScrollView.mn_split.transitionState = .willAppear
+                guessPage.preferredPageScrollView.mn.transitionState = .willAppear
                 updateOffset(with: guessPage)
                 delegate?.contentControllerWillAppear?(guessPage, animated: false)
                 guessPage.endAppearanceTransition()
-                guessPage.preferredPageScrollView.mn_split.transitionState = .didAppear
+                guessPage.preferredPageScrollView.mn.transitionState = .didAppear
                 delegate?.contentControllerDidAppear?(guessPage, animated: false)
             }
         }
@@ -751,37 +751,37 @@ extension MNSplitPageController: UIScrollViewDelegate {
         if currentPageIndex == lastPageIndex {
             if guessPageIndex != currentPageIndex, let guessPage = page(for: guessPageIndex, access: false) {
                 guessPage.beginAppearanceTransition(false, animated: false)
-                guessPage.preferredPageScrollView.mn_split.transitionState = .willDisappear
+                guessPage.preferredPageScrollView.mn.transitionState = .willDisappear
                 delegate?.contentControllerWillDisappear?(guessPage, animated: false)
                 guessPage.endAppearanceTransition()
-                guessPage.preferredPageScrollView.mn_split.transitionState = .didDisappear
+                guessPage.preferredPageScrollView.mn.transitionState = .didDisappear
                 delegate?.contentControllerDidDisappear?(guessPage, animated: false)
             }
         } else {
             if let lastPage = page(for: lastPageIndex, access: false) {
                 lastPage.beginAppearanceTransition(false, animated: false)
-                lastPage.preferredPageScrollView.mn_split.transitionState = .willDisappear
+                lastPage.preferredPageScrollView.mn.transitionState = .willDisappear
                 delegate?.contentControllerWillDisappear?(lastPage, animated: false)
                 lastPage.endAppearanceTransition()
-                lastPage.preferredPageScrollView.mn_split.transitionState = .didDisappear
+                lastPage.preferredPageScrollView.mn.transitionState = .didDisappear
                 delegate?.contentControllerDidDisappear?(lastPage, animated: false)
             }
             if guessPageIndex != currentPageIndex {
                 if guessPageIndex != lastPageIndex, let guessPage = page(for: guessPageIndex, access: false) {
                     guessPage.beginAppearanceTransition(false, animated: false)
-                    guessPage.preferredPageScrollView.mn_split.transitionState = .willDisappear
+                    guessPage.preferredPageScrollView.mn.transitionState = .willDisappear
                     delegate?.contentControllerWillDisappear?(guessPage, animated: false)
                     guessPage.endAppearanceTransition()
-                    guessPage.preferredPageScrollView.mn_split.transitionState = .didDisappear
+                    guessPage.preferredPageScrollView.mn.transitionState = .didDisappear
                     delegate?.contentControllerDidDisappear?(guessPage, animated: false)
                 }
                 if let currentPage = page(for: currentPageIndex, access: true) {
                     currentPage.beginAppearanceTransition(true, animated: false)
-                    currentPage.preferredPageScrollView.mn_split.transitionState = .willAppear
+                    currentPage.preferredPageScrollView.mn.transitionState = .willAppear
                     updateOffset(with: currentPage)
                     delegate?.contentControllerWillAppear?(currentPage, animated: false)
                     currentPage.endAppearanceTransition()
-                    currentPage.preferredPageScrollView.mn_split.transitionState = .didAppear
+                    currentPage.preferredPageScrollView.mn.transitionState = .didAppear
                     delegate?.contentControllerDidAppear?(currentPage, animated: false)
                 }
 #if DEBUG

@@ -79,10 +79,10 @@ import Foundation
 public extension MNSplitPageConvertible {
     
     /// 页码
-    var pageIndex: Int { preferredPageScrollView.mn_split.pageIndex }
+    var pageIndex: Int { preferredPageScrollView.mn.pageIndex }
     
     /// 是否在显示
-    var isAppear: Bool { preferredPageScrollView.mn_split.isAppear }
+    var isAppear: Bool { preferredPageScrollView.mn.isAppear }
 }
 
 /// 分页控制器
@@ -534,7 +534,7 @@ extension MNSplitViewController: MNSplitPageControllerDataSource {
         var contentOffset = scrollView.contentOffset
         switch axis {
         case .horizontal:
-            guard scrollView.mn_split.isReachedLeastSize else { break }
+            guard scrollView.mn.isReachedLeastSize else { break }
             let greatestFiniteOffset = pageHeaderGreatestFiniteOffset
             let originY = scrollView.superview?.convert(scrollView.frame, to: view).minY ?? 0.0
             guard greatestFiniteOffset > originY else { break }
@@ -564,7 +564,7 @@ extension MNSplitViewController: MNSplitPageControllerDelegate {
     
     func scrollView(_ scrollView: UIScrollView, contentOffsetChanged contentOffset: CGPoint) {
         delegate?.splitViewController?(self, scrollView: scrollView, contentOffsetChanged: contentOffset)
-        guard scrollView.mn_split.isReachedLeastSize else { return }
+        guard scrollView.mn.isReachedLeastSize else { return }
         guard headerView.frame.maxY > 0.0 else { return }
         let greatestFiniteOffset = pageHeaderGreatestFiniteOffset
         let originY = scrollView.superview?.convert(scrollView.frame, to: view).minY ?? 0.0

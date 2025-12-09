@@ -73,7 +73,7 @@ PODS:
     - MNSwiftKit/Refresh
     - MNSwiftKit/Request
     - MNSwiftKit/Slider
-    - MNSwiftKit/Spliter
+    - MNSwiftKit/SplitController
     - MNSwiftKit/Toast
     - MNSwiftKit/Transitioning
     - MNSwiftKit/Utility
@@ -91,8 +91,9 @@ PODS:
   - MNSwiftKit/Request (0.1.2):
     - MNSwiftKit/Networking
   - MNSwiftKit/Slider (0.1.2)
-  - MNSwiftKit/Spliter (0.1.2):
+  - MNSwiftKit/SplitController (0.1.2):
     - MNSwiftKit/Layout
+    - MNSwiftKit/NameSpace
   - MNSwiftKit/Toast (0.1.2):
     - MNSwiftKit/NameSpace
   - MNSwiftKit/Transitioning (0.1.2):
@@ -107,8 +108,8 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: 35a17ac2d45554e2033cdf12ce6d80c9a3163ca8
+  MNSwiftKit: fd13398e00a24270975d86056694b52f2b5015c2
 
-PODFILE CHECKSUM: 03cb55eaa6ebed2175b581c2491b5926c86d3615
+PODFILE CHECKSUM: e54b2c7b572998b9adf0f03a0facc2e99c97263b
 
 COCOAPODS: 1.16.2

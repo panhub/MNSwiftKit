@@ -81,7 +81,7 @@ import CoreGraphics
     /// - Parameters:
     ///   - target: 调用对象
     ///   - action: 响应事件
-    @objc func addTarget(_ target: NSObjectProtocol, action: Selector) {
+    @objc public func addTarget(_ target: NSObjectProtocol, action: Selector) {
         self.target = target
         self.action = action
     }
@@ -92,8 +92,8 @@ import CoreGraphics
         // 保持同宽度
         autoresizingMask = []
         var rect = frame
-        frame.origin.x = -scrollView.contentInset.left
-        frame.size.width = scrollView.frame.width
+        rect.origin.x = -scrollView.contentInset.left
+        rect.size.width = scrollView.frame.width
         frame = rect
         autoresizingMask = .flexibleWidth
         // 记录UIScrollView最开始的contentInset

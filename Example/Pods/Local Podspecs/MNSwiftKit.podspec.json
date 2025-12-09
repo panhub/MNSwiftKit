@@ -102,18 +102,6 @@
       "source_files": "MNSwiftKit/Player/Sources/**/*.swift"
     },
     {
-      "name": "Spliter",
-      "frameworks": [
-        "UIKit",
-        "Foundation",
-        "CoreGraphics"
-      ],
-      "source_files": "MNSwiftKit/Spliter/Sources/**/*.swift",
-      "dependencies": {
-        "MNSwiftKit/Layout": []
-      }
-    },
-    {
       "name": "Layout",
       "frameworks": [
         "UIKit",
@@ -304,6 +292,19 @@
       "source_files": "MNSwiftKit/NameSpace/Sources/**/*.swift"
     },
     {
+      "name": "SplitController",
+      "frameworks": [
+        "UIKit",
+        "Foundation",
+        "CoreGraphics"
+      ],
+      "source_files": "MNSwiftKit/SplitController/Sources/**/*.swift",
+      "dependencies": {
+        "MNSwiftKit/Layout": [],
+        "MNSwiftKit/NameSpace": []
+      }
+    },
+    {
       "name": "PageControl",
       "frameworks": [
         "UIKit",
@@ -401,7 +402,6 @@
         "MNSwiftKit/Slider": [],
         "MNSwiftKit/Utility": [],
         "MNSwiftKit/Player": [],
-        "MNSwiftKit/Spliter": [],
         "MNSwiftKit/Layout": [],
         "MNSwiftKit/Refresh": [],
         "MNSwiftKit/Request": [],
@@ -418,6 +418,7 @@
         "MNSwiftKit/MediaExport": [],
         "MNSwiftKit/Transitioning": [],
         "MNSwiftKit/AssetBrowser": [],
+        "MNSwiftKit/SplitController": [],
         "MNSwiftKit/AnimatedImage": [],
         "MNSwiftKit/CollectionLayout": [],
         "MNSwiftKit/EmoticonKeyboard": []

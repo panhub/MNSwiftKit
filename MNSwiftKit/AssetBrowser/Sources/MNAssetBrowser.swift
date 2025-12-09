@@ -796,7 +796,7 @@ extension MNAssetBrowser: UICollectionViewDelegate, UICollectionViewDataSource {
 // MARK: - MNAssetBrowseResourceHandler
 extension MNAssetBrowser: MNAssetBrowseResourceHandler {
     
-    func browserCell(_ cell: MNAssetBrowserCell, fetchCover asset: any MNAssetBrowseSupported, completion completionHandler: @escaping (any MNAssetBrowseSupported) -> Void) {
+    public func browserCell(_ cell: MNAssetBrowserCell, fetchCover asset: any MNAssetBrowseSupported, completion completionHandler: @escaping (any MNAssetBrowseSupported) -> Void) {
         if let _ = asset.cover {
             completionHandler(asset)
         } else if let delegate = delegate {
@@ -804,7 +804,7 @@ extension MNAssetBrowser: MNAssetBrowseResourceHandler {
         }
     }
     
-    func browserCell(_ cell: MNAssetBrowserCell, fetchContents asset: any MNAssetBrowseSupported, progress progressHandler: @escaping (any MNAssetBrowseSupported, Double, (any Error)?) -> Void, completion completionHandler: @escaping (any MNAssetBrowseSupported) -> Void) {
+    public func browserCell(_ cell: MNAssetBrowserCell, fetchContents asset: any MNAssetBrowseSupported, progress progressHandler: @escaping (any MNAssetBrowseSupported, Double, (any Error)?) -> Void, completion completionHandler: @escaping (any MNAssetBrowseSupported) -> Void) {
         if let _ = asset.contents {
             completionHandler(asset)
         } else if let delegate = delegate {

@@ -13,7 +13,7 @@ let package = Package(
         .library(
             name: "MNSwiftKit",
             targets: [
-                "MNSwiftKit"
+                "Base", "Toast", "Slider", "Utility", "Player", "Layout", "Refresh", "Request", "Purchase", "Database", "Definition", "Extension", "EmptyView", "Networking", "AssetPicker", "NameSpace", "PageControl", "Components", "MediaExport", "Transitioning", "AssetBrowser", "SplitController", "AnimatedImage", "CollectionLayout", "EmoticonKeyboard"
             ]
         ),
         .library(
@@ -29,27 +29,21 @@ let package = Package(
             ]
         ),
         .library(
-            name: "MNSwiftKitSlider",
-            targets: [
-                "Slider"
-            ]
-        ),
-        .library(
             name: "MNSwiftKitUtility",
             targets: [
                 "Utility"
             ]
         ),
         .library(
-            name: "MNSwiftKitPlayer",
+            name: "MNSwiftKitSlider",
             targets: [
-                "Player"
+                "Slider"
             ]
         ),
         .library(
-            name: "MNSwiftKitSpliter",
+            name: "MNSwiftKitPlayer",
             targets: [
-                "Spliter"
+                "Player"
             ]
         ),
         .library(
@@ -71,6 +65,12 @@ let package = Package(
             ]
         ),
         .library(
+            name: "MNSwiftKitMediaExport",
+            targets: [
+                "MediaExport"
+            ]
+        ),
+        .library(
             name: "MNSwiftKitPurchase",
             targets: [
                 "Purchase"
@@ -86,6 +86,12 @@ let package = Package(
             name: "MNSwiftKitDefinition",
             targets: [
                 "Definition"
+            ]
+        ),
+        .library(
+            name: "MNSwiftKitExtension",
+            targets: [
+                "Extension"
             ]
         ),
         .library(
@@ -113,6 +119,18 @@ let package = Package(
             ]
         ),
         .library(
+            name: "MNSwiftKitAssetBrowser",
+            targets: [
+                "AssetBrowser"
+            ]
+        ),
+        .library(
+            name: "MNSwiftKitSplitController",
+            targets: [
+                "SplitController"
+            ]
+        ),
+        .library(
             name: "MNSwiftKitPageControl",
             targets: [
                 "PageControl"
@@ -125,21 +143,15 @@ let package = Package(
             ]
         ),
         .library(
-            name: "MNSwiftKitMediaExport",
-            targets: [
-                "MediaExport"
-            ]
-        ),
-        .library(
             name: "MNSwiftKitTransitioning",
             targets: [
                 "Transitioning"
             ]
         ),
         .library(
-            name: "MNSwiftKitAssetBrowser",
+            name: "MNSwiftKitEmoticonKeyboard",
             targets: [
-                "AssetBrowser"
+                "EmoticonKeyboard"
             ]
         ),
         .library(
@@ -153,17 +165,12 @@ let package = Package(
             targets: [
                 "CollectionLayout"
             ]
-        ),
-        .library(
-            name: "MNSwiftKitEmoticonKeyboard",
-            targets: [
-                "EmoticonKeyboard"
-            ]
         )
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
+	/*
         .target(
             name: "MNSwiftKit",
             dependencies: [
@@ -171,6 +178,7 @@ let package = Package(
             ],
             path: "MNSwiftKit/Full"
         ),
+        */
         .target(
             name: "Base",
             dependencies: [
@@ -237,18 +245,6 @@ let package = Package(
                 .linkedFramework("Foundation"),
                 .linkedFramework("AudioToolbox"),
                 .linkedFramework("AVFoundation")
-            ]
-        ),
-        .target(
-            name: "Spliter",
-            dependencies: [
-                "Layout"
-            ],
-            path: "MNSwiftKit/Spliter",
-            linkerSettings: [
-                .linkedFramework("UIKit"),
-                .linkedFramework("Foundation"),
-                .linkedFramework("CoreGraphics")
             ]
         ),
         .target(
@@ -396,6 +392,15 @@ let package = Package(
             ]
         ),
         .target(
+            name: "NameSpace",
+            path: "MNSwiftKit/NameSpace",
+            linkerSettings: [
+                .linkedFramework("UIKit"),
+                .linkedFramework("Foundation"),
+                .linkedFramework("CoreGraphics")
+            ]
+        ),
+        .target(
             name: "AssetBrowser",
             dependencies: [
                 "Slider", "Player", "Layout", "Definition", "Extension", "AnimatedImage"
@@ -411,13 +416,6 @@ let package = Package(
                 .linkedFramework("CoreGraphics"),
                 .linkedFramework("AVFoundation"),
                 .linkedFramework("CoreFoundation")
-            ]
-        ),
-        .target(
-            name: "NameSpace",
-            path: "MNSwiftKit/NameSpace",
-            linkerSettings: [
-                .linkedFramework("Foundation")
             ]
         ),
         .target(
@@ -456,6 +454,18 @@ let package = Package(
                 "NameSpace"
             ],
             path: "MNSwiftKit/Transitioning",
+            linkerSettings: [
+                .linkedFramework("UIKit"),
+                .linkedFramework("Foundation"),
+                .linkedFramework("CoreGraphics")
+            ]
+        ),
+        .target(
+            name: "SplitController",
+            dependencies: [
+                "Layout", "NameSpace"
+            ],
+            path: "MNSwiftKit/SplitController",
             linkerSettings: [
                 .linkedFramework("UIKit"),
                 .linkedFramework("Foundation"),

@@ -31,6 +31,7 @@ public class HTTPParser {
     /// 接受的响应数据类型
     public var acceptableContentTypes: [HTTPContentType]!
     
+    public init() {}
     
     /// 解析响应结果
     /// - Parameters:

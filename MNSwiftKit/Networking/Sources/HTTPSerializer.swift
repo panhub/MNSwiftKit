@@ -31,7 +31,9 @@ public class HTTPSerializer {
     /**服务端认证信息*/
     public var authHeaderField: [String: String]?
     /**默认序列化实例*/
-    public static let `default`: HTTPSerializer = HTTPSerializer()
+    nonisolated(unsafe) public static let `default`: HTTPSerializer = HTTPSerializer()
+    
+    public init() {}
     
     /// 获取请求实例
     /// - Parameters:
