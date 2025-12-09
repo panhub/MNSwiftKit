@@ -134,7 +134,7 @@ public class MNScanner: NSObject {
         requestCameraPermission { [weak self] result in
             guard let self = self else { return }
             guard result else {
-                self.fail(error: .notPermission(.cameraDenied))
+                self.fail(error: NSError(domain: AVFoundationErrorDomain, code: AVError.Code.applicationIsNotAuthorized.rawValue, userInfo: [NSLocalizedDescriptionKey:"应用程序未授权"]))
                 return
             }
             // 拍摄会话
@@ -159,7 +159,7 @@ public class MNScanner: NSObject {
                 break
             }
             guard let device = self.device else {
-                self.fail(error: .deviceError(.notFound))
+                self.fail(error: NSError(domain: AVFoundationErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey:"未发现指定设备"]))
                 return
             }
             // 输入
@@ -167,11 +167,11 @@ public class MNScanner: NSObject {
             do {
                 videoInput = try AVCaptureDeviceInput(device: device)
             } catch {
-                self.fail(error: .deviceError(.cannotCreateVideoInput))
+                self.fail(error: NSError(domain: AVFoundationErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey:"无法添加设备"]))
                 return
             }
             guard self.session.canAddInput(videoInput) else {
-                self.fail(error: .sessionError(.cannotAddVideoInput))
+                self.fail(error: NSError(domain: AVFoundationErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey:"无法添加视频输入"]))
                 return
             }
             self.session.addInput(videoInput)
@@ -179,7 +179,7 @@ public class MNScanner: NSObject {
             let videoOutput = AVCaptureVideoDataOutput()
             videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "com.mn.scanner.data.output"))
             guard self.session.canAddOutput(videoOutput) else {
-                self.fail(error: .sessionError(.cannotAddVideoOutput))
+                self.fail(error: NSError(domain: AVFoundationErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey:"无法添加视频输出"]))
                 return
             }
             self.session.addOutput(videoOutput)
@@ -187,7 +187,7 @@ public class MNScanner: NSObject {
             let metadataOutput = AVCaptureMetadataOutput()
             metadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue(label: "com.mn.scanner.metadata.output"))
             guard self.session.canAddOutput(metadataOutput) else {
-                self.fail(error: .sessionError(.cannotAddVideoOutput))
+                self.fail(error: NSError(domain: AVFoundationErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey:"无法添加元数据输出"]))
                 return
             }
             self.session.addOutput(metadataOutput)
@@ -227,7 +227,7 @@ public class MNScanner: NSObject {
     
     /// 错误回调
     /// - Parameter error: 错误信息
-    private func fail(error: AVError) {
+    private func fail(error: Error) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.delegate?.scanner?(self, didFail: error)
