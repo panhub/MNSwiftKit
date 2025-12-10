@@ -6,6 +6,6 @@
 //
 
 #if SWIFT_PACKAGE
-@_exported import Layout
-@_exported import Extension
+@_exported import MNLayout
+@_exported import MNExtension
 #endif

@@ -9,165 +9,161 @@ let package = Package(
         .iOS(.v12)
     ],
     products: [
-        // 每个产品做为一个构建目标
+        // 每个产品做为一个构建目标, 方便独立依赖
         .library(
             name: "MNSwiftKit",
             targets: [
-                // 将所有target做为独立模块输出, 即支持全部导入, 也支持独立导入
-                /**
-                 , "Base", "Toast", "Slider", "Utility", "Player", "Layout", "Refresh", "Request", "Purchase", "Database", "Definition", "Extension", "EmptyView", "Networking", "AssetPicker", "NameSpace", "PageControl", "Components", "MediaExport", "Transitioning", "AssetBrowser", "SplitController", "AnimatedImage", "CollectionLayout", "EmoticonKeyboard"
-                 */
                 "MNSwiftKit"
             ]
         ),
         .library(
-            name: "MNSwiftKitBase",
+            name: "MNBase",
             targets: [
-                "Base"
+                "MNBase"
             ]
         ),
         .library(
-            name: "MNSwiftKitToast",
+            name: "MNToast",
             targets: [
-                "Toast"
+                "MNToast"
             ]
         ),
         .library(
-            name: "MNSwiftKitUtility",
+            name: "MNUtility",
             targets: [
-                "Utility"
+                "MNUtility"
             ]
         ),
         .library(
-            name: "MNSwiftKitSlider",
+            name: "MNSlider",
             targets: [
-                "Slider"
+                "MNSlider"
             ]
         ),
         .library(
-            name: "MNSwiftKitPlayer",
+            name: "MNPlayer",
             targets: [
-                "Player"
+                "MNPlayer"
             ]
         ),
         .library(
-            name: "MNSwiftKitLayout",
+            name: "MNLayout",
             targets: [
-                "Layout"
+                "MNLayout"
             ]
         ),
         .library(
-            name: "MNSwiftKitRefresh",
+            name: "MNRefresh",
             targets: [
-                "Refresh"
+                "MNRefresh"
             ]
         ),
         .library(
-            name: "MNSwiftKitRequest",
+            name: "MNRequest",
             targets: [
-                "Request"
+                "MNRequest"
             ]
         ),
         .library(
-            name: "MNSwiftKitPurchase",
+            name: "MNPurchase",
             targets: [
-                "Purchase"
+                "MNPurchase"
             ]
         ),
         .library(
-            name: "MNSwiftKitDatabase",
+            name: "MNDatabase",
             targets: [
-                "Database"
+                "MNDatabase"
             ]
         ),
         .library(
-            name: "MNSwiftKitDefinition",
+            name: "MNDefinition",
             targets: [
-                "Definition"
+                "MNDefinition"
             ]
         ),
         .library(
-            name: "MNSwiftKitExtension",
+            name: "MNExtension",
             targets: [
-                "Extension"
+                "MNExtension"
             ]
         ),
         .library(
-            name: "MNSwiftKitEmptyView",
+            name: "MNEmptyView",
             targets: [
-                "EmptyView"
+                "MNEmptyView"
             ]
         ),
         .library(
-            name: "MNSwiftKitNetworking",
+            name: "MNNetworking",
             targets: [
-                "Networking"
+                "MNNetworking"
             ]
         ),
         .library(
-            name: "MNSwiftKitAssetPicker",
+            name: "MNAssetPicker",
             targets: [
-                "AssetPicker"
+                "MNAssetPicker"
             ]
         ),
         .library(
-            name: "MNSwiftKitMediaExport",
+            name: "MNMediaExport",
             targets: [
-                "MediaExport"
+                "MNMediaExport"
             ]
         ),
         .library(
-            name: "MNSwiftKitNameSpace",
+            name: "MNNameSpace",
             targets: [
-                "NameSpace"
+                "MNNameSpace"
             ]
         ),
         .library(
-            name: "MNSwiftKitAssetBrowser",
+            name: "MNAssetBrowser",
             targets: [
-                "AssetBrowser"
+                "MNAssetBrowser"
             ]
         ),
         .library(
-            name: "MNSwiftKitSplitController",
+            name: "MNSplitController",
             targets: [
-                "SplitController"
+                "MNSplitController"
             ]
         ),
         .library(
-            name: "MNSwiftKitPageControl",
+            name: "MNPageControl",
             targets: [
-                "PageControl"
+                "MNPageControl"
             ]
         ),
         .library(
-            name: "MNSwiftKitComponents",
+            name: "MNComponents",
             targets: [
-                "Components"
+                "MNComponents"
             ]
         ),
         .library(
-            name: "MNSwiftKitTransitioning",
+            name: "MNTransitioning",
             targets: [
-                "Transitioning"
+                "MNTransitioning"
             ]
         ),
         .library(
-            name: "MNSwiftKitEmoticonKeyboard",
+            name: "MNEmoticonKeyboard",
             targets: [
-                "EmoticonKeyboard"
+                "MNEmoticonKeyboard"
             ]
         ),
         .library(
-            name: "MNSwiftKitAnimatedImage",
+            name: "MNAnimatedImage",
             targets: [
-                "AnimatedImage"
+                "MNAnimatedImage"
             ]
         ),
         .library(
-            name: "MNSwiftKitCollectionLayout",
+            name: "MNCollectionLayout",
             targets: [
-                "CollectionLayout"
+                "MNCollectionLayout"
             ]
         )
     ],
@@ -177,14 +173,14 @@ let package = Package(
         .target(
             name: "MNSwiftKit",
             dependencies: [
-                "Base", "Toast", "Slider", "Utility", "Player", "Layout", "Refresh", "Request", "Purchase", "Database", "Definition", "Extension", "EmptyView", "Networking", "AssetPicker", "NameSpace", "PageControl", "Components", "MediaExport", "Transitioning", "AssetBrowser", "SplitController", "AnimatedImage", "CollectionLayout", "EmoticonKeyboard"
+                "MNBase", "MNToast", "MNSlider", "MNUtility", "MNPlayer", "MNLayout", "MNRefresh", "MNRequest", "MNPurchase", "MNDatabase", "MNDefinition", "MNExtension", "MNEmptyView", "MNNetworking", "MNAssetPicker", "MNNameSpace", "MNPageControl", "MNComponents", "MNMediaExport", "MNTransitioning", "MNAssetBrowser", "MNSplitController", "MNAnimatedImage", "MNCollectionLayout", "MNEmoticonKeyboard"
             ],
             path: "MNSwiftKit/Full"
         ),
         .target(
-            name: "Base",
+            name: "MNBase",
             dependencies: [
-                "Toast", "Layout", "Refresh", "Request", "Definition", "Extension", "EmptyView", "Transitioning", "CollectionLayout"
+                "MNToast", "MNLayout", "MNRefresh", "MNRequest", "MNDefinition", "MNExtension", "MNEmptyView", "MNTransitioning", "MNCollectionLayout"
             ],
             path: "MNSwiftKit/Base",
             resources: [
@@ -198,9 +194,9 @@ let package = Package(
             ]
         ),
         .target(
-            name: "Toast",
+            name: "MNToast",
             dependencies: [
-                "NameSpace"
+                "MNNameSpace"
             ],
             path: "MNSwiftKit/Toast",
             resources: [
@@ -213,7 +209,7 @@ let package = Package(
             ]
         ),
         .target(
-            name: "Utility",
+            name: "MNUtility",
             path: "MNSwiftKit/Utility",
             linkerSettings: [
                 .linkedFramework("UIKit"),
@@ -229,7 +225,7 @@ let package = Package(
             ]
         ),
         .target(
-            name: "Slider",
+            name: "MNSlider",
             path: "MNSwiftKit/Slider",
             linkerSettings: [
                 .linkedFramework("UIKit"),
@@ -239,7 +235,7 @@ let package = Package(
             ]
         ),
         .target(
-            name: "Player",
+            name: "MNPlayer",
             path: "MNSwiftKit/Player",
             linkerSettings: [
                 .linkedFramework("UIKit"),
@@ -250,9 +246,9 @@ let package = Package(
             ]
         ),
         .target(
-            name: "Layout",
+            name: "MNLayout",
             dependencies: [
-                "NameSpace"
+                "MNNameSpace"
             ],
             path: "MNSwiftKit/Layout",
             linkerSettings: [
@@ -262,9 +258,9 @@ let package = Package(
             ]
         ),
         .target(
-            name: "Refresh",
+            name: "MNRefresh",
             dependencies: [
-                "NameSpace"
+                "MNNameSpace"
             ],
             path: "MNSwiftKit/Refresh",
             linkerSettings: [
@@ -274,9 +270,9 @@ let package = Package(
             ]
         ),
         .target(
-            name: "Request",
+            name: "MNRequest",
             dependencies: [
-                "Networking"
+                "MNNetworking"
             ],
             path: "MNSwiftKit/Request",
             linkerSettings: [
@@ -289,9 +285,9 @@ let package = Package(
             ]
         ),
         .target(
-            name: "MediaExport",
+            name: "MNMediaExport",
             dependencies: [
-                "NameSpace"
+                "MNNameSpace"
             ],
             path: "MNSwiftKit/MediaExport",
             linkerSettings: [
@@ -302,7 +298,7 @@ let package = Package(
             ]
         ),
         .target(
-            name: "Purchase",
+            name: "MNPurchase",
             path: "MNSwiftKit/Purchase",
             linkerSettings: [
                 .linkedFramework("UIKit"),
@@ -311,7 +307,7 @@ let package = Package(
             ]
         ),
         .target(
-            name: "Database",
+            name: "MNDatabase",
             path: "MNSwiftKit/Database",
             linkerSettings: [
                 .linkedLibrary("sqlite3"),
@@ -321,9 +317,9 @@ let package = Package(
             ]
         ),
         .target(
-            name: "Definition",
+            name: "MNDefinition",
             dependencies: [
-                "NameSpace"
+                "MNNameSpace"
             ],
             path: "MNSwiftKit/Definition",
             linkerSettings: [
@@ -333,9 +329,9 @@ let package = Package(
             ]
         ),
         .target(
-            name: "Extension",
+            name: "MNExtension",
             dependencies: [
-                "NameSpace", "AnimatedImage"
+                "MNNameSpace", "MNAnimatedImage"
             ],
             path: "MNSwiftKit/Extension",
             linkerSettings: [
@@ -346,9 +342,9 @@ let package = Package(
             ]
         ),
         .target(
-            name: "EmptyView",
+            name: "MNEmptyView",
             dependencies: [
-                "NameSpace"
+                "MNNameSpace"
             ],
             path: "MNSwiftKit/EmptyView",
             linkerSettings: [
@@ -358,7 +354,7 @@ let package = Package(
             ]
         ),
         .target(
-            name: "Networking",
+            name: "MNNetworking",
             path: "MNSwiftKit/Networking",
             resources: [
                 .process("Resources")
@@ -374,9 +370,9 @@ let package = Package(
             ]
         ),
         .target(
-            name: "AssetPicker",
+            name: "MNAssetPicker",
             dependencies: [
-                "Toast", "Slider", "Player", "Layout", "Refresh", "Definition", "Extension", "EmptyView", "NameSpace", "MediaExport", "AssetBrowser", "AnimatedImage"
+                "MNToast", "MNSlider", "MNPlayer", "MNLayout", "MNRefresh", "MNDefinition", "MNExtension", "MNEmptyView", "MNNameSpace", "MNMediaExport", "MNAssetBrowser", "MNAnimatedImage"
             ],
             path: "MNSwiftKit/AssetPicker",
             resources: [
@@ -394,7 +390,7 @@ let package = Package(
             ]
         ),
         .target(
-            name: "NameSpace",
+            name: "MNNameSpace",
             path: "MNSwiftKit/NameSpace",
             linkerSettings: [
                 .linkedFramework("UIKit"),
@@ -403,9 +399,9 @@ let package = Package(
             ]
         ),
         .target(
-            name: "AssetBrowser",
+            name: "MNAssetBrowser",
             dependencies: [
-                "Slider", "Player", "Layout", "Definition", "Extension", "AnimatedImage"
+                "MNSlider", "MNPlayer", "MNLayout", "MNDefinition", "MNExtension", "MNAnimatedImage"
             ],
             path: "MNSwiftKit/AssetBrowser",
             resources: [
@@ -421,7 +417,7 @@ let package = Package(
             ]
         ),
         .target(
-            name: "PageControl",
+            name: "MNPageControl",
             path: "MNSwiftKit/PageControl",
             linkerSettings: [
                 .linkedFramework("UIKit"),
@@ -430,9 +426,9 @@ let package = Package(
             ]
         ),
         .target(
-            name: "Components",
+            name: "MNComponents",
             dependencies: [
-                "Layout", "Extension"
+                "MNLayout", "MNExtension"
             ],
             path: "MNSwiftKit/Components",
             resources: [
@@ -451,9 +447,9 @@ let package = Package(
             ]
         ),
         .target(
-            name: "Transitioning",
+            name: "MNTransitioning",
             dependencies: [
-                "NameSpace"
+                "MNNameSpace"
             ],
             path: "MNSwiftKit/Transitioning",
             linkerSettings: [
@@ -463,9 +459,9 @@ let package = Package(
             ]
         ),
         .target(
-            name: "SplitController",
+            name: "MNSplitController",
             dependencies: [
-                "Layout", "NameSpace"
+                "MNLayout", "MNNameSpace"
             ],
             path: "MNSwiftKit/SplitController",
             linkerSettings: [
@@ -475,9 +471,9 @@ let package = Package(
             ]
         ),
         .target(
-            name: "AnimatedImage",
+            name: "MNAnimatedImage",
             dependencies: [
-                "NameSpace"
+                "MNNameSpace"
             ],
             path: "MNSwiftKit/AnimatedImage",
             linkerSettings: [
@@ -490,9 +486,9 @@ let package = Package(
             ]
         ),
         .target(
-            name: "EmoticonKeyboard",
+            name: "MNEmoticonKeyboard",
             dependencies: [
-                "Definition", "Extension", "NameSpace", "PageControl", "AnimatedImage"
+                "MNDefinition", "MNExtension", "MNNameSpace", "MNPageControl", "MNAnimatedImage"
             ],
             path: "MNSwiftKit/EmoticonKeyboard",
             resources: [
@@ -505,7 +501,7 @@ let package = Package(
             ]
         ),
         .target(
-            name: "CollectionLayout",
+            name: "MNCollectionLayout",
             path: "MNSwiftKit/CollectionLayout",
             linkerSettings: [
                 .linkedFramework("UIKit"),

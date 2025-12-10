@@ -9,7 +9,7 @@ import UIKit
 import QuartzCore
 import ObjectiveC.runtime
 #if SWIFT_PACKAGE
-import NameSpace
+import MNNameSpace
 #endif
 
 /// 空数据视图代理

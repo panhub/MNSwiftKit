@@ -6,6 +6,6 @@
 //
 
 #if SWIFT_PACKAGE
-@_exported import Layout
-@_exported import NameSpace
+@_exported import MNLayout
+@_exported import MNNameSpace
 #endif

@@ -6,6 +6,6 @@
 //
 
 #if SWIFT_PACKAGE
-@_exported import NameSpace
-@_exported import AnimatedImage
+@_exported import MNNameSpace
+@_exported import MNAnimatedImage
 #endif

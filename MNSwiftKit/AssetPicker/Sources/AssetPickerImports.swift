@@ -6,16 +6,16 @@
 //
 
 #if SWIFT_PACKAGE
-@_exported import Toast
-@_exported import Slider
-@_exported import Player
-@_exported import Layout
-@_exported import Refresh
-@_exported import Definition
-@_exported import Extension
-@_exported import EmptyView
-@_exported import NameSpace
-@_exported import MediaExport
-@_exported import AssetBrowser
-@_exported import AnimatedImage
+@_exported import MNToast
+@_exported import MNSlider
+@_exported import MNPlayer
+@_exported import MNLayout
+@_exported import MNRefresh
+@_exported import MNDefinition
+@_exported import MNExtension
+@_exported import MNEmptyView
+@_exported import MNNameSpace
+@_exported import MNMediaExport
+@_exported import MNAssetBrowser
+@_exported import MNAnimatedImage
 #endif

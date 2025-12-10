@@ -6,5 +6,5 @@
 //
 
 #if SWIFT_PACKAGE
-@_exported import Networking
+@_exported import MNNetworking
 #endif

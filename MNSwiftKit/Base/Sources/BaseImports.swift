@@ -6,13 +6,13 @@
 //
 
 #if SWIFT_PACKAGE
-@_exported import Toast
-@_exported import Layout
-@_exported import Refresh
-@_exported import Request
-@_exported import Definition
-@_exported import Extension
-@_exported import EmptyView
-@_exported import Transitioning
-@_exported import CollectionLayout
+@_exported import MNToast
+@_exported import MNLayout
+@_exported import MNRefresh
+@_exported import MNRequest
+@_exported import MNDefinition
+@_exported import MNExtension
+@_exported import MNEmptyView
+@_exported import MNTransitioning
+@_exported import MNCollectionLayout
 #endif

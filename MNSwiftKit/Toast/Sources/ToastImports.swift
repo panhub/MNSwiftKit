@@ -6,5 +6,5 @@
 //
 
 #if SWIFT_PACKAGE
-@_exported import NameSpace
+@_exported import MNNameSpace
 #endif

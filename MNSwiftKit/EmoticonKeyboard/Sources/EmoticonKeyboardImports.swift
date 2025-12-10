@@ -6,9 +6,9 @@
 //
 
 #if SWIFT_PACKAGE
-@_exported import Definition
-@_exported import Extension
-@_exported import NameSpace
-@_exported import PageControl
-@_exported import AnimatedImage
+@_exported import MNDefinition
+@_exported import MNExtension
+@_exported import MNNameSpace
+@_exported import MNPageControl
+@_exported import MNAnimatedImage
 #endif
