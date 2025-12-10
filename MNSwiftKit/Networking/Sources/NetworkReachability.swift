@@ -13,7 +13,7 @@ import ObjectiveC.objc_sync
 
 // 定义网络状态
 @objc public enum NetworkStatus: Int {
-    case none // 不可达
+    case unreachable // 不可达
     case wwan // 基带网络
     case wifi // "Wi-Fi"
 }
@@ -162,23 +162,23 @@ public class NetworkReachability: NSObject {
 // MARK: - 网络状态
 public extension NetworkReachability {
     // 是否可达
-    @objc var isReachable: Bool { status != .none }
+    @objc var isReachable: Bool { status != .unreachable }
     // 是否是Wifi
     @objc var isWifiReachable: Bool { status == .wifi }
     // 是否是无线广域网
     @objc var isCellularReachable: Bool { status == .wwan }
     // 当前网络状态
     @objc var status: NetworkStatus {
-        guard let reachability = reachability else { return .none }
+        guard let reachability = reachability else { return .unreachable }
         var flags: SCNetworkReachabilityFlags = []
-        guard SCNetworkReachabilityGetFlags(reachability, &flags) else { return .none }
+        guard SCNetworkReachabilityGetFlags(reachability, &flags) else { return .unreachable }
         return status(with: flags)
     }
     
     private func status(with flags: SCNetworkReachabilityFlags) -> NetworkStatus {
         // 无法连接网络
-        guard flags.contains(.reachable) else { return .none }
-        if flags.contains(.interventionRequired) { return .none } //|| flags.contains(.transientConnection)
+        guard flags.contains(.reachable) else { return .unreachable }
+        if flags.contains(.interventionRequired) { return .unreachable } //|| flags.contains(.transientConnection)
         if flags.contains(.isWWAN) {
 #if arch(i386) || arch(x86_64) || targetEnvironment(simulator)
             // 模拟器
@@ -196,7 +196,7 @@ extension NetworkReachability {
     @objc public var type: NetworkType {
         guard isCellularReachable else { return .unknown }
         var type: NetworkType = .unknown
-        if #available(iOS 12.1, *) {
+        if #available(iOS 12.0, *) {
             if let values = networkInfo.serviceCurrentRadioAccessTechnology?.values {
                 for technology in values {
                     if let value = technologys[technology] {

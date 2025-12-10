@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "MNSwiftKit",
     platforms: [
-        .iOS(.v12)
+        .iOS(.v9)
     ],
     products: [
         // 每个产品做为一个构建目标, 方便独立依赖
@@ -509,5 +509,8 @@ let package = Package(
                 .linkedFramework("CoreGraphics")
             ]
         )
+    ],
+    swiftLanguageVersions: [
+        .v5
     ]
 )
