@@ -44,9 +44,9 @@ public class MNProgressToast {
         if style == .line {
             activityLayer.lineCap = .round
             activityLayer.lineJoin = .round
-            activityLayer.strokeColor = MNToast.Configuration.shared.color.cgColor
+            activityLayer.strokeColor = MNToast.Configuration.shared.primaryColor.withAlphaComponent(0.86).cgColor
         } else {
-            activityLayer.strokeColor = MNToast.Configuration.shared.color.withAlphaComponent(0.75).cgColor
+            activityLayer.strokeColor = MNToast.Configuration.shared.primaryColor.withAlphaComponent(0.86).cgColor
         }
         
         return activityLayer
@@ -57,7 +57,7 @@ public class MNProgressToast {
         let percentLabel = UILabel()
         percentLabel.numberOfLines = 1
         percentLabel.textAlignment = .center
-        percentLabel.textColor = MNToast.Configuration.shared.color
+        percentLabel.textColor = MNToast.Configuration.shared.primaryColor
         percentLabel.font = .systemFont(ofSize: 10.0, weight: .medium)
         return percentLabel
     }()
@@ -91,7 +91,7 @@ extension MNProgressToast: MNToastBuilder {
         trackLayer.frame = .init(origin: .zero, size: borderSize)
         trackLayer.path = path.cgPath
         trackLayer.fillColor = UIColor.clear.cgColor
-        trackLayer.strokeColor = activityLayer.strokeColor?.copy(alpha: 0.05)
+        trackLayer.strokeColor = activityLayer.strokeColor?.copy(alpha: 0.08)
         trackLayer.lineWidth = lineWidth
         trackLayer.strokeEnd = 1.0
         
@@ -119,7 +119,7 @@ extension MNProgressToast: MNToastBuilder {
         paragraph.paragraphSpacing = 1.0
         paragraph.lineHeightMultiple = 1.0
         paragraph.paragraphSpacingBefore = 1.0
-        return [.font:MNToast.Configuration.shared.font, .foregroundColor:MNToast.Configuration.shared.color, .paragraphStyle:paragraph]
+        return [.font:MNToast.Configuration.shared.font, .foregroundColor:MNToast.Configuration.shared.primaryColor, .paragraphStyle:paragraph]
     }
     
     public var fadeInForToast: Bool {

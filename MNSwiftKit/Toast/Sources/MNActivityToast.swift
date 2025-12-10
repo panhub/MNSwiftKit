@@ -46,7 +46,7 @@ public class MNActivityToast {
         }
         let activityView = UIActivityIndicatorView(style: activityStyle)
         activityView.hidesWhenStopped = false
-        activityView.color = MNToast.Configuration.shared.color
+        activityView.color = MNToast.Configuration.shared.primaryColor
         return activityView
     }()
 }
@@ -81,7 +81,7 @@ extension MNActivityToast: MNToastBuilder {
         paragraph.paragraphSpacing = 1.0
         paragraph.lineHeightMultiple = 1.0
         paragraph.paragraphSpacingBefore = 1.0
-        return [.font:MNToast.Configuration.shared.font, .foregroundColor:MNToast.Configuration.shared.color, .paragraphStyle:paragraph]
+        return [.font:MNToast.Configuration.shared.font, .foregroundColor:MNToast.Configuration.shared.primaryColor, .paragraphStyle:paragraph]
     }
     
     public var fadeInForToast: Bool {

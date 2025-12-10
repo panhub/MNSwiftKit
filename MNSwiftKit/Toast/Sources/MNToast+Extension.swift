@@ -63,8 +63,11 @@ extension MNToast {
         /// 内容四周约束
         public var contentInset: UIEdgeInsets = .init(top: 13.0, left: 13.0, bottom: 13.0, right: 13.0)
         
-        /// 视图元素颜色
-        public var color: UIColor = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
+        /// 主要颜色(主题颜色)
+        public var primaryColor: UIColor = UIColor(hue: 0.0, saturation: 0.0, brightness: 0.95, alpha: 1.0)
+        
+        /// 次要颜色(配色)
+        public var secondaryColor: UIColor = UIColor(hue: 0.0, saturation: 0.0, brightness: 0.3, alpha: 1.0)
         
         /// 字体
         public var font: UIFont = .systemFont(ofSize: 15.0, weight: .regular)

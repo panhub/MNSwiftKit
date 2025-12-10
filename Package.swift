@@ -9,10 +9,14 @@ let package = Package(
         .iOS(.v12)
     ],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
+        // 每个产品做为一个构建目标
         .library(
             name: "MNSwiftKit",
             targets: [
+                // 将所有target做为独立模块输出, 即支持全部导入, 也支持独立导入
+                /**
+                 , "Base", "Toast", "Slider", "Utility", "Player", "Layout", "Refresh", "Request", "Purchase", "Database", "Definition", "Extension", "EmptyView", "Networking", "AssetPicker", "NameSpace", "PageControl", "Components", "MediaExport", "Transitioning", "AssetBrowser", "SplitController", "AnimatedImage", "CollectionLayout", "EmoticonKeyboard"
+                 */
                 "MNSwiftKit"
             ]
         ),
@@ -65,12 +69,6 @@ let package = Package(
             ]
         ),
         .library(
-            name: "MNSwiftKitMediaExport",
-            targets: [
-                "MediaExport"
-            ]
-        ),
-        .library(
             name: "MNSwiftKitPurchase",
             targets: [
                 "Purchase"
@@ -110,6 +108,12 @@ let package = Package(
             name: "MNSwiftKitAssetPicker",
             targets: [
                 "AssetPicker"
+            ]
+        ),
+        .library(
+            name: "MNSwiftKitMediaExport",
+            targets: [
+                "MediaExport"
             ]
         ),
         .library(
@@ -213,15 +217,15 @@ let package = Package(
             path: "MNSwiftKit/Utility",
             linkerSettings: [
                 .linkedFramework("UIKit"),
-                .linkedFramework("Foundation"),
-                .linkedFramework("AVFoundation"),
-                .linkedFramework("CoreFoundation"),
-                .linkedFramework("CoreGraphics"),
-                .linkedFramework("CoreMedia"),
                 .linkedFramework("Photos"),
                 .linkedFramework("AdSupport"),
-                .linkedFramework("AppTrackingTransparency"),
-                .linkedFramework("AuthenticationServices")
+                .linkedFramework("CoreMedia"),
+                .linkedFramework("Foundation"),
+                .linkedFramework("CoreGraphics"),
+                .linkedFramework("AVFoundation"),
+                .linkedFramework("CoreFoundation"),
+                .linkedFramework("AuthenticationServices"),
+                .linkedFramework("AppTrackingTransparency")
             ]
         ),
         .target(
@@ -312,8 +316,8 @@ let package = Package(
             linkerSettings: [
                 .linkedLibrary("sqlite3"),
                 .linkedFramework("Foundation"),
-                .linkedFramework("AVFoundation"),
-                .linkedFramework("CoreGraphics")
+                .linkedFramework("CoreGraphics"),
+                .linkedFramework("AVFoundation")
             ]
         ),
         .target(
@@ -471,21 +475,6 @@ let package = Package(
             ]
         ),
         .target(
-            name: "EmoticonKeyboard",
-            dependencies: [
-                "Definition", "Extension", "NameSpace", "PageControl", "AnimatedImage"
-            ],
-            path: "MNSwiftKit/EmoticonKeyboard",
-            resources: [
-                .process("Resources")
-            ],
-            linkerSettings: [
-                .linkedFramework("UIKit"),
-                .linkedFramework("Foundation"),
-                .linkedFramework("CoreGraphics")
-            ]
-        ),
-        .target(
             name: "AnimatedImage",
             dependencies: [
                 "NameSpace"
@@ -501,6 +490,21 @@ let package = Package(
             ]
         ),
         .target(
+            name: "EmoticonKeyboard",
+            dependencies: [
+                "Definition", "Extension", "NameSpace", "PageControl", "AnimatedImage"
+            ],
+            path: "MNSwiftKit/EmoticonKeyboard",
+            resources: [
+                .process("Resources")
+            ],
+            linkerSettings: [
+                .linkedFramework("UIKit"),
+                .linkedFramework("Foundation"),
+                .linkedFramework("CoreGraphics")
+            ]
+        ),
+        .target(
             name: "CollectionLayout",
             path: "MNSwiftKit/CollectionLayout",
             linkerSettings: [
@@ -509,6 +513,5 @@ let package = Package(
                 .linkedFramework("CoreGraphics")
             ]
         )
-        //.testTarget(name: "testTests", dependencies: ["test"])
     ]
 )

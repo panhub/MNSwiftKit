@@ -36,7 +36,7 @@ class MNInfoToast: MNToastBuilder {
         let imageView = UIImageView(frame: .init(origin: .zero, size: .init(width: 40.0, height: 40.0)))
         imageView.image = image?.withRenderingMode(.alwaysTemplate)
         imageView.contentMode = .scaleAspectFit
-        imageView.tintColor = MNToast.Configuration.shared.color.withAlphaComponent(0.75)
+        imageView.tintColor = MNToast.Configuration.shared.primaryColor
         return imageView
     }
     
@@ -48,7 +48,7 @@ class MNInfoToast: MNToastBuilder {
         paragraph.paragraphSpacing = 1.0
         paragraph.lineHeightMultiple = 1.0
         paragraph.paragraphSpacingBefore = 1.0
-        return [.font:MNToast.Configuration.shared.font, .foregroundColor:MNToast.Configuration.shared.color, .paragraphStyle:paragraph]
+        return [.font:MNToast.Configuration.shared.font, .foregroundColor:MNToast.Configuration.shared.primaryColor, .paragraphStyle:paragraph]
     }
     
     var fadeInForToast: Bool {

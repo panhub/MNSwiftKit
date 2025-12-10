@@ -311,7 +311,7 @@ public class MNToast: UIView {
         if cancellation {
             let closeImage = ToastResource.image(named: "toast_close")?.withRenderingMode(.alwaysTemplate)
             closeButton = UIButton(type: .custom)
-            closeButton.tintColor = MNToast.Configuration.shared.color.withAlphaComponent(0.75)
+            closeButton.tintColor = MNToast.Configuration.shared.primaryColor
             closeButton.translatesAutoresizingMaskIntoConstraints = false
             closeButton.addTarget(self, action: #selector(cancel), for: .touchUpInside)
             if #available(iOS 15.0, *) {

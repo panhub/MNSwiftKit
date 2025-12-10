@@ -25,7 +25,7 @@ class MNSuccessToast {
         activityLayer.frame = .init(origin: .zero, size: borderSize)
         activityLayer.path = path.cgPath
         activityLayer.fillColor = UIColor.clear.cgColor
-        activityLayer.strokeColor = MNToast.Configuration.shared.color.withAlphaComponent(0.75).cgColor
+        activityLayer.strokeColor = MNToast.Configuration.shared.primaryColor.withAlphaComponent(0.88).cgColor
         activityLayer.lineWidth = lineWidth
         activityLayer.lineCap = .round
         activityLayer.lineJoin = .round
@@ -68,7 +68,7 @@ extension MNSuccessToast: MNToastBuilder {
         paragraph.paragraphSpacing = 1.0
         paragraph.lineHeightMultiple = 1.0
         paragraph.paragraphSpacingBefore = 1.0
-        return [.font:MNToast.Configuration.shared.font, .foregroundColor:MNToast.Configuration.shared.color.withAlphaComponent(0.8), .paragraphStyle:paragraph]
+        return [.font:MNToast.Configuration.shared.font, .foregroundColor:MNToast.Configuration.shared.primaryColor, .paragraphStyle:paragraph]
     }
     
     var fadeInForToast: Bool {
