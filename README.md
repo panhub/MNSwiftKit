@@ -7,6 +7,15 @@
 
 一个Swift组件集合，可以安装任一模块。
 
+1. [要求](#要求)
+2. [安装](#安装)
+3. [使用](#使用)
+    - [MNToast](#MNToast)
+    - [MediaExport](#MediaExport)
+4. [示例](#示例)
+5. [作者](#作者)
+5. [许可](#许可)
+
 ## 要求
 
 - iOS 9.0+ | Swift 5.0
@@ -75,7 +84,7 @@ let package = Package(
 依赖系统库/框架包括：
 `UIKit`，`Photos`，`PhotosUI`，`ImageIO`，`Security`，`StoreKit`，`Foundation`，`CoreFoundation`，`AVFoundation`, `AudioToolbox`，`CoreFoundation`，`CoreServices`，`CoreGraphics`，`CoreMedia`，`CoreAudio`，`CoreImage`，`CoreTelephony`，`QuartzCore`，`AdSupport`，`AppTrackingTransparency`，`AuthenticationServices`，`UniformTypeIdentifiers`，`SystemConfiguration`，`sqlite3`。
 
-## 模块
+## 使用
 
 ### MNToast
 
@@ -95,56 +104,57 @@ let package = Package(
 
 #### 🚀 快速开始
 
-```
+```swift
 // Cocoapods 安装：
 import MNSwiftKit
+
 // SPM 安装可独立导入：
 import MNToast
 ```
 显示带系统加载指示器的 Toast（支持大号和小号两种样式）：
-```
+```swift
 MNToast.showActivity("加载中...")
 view.mn.showActivityToast("加载中...")
 ```
 显示成功的 Toast（带对勾动画的指示器）：
-```
+```swift
 MNToast.showSuccess("操作成功")
 view.mn.showSuccessToast("操作成功")
 ```
 显示错误的 Toast（带 X 动画的指示器）：
-```
+```swift
 MNToast.showError("操作失败")
 view.mn.showErrorToast("操作失败")
 ```
 显示纯文本提示的 Toast（自动关闭）
-```
+```swift
 MNToast.showMsg("这是自动消失提示")
 view.mn.showMsgToast("这是自动消失提示")
 ```
 显示带图标提示的 Toast（不自动关闭）
-```
+```swift
 MNToast.showInfo("温馨提示")
 view.mn.showInfoToast("这是自动消失提示")
 ````
 显示旋转动画的 Toast（支持三种样式：纯色线条、双线条、渐变线条）：
-```
+```swift
 // 默认渐变线条
 MNToast.showRotation("加载中...", style: .gradient)
 view.mn.showRotationToast("加载中...", style: .gradient)
 ```
 显示带进度的 Toast（支持两种样式：线条、填充）：
-```
+```swift
 // 默认线条样式, 更新进度时，重新调用即可
 MNToast.showProgress("正在下载", style: .line, value: 0.0)
 view.mn.showProgressToast("正在下载", style: .line, value: 0.0)
 ```
 关闭当前 Toast
-```
+```swift
 MNToast.close(delay: 3.0, completion: nil)
 view.mn.closeToast(delay: 3.0, completion: nil)
 ```
 检查窗口是否有 Toast 显示
-```
+```swift
 if MNToast.isAppearing {
     print("当前有 Toast 正在显示")
 }
@@ -154,7 +164,7 @@ if view.mn.isToastAppearing {
 ```
 
 如果同类型的 Toast 正在显示，新的 Toast 会更新现有内容而不是创建新的：
-````
+````swift
 // 第一次显示
 MNToast.showActivity("加载中...")
 // 再次调用相同类型，会更新文字而不是新建
@@ -162,7 +172,7 @@ MNToast.showActivity("加载完成")
 ````
 
 你可以通过实现 `MNToastBuilder` 协议来创建自定义的 Toast 样式：
-```
+```swift
 class CustomToast: MNToastBuilder {
 
     // 视图与文字的布局方向（横向或纵向排版）
@@ -191,7 +201,7 @@ class CustomToast: MNToastBuilder {
 }
 ```
 如果需要支持动画，可以实现 `MNToastAnimationSupported` 协议：
-```
+```swift
 extension CustomToast: MNToastAnimationSupported {
 
     func startAnimating() {
@@ -204,7 +214,7 @@ extension CustomToast: MNToastAnimationSupported {
 }
 ```
 如果需要支持进度更新，可以实现 `MNToastProgressSupported` 协议：
-```
+```swift
 extension CustomToast: MNToastProgressSupported {
 
     func toastShouldUpdateProgress(_ value: CGFloat) {
@@ -236,16 +246,18 @@ extension CustomToast: MNToastProgressSupported {
 
 #### 🚀 快速开始
 
-```
+```swift
 // Cocoapods 安装：
 import MNSwiftKit
+
 // SPM 安装可独立导入：
 import MNMediaExport
 ```
-** MNAssetExportSession **
+
+**MNAssetExportSession**
 
 使用 `AVAssetExportSession` 进行导出，增加了画面裁剪，时间片段裁剪，是否导出音视频控制等。
-```
+```swift
 let session = MNAssetExportSession(asset: videoAsset, outputURL: outputURL)
 // 质量预设
 session.presetName = AVAssetExportPresetHighestQuality
@@ -270,10 +282,10 @@ session.exportAsynchronously { progressValue in
 }
 ```
 
-** MNMediaExportSession **
+**MNMediaExportSession**
 
 使用 `AVAssetReader` 和 `AVAssetWriter` 进行底层导出，提供画面裁剪，时间片段裁剪，是否导出音视频控制等。
-```
+```swift
 let session = MNMediaExportSession(asset: videoAsset, outputURL: outputURL)
 session.quality = .high // 输出质量
 session.exportAudioTrack = true
@@ -292,37 +304,37 @@ session.exportAsynchronously { progressValue in
 }
 ```
 
-** 元数据操作 **
+**元数据操作**
 
 获取媒体文件时长
-```
+```swift
 // 从文件路径获取
 let duration = MNMediaExportSession.seconds(fileAtPath: "媒体文件路径")
 // 从本地 URL 获取
 let duration = MNMediaExportSession.seconds(mediaOfURL: videoURL)
 ```
 获取视频尺寸
-```
+```swift
 // 从文件路径获取
 let size = MNMediaExportSession.naturalSize(videoAtPath: "视频文件路径")
 // 从本地 URL 获取
 let size = MNMediaExportSession.naturalSize(videoOfURL: videoURL)
 ```
 获取视频截图
-```
+```swift
 // 生成第5秒处的截图，若文件是音频则忽略时间，检查文件内封面输出
 let image = MNMediaExportSession.generateImage(fileAtPath: "视频路径", at: 5.0, maximum: CGSize(width: 300, height: 300))
 let image = MNMediaExportSession.generateImage(mediaOfURL: videoURL, at: 5.0, maximum: CGSize(width: 300, height: 300))
 ```
 
-** 视频格式 **
+**视频格式**
 
 - `.mp4` - MPEG-4 视频（最常用）
 - `.m4v` - Apple 受保护的 MPEG-4 视频
 - `.mov` - QuickTime 电影
 - `.mobile3GPP` - 3GPP 视频
 
-** 音频格式 **
+**音频格式**
 
 - `.m4a` - Apple 音频（最常用）
 - `.wav` - WAV 音频
@@ -330,9 +342,9 @@ let image = MNMediaExportSession.generateImage(mediaOfURL: videoURL, at: 5.0, ma
 - `.aiff` - AIFF 音频
 - `.aifc` - AIFC 音频
 
-** 质量枚举 **
+**质量枚举**
 
-```
+```swift
 public enum Quality {
     // 低质量
     case low      
@@ -355,47 +367,47 @@ public enum Quality {
 - 比特率：64 kbps（低）→ 128 kbps（中）→ 192 kbps（高）
 - 声道数：单声道（低）→ 立体声（中/高）
 
-** 错误信息 **
+**错误信息**
 
 导出过程中可能出现的错误构造为`MNExportError`输出，使用`asExportError`转换后，调用`msg`属性输出错误提示信息。
 
-```
+```swift
 public enum MNExportError: Swift.Error {
-    /// 未知错误
+    // 未知错误
     case unknown
-    /// 已取消
+    // 已取消
     case cancelled
-    /// 繁忙
+    // 繁忙
     case exporting
-    /// 资源不可用
+    // 资源不可用
     case unexportable
-    /// 资源不可读
+    // 资源不可读
     case unreadable
-    /// 无法输出文件
+    // 无法输出文件
     case cannotExportFile(URL, fileType: AVFileType)
-    /// 未知文件类型
+    // 未知文件类型
     case unknownFileType(String)
-    /// 无法创建输出目录
+    // 无法创建输出目录
     case cannotCreateDirectory(Error)
-    /// 文件已存在
+    // 文件已存在
     case fileDoesExist(URL)
-    /// 无法添加资源轨道
+    // 无法添加资源轨道
     case cannotAppendTrack(AVMediaType)
-    /// 无法读取资源
+    // 无法读取资源
     case cannotReadAsset(Error)
-    /// 无法读写入文件
+    // 无法读写入文件
     case cannotWritToFile(URL, fileType: AVFileType, error: Error)
-    /// 无法添加Output
+    // 无法添加Output
     case cannotAddOutput(AVMediaType)
-    /// 未知输出设置
+    // 未知输出设置
     case unknownExportSetting(AVMediaType, fileType: AVFileType)
-    /// 无法添加Input
+    // 无法添加Input
     case cannotAddInput(AVMediaType)
-    /// 无法开始读取
+    // 无法开始读取
     case cannotStartReading(Error)
-    /// 无法开始写入
+    // 无法开始写入
     case cannotStartWriting(Error)
-    /// 底层错误
+    // 底层错误
     case underlyingError(Swift.Error)
 }
 ```
@@ -415,6 +427,6 @@ public enum MNExportError: Swift.Error {
 
 panhub, fengpann@163.com
 
-## 许可证
+## 许可
 
 `MNSwiftKit`在MIT许可下可用，更多信息请参见`LICENSE`文件。
