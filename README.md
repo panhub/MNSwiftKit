@@ -12,6 +12,7 @@
 3. [使用](#使用)
     - [MNToast](#MNToast)
     - [MediaExport](#MediaExport)
+    - [AssetBrowser](#AssetBrowser)
 4. [示例](#示例)
 5. [作者](#作者)
 5. [许可](#许可)
@@ -25,7 +26,7 @@
 
 ### CocoaPods (iOS 9+, Swift 5+)
 
-`MNSwiftKit`可以通过[CocoaPods](https://cocoapods.org)安装，只需添加以下行到您的Podfile:
+`MNSwiftKit` 可以通过[CocoaPods](https://cocoapods.org)安装，只需添加以下行到您的Podfile:
 
 ```ruby
 pod 'MNSwiftKit'
@@ -61,7 +62,7 @@ pod 'MNSwiftKit/EmoticonKeyboard'
 ```
 ### Swift软件包管理器 (iOS 9+, Swift 5+)
 
-`MNSwiftKit`也可以通过在您的`Package.swift`文件中添加适当的描述使用[Swift软件包管理器](https://docs.swift.org/swiftpm/documentation/packagemanagerdocs/)来安装：
+`MNSwiftKit` 也可以通过在您的`Package.swift`文件中添加适当的描述使用[Swift软件包管理器](https://docs.swift.org/swiftpm/documentation/packagemanagerdocs/)来安装：
 
 ```swift
 // swift-tools-version:5.4
@@ -76,10 +77,10 @@ let package = Package(
 ```
 ### 手动导入 (iOS 9+, Swift 5+)
 
-要在项目中手动安装`MNSwiftKit`，您可以：
+要在项目中手动安装 `MNSwiftKit`，您可以：
 
-1. 将`MNSwiftKit`文件夹整个拖入项目。
-2. 导航至项目target下，切换至`Build Phases`选项卡，在`Link Binary With Libraries`下添加依赖库。
+1. 将 `MNSwiftKit` 文件夹整个拖入项目。
+2. 导航至项目target下，切换至 `Build Phases` 选项卡，在 `Link Binary With Libraries` 下添加依赖库。
 
 依赖系统库/框架包括：
 `UIKit`，`Photos`，`PhotosUI`，`ImageIO`，`Security`，`StoreKit`，`Foundation`，`CoreFoundation`，`AVFoundation`, `AudioToolbox`，`CoreFoundation`，`CoreServices`，`CoreGraphics`，`CoreMedia`，`CoreAudio`，`CoreImage`，`CoreTelephony`，`QuartzCore`，`AdSupport`，`AppTrackingTransparency`，`AuthenticationServices`，`UniformTypeIdentifiers`，`SystemConfiguration`，`sqlite3`。
@@ -591,16 +592,16 @@ func assetBrowser(_ browser: MNAssetBrowser, navigationItemTouchUpInside event: 
 #### 📝 注意事项
 
 - `asset.contents`类型：
-  - `.photo/.gif`：`UIImage`对象
-  - `.livePhoto`：`PHLivePhoto`对象
-  - `.video`：`String`类型本地视频文件路径（建议先落地）
+  - `.photo/.gif`：`UIImage` 对象
+  - `.livePhoto`：`PHLivePhoto` 对象
+  - `.video`：`String` 类型本地视频文件路径（建议先落地）
 - `asset.container`（缩略图所在视图）必须赋值，用于转场动画。
 - 导航按钮事件通过 MNAssetBrowser.Event（back/done/save/share/none）区分。
 - 资源较大时，请务必做好异步加载与进度回调，避免阻塞 UI。
 
 ## 示例
 
-要运行示例项目，克隆repo，从`Example`目录运行`pod install`。
+要运行示例项目，克隆repo，从 `Example` 目录运行 `pod install`。
 
 ## 作者
 
@@ -608,4 +609,4 @@ panhub, fengpann@163.com
 
 ## 许可
 
-`MNSwiftKit`在MIT许可下可用，更多信息请参见`LICENSE`文件。
+`MNSwiftKit` 在MIT许可下可用，更多信息请参见`LICENSE`文件。
