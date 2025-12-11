@@ -57,7 +57,7 @@ let package = Package(
                 .linkedFramework("UIKit"),
                 .linkedFramework("WebKit"),
                 .linkedFramework("Foundation"),
-                .linkedFramework("CoreGraphics")
+                .linkedFramework("CoreFoundation")
             ]
         ),
         .target(
@@ -68,6 +68,7 @@ let package = Package(
                 .linkedFramework("Photos"),
                 .linkedFramework("AdSupport"),
                 .linkedFramework("CoreMedia"),
+                .linkedFramework("CoreImage"),
                 .linkedFramework("Foundation"),
                 .linkedFramework("CoreGraphics"),
                 .linkedFramework("AVFoundation"),
@@ -83,7 +84,7 @@ let package = Package(
                 .linkedFramework("UIKit"),
                 .linkedFramework("Foundation"),
                 .linkedFramework("QuartzCore"),
-                .linkedFramework("CoreGraphics")
+                .linkedFramework("CoreFoundation")
             ]
         ),
         .target(
@@ -98,7 +99,7 @@ let package = Package(
             linkerSettings: [
                 .linkedFramework("UIKit"),
                 .linkedFramework("Foundation"),
-                .linkedFramework("CoreGraphics")
+                .linkedFramework("CoreFoundation")
             ]
         ),
         .target(
@@ -121,7 +122,7 @@ let package = Package(
             linkerSettings: [
                 .linkedFramework("UIKit"),
                 .linkedFramework("Foundation"),
-                .linkedFramework("CoreGraphics")
+                .linkedFramework("CoreFoundation")
             ]
         ),
         .target(
@@ -133,7 +134,7 @@ let package = Package(
             linkerSettings: [
                 .linkedFramework("UIKit"),
                 .linkedFramework("Foundation"),
-                .linkedFramework("CoreGraphics")
+                .linkedFramework("CoreFoundation")
             ]
         ),
         .target(
@@ -147,7 +148,7 @@ let package = Package(
                 .linkedFramework("ImageIO"),
                 .linkedFramework("Foundation"),
                 .linkedFramework("CoreServices"),
-                .linkedFramework("CoreGraphics"),
+                .linkedFramework("CoreFoundation"),
                 .linkedFramework("UniformTypeIdentifiers")
             ]
         ),
@@ -155,6 +156,7 @@ let package = Package(
             name: "MNPurchase",
             path: "MNSwiftKit/Purchase",
             linkerSettings: [
+                .linkedLibrary("sqlite3"),
                 .linkedFramework("UIKit"),
                 .linkedFramework("StoreKit"),
                 .linkedFramework("Foundation")
@@ -166,8 +168,8 @@ let package = Package(
             linkerSettings: [
                 .linkedLibrary("sqlite3"),
                 .linkedFramework("Foundation"),
-                .linkedFramework("CoreGraphics"),
-                .linkedFramework("AVFoundation")
+                .linkedFramework("AVFoundation"),
+                .linkedFramework("CoreFoundation")
             ]
         ),
         .target(
@@ -179,7 +181,7 @@ let package = Package(
             linkerSettings: [
                 .linkedFramework("UIKit"),
                 .linkedFramework("Foundation"),
-                .linkedFramework("CoreGraphics")
+                .linkedFramework("CoreFoundation")
             ]
         ),
         .target(
@@ -190,7 +192,9 @@ let package = Package(
             path: "MNSwiftKit/Extension",
             linkerSettings: [
                 .linkedFramework("UIKit"),
+                .linkedFramework("StoreKit"),
                 .linkedFramework("Foundation"),
+                .linkedFramework("QuartzCore"),
                 .linkedFramework("CoreGraphics"),
                 .linkedFramework("CoreFoundation")
             ]
@@ -204,7 +208,7 @@ let package = Package(
             linkerSettings: [
                 .linkedFramework("UIKit"),
                 .linkedFramework("Foundation"),
-                .linkedFramework("CoreGraphics")
+                .linkedFramework("CoreFoundation")
             ]
         ),
         .target(
@@ -249,7 +253,7 @@ let package = Package(
             linkerSettings: [
                 .linkedFramework("UIKit"),
                 .linkedFramework("Foundation"),
-                .linkedFramework("CoreGraphics")
+                .linkedFramework("CoreFoundation")
             ]
         ),
         .target(
@@ -258,7 +262,7 @@ let package = Package(
             linkerSettings: [
                 .linkedFramework("UIKit"),
                 .linkedFramework("Foundation"),
-                .linkedFramework("CoreGraphics")
+                .linkedFramework("CoreFoundation")
             ]
         ),
         .target(
@@ -304,7 +308,7 @@ let package = Package(
             linkerSettings: [
                 .linkedFramework("UIKit"),
                 .linkedFramework("Foundation"),
-                .linkedFramework("CoreGraphics")
+                .linkedFramework("CoreFoundation")
             ]
         ),
         .target(
@@ -334,7 +338,7 @@ let package = Package(
             linkerSettings: [
                 .linkedFramework("UIKit"),
                 .linkedFramework("Foundation"),
-                .linkedFramework("CoreGraphics")
+                .linkedFramework("CoreFoundation")
             ]
         ),
         .target(
@@ -348,7 +352,7 @@ let package = Package(
                 .linkedFramework("ImageIO"),
                 .linkedFramework("Foundation"),
                 .linkedFramework("CoreServices"),
-                .linkedFramework("CoreGraphics"),
+                .linkedFramework("CoreFoundation"),
                 .linkedFramework("UniformTypeIdentifiers")
             ]
         ),
@@ -358,7 +362,7 @@ let package = Package(
             linkerSettings: [
                 .linkedFramework("UIKit"),
                 .linkedFramework("Foundation"),
-                .linkedFramework("CoreGraphics")
+                .linkedFramework("CoreFoundation")
             ]
         ),
         .target(
@@ -373,7 +377,7 @@ let package = Package(
             linkerSettings: [
                 .linkedFramework("UIKit"),
                 .linkedFramework("Foundation"),
-                .linkedFramework("CoreGraphics")
+                .linkedFramework("CoreFoundation")
             ]
         )
     ],

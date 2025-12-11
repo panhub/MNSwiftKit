@@ -7,7 +7,7 @@
 
 import UIKit
 import Foundation
-import CoreGraphics
+import CoreFoundation
 
 /// 内部保留标签栏高度
 fileprivate var MNTabBarHeight: CGFloat?

@@ -7,7 +7,7 @@
 
 import UIKit
 import Foundation
-import CoreGraphics
+import CoreFoundation
 
 /// 内部保留屏幕安全区域
 fileprivate var MNWindowSafeAreaInsets: UIEdgeInsets?

@@ -6,7 +6,7 @@
 //  链接参数提取
 
 import Foundation
-import CoreGraphics
+import CoreFoundation
 
 public struct HTTPParam {
     

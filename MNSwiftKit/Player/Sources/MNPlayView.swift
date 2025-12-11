@@ -6,8 +6,9 @@
 //  播放器画布
 
 import UIKit
-import CoreGraphics
+import Foundation
 import AVFoundation
+import CoreFoundation
 
 /// 播放视图代理
 @objc public protocol MNPlayViewDelegate: NSObjectProtocol {

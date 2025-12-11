@@ -36,7 +36,7 @@ Pod::Spec.new do |s|
   
   # Base <控制器基类>
   s.subspec 'Base' do |b|
-    b.frameworks = 'UIKit', 'WebKit', 'Foundation', 'CoreGraphics'
+    b.frameworks = 'UIKit', 'WebKit', 'Foundation', 'CoreFoundation'
     b.source_files = 'MNSwiftKit/Base/Sources/**/*.swift'
     b.resource_bundles = {
         'MNSwiftKit_Base' => ['MNSwiftKit/Base/Resources/*']
@@ -54,7 +54,7 @@ Pod::Spec.new do |s|
   
   # Toast <加载指示图>
   s.subspec 'Toast' do |t|
-    t.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    t.frameworks = 'UIKit', 'Foundation', 'CoreFoundation'
     t.source_files = 'MNSwiftKit/Toast/Sources/**/*.swift'
     t.dependency 'MNSwiftKit/NameSpace'
     t.resource_bundles = {
@@ -64,13 +64,13 @@ Pod::Spec.new do |s|
   
   # Utility <基础工具>
   s.subspec 'Utility' do |u|
-    u.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'CoreFoundation', 'CoreGraphics', 'CoreMedia', 'Photos', 'AdSupport', 'AppTrackingTransparency', 'AuthenticationServices'
+    u.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'CoreFoundation', 'CoreImage', 'CoreGraphics', 'CoreMedia', 'Photos', 'AdSupport', 'AppTrackingTransparency', 'AuthenticationServices'
     u.source_files = 'MNSwiftKit/Utility/Sources/**/*.swift'
   end
   
   # Slider <自定义滑块>
   s.subspec 'Slider' do |s|
-    s.frameworks = 'UIKit', 'Foundation', 'QuartzCore', 'CoreGraphics'
+    s.frameworks = 'UIKit', 'Foundation', 'QuartzCore', 'CoreFoundation'
     s.source_files = 'MNSwiftKit/Slider/Sources/**/*.swift'
   end
   
@@ -82,21 +82,21 @@ Pod::Spec.new do |s|
   
   # Layout <UI布局快速获取>
   s.subspec 'Layout' do |a|
-    a.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    a.frameworks = 'UIKit', 'Foundation', 'CoreFoundation'
     a.source_files = 'MNSwiftKit/Layout/Sources/**/*.swift'
     a.dependency 'MNSwiftKit/NameSpace'
   end
   
   # Refresh <刷新控件>
   s.subspec 'Refresh' do |r|
-    r.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    r.frameworks = 'UIKit', 'Foundation', 'CoreFoundation'
     r.source_files = 'MNSwiftKit/Refresh/Sources/**/*.swift'
     r.dependency 'MNSwiftKit/NameSpace'
   end
   
   # Request <网络请求封装>
   s.subspec 'Request' do |r|
-    r.frameworks = 'UIKit', 'ImageIO', 'Foundation', 'CoreServices', 'CoreGraphics', 'UniformTypeIdentifiers'
+    r.frameworks = 'UIKit', 'ImageIO', 'Foundation', 'CoreServices', 'CoreFoundation', 'UniformTypeIdentifiers'
     r.source_files = 'MNSwiftKit/Request/Sources/**/*.swift'
     r.dependency 'MNSwiftKit/Networking'
   end
@@ -110,6 +110,7 @@ Pod::Spec.new do |s|
   
   # Purchase <内购支持>
   s.subspec 'Purchase' do |p|
+    p.libraries = 'sqlite3'
     p.frameworks = 'UIKit', 'StoreKit', 'Foundation'
     p.source_files = 'MNSwiftKit/Purchase/Sources/**/*.swift'
   end
@@ -117,20 +118,20 @@ Pod::Spec.new do |s|
   # Database <数据库>
   s.subspec 'Database' do |d|
     d.libraries = 'sqlite3'
-    d.frameworks = 'Foundation', 'AVFoundation', 'CoreGraphics'
+    d.frameworks = 'Foundation', 'AVFoundation', 'CoreFoundation'
     d.source_files = 'MNSwiftKit/Database/Sources/**/*.swift'
   end
   
   # Definition <基础定义>
   s.subspec 'Definition' do |d|
-    d.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    d.frameworks = 'UIKit', 'Foundation', 'CoreFoundation'
     d.source_files = 'MNSwiftKit/Definition/Sources/**/*.swift'
     d.dependency 'MNSwiftKit/NameSpace'
   end
   
   # Extension <基础扩展>
   s.subspec 'Extension' do |e|
-    e.frameworks = 'UIKit', 'Foundation', 'CoreGraphics', 'CoreFoundation'
+    e.frameworks = 'UIKit', 'StoreKit', 'Foundation', 'QuartzCore', 'CoreGraphics', 'CoreFoundation'
     e.source_files = 'MNSwiftKit/Extension/Sources/**/*.swift'
     e.dependency 'MNSwiftKit/NameSpace'
     e.dependency 'MNSwiftKit/AnimatedImage'
@@ -138,7 +139,7 @@ Pod::Spec.new do |s|
   
   # EmptyView <空数据视图>
   s.subspec 'EmptyView' do |e|
-    e.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    e.frameworks = 'UIKit', 'Foundation', 'CoreFoundation'
     e.source_files = 'MNSwiftKit/EmptyView/Sources/**/*.swift'
     e.dependency 'MNSwiftKit/NameSpace'
   end
@@ -190,13 +191,13 @@ Pod::Spec.new do |s|
   
   # NameSpace <命名空间>
   s.subspec 'NameSpace' do |n|
-    n.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    n.frameworks = 'UIKit', 'Foundation', 'CoreGraphics', 'CoreFoundation'
     n.source_files = 'MNSwiftKit/NameSpace/Sources/**/*.swift'
   end
   
   # SplitController <分页控制器>
   s.subspec 'SplitController' do |s|
-    s.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    s.frameworks = 'UIKit', 'Foundation', 'CoreFoundation'
     s.source_files = 'MNSwiftKit/SplitController/Sources/**/*.swift'
     s.dependency 'MNSwiftKit/Layout'
     s.dependency 'MNSwiftKit/NameSpace'
@@ -204,7 +205,7 @@ Pod::Spec.new do |s|
   
   # PageControl <简单的页码指示器>
   s.subspec 'PageControl' do |p|
-    p.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    p.frameworks = 'UIKit', 'Foundation', 'CoreFoundation'
     p.source_files = 'MNSwiftKit/PageControl/Sources/**/*.swift'
   end
   
@@ -221,14 +222,14 @@ Pod::Spec.new do |s|
   
   # Transitioning <控制器转场支持>
   s.subspec 'Transitioning' do |t|
-    t.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    t.frameworks = 'UIKit', 'Foundation', 'CoreFoundation'
     t.source_files = 'MNSwiftKit/Transitioning/Sources/**/*.swift'
     t.dependency 'MNSwiftKit/NameSpace'
   end
   
   # EmoticonKeyboard <表情键盘>
   s.subspec 'EmoticonKeyboard' do |e|
-    e.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    e.frameworks = 'UIKit', 'Foundation', 'CoreFoundation'
     e.source_files = 'MNSwiftKit/EmoticonKeyboard/Sources/**/*.swift'
     e.resource_bundles = {
         'MNSwiftKit_EmoticonKeyboard' => ['MNSwiftKit/EmoticonKeyboard/Resources/*']
@@ -242,14 +243,14 @@ Pod::Spec.new do |s|
   
   # AnimatedImage <动图支持>
   s.subspec 'AnimatedImage' do |a|
-    a.frameworks = 'UIKit', 'ImageIO', 'Foundation', 'CoreServices', 'CoreGraphics', 'UniformTypeIdentifiers'
+    a.frameworks = 'UIKit', 'ImageIO', 'Foundation', 'CoreServices', 'CoreFoundation', 'UniformTypeIdentifiers'
     a.source_files = 'MNSwiftKit/AnimatedImage/Sources/**/*.swift'
     a.dependency 'MNSwiftKit/NameSpace'
   end
   
   # CollectionLayout <UICollectionView布局对象>
   s.subspec 'CollectionLayout' do |c|
-    c.frameworks = 'UIKit', 'Foundation', 'CoreGraphics'
+    c.frameworks = 'UIKit', 'Foundation', 'CoreFoundation'
     c.source_files = 'MNSwiftKit/CollectionLayout/Sources/**/*.swift'
   end
   

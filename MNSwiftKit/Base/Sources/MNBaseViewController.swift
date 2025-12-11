@@ -7,7 +7,7 @@
 
 import UIKit
 import Foundation
-import CoreGraphics
+import CoreFoundation
 
 open class MNBaseViewController: UIViewController {
     

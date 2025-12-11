@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import CoreGraphics
+import CoreFoundation
 
 extension NameSpaceWrapper where Base == CGSize {
     

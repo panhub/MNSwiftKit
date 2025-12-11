@@ -6,9 +6,9 @@
 //  二维码
 
 import UIKit
-import Foundation
 import CoreImage
-import CoreGraphics
+import Foundation
+import CoreFoundation
 
 /// 二维码
 public class MNQRCode {

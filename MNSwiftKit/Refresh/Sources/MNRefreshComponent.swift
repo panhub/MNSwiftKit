@@ -7,7 +7,7 @@
 
 import UIKit
 import Foundation
-import CoreGraphics
+import CoreFoundation
 
 @objc open class MNRefreshComponent: UIView {
     /// 刷新状态

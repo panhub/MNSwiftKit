@@ -7,7 +7,7 @@
 
 import UIKit
 import Foundation
-import CoreGraphics
+import CoreFoundation
 
 /// 屏幕尺寸最小值
 public let MN_SCREEN_MIN: CGFloat = UIScreen.mn.min

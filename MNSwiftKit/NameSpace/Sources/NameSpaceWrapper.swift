@@ -7,7 +7,7 @@
 
 import UIKit
 import Foundation
-import CoreGraphics
+import CoreFoundation
 import ObjectiveC.runtime
 
 /// MNSwiftKit命名空间

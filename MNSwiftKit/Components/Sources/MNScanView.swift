@@ -6,7 +6,8 @@
 //  扫描视图
 
 import UIKit
-import CoreGraphics
+import QuartzCore
+import CoreFoundation
 
 public class MNScanView: UIView {
     /// 扫描线图片

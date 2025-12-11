@@ -7,7 +7,7 @@
 
 import UIKit
 import Foundation
-import CoreGraphics
+import CoreFoundation
 
 /// 导航条事件代理
 @objc public protocol MNNavigationBarDelegate: NSObjectProtocol {

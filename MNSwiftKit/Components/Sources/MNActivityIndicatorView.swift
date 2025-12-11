@@ -8,7 +8,7 @@
 import UIKit
 import Foundation
 import QuartzCore
-import CoreGraphics
+import CoreFoundation
 
 /// 指示器样式
 @objc public enum MNActivityIndicatorStyle: Int {

@@ -7,8 +7,8 @@
 
 import Foundation
 import AVFoundation
+import CoreFoundation
 import ObjectiveC.runtime
-import CoreGraphics.CGBase
 #if !canImport(SQLCipher)
 import SQLite3
 #endif

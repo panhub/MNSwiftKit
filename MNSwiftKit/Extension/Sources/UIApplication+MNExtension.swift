@@ -8,7 +8,7 @@
 import UIKit
 import StoreKit
 import Foundation
-import CoreGraphics
+import CoreFoundation
 
 /// 加载评分方式
 public enum MNOpenScoreMode {

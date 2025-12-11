@@ -6,10 +6,11 @@
 //  动态图
 
 import UIKit
+import ImageIO
 import Foundation
-import ImageIO.ImageIOBase
-import CoreServices.UTCoreTypes
-import UniformTypeIdentifiers.UTType
+import CoreServices
+import CoreFoundation
+import UniformTypeIdentifiers
 #if SWIFT_PACKAGE
 import MNNameSpace
 #endif

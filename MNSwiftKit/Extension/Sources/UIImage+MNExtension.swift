@@ -7,8 +7,8 @@
 
 import UIKit
 import Foundation
-import QuartzCore
 import CoreGraphics
+import CoreFoundation
 
 extension UIImage {
     

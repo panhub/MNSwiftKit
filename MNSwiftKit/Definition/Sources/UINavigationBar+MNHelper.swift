@@ -7,7 +7,7 @@
 
 import UIKit
 import Foundation
-import CoreGraphics
+import CoreFoundation
 
 /// 内部保留导航栏高度
 fileprivate var MNNavigationBarHeight: CGFloat?
