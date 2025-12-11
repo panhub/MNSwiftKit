@@ -13,6 +13,7 @@
     - [MNToast](#MNToast)
     - [MediaExport](#MediaExport)
     - [AssetBrowser](#AssetBrowser)
+    - [AssetPicker](#AssetPicker)
 4. [示例](#示例)
 5. [作者](#作者)
 5. [许可](#许可)
@@ -598,6 +599,18 @@ func assetBrowser(_ browser: MNAssetBrowser, navigationItemTouchUpInside event: 
 - `asset.container`（缩略图所在视图）必须赋值，用于转场动画。
 - 导航按钮事件通过 MNAssetBrowser.Event（back/done/save/share/none）区分。
 - 资源较大时，请务必做好异步加载与进度回调，避免阻塞 UI。
+
+### AssetPicker
+
+一套基于 Photos 框架的多媒体选择器，支持图片/GIF/LivePhoto/视频的选择、预览、裁剪与导出，提供丰富的选项控制、交互体验和结果回调。内置依赖多个子模块，完成选取、预览、播放、导出的一站式流程。
+
+
+
+
+
+
+
+
 
 ## 示例
 
