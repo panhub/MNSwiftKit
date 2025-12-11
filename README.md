@@ -604,13 +604,184 @@ func assetBrowser(_ browser: MNAssetBrowser, navigationItemTouchUpInside event: 
 
 一套基于 Photos 框架的多媒体选择器，支持图片/GIF/LivePhoto/视频的选择、预览、裁剪与导出，提供丰富的选项控制、交互体验和结果回调。内置依赖多个子模块，完成选取、预览、播放、导出的一站式流程。
 
+#### ✨ 特性
 
+- 📸 **多资源类型支持**：支持静态图片、GIF 动图、Live Photo、视频四种资源类型
+- 🎯 **灵活选择控制**：支持单选/多选、混合选择、类型限制、数量限制等丰富的选择策略
+- 🎨 **主题样式**：支持亮色/暗黑两种主题模式，可自定义主题颜色和辅助颜色
+- 👆 **滑动选择**：支持手势滑动快速选择多个资源，提升选择效率
+- 🎬 **视频裁剪**：内置视频裁剪功能，支持设置最小时长和最大时长限制
+- 🔍 **资源预览**：支持全屏预览已选资源，可在预览中调整选择状态
+- 📱 **相册切换**：支持切换不同相册，查看所有相册资源
+- 📄 **分页加载**：采用分页加载机制，支持升序/降序排列，优化性能
+- ☁️ **iCloud 支持**：自动处理 iCloud 资源下载，显示下载进度
+- 🎞️ **格式导出**：支持 HEIF/HEIC 格式导出，支持视频导出为 MP4 格式
+- 📊 **文件信息**：可选显示文件大小、视频时长等元数据信息
+- 🔄 **Live Photo 处理**：支持 Live Photo 资源导出，可选择导出资源文件
 
+#### 🚀 快速开始
 
+```swift
+// Cocoapods 安装：
+import MNSwiftKit
 
+// SPM 安装可独立导入：
+import MNAssetPicker
+```
 
+**单选配置**
 
+```swift
+let options = MNAssetPickerOptions()
+options.maxPickingCount = 1
+options.allowsPickingPhoto = true
+options.allowsPickingVideo = false
 
+let picker = MNAssetPicker(options: options)
+picker.present(pickingHandler: { picker, assets in
+    guard let asset = assets.first else { return }
+    if let image = asset.contents as? UIImage {
+        // 使用图片
+        print("选择了图片：\(image)")
+    }
+}, cancelHandler: { picker in
+    print("用户取消了选择")
+})
+```
+
+**多选配置**
+
+```swift
+let options = MNAssetPickerOptions()
+options.maxPickingCount = 9  // 最多选择9张
+options.minPickingCount = 1  // 至少选择1张
+options.allowsPickingPhoto = true
+options.allowsPickingVideo = true
+options.allowsPickingGif = true
+options.allowsPickingLivePhoto = true
+options.allowsMixedPicking = true  // 允许混合选择
+```
+
+**自定义主题样式**
+
+```swift
+let options = MNAssetPickerOptions()
+options.mode = .dark  // 暗黑模式
+options.themeColor = UIColor(red: 72.0/255.0, green: 122.0/255.0, blue: 245.0/255.0, alpha: 1.0)
+options.tintColor = .white
+options.numberOfColumns = 4  // 每行显示4列
+options.minimumLineSpacing = 4.0
+options.minimumInteritemSpacing = 4.0
+```
+
+**视频裁剪配置**
+
+```swift
+let options = MNAssetPickerOptions()
+options.maxPickingCount = 1
+options.allowsPickingVideo = true
+options.allowsPickingPhoto = false
+options.minExportDuration = 3.0  // 最小时长3秒
+options.maxExportDuration = 60.0  // 最大时长60秒
+options.allowsExportVideo = true  // 允许导出视频为MP4
+```
+
+**使用代理**
+
+```swift
+class ViewController: UIViewController, MNAssetPickerDelegate {
+    
+    func assetPicker(_ picker: MNAssetPicker, didFinishPicking assets: [MNAsset]) {
+        // 处理选择的资源
+        for asset in assets {
+            // 处理每个资源
+        }
+    }
+    
+    func assetPickerDidCancel(_ picker: MNAssetPicker) {
+        // 用户取消选择
+    }
+}
+```
+
+**配置选项说明**
+
+`MNAssetPickerOptions` 提供了丰富的配置选项：
+
+- **选择控制**：
+  - `maxPickingCount`: 最多选择数量（默认：1）
+  - `minPickingCount`: 至少选择数量（默认：0）
+  - `allowsPickingPhoto`: 是否允许选择图片（默认：true）
+  - `allowsPickingVideo`: 是否允许选择视频（默认：true）
+  - `allowsPickingGif`: 是否允许选择 GIF（默认：true）
+  - `allowsPickingLivePhoto`: 是否允许选择 Live Photo（默认：true）
+  - `allowsMultiplePickingPhoto`: 是否允许多选图片（默认：true）
+  - `allowsMultiplePickingVideo`: 是否允许多选视频（默认：true）
+  - `allowsMixedPicking`: 是否允许混合选择（默认：true）
+
+- **UI 配置**：
+  - `mode`: 主题模式（.light / .dark，默认：.dark）
+  - `themeColor`: 主题颜色
+  - `tintColor`: 辅助颜色
+  - `numberOfColumns`: 每行显示列数（默认：4）
+  - `minimumLineSpacing`: 行间距（默认：4.0）
+  - `minimumInteritemSpacing`: 列间距（默认：4.0）
+  
+- **功能配置**：
+  - `allowsPreview`: 是否允许预览（默认：false）
+  - `allowsSlidePicking`: 是否允许滑动选择（默认：false）
+  - `allowsPickingAlbum`: 是否允许切换相册（默认：true）
+  - `showFileSize`: 是否显示文件大小（默认：false）
+  - `allowsExportHeifc`: 是否允许导出 HEIF/HEIC 格式（默认：false）
+  - `allowsExportVideo`: 是否允许导出视频为 MP4（默认：false）
+  
+- **视频配置**：
+  - `minExportDuration`: 视频最小时长（默认：0.0）
+  - `maxExportDuration`: 视频最大时长（默认：0.0）
+  - `videoExportURL`: 视频导出路径
+  - `videoExportPreset`: 视频导出质量预设
+  
+- **其他配置**：
+  - `compressionQuality`: 图片压缩质量（0.0-1.0，默认：1.0）
+  - `renderSize`: 预览图渲染大小（默认：250x250）
+  - `pageCount`: 分页数量（默认：140）
+  - `sortAscending`: 是否升序排列（默认：false，降序）
+  
+**资源模型**
+  
+  选择完成后，返回的是 `MNAsset` 对象数组，对象包含：
+  
+- `type`: 资源类型（.photo / .gif / .livePhoto / .video）
+- `contents`: 资源内容
+  - 图片/GIF: UIImage 对象
+  - Live Photo: PHLivePhoto 对象（iOS 9.1+）
+  - 视频: String 类型本地文件路径
+- `cover`: 缩略图 UIImage
+- `duration`: 视频时长（仅视频有效）
+- `fileSize`: 文件大小（字节）
+- `isSelected`: 是否已选中
+- `index`: 选择序号（从1开始）
+  
+#### 📝 注意事项
+  
+1. **权限要求**：需要在 `Info.plist` 中添加相册访问权限说明
+```swift
+<key>NSPhotoLibraryUsageDescription</key>
+<string>需要访问相册以选择图片</string>
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>需要访问相册以保存图片</string>
+```
+2. **资源类型**：
+  - `.photo`: 静态图片，`contents` 为 UIImage
+  - `.gif`: GIF 动图，`contents` 为 UIImage（包含多帧）
+  - `.livePhoto`: Live Photo，`contents` 为 PHLivePhoto（iOS 9.1+）
+  - `.video`: 视频，`contents` 为 `String` 类型本地文件路径
+3. **iCloud 资源**：如果资源存储在 iCloud，模块会自动下载，请确保网络连接正常。
+4. **视频导出**：如果设置了 maxExportDuration 且视频时长超过限制，会自动进入视频裁剪界面。
+5. **内存管理**：大量资源选择时，建议及时处理 contents 并释放内存。
+6. **线程安全**：所有回调都在主线程执行，可以直接更新 UI。
+  
+  
 
 ## 示例
 

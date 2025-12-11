@@ -7,6 +7,7 @@
 
 import UIKit
 import Foundation
+import CoreFoundation
 
 public extension MNToast {
     
@@ -59,6 +60,9 @@ extension MNToast {
         
         /// 布局方向
         public var axis: MNToast.Axis = .vertical(spacing: 8.0)
+        
+        /// 键盘弹起时, 与键盘的距离
+        public var spacingToKeyboard: CGFloat = 20.0
         
         /// 内容四周约束
         public var contentInset: UIEdgeInsets = .init(top: 13.0, left: 13.0, bottom: 13.0, right: 13.0)

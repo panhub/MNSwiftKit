@@ -604,7 +604,7 @@ extension MNToast {
         guard let userInfo = notification.userInfo else { return }
         guard let keyboardFrame = userInfo[UIWindow.keyboardFrameEndUserInfoKey] as? CGRect else { return }
         let convertedRect = convert(visualView.frame, to: window)
-        let minY = keyboardFrame.minY - 15.0 - convertedRect.height
+        let minY = keyboardFrame.minY - MNToast.Configuration.shared.spacingToKeyboard - convertedRect.height
         switch position {
         case .top(let distance):
             // 顶部
