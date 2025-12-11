@@ -3028,7 +3028,7 @@ emoticonKeyboard.delegate = self
 
 自定义配置
 
-````swift
+```swift
 let options = MNEmoticonKeyboard.Options()
 
 // 表情包列表
