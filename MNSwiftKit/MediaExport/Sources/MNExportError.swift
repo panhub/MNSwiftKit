@@ -20,8 +20,6 @@ public enum MNExportError: Swift.Error {
     case unexportable
     /// 资源不可读
     case unreadable
-    /// 未知输出目录
-    case unknownExportDirectory
     /// 无法输出文件
     case cannotExportFile(URL, fileType: AVFileType)
     /// 未知文件类型
@@ -66,7 +64,6 @@ extension MNExportError {
         case .exporting: return "输出会话繁忙, 请稍后重试"
         case .unreadable: return "无法读取资源"
         case .unexportable: return "无法输出资源"
-        case .unknownExportDirectory: return "未知输出目录"
         case .cannotExportFile: return "不支持输出文件类型"
         case .unknownFileType: return "未知输出文件类型"
         case .cannotCreateDirectory: return "无法创建输出目录"
@@ -111,20 +108,19 @@ extension MNExportError: CustomNSError {
         case .exporting: return -181378
         case .unexportable: return -181379
         case .unreadable: return -181380
-        case .unknownExportDirectory: return -181381
-        case .cannotExportFile: return -181382
-        case .unknownFileType: return -181383
-        case .cannotCreateDirectory: return -181384
-        case .fileDoesExist: return -181385
-        case .cannotAppendTrack: return -181386
-        case .cannotReadAsset: return -181387
-        case .cannotWritToFile: return -181388
-        case .cannotAddOutput: return -181389
-        case .unknownExportSetting: return -181390
-        case .cannotAddInput: return -181391
-        case .cannotStartReading: return -181392
-        case .cannotStartWriting: return -181393
-        case .underlyingError: return -181394
+        case .cannotExportFile: return -181381
+        case .unknownFileType: return -181382
+        case .cannotCreateDirectory: return -181383
+        case .fileDoesExist: return -181384
+        case .cannotAppendTrack: return -181385
+        case .cannotReadAsset: return -181386
+        case .cannotWritToFile: return -181387
+        case .cannotAddOutput: return -181388
+        case .unknownExportSetting: return -181389
+        case .cannotAddInput: return -181390
+        case .cannotStartReading: return -181391
+        case .cannotStartWriting: return -181392
+        case .underlyingError: return -181393
         }
     }
     
@@ -146,7 +142,6 @@ extension MNExportError: CustomDebugStringConvertible {
         case .exporting: return "正在输出操作"
         case .unexportable: return "检查导出操作失败"
         case .unreadable: return "检查可读性失败"
-        case .unknownExportDirectory: return "输出路径为空"
         case .cannotExportFile(let url, let fileType): return "不支持输出该类型的文件(请参考'outputURL'对于文件类型的解释): \(fileType) \(url)"
         case .unknownFileType(let string): return "分析文件类型失败: \(string)"
         case .cannotCreateDirectory(let error): return "创建输出文件夹失败: \(error)"

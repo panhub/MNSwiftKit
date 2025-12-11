@@ -75,7 +75,7 @@ let package = Package(
 依赖系统库/框架包括：
 `UIKit`，`Photos`，`PhotosUI`，`ImageIO`，`Security`，`StoreKit`，`Foundation`，`CoreFoundation`，`AVFoundation`, `AudioToolbox`，`CoreFoundation`，`CoreServices`，`CoreGraphics`，`CoreMedia`，`CoreAudio`，`CoreImage`，`CoreTelephony`，`QuartzCore`，`AdSupport`，`AppTrackingTransparency`，`AuthenticationServices`，`UniformTypeIdentifiers`，`SystemConfiguration`，`sqlite3`。
 
-## 演示
+## 模块
 
 ### MNToast
 
@@ -96,7 +96,10 @@ let package = Package(
 #### 🚀 快速开始
 
 ```
+// Cocoapods 安装：
 import MNSwiftKit
+// SPM 安装可独立导入：
+import MNToast
 ```
 显示带系统加载指示器的 Toast（支持大号和小号两种样式）：
 ```
@@ -212,10 +215,197 @@ extension CustomToast: MNToastProgressSupported {
 
 #### 📝 注意事项
 
-1. **线程安全**：类方法加载时，Toast 相关方法都会自动在主线程执行，无需手动处理
-2. **键盘避让**：Toast 会自动检测键盘位置并调整显示位置，避免被键盘遮挡
-3. **内存管理**：Toast 会在关闭后自动从视图层级中移除，无需手动管理
-4. **自动关闭**：`MNMsgToast` 会根据文字长度自动计算合适的显示时长
+1. 线程安全：类方法加载时，Toast 相关方法都会自动在主线程执行，无需手动处理
+2. 键盘避让：Toast 会自动检测键盘位置并调整显示位置，避免被键盘遮挡
+3. 内存管理：Toast 会在关闭后自动从视图层级中移除，无需手动管理
+4. 自动关闭：`MNMsgToast` 会根据文字长度自动计算合适的显示时长
+
+### MediaExport
+
+用于媒体资源导出和处理的模块，它提供了强大的音视频导出功能，支持多种格式转换、裁剪、质量调整等操作。该模块基于 AVFoundation 框架构建，提供了两种导出方式：底层精细控制的 `MNMediaExportSession` 和简单易用的 `MNAssetExportSession`。
+
+#### ✨ 特性
+
+- ✅ **多格式支持**：支持 MP4、MOV、M4V、WAV、M4A、CAF、AIFF 等多种音视频格式
+- ✅ **视频处理**：支持视频裁剪、尺寸调整、时间范围调整
+- ✅ **音频处理**：支持音频提取、格式转换、质量调整
+- ✅ **质量控制**：提供低、中、高三种质量预设
+- ✅ **进度监控**：实时导出进度回调
+- ✅ **元数据支持**：获取媒体时长、尺寸、截图等元数据信息输出
+- ✅ **错误处理**：完善的错误类型
+
+#### 🚀 快速开始
+
+```
+// Cocoapods 安装：
+import MNSwiftKit
+// SPM 安装可独立导入：
+import MNMediaExport
+```
+** MNAssetExportSession **
+
+使用 `AVAssetExportSession` 进行导出，增加了画面裁剪，时间片段裁剪，是否导出音视频控制等。
+```
+let session = MNAssetExportSession(asset: videoAsset, outputURL: outputURL)
+// 质量预设
+session.presetName = AVAssetExportPresetHighestQuality
+// 是否导出音频/视频
+session.exportAudioTrack = true
+session.exportVideoTrack = true
+// 裁剪区域
+session.cropRect = CGRect(x: 0.0, y: 0.0, width: 500.0, height: 500.0)
+// 渲染尺寸（输出的视频画面尺寸）
+session.renderSize = CGSize(width: 1080.0, height: 1080.0)
+// 裁剪的时间范围
+session.timeRange = CMTimeRange(start: CMTime(seconds: 10, preferredTimescale: 600), duration: CMTime(seconds: 30, preferredTimescale: 600))
+// 异步输出，进度和结果在主队列回调
+session.exportAsynchronously { progressValue in
+    print(progressValue)
+} completionHandler: { status, error in
+    if status == .completed {
+        print("导出成功")
+    } else {
+        print("导出失败：\(error!)")
+    }
+}
+```
+
+** MNMediaExportSession **
+
+使用 `AVAssetReader` 和 `AVAssetWriter` 进行底层导出，提供画面裁剪，时间片段裁剪，是否导出音视频控制等。
+```
+let session = MNMediaExportSession(asset: videoAsset, outputURL: outputURL)
+session.quality = .high // 输出质量
+session.exportAudioTrack = true
+session.exportVideoTrack = true
+session.cropRect = CGRect(x: 0.0, y: 0.0, width: 500.0, height: 500.0)
+session.renderSize = CGSize(width: 1080.0, height: 1080.0)
+session.timeRange = CMTimeRange(start: CMTime(seconds: 10, preferredTimescale: 600), duration: CMTime(seconds: 30, preferredTimescale: 600))
+session.exportAsynchronously { progressValue in
+    print(progressValue)
+} completionHandler: { status, error in
+    if status == .completed {
+        print("导出成功")
+    } else {
+        print("导出失败：\(error!)")
+    }
+}
+```
+
+** 元数据操作 **
+
+获取媒体文件时长
+```
+// 从文件路径获取
+let duration = MNMediaExportSession.seconds(fileAtPath: "媒体文件路径")
+// 从本地 URL 获取
+let duration = MNMediaExportSession.seconds(mediaOfURL: videoURL)
+```
+获取视频尺寸
+```
+// 从文件路径获取
+let size = MNMediaExportSession.naturalSize(videoAtPath: "视频文件路径")
+// 从本地 URL 获取
+let size = MNMediaExportSession.naturalSize(videoOfURL: videoURL)
+```
+获取视频截图
+```
+// 生成第5秒处的截图，若文件是音频则忽略时间，检查文件内封面输出
+let image = MNMediaExportSession.generateImage(fileAtPath: "视频路径", at: 5.0, maximum: CGSize(width: 300, height: 300))
+let image = MNMediaExportSession.generateImage(mediaOfURL: videoURL, at: 5.0, maximum: CGSize(width: 300, height: 300))
+```
+
+** 视频格式 **
+
+- `.mp4` - MPEG-4 视频（最常用）
+- `.m4v` - Apple 受保护的 MPEG-4 视频
+- `.mov` - QuickTime 电影
+- `.mobile3GPP` - 3GPP 视频
+
+** 音频格式 **
+
+- `.m4a` - Apple 音频（最常用）
+- `.wav` - WAV 音频
+- `.caf` - Core Audio 格式
+- `.aiff` - AIFF 音频
+- `.aifc` - AIFC 音频
+
+** 质量枚举 **
+
+```
+public enum Quality {
+    // 低质量
+    case low      
+    // 中等质量
+    case medium   
+    // 高质量
+    case high
+}
+```
+
+质量对视频的影响
+
+- 低质量：适合快速预览，文件小
+- 中等质量：平衡质量和文件大小（默认）
+- 高质量：最佳画质，文件较大
+
+质量对音频的影响
+
+- 采样率：22050 Hz（低）→ 44100 Hz（中）→ 48000 Hz（高）
+- 比特率：64 kbps（低）→ 128 kbps（中）→ 192 kbps（高）
+- 声道数：单声道（低）→ 立体声（中/高）
+
+** 错误信息 **
+
+导出过程中可能出现的错误构造为`MNExportError`输出，使用`asExportError`转换后，调用`msg`属性输出错误提示信息。
+
+```
+public enum MNExportError: Swift.Error {
+    /// 未知错误
+    case unknown
+    /// 已取消
+    case cancelled
+    /// 繁忙
+    case exporting
+    /// 资源不可用
+    case unexportable
+    /// 资源不可读
+    case unreadable
+    /// 无法输出文件
+    case cannotExportFile(URL, fileType: AVFileType)
+    /// 未知文件类型
+    case unknownFileType(String)
+    /// 无法创建输出目录
+    case cannotCreateDirectory(Error)
+    /// 文件已存在
+    case fileDoesExist(URL)
+    /// 无法添加资源轨道
+    case cannotAppendTrack(AVMediaType)
+    /// 无法读取资源
+    case cannotReadAsset(Error)
+    /// 无法读写入文件
+    case cannotWritToFile(URL, fileType: AVFileType, error: Error)
+    /// 无法添加Output
+    case cannotAddOutput(AVMediaType)
+    /// 未知输出设置
+    case unknownExportSetting(AVMediaType, fileType: AVFileType)
+    /// 无法添加Input
+    case cannotAddInput(AVMediaType)
+    /// 无法开始读取
+    case cannotStartReading(Error)
+    /// 无法开始写入
+    case cannotStartWriting(Error)
+    /// 底层错误
+    case underlyingError(Swift.Error)
+}
+```
+
+#### 📝 注意事项
+
+1. 文件路径：模块会自动创建目录，但需要确保有写入权限
+2. 文件覆盖：如果输出文件已存在，模块会自动删除旧文件
+3. 线程安全：进度和完成回调都在主队列执行，可以直接更新 UI
+4. 格式兼容性：某些格式可能在不同 iOS 版本上有差异，建议使用 MP4（视频）和 M4A（音频）以获得最佳兼容性
 
 ## 示例
 

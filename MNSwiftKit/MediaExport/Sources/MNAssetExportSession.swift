@@ -12,10 +12,6 @@ import AVFoundation
 public class MNAssetExportSession: NSObject {
     /// 获取资源信息
     public let asset: AVAsset
-    /// 裁剪画面矩形
-    public var cropRect: CGRect?
-    /// 预设质量
-    public var presetName: String?
     /// 输出文件路径
     /// - 支持的文件UTI: public.aiff-audio, com.apple.m4v-video, org.3gpp.adaptive-multi-rate-audio, com.apple.m4a-audio, com.microsoft.waveform-audio, com.apple.coreaudio-format, public.3gpp, public.mpeg-4, com.apple.quicktime-movie, public.aifc-audio
     /// - 支持的视频文件类型: .mp4, .m4v, .mov, .mobile3GPP
@@ -26,7 +22,11 @@ public class MNAssetExportSession: NSObject {
     /// - com.apple.immersive-video: .immersivevideo文件, 是一个苹果私有的封装格式, 主要用于 Apple Vision Pro 的“电视”应用中播放的专用内容。
     /// - com.apple.itunes-timed-text: .itt文件, 是苹果公司推出的一种支持丰富文本样式的XML字幕格式, 主要用于其自家的内容分发平台和专业视频编辑软件中。
     /// - org.3gpp.adaptive-multi-rate-audio: .amr文件, 系统仅支持解码, 编码需要第三方库, 故不支持编辑
-    public var outputURL: URL!
+    public let outputURL: URL
+    /// 裁剪画面矩形
+    public var cropRect: CGRect?
+    /// 预设质量
+    public var presetName: String?
     /// 输出分辨率outputRect有效时有效
     public var renderSize: CGSize?
     /// 裁剪片段
@@ -57,23 +57,30 @@ public class MNAssetExportSession: NSObject {
     private var completionHandler: ((AVAssetExportSession.Status, Error?)->Void)?
     
     /// 构造资源输出会话
-    /// - Parameter asset: 媒体资源
-    public init(asset: AVAsset) {
+    /// - Parameters:
+    ///   - asset: 媒体资源
+    ///   - outputURL: 文件输出位置
+    public init(asset: AVAsset, outputURL: URL) {
         self.asset = asset
+        self.outputURL = outputURL
     }
     
     /// 构造资源输出会话
-    /// - Parameter filePath: 媒体资源路径
-    public convenience init?(fileAtPath filePath: String) {
+    /// - Parameters:
+    ///   - filePath: 媒体资源路径
+    ///   - outputURL: 文件输出位置
+    public convenience init?(fileAtPath filePath: String, outputURL: URL) {
         guard let asset = AVURLAsset(fileAtPath: filePath) else { return nil }
-        self.init(asset: asset)
+        self.init(asset: asset, outputURL: outputURL)
     }
     
     /// 构造资源输出会话
-    /// - Parameter url: 媒体资源定位器
-    public convenience init(assetOfURL url: URL) {
+    /// - Parameters:
+    ///   - url: 媒体资源定位器
+    ///   - outputURL: 文件输出位置
+    public convenience init(assetOfURL url: URL, outputURL: URL) {
         let asset = AVURLAsset(mediaOfURL: url)
-        self.init(asset: asset)
+        self.init(asset: asset, outputURL: outputURL)
     }
     
     deinit {
@@ -107,11 +114,6 @@ public class MNAssetExportSession: NSObject {
     
     /// 开始输出资源
     private func export() {
-        
-        guard let outputURL = outputURL, outputURL.isFileURL else {
-            finish(error: .unknownExportDirectory)
-            return
-        }
         
         // 检查文件类型
         guard let outputFileType = MNAssetExportSession.fileType(withExtension: outputURL.pathExtension) else {
@@ -252,7 +254,7 @@ public class MNAssetExportSession: NSObject {
             }
             Task {
                 do {
-                    try await exportSession.export(to: outputURL, as: outputFileType)
+                    try await exportSession.export(to: self.outputURL, as: outputFileType)
                     self.update(progress: 1.0)
                     if let progressHandler = self.progressHandler {
                         DispatchQueue.main.async {

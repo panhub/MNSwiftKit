@@ -35,18 +35,18 @@ extension MNMetadataExportSupported {
     }
     
     /// 获取视频资源的原始尺寸
-    /// - Parameter path: 视频文件路径或远程连接
+    /// - Parameter videoPath: 视频文件路径
     /// - Returns: 获取到的原始尺寸
-    static public func naturalSize(fileAtPath path: String) -> CGSize {
-        guard let asset = AVURLAsset(fileAtPath: path) else { return .zero }
+    static public func naturalSize(videoAtPath videoPath: String) -> CGSize {
+        guard let asset = AVURLAsset(fileAtPath: videoPath) else { return .zero }
         return naturalSize(for: asset)
     }
     
     /// 获取视频资源的原始尺寸
-    /// - Parameter url: 视频文件定位器
+    /// - Parameter videoURL: 视频文件定位器
     /// - Returns: 获取到的原始尺寸
-    static public func naturalSize(mediaOfURL url: URL) -> CGSize {
-        let asset = AVURLAsset(mediaOfURL: url)
+    static public func naturalSize(videoOfURL videoURL: URL) -> CGSize {
+        let asset = AVURLAsset(mediaOfURL: videoURL)
         return naturalSize(for: asset)
     }
     

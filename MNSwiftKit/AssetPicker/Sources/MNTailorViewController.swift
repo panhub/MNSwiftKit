@@ -98,7 +98,7 @@ public class MNTailorViewController: UIViewController {
         modalPresentationStyle = .fullScreen
         self.duration = MNAssetExportSession.seconds(fileAtPath: videoPath)
         self.cover = MNAssetExportSession.generateImage(fileAtPath: videoPath)
-        let naturalSize = MNAssetExportSession.naturalSize(fileAtPath: videoPath)
+        let naturalSize = MNAssetExportSession.naturalSize(videoAtPath: videoPath)
         if naturalSize.width > 0.0, naturalSize.height > 0.0 {
             self.naturalSize = naturalSize
         }
@@ -424,43 +424,17 @@ extension MNTailorViewController {
                 }
             }
         } else {
-            /*
-            guard let exportSession = MNMediaExportSession(fileAtPath: videoPath) else {
+            var outputURL: URL
+            if #available(iOS 16.0, *) {
+                outputURL = URL(filePath: outputPath)
+            } else {
+                outputURL = URL(fileURLWithPath: outputPath)
+            }
+            guard let exportSession = MNAssetExportSession(fileAtPath: videoPath, outputURL: outputURL) else {
                 MNToast.showMsg("解析视频失败")
                 return
             }
             exportSession.timeRange = exportSession.asset.mn.timeRange(withProgress: begin, to: end)
-            if #available(iOS 16.0, *) {
-                exportSession.outputURL = URL(filePath: outputPath)
-            } else {
-                exportSession.outputURL = URL(fileURLWithPath: outputPath)
-            }
-            MNToast.showProgress("正在导出", style: .line)
-            exportSession.exportAsynchronously { value in
-                MNToast.showProgress(value: value)
-            } completionHandler: { [weak self] status, error in
-                if status == .completed {
-                    MNToast.close { _ in
-                        guard let self = self else { return }
-                        self.delegate?.tailorController(self, didOutputVideoAtPath: outputPath)
-                    }
-                } else if let error = error {
-                    MNToast.showMsg(error.localizedDescription)
-                } else {
-                    MNToast.showMsg("视频导出失败")
-                }
-            }
-            */
-            guard let exportSession = MNAssetExportSession(fileAtPath: videoPath) else {
-                MNToast.showMsg("解析视频失败")
-                return
-            }
-            exportSession.timeRange = exportSession.asset.mn.timeRange(withProgress: begin, to: end)
-            if #available(iOS 16.0, *) {
-                exportSession.outputURL = URL(filePath: outputPath)
-            } else {
-                exportSession.outputURL = URL(fileURLWithPath: outputPath)
-            }
             MNToast.showProgress("正在导出", style: .line, cancellation: true) { [weak exportSession] cancellation in
                 guard cancellation else { return }
                 guard let exportSession = exportSession else { return }
@@ -480,6 +454,28 @@ extension MNTailorViewController {
                     MNToast.showMsg("视频导出失败")
                 }
             }
+            /*
+            guard let exportSession = MNMediaExportSession(fileAtPath: videoPath, outputURL: outputURL) else {
+                MNToast.showMsg("解析视频失败")
+                return
+            }
+            exportSession.timeRange = exportSession.asset.mn.timeRange(withProgress: begin, to: end)
+            MNToast.showProgress("正在导出", style: .line)
+            exportSession.exportAsynchronously { value in
+                MNToast.showProgress(value: value)
+            } completionHandler: { [weak self] status, error in
+                if status == .completed {
+                    MNToast.close { _ in
+                        guard let self = self else { return }
+                        self.delegate?.tailorController(self, didOutputVideoAtPath: outputPath)
+                    }
+                } else if let error = error {
+                    MNToast.showMsg(error.localizedDescription)
+                } else {
+                    MNToast.showMsg("视频导出失败")
+                }
+            }
+            */
         }
     }
 }
