@@ -7,16 +7,18 @@
 
 一个Swift组件集合，可以安装任一模块。
 
-1. [要求](#要求)
-2. [安装](#安装)
-3. [使用](#使用)
+- [要求](#要求)
+- [安装](#安装)
+- [使用](#使用)
     - [MNToast](#MNToast)
     - [MediaExport](#MediaExport)
     - [AssetBrowser](#AssetBrowser)
     - [AssetPicker](#AssetPicker)
-4. [示例](#示例)
-5. [作者](#作者)
-5. [许可](#许可)
+    - [Database](#Database)
+    - [EmptyView](#EmptyView)
+- [示例](#示例)
+- [作者](#作者)
+- [许可](#许可)
 
 ## 要求
 
@@ -780,8 +782,774 @@ class ViewController: UIViewController, MNAssetPickerDelegate {
 4. **视频导出**：如果设置了 maxExportDuration 且视频时长超过限制，会自动进入视频裁剪界面。
 5. **内存管理**：大量资源选择时，建议及时处理 contents 并释放内存。
 6. **线程安全**：所有回调都在主线程执行，可以直接更新 UI。
-  
-  
+
+### Database
+
+一套基于 `SQLite3` 的轻量级数据库解决方案，提供简洁的 API 和强大的功能，支持模型自动映射、事务处理、异步操作等特性。无需编写 SQL 语句即可完成大部分数据库操作，让数据库操作变得简单高效。
+
+#### ✨ 特性
+
+- 🗄️ **SQLite3 基础**：基于 SQLite3，轻量级、高性能、零配置
+- 🔒 **线程安全**：使用信号量机制保证多线程环境下的数据安全
+- 🚀 **异步支持**：所有操作都支持同步和异步两种方式
+- 🎯 **自动映射**：自动将 `Swift` 模型映射到数据库表结构，无需手动编写 SQL
+- 📝 **协议支持**：支持 `TableColumnSupported` 协议自定义表字段
+- 🔍 **灵活查询**：支持条件查询、模糊查询（前缀/后缀/包含）、排序、分页
+- 📊 **聚合函数**：支持 SUM、AVG、MIN、MAX 等聚合函数
+- 💾 **事务支持**：支持事务操作，保证数据一致性
+- 🔐 **加密支持**：可选支持 SQLCipher 数据库加密
+- 🎨 **类型丰富**：支持 integer、float、text、blob 四种数据类型
+- 🔄 **自动处理**：自动处理枚举类型、可选类型等
+
+#### 🚀 快速开始
+
+```swift
+// Cocoapods 安装：
+import MNSwiftKit
+
+// SPM 安装可独立导入：
+import MNDatabase
+```
+
+**初始化数据库**
+
+```swift
+// 使用默认路径（/Documents/database.sqlite）
+let database = MNDatabase.default
+
+// 或指定自定义路径
+let database = MNDatabase(path: "/path/to/your/database.sqlite")
+```
+
+**定义数据模型**
+
+```swift
+// 方式1：使用自动映射（推荐）
+class User: Initializable {
+    var name: String = ""
+    var age: Int = 0
+    var email: String = ""
+    var score: Double = 0.0
+    var avatar: Data = Data()
+}
+
+// 方式2：使用协议自定义字段
+class User: Initializable, TableColumnSupported {
+    var name: String = ""
+    var age: Int = 0
+    
+    static var supportedTableColumns: [String: MNTableColumn.FieldType] {
+        [
+            "name": .text,
+            "age": .integer
+        ]
+    }
+}
+```
+
+**创建表**
+
+```swift
+// 同步创建表
+if database.create(table: "users", using: User.self) {
+    print("表创建成功")
+}
+
+// 异步创建表
+database.create(table: "users", using: User.self) { success in
+    if success {
+        print("表创建成功")
+    }
+}
+
+// 使用字段字典创建表
+let columns: [String: MNTableColumn.FieldType] = [
+    "name": .text,
+    "age": .integer,
+    "score": .float
+]
+database.create(table: "users", using: columns)
+```
+
+**插入数据**
+
+```swift
+// 方式1：插入模型对象
+let user = User()
+user.name = "张三"
+user.age = 25
+user.email = "zhangsan@example.com"
+user.score = 95.5
+
+if database.insert(into: "users", using: user) {
+    print("插入成功")
+}
+
+// 方式2：插入字典
+let fields: [String: Any] = [
+    "name": "李四",
+    "age": 30,
+    "email": "lisi@example.com",
+    "score": 88.0
+]
+database.insert(into: "users", using: fields)
+
+// 批量插入
+let users = [user1, user2, user3]
+database.insert(into: "users", using: users)
+
+// 异步插入
+database.insert(into: "users", using: user) { success in
+    print("插入结果：\(success)")
+}
+```
+
+**查询数据**
+
+```swift
+// 查询所有数据
+if let users = database.selectRows(from: "users", type: User.self) {
+    for user in users {
+        print("姓名：\(user.name)，年龄：\(user.age)")
+    }
+}
+
+// 条件查询（使用字典）
+let condition: [String: Any] = ["age": 25]
+if let users = database.selectRows(from: "users", where: condition.sql, type: User.self) {
+    // 处理查询结果
+}
+
+// 条件查询（使用字符串）
+if let users = database.selectRows(from: "users", where: "age > 20", type: User.self) {
+    // 处理查询结果
+}
+
+// 模糊查询
+let match = MNTableColumn.MatchType.contains("name", "张")
+if let users = database.selectRows(from: "users", regular: match, type: User.self) {
+    // 查询姓名包含"张"的用户
+}
+
+// 排序查询
+let ordered = MNTableColumn.ComparisonResult.descending("age")
+if let users = database.selectRows(from: "users", ordered: ordered, type: User.self) {
+    // 按年龄降序排列
+}
+
+// 分页查询
+let range = NSRange(location: 0, length: 10)
+if let users = database.selectRows(from: "users", limit: range, type: User.self) {
+    // 查询前10条数据
+}
+
+// 组合查询
+if let users = database.selectRows(
+    from: "users",
+    where: "age > 20",
+    regular: MNTableColumn.MatchType.prefix("name", "张"),
+    ordered: MNTableColumn.ComparisonResult.descending("age"),
+    limit: NSRange(location: 0, length: 10),
+    type: User.self
+) {
+    // 查询年龄大于20、姓名以"张"开头、按年龄降序、前10条
+}
+
+// 异步查询
+database.selectRows(from: "users", type: User.self) { users in
+    guard let users = users else { return }
+    // 处理查询结果
+}
+
+// 查询数量
+if let count = database.selectCount(from: "users") {
+    print("共有 \(count) 条记录")
+}
+
+// 查询数量（带条件）
+if let count = database.selectCount(from: "users", where: "age > 20") {
+    print("年龄大于20的用户有 \(count) 个")
+}
+```
+
+**更新数据**
+
+```swift
+// 更新模型对象
+let user = User()
+user.name = "王五"
+user.age = 28
+
+if database.update("users", where: "name = '张三'", using: user) {
+    print("更新成功")
+}
+
+// 更新字典
+let fields: [String: Any] = [
+    "age": 26,
+    "score": 96.0
+]
+database.update("users", where: "name = '张三'", using: fields)
+
+// 更新所有记录
+database.update("users", where: nil, using: ["score": 100.0])
+
+// 异步更新
+database.update("users", where: "name = '张三'", using: fields) { success in
+    print("更新结果：\(success)")
+}
+```
+
+**删除数据**
+
+```swift
+// 删除指定条件的数据
+if database.delete(from: "users", where: "age < 18") {
+    print("删除成功")
+}
+
+// 删除所有数据
+database.delete(from: "users", where: nil)
+
+// 删除表
+if database.delete(table: "users") {
+    print("表删除成功")
+}
+
+// 异步删除
+database.delete(from: "users", where: "age < 18") { success in
+    print("删除结果：\(success)")
+}
+```
+
+**聚合函数**
+
+```swift
+// 求和
+if let sum = database.selectFinite(
+    from: "users",
+    field: "score",
+    operation: .SUM,
+    default: 0.0
+) {
+    print("总分：\(sum)")
+}
+
+// 平均值
+if let avg = database.selectFinite(
+    from: "users",
+    field: "score",
+    operation: .AVG,
+    default: 0.0
+) {
+    print("平均分：\(avg)")
+}
+
+// 最大值
+if let max = database.selectFinite(
+    from: "users",
+    field: "age",
+    operation: .MAX,
+    default: 0
+) {
+    print("最大年龄：\(max)")
+}
+
+// 最小值
+if let min = database.selectFinite(
+    from: "users",
+    field: "age",
+    operation: .MIN,
+    default: 0
+) {
+    print("最小年龄：\(min)")
+}
+```
+
+**表管理**
+
+```swift
+// 检查表是否存在
+if database.exists(table: "users") {
+    print("表存在")
+}
+
+// 获取表字段信息
+let columns = database.columns(in: "users")
+for column in columns {
+    print("字段：\(column.name)，类型：\(column.type)")
+}
+
+// 更新表字段（根据模型类）
+if database.update("users", using: User.self) {
+    print("表字段更新成功")
+}
+
+// 重命名表
+if database.update("users", name: "new_users") {
+    print("表重命名成功")
+}
+```
+
+**字典转 SQL 条件**
+
+```swift
+// 将字典自动转换为 SQL WHERE 条件
+let condition: [String: Any] = [
+    "name": "张三",
+    "age": 25,
+    "score": 95.5
+]
+let sql = condition.sql  // "name = '张三' AND age = 25 AND score = 95.5"
+
+// 使用转换后的 SQL
+if let users = database.selectRows(from: "users", where: sql, type: User.self) {
+    // 查询结果
+}
+```
+
+**模糊查询类型**
+
+```swift
+// 前缀匹配（姓名以"张"开头）
+let prefix = MNTableColumn.MatchType.prefix("name", "张")
+// 可指定后续字符数限制
+let prefixLimited = MNTableColumn.MatchType.prefix("name", "张", count: 2)
+
+// 后缀匹配（姓名以"三"结尾）
+let suffix = MNTableColumn.MatchType.suffix("name", "三")
+
+// 包含匹配（姓名包含"张"）
+let contains = MNTableColumn.MatchType.contains("name", "张")
+
+// 自定义转义符
+let customEscape = MNTableColumn.MatchType.contains("name", "张%", escape: "\\")
+```
+
+**数据类型**
+
+`MNTableColumn.FieldType` 支持四种数据类型：
+  - `.integer`: 整数类型（Int、Int64、Bool 等）
+  - `.float`: 浮点数类型（Double、Float、CGFloat 等）
+  - `.text`: 字符串类型（String、NSString）
+  - `.blob`: 二进制数据类型（Data、NSData）
+
+**协议支持**
+
+```swift
+// TableColumnAssignment：自定义赋值逻辑
+class CustomUser: Initializable, TableColumnAssignment {
+    var name: String = ""
+    var age: Int = 0
+    
+    func setValue(_ value: Any, for property: String) {
+        switch property {
+        case "name":
+            if let name = value as? String {
+                self.name = name
+            }
+        case "age":
+            if let age = value as? Int {
+                self.age = age
+            }
+        default:
+            break
+        }
+    }
+}
+```
+
+#### 📝 注意事项
+
+1. **线程安全**：所有数据库操作都是线程安全的，可以在任意线程调用。
+2. **模型要求**：数据模型必须实现 `Initializable` 协议（提供 init() 方法）。
+3. **自动映射规则**：
+  - `Int`、`Int64`、`Bool` → `.integer`
+  - `Double`、`Float`、`CGFloat` → `.float`
+  - `String`、`NSString` → `.text`
+  - `Data`、`NSData` → `.blob`
+  - 枚举类型会自动使用 `rawValue`
+4. **主键**：每个表自动包含一个名为 `id` 的自增主键，无需在模型中定义。
+5. **可选类型**：可选类型会被正确处理，`nil` 值会使用字段的默认值。
+6. **日期类型**：`Date` 类型会自动转换为时间戳（`Int64` 或 `Double`）存储。
+7. **性能优化**：
+  - 批量插入时使用事务，性能更好
+  - 查询结果会缓存表结构信息
+  - 使用预编译语句缓存提升性能
+9. **错误处理**：在 DEBUG 模式下，所有 SQL 错误都会打印到控制台，便于调试。
+10. **数据库路径**：默认数据库路径为 `Documents/database.sqlite`，可通过初始化方法自定义。
+
+### EmptyView
+
+一个功能强大的空数据占位视图组件，用于在列表为空、数据加载失败等场景下展示友好的提示界面。支持图片、文字、按钮、自定义视图等多种元素，提供灵活的配置选项和自动显示/隐藏机制，让空状态展示变得简单优雅。
+
+#### ✨ 特性
+
+- 🎨 **多元素支持**：支持图片、文字、按钮、自定义视图四种元素，可自由组合
+- 🔄 **自动检测**：自动检测 `UITableView` 和 `UICollectionView` 的数据数量，无需手动控制
+- 📱 **滚动控制**：支持控制 `UIScrollView` 的滚动状态，空数据时可禁用滚动
+- 🎭 **灵活配置**：通过协议提供丰富的配置选项，支持自定义样式、布局、动画等
+- 🎬 **动画支持**：支持自定义动画和渐现动画，提升用户体验
+- 🔍 **智能显示**：根据数据源自动判断是否显示空视图，支持手动控制
+- 📐 **布局灵活**：支持垂直和水平布局，可自定义间距、对齐方式、偏移量
+- 🎯 **事件处理**：支持图片、文字、按钮的点击事件，提供完整的交互能力
+- 🔗 **协议驱动**：采用数据源和代理模式，代码结构清晰，易于扩展
+
+#### 🚀 快速开始
+
+```swift
+// Cocoapods 安装：
+import MNSwiftKit
+
+// SPM 安装可独立导入：
+import MNEmptyView
+```
+
+**基础使用**
+
+```swift
+class ViewController: UIViewController {
+    @IBOutlet weak var tableView: UITableView!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // 设置数据源
+        tableView.mn.emptySource = self
+        tableView.mn.emptyDelegate = self
+    }
+}
+
+extension ViewController: MNDataEmptySource {
+    // 是否显示空视图
+    func dataEmptyViewShouldDisplay(_ superview: UIView) -> Bool {
+        // 返回 true 表示显示空视图
+        return dataArray.isEmpty
+    }
+    
+    // 空视图图片
+    func imageForDataEmptyView(_ superview: UIView) -> UIImage? {
+        return UIImage(named: "empty_icon")
+    }
+    
+    // 空视图描述文字
+    func descriptionForDataEmptyView(_ superview: UIView) -> NSAttributedString? {
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 16),
+            .foregroundColor: UIColor.gray
+        ]
+        return NSAttributedString(string: "暂无数据", attributes: attributes)
+    }
+    
+    // 按钮标题
+    func buttonAttributedTitleForDataEmptyView(_ superview: UIView, with state: UIControl.State) -> NSAttributedString? {
+        if state == .normal {
+            let attributes: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 15),
+                .foregroundColor: UIColor.blue
+            ]
+            return NSAttributedString(string: "重新加载", attributes: attributes)
+        }
+        return nil
+    }
+    
+    // 按钮大小
+    func buttonSizeForDataEmptyView(_ superview: UIView) -> CGSize {
+        return CGSize(width: 120, height: 40)
+    }
+}
+
+extension ViewController: MNDataEmptyDelegate {
+    // 按钮点击事件
+    func dataEmptyViewButtonTouchUpInside() {
+        // 重新加载数据
+        loadData()
+    }
+}
+```
+
+**自定义视图**
+
+```swift
+extension ViewController: MNDataEmptySource {
+
+    func dataEmptyViewShouldDisplay(_ superview: UIView) -> Bool {
+        return dataArray.isEmpty
+    }
+    
+    // 使用自定义视图
+    func customViewForDataEmptyView(_ superview: UIView) -> UIView? {
+        let customView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
+        customView.backgroundColor = .lightGray
+        
+        let label = UILabel()
+        label.text = "自定义空视图"
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        customView.addSubview(label)
+        
+        NSLayoutConstraint.activate([
+            label.centerXAnchor.constraint(equalTo: customView.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: customView.centerYAnchor)
+        ])
+        
+        return customView
+    }
+}
+```
+
+**配置元素组合**
+
+```swift
+// 只显示图片和文字，不显示按钮
+tableView.mn.emptyComponents = [.image, .text]
+
+// 只显示自定义视图
+tableView.mn.emptyComponents = [.custom]
+
+// 显示所有元素（默认）
+tableView.mn.emptyComponents = [.image, .text, .button]
+```
+
+**自定义布局**
+
+```swift
+extension ViewController: MNDataEmptySource {
+
+    // 布局方向（垂直或水平）
+    func axisForDataEmptyView(_ superview: UIView) -> NSLayoutConstraint.Axis {
+        return .horizontal  // 水平布局
+    }
+    
+    // 元素间距
+    func spacingForDataEmptyView(_ superview: UIView) -> CGFloat {
+        return 30.0
+    }
+    
+    // 对齐方式
+    func alignmentForDataEmptyView(_ superview: UIView) -> UIStackView.Alignment {
+        return .center
+    }
+    
+    // 内容偏移
+    func offsetForDataEmptyView(_ superview: UIView) -> UIOffset {
+        return UIOffset(horizontal: 0, vertical: -50)  // 向上偏移50点
+    }
+    
+    // 边距
+    func edgeInsetForDataEmptyView(_ superview: UIView) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+    }
+}
+```
+
+**自定义样式**
+
+```swift
+extension ViewController: MNDataEmptySource {
+
+    // 背景颜色
+    func backgroundColorForDataEmptyView(_ superview: UIView) -> UIColor? {
+        return UIColor(white: 0.95, alpha: 1.0)
+    }
+    
+    // 图片尺寸
+    func imageSizeForDataEmptyView(_ superview: UIView) -> CGSize {
+        return CGSize(width: 120, height: 120)
+    }
+    
+    // 图片圆角
+    func imageRadiusForDataEmptyView(_ superview: UIView) -> CGFloat {
+        return 10.0
+    }
+    
+    // 图片填充模式
+    func imageModeForDataEmptyView(_ superview: UIView) -> UIView.ContentMode {
+        return .scaleAspectFit
+    }
+    
+    // 文字最大宽度
+    func descriptionFiniteMagnitudeForDataEmptyView(_ superview: UIView) -> CGFloat {
+        return 250.0
+    }
+    
+    // 按钮圆角
+    func buttonRadiusForDataEmptyView(_ superview: UIView) -> CGFloat {
+        return 5.0
+    }
+    
+    // 按钮边框
+    func buttonBorderWidthForDataEmptyView(_ superview: UIView) -> CGFloat {
+        return 1.0
+    }
+    
+    func buttonBorderColorForDataEmptyView(_ superview: UIView) -> UIColor? {
+        return .blue
+    }
+    
+    // 按钮背景颜色
+    func buttonBackgroundColorForDataEmptyView(_ superview: UIView) -> UIColor? {
+        return .white
+    }
+}
+```
+
+**动画效果**
+
+```swift
+extension ViewController: MNDataEmptySource {
+
+    // 自定义动画
+    func displayAnimationForDataEmptyView(_ superview: UIView) -> CAAnimation? {
+        let animation = CABasicAnimation(keyPath: "transform.scale")
+        animation.fromValue = 0.0
+        animation.toValue = 1.0
+        animation.duration = 0.3
+        animation.timingFunction = CAMediaTimingFunction(name: .easeOut)
+        return animation
+    }
+    
+    // 或使用渐现动画
+    func fadeInDurationForDataEmptyView(_ superview: UIView) -> TimeInterval {
+        return 0.25  // 0.0 表示不使用渐现动画
+    }
+}
+```
+
+**滚动控制**
+
+```swift
+extension ViewController: MNDataEmptySource {
+
+    // 空数据时是否允许滚动
+    func dataEmptyViewShouldScroll(_ superview: UIView) -> Bool {
+        return false  // 空数据时禁用滚动
+    }
+}
+```
+
+**交互事件**
+
+```swift
+extension ViewController: MNDataEmptySource {
+
+    // 图片是否可点击
+    func dataEmptyViewShouldTouchImage(_ superview: UIView) -> Bool {
+        return true
+    }
+    
+    // 文字是否可点击
+    func dataEmptyViewShouldTouchDescription(_ superview: UIView) -> Bool {
+        return true
+    }
+}
+
+extension ViewController: MNDataEmptyDelegate {
+
+    // 图片点击事件
+    func dataEmptyViewImageTouchUpInside(_ image: UIImage?) {
+        print("图片被点击")
+    }
+    
+    // 文字点击事件
+    func dataEmptyViewDescriptionTouchUpInside(_ description: String?) {
+        print("文字被点击：\(description ?? "")")
+    }
+    
+    // 按钮点击事件
+    func dataEmptyViewButtonTouchUpInside() {
+        print("按钮被点击")
+        loadData()
+    }
+    
+    // 空视图出现
+    func dataEmptyViewDidAppear() {
+        print("空视图已显示")
+    }
+    
+    // 空视图消失
+    func dataEmptyViewDidDisappear() {
+        print("空视图已隐藏")
+    }
+}
+```
+
+**手动控制显示/隐藏**
+
+```swift
+// 手动显示空视图
+tableView.mn.emptyView?.show()
+
+// 手动隐藏空视图
+tableView.mn.emptyView?.dismiss()
+
+// 根据条件显示/隐藏
+tableView.mn.emptyView?.showIfNeeded()
+```
+
+**自动显示控制**
+
+```swift
+// 启用自动显示（默认开启）
+tableView.mn.autoDisplayEmpty = true
+
+// 禁用自动显示
+tableView.mn.autoDisplayEmpty = false
+```
+
+**协议方法说明**
+
+`MNDataEmptySource` 协议提供了丰富的配置方法，所有方法都是可选的：
+
+- **显示控制**：
+  - `dataEmptyViewShouldDisplay`: 是否显示空视图
+  - `dataEmptyViewShouldScroll`: 是否允许滚动（`UIScrollView` 有效）
+- **布局配置**：
+  - `edgeInsetForDataEmptyView`: 边距
+  - `offsetForDataEmptyView`: 内容偏移
+  - `axisForDataEmptyView`: 布局方向（`.vertical` / `.horizontal`）
+  - `spacingForDataEmptyView`: 元素间距
+  - `alignmentForDataEmptyView`: 对齐方式
+- **图片配置**：
+  - `imageForDataEmptyView`: 图片
+  - `imageSizeForDataEmptyView`: 图片尺寸
+  - `imageModeForDataEmptyView`: 图片填充模式
+  - `imageRadiusForDataEmptyView`: 图片圆角
+  - `dataEmptyViewShouldTouchImage`: 图片是否可点击
+- **文字配置**：
+  - `descriptionForDataEmptyView`: 描述文字（富文本）
+  - `descriptionFiniteMagnitudeForDataEmptyView`: 文字最大宽度
+  - `dataEmptyViewShouldTouchDescription`: 文字是否可点击
+- **按钮配置**：
+  - `buttonSizeForDataEmptyView`: 按钮尺寸
+  - `buttonRadiusForDataEmptyView`: 按钮圆角
+  - `buttonBorderWidthForDataEmptyView`: 按钮边框宽度
+  - `buttonBorderColorForDataEmptyView`: 按钮边框颜色
+  - `buttonBackgroundColorForDataEmptyView`: 按钮背景颜色
+  - `buttonBackgroundImageForDataEmptyView`: 按钮背景图片
+  - `buttonAttributedTitleForDataEmptyView`: 按钮标题（富文本）
+- **其他配置**：
+  - `customViewForDataEmptyView`: 自定义视图
+  - `backgroundColorForDataEmptyView`: 背景颜色
+  - `userInfoForDataEmptyView`: 用户信息
+  - `displayAnimationForDataEmptyView`: 自定义动画
+  - `fadeInDurationForDataEmptyView`: 渐现动画时长
+
+### 📝 注意事项
+
+1. **自动检测**：对于 `UITableView` 和 `UICollectionView`，模块会自动检测数据源的数量，无需手动实现 `dataEmptyViewShouldDisplay`。
+2. **滚动视图**：对于 `UIScrollView`，模块会监听 `contentSize` 的变化，自动判断是否显示空视图。
+3. **线程安全**：所有显示/隐藏操作都应在主线程执行，模块已使用 `@MainActor` 标记。
+4. **内存管理**：空视图使用弱引用关联到父视图，无需担心循环引用。
+5. **元素顺序**：通过 `emptyComponents` 可以控制元素的显示顺序，例如 [.text, .image, .button]。
+6. **自定义视图**：使用自定义视图时，需要设置正确的 frame 或使用 Auto Layout。
+7. **动画优先级**：如果同时实现了 `displayAnimationForDataEmptyView` 和 `fadeInDurationForDataEmptyView`，优先使用自定义动画。
+8. **滚动控制**：当空视图显示时，如果设置了 `dataEmptyViewShouldScroll` 为 `false`，会自动禁用滚动视图的滚动，隐藏时会恢复。
+9. **生命周期**：空视图的显示和隐藏会触发代理方法，可以在这些方法中执行相关操作。
+10. **数据源更新**：当数据源发生变化时，如果启用了 `autoDisplayEmpty`，空视图会自动更新显示状态。
+
+
+
 
 ## 示例
 
