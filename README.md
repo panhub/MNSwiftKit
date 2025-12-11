@@ -5,6 +5,8 @@
 [![License](https://img.shields.io/cocoapods/l/MNSwiftKit.svg?style=flat)](https://cocoapods.org/pods/MNSwiftKit)
 [![Platform](https://img.shields.io/cocoapods/p/MNSwiftKit.svg?style=flat)](https://cocoapods.org/pods/MNSwiftKit)
 
+一个Swift组件集合，可以安装任一模块。
+
 ## 要求
 
 - iOS 9.0+ | Swift 5.0
@@ -19,7 +21,7 @@
 ```ruby
 pod 'MNSwiftKit'
 ```
-或按需添加以下一个或多个行到您的Podfile:
+或按需添加一个或多个行到您的Podfile:
 
 ```ruby
 pod 'MNSwiftKit/Base'
@@ -50,7 +52,7 @@ pod 'MNSwiftKit/EmoticonKeyboard'
 ```
 ### Swift软件包管理器 (iOS 9+, Swift 5+)
 
-同时也可以通过在您的`Package.swift`文件中添加适当的描述使用[Swift软件包管理器](https://docs.swift.org/swiftpm/documentation/packagemanagerdocs/)来安装：
+`MNSwiftKit`也可以通过在您的`Package.swift`文件中添加适当的描述使用[Swift软件包管理器](https://docs.swift.org/swiftpm/documentation/packagemanagerdocs/)来安装：
 
 ```swift
 // swift-tools-version:5.4
@@ -65,12 +67,12 @@ let package = Package(
 ```
 ### 手动导入 (iOS 9+, Swift 5+)
 
-要在项目中手动使用此库，您可以：
+要在项目中手动安装`MNSwiftKit`，您可以：
 
 1. 将`MNSwiftKit`文件夹整个拖入项目。
 2. 导航至项目target下，切换至`Build Phases`选项卡，在`Link Binary With Libraries`下添加依赖库。
 
-依赖库如下：
+依赖系统库/框架包括：
 `UIKit`，`Photos`，`PhotosUI`，`ImageIO`，`Security`，`StoreKit`，`Foundation`，`CoreFoundation`，`AVFoundation`, `AudioToolbox`，`CoreFoundation`，`CoreServices`，`CoreGraphics`，`CoreMedia`，`CoreAudio`，`CoreImage`，`CoreTelephony`，`QuartzCore`，`AdSupport`，`AppTrackingTransparency`，`AuthenticationServices`，`UniformTypeIdentifiers`，`SystemConfiguration`，`sqlite3`。
 
 ## 示例
