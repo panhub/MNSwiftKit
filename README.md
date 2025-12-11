@@ -111,67 +111,97 @@ import MNSwiftKit
 // SPM 安装可独立导入：
 import MNToast
 ```
+
 显示带系统加载指示器的 Toast（支持大号和小号两种样式）：
+
 ```swift
 MNToast.showActivity("加载中...")
+
 view.mn.showActivityToast("加载中...")
 ```
+
 显示成功的 Toast（带对勾动画的指示器）：
+
 ```swift
 MNToast.showSuccess("操作成功")
+
 view.mn.showSuccessToast("操作成功")
 ```
+
 显示错误的 Toast（带 X 动画的指示器）：
+
 ```swift
 MNToast.showError("操作失败")
+
 view.mn.showErrorToast("操作失败")
 ```
+
 显示纯文本提示的 Toast（自动关闭）
+
 ```swift
 MNToast.showMsg("这是自动消失提示")
+
 view.mn.showMsgToast("这是自动消失提示")
 ```
+
 显示带图标提示的 Toast（不自动关闭）
+
 ```swift
 MNToast.showInfo("温馨提示")
+
 view.mn.showInfoToast("这是自动消失提示")
 ````
+
 显示旋转动画的 Toast（支持三种样式：纯色线条、双线条、渐变线条）：
+
 ```swift
 // 默认渐变线条
 MNToast.showRotation("加载中...", style: .gradient)
+
 view.mn.showRotationToast("加载中...", style: .gradient)
 ```
+
 显示带进度的 Toast（支持两种样式：线条、填充）：
+
 ```swift
 // 默认线条样式, 更新进度时，重新调用即可
 MNToast.showProgress("正在下载", style: .line, value: 0.0)
+
 view.mn.showProgressToast("正在下载", style: .line, value: 0.0)
 ```
+
 关闭当前 Toast
+
 ```swift
 MNToast.close(delay: 3.0, completion: nil)
+
 view.mn.closeToast(delay: 3.0, completion: nil)
 ```
+
 检查窗口是否有 Toast 显示
+
 ```swift
 if MNToast.isAppearing {
     print("当前有 Toast 正在显示")
 }
+
 if view.mn.isToastAppearing {
     print("该视图上有 Toast 显示")
 }
 ```
 
 如果同类型的 Toast 正在显示，新的 Toast 会更新现有内容而不是创建新的：
+
 ````swift
 // 第一次显示
 MNToast.showActivity("加载中...")
+
 // 再次调用相同类型，会更新文字而不是新建
 MNToast.showActivity("加载完成")
 ````
 
 你可以通过实现 `MNToastBuilder` 协议来创建自定义的 Toast 样式：
+
 ```swift
 class CustomToast: MNToastBuilder {
 
@@ -200,7 +230,9 @@ class CustomToast: MNToastBuilder {
     var allowUserInteraction: Bool { false }
 }
 ```
+
 如果需要支持动画，可以实现 `MNToastAnimationSupported` 协议：
+
 ```swift
 extension CustomToast: MNToastAnimationSupported {
 
@@ -213,7 +245,9 @@ extension CustomToast: MNToastAnimationSupported {
     }
 }
 ```
+
 如果需要支持进度更新，可以实现 `MNToastProgressSupported` 协议：
+
 ```swift
 extension CustomToast: MNToastProgressSupported {
 
@@ -257,6 +291,7 @@ import MNMediaExport
 **MNAssetExportSession**
 
 使用 `AVAssetExportSession` 进行导出，增加了画面裁剪，时间片段裁剪，是否导出音视频控制等。
+
 ```swift
 let session = MNAssetExportSession(asset: videoAsset, outputURL: outputURL)
 // 质量预设
@@ -285,6 +320,7 @@ session.exportAsynchronously { progressValue in
 **MNMediaExportSession**
 
 使用 `AVAssetReader` 和 `AVAssetWriter` 进行底层导出，提供画面裁剪，时间片段裁剪，是否导出音视频控制等。
+
 ```swift
 let session = MNMediaExportSession(asset: videoAsset, outputURL: outputURL)
 session.quality = .high // 输出质量
@@ -307,20 +343,25 @@ session.exportAsynchronously { progressValue in
 **元数据操作**
 
 获取媒体文件时长
+
 ```swift
 // 从文件路径获取
 let duration = MNMediaExportSession.seconds(fileAtPath: "媒体文件路径")
 // 从本地 URL 获取
 let duration = MNMediaExportSession.seconds(mediaOfURL: videoURL)
 ```
+
 获取视频尺寸
+
 ```swift
 // 从文件路径获取
 let size = MNMediaExportSession.naturalSize(videoAtPath: "视频文件路径")
 // 从本地 URL 获取
 let size = MNMediaExportSession.naturalSize(videoOfURL: videoURL)
 ```
+
 获取视频截图
+
 ```swift
 // 生成第5秒处的截图，若文件是音频则忽略时间，检查文件内封面输出
 let image = MNMediaExportSession.generateImage(fileAtPath: "视频路径", at: 5.0, maximum: CGSize(width: 300, height: 300))
@@ -418,6 +459,144 @@ public enum MNExportError: Swift.Error {
 2. 文件覆盖：如果输出文件已存在，模块会自动删除旧文件
 3. 线程安全：进度和完成回调都在主队列执行，可以直接更新 UI
 4. 格式兼容性：某些格式可能在不同 iOS 版本上有差异，建议使用 MP4（视频）和 M4A（音频）以获得最佳兼容性
+
+### AssetBrowser
+
+提供图片 / GIF / Live Photo / 视频的全屏浏览与交互体验，包含手势缩放、下拉退出、进度加载、播放器控制栏等完整功能。常用于相册资源预览、聊天/动态图片预览等场景。
+
+#### ✨ 特性
+
+- **支持类型**：静态图、GIF、Live Photo、视频（含进度控制与播放）
+- **UI/交互**：双击缩放、下拉/点击退出、转场动画（缩略图到全屏）
+- **资源获取**：封面、内容的异步加载与进度回调
+- **播放控制**：播放/暂停、拖动进度、时间显示、自动播放开关
+- **自定义事件**：返回/完成/保存/分享按钮；状态回调；滚动回调
+- **清理策略**：退出时可选择清理临时资源
+
+**核心类型与协议**
+
+- MNAssetBrowser：浏览器视图，负责转场、手势、分页、状态管理。
+- MNAssetBrowserCell：单页展示单元，负责图片/视频/LivePhoto 展示与播放控制。
+- MNAssetScrollView：缩放容器，支持图片/视频/LivePhoto 的缩放与居中布局。
+- MNAssetBrowseSupported：资源模型协议（类型、封面、内容、进度、容器视图）。
+- MNAssetBrowseDelegate：浏览器事件代理（滚动、状态、导航按钮、封面/内容获取）。
+- MNAssetBrowseResourceHandler：用于向上层请求封面与内容。
+
+#### 🚀 快速开始
+
+```swift
+// Cocoapods 安装：
+import MNSwiftKit
+
+// SPM 安装可独立导入：
+import MNAssetBrowser
+```
+
+**准备资源模型**
+
+实现 MNAssetBrowseSupported 协议，或直接使用内置的 MNAssetBrowser.Item：
+
+```swift
+let item = MNAssetBrowser.Item()
+item.identifier = "unique-id"
+item.type = .photo  // .photo / .gif / .livePhoto / .video
+item.cover = coverImage // 缩略图
+item.contents = nil // 真实内容稍后异步填充
+item.container = thumbView // 缩略图所在视图，用于转场动画
+item.progress = 0.0 // 初始加载进度
+```
+
+**创建浏览器**
+
+```swift
+let browser = MNAssetBrowser(assets: [item1, item2, ...])
+browser.leftBarEvent = .back // 左按钮：返回
+browser.rightBarEvent = .save // 右按钮：保存/分享/完成等
+browser.autoPlaying = true // 自动播放视频/LivePhoto
+browser.exitWhenPulled = true // 下拉退出
+browser.exitWhenTouched = false // 单击退出
+browser.maximumZoomScale = 3.0 // 双击放大倍率
+browser.delegate = self // 处理封面/内容获取与事件
+```
+
+**展示**
+
+```swift
+browser.present(in: view, from: startIndex, animated: true) { state in
+    // willAppear / didAppear / willDisappear / didDisappear
+}
+```
+或浏览单张图：
+
+```swift
+MNAssetBrowser.present(container: thumbView, in: view, using: image, animated: true)
+```
+
+**实现代理，提供封面/内容**
+
+```swift
+extension YourVC: MNAssetBrowseDelegate {
+
+    func assetBrowser(_ browser: MNAssetBrowser,
+                      fetchCover asset: any MNAssetBrowseSupported,
+                      completion completionHandler: @escaping MNAssetBrowserCell.CoverUpdateHandler) {
+        // 如果封面已就绪，直接 completionHandler(asset)
+        // 否则异步下载封面，设置 asset.cover 后回调
+    }
+
+    func assetBrowser(_ browser: MNAssetBrowser,
+                      fetchContents asset: any MNAssetBrowseSupported,
+                      progress progressHandler: @escaping MNAssetBrowserCell.ProgressUpdateHandler,
+                      completion completionHandler: @escaping MNAssetBrowserCell.ContentsUpdateHandler) {
+        // 根据类型获取真实内容：
+        // photo/gif: UIImage 或 GIF UIImage
+        // livePhoto: PHLivePhoto
+        // video: 本地文件路径 String
+        // 下载/解码中调用 progressHandler(asset, progress, error)
+        // 完成后设置 asset.contents，并 completionHandler(asset)
+    }
+}
+```
+
+**事件回调**
+
+```swift
+func assetBrowser(_ browser: MNAssetBrowser, didScrollToItemAt index: Int) {
+    // 告知已浏览的资源索引
+}
+
+func assetBrowser(_ browser: MNAssetBrowser, didChange state: MNAssetBrowser.State) {
+    // 状态变化 willAppear / didAppear / willDisappear / didDisappear
+}
+
+func assetBrowser(_ browser: MNAssetBrowser, navigationItemTouchUpInside event: MNAssetBrowser.Event) {
+    switch event {
+    case .back:  browser.dismiss()
+    case .done:  // 完成
+    case .save:  // 保存
+    case .share: // 分享
+    }
+}
+```
+
+**UI/交互说明**
+
+- 手势：
+  - 双击：放大/还原
+  - 单击（可选）：退出并带转场
+  - 下拉（可选）：退出并带转场
+- 视频控制：播放/暂停按钮、进度滑条、当前时长与总时长显示。
+- Live Photo：显示 Live badge，自动播放可选。
+
+#### 📝 注意事项
+
+- `asset.contents`类型：
+  - `.photo/.gif`：`UIImage`对象
+  - `.livePhoto`：`PHLivePhoto`对象
+  - `.video`：`String`类型本地视频文件路径（建议先落地）
+- `asset.container`（缩略图所在视图）必须赋值，用于转场动画。
+- 导航按钮事件通过 MNAssetBrowser.Event（back/done/save/share/none）区分。
+- 资源较大时，请务必做好异步加载与进度回调，避免阻塞 UI。
 
 ## 示例
 
