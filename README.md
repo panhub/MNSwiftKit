@@ -7,18 +7,20 @@
 
 一个Swift组件集合，可以安装任一模块。
 
-- [要求](#要求)
-- [安装](#安装)
-- [使用](#使用)
+1. [要求](#要求)
+2. [安装](#安装)
+3. [使用](#使用)
     - [MNToast](#MNToast)
     - [MediaExport](#MediaExport)
     - [AssetBrowser](#AssetBrowser)
     - [AssetPicker](#AssetPicker)
     - [Database](#Database)
     - [EmptyView](#EmptyView)
-- [示例](#示例)
-- [作者](#作者)
-- [许可](#许可)
+    - [Request](#Request)
+    - [Refresh](#Refresh)
+4. [示例](#示例)
+5. [作者](#作者)
+6. [许可](#许可)
 
 ## 要求
 
@@ -263,10 +265,10 @@ extension CustomToast: MNToastProgressSupported {
 
 #### 📝 注意事项
 
-1. 线程安全：类方法加载时，Toast 相关方法都会自动在主线程执行，无需手动处理
-2. 键盘避让：Toast 会自动检测键盘位置并调整显示位置，避免被键盘遮挡
-3. 内存管理：Toast 会在关闭后自动从视图层级中移除，无需手动管理
-4. 自动关闭：`MNMsgToast` 会根据文字长度自动计算合适的显示时长
+- **线程安全**：类方法加载时，Toast 相关方法都会自动在主线程执行，无需手动处理
+- **键盘避让**：Toast 会自动检测键盘位置并调整显示位置，避免被键盘遮挡
+- **内存管理**：Toast 会在关闭后自动从视图层级中移除，无需手动管理
+- **自动关闭**：`MNMsgToast` 会根据文字长度自动计算合适的显示时长
 
 ### MediaExport
 
@@ -274,13 +276,13 @@ extension CustomToast: MNToastProgressSupported {
 
 #### ✨ 特性
 
-- ✅ **多格式支持**：支持 MP4、MOV、M4V、WAV、M4A、CAF、AIFF 等多种音视频格式
-- ✅ **视频处理**：支持视频裁剪、尺寸调整、时间范围调整
-- ✅ **音频处理**：支持音频提取、格式转换、质量调整
-- ✅ **质量控制**：提供低、中、高三种质量预设
-- ✅ **进度监控**：实时导出进度回调
-- ✅ **元数据支持**：获取媒体时长、尺寸、截图等元数据信息输出
-- ✅ **错误处理**：完善的错误类型
+-  **多格式支持**：支持 MP4、MOV、M4V、WAV、M4A、CAF、AIFF 等多种音视频格式
+-  **视频处理**：支持视频裁剪、尺寸调整、时间范围调整
+-  **音频处理**：支持音频提取、格式转换、质量调整
+-  **质量控制**：提供低、中、高三种质量预设
+-  **进度监控**：实时导出进度回调
+-  **元数据支持**：获取媒体时长、尺寸、截图等元数据信息输出
+-  **错误处理**：完善的错误类型
 
 #### 🚀 快速开始
 
@@ -459,10 +461,10 @@ public enum MNExportError: Swift.Error {
 
 #### 📝 注意事项
 
-1. 文件路径：模块会自动创建目录，但需要确保有写入权限
-2. 文件覆盖：如果输出文件已存在，模块会自动删除旧文件
-3. 线程安全：进度和完成回调都在主队列执行，可以直接更新 UI
-4. 格式兼容性：某些格式可能在不同 iOS 版本上有差异，建议使用 MP4（视频）和 M4A（音频）以获得最佳兼容性
+- **文件路径**：模块会自动创建目录，但需要确保有写入权限
+- **文件覆盖**：如果输出文件已存在，模块会自动删除旧文件
+- **线程安全**：进度和完成回调都在主队列执行，可以直接更新 UI
+- **格式兼容性**：某些格式可能在不同 iOS 版本上有差异，建议使用 MP4（视频）和 M4A（音频）以获得最佳兼容性
 
 ### AssetBrowser
 
@@ -766,22 +768,22 @@ class ViewController: UIViewController, MNAssetPickerDelegate {
   
 #### 📝 注意事项
   
-1. **权限要求**：需要在 `Info.plist` 中添加相册访问权限说明
+- **权限要求**：需要在 `Info.plist` 中添加相册访问权限说明
 ```swift
 <key>NSPhotoLibraryUsageDescription</key>
 <string>需要访问相册以选择图片</string>
 <key>NSPhotoLibraryAddUsageDescription</key>
 <string>需要访问相册以保存图片</string>
 ```
-2. **资源类型**：
+- **资源类型**：
   - `.photo`: 静态图片，`contents` 为 UIImage
   - `.gif`: GIF 动图，`contents` 为 UIImage（包含多帧）
   - `.livePhoto`: Live Photo，`contents` 为 PHLivePhoto（iOS 9.1+）
   - `.video`: 视频，`contents` 为 `String` 类型本地文件路径
-3. **iCloud 资源**：如果资源存储在 iCloud，模块会自动下载，请确保网络连接正常。
-4. **视频导出**：如果设置了 maxExportDuration 且视频时长超过限制，会自动进入视频裁剪界面。
-5. **内存管理**：大量资源选择时，建议及时处理 contents 并释放内存。
-6. **线程安全**：所有回调都在主线程执行，可以直接更新 UI。
+- **iCloud 资源**：如果资源存储在 iCloud，模块会自动下载，请确保网络连接正常。
+- **视频导出**：如果设置了 maxExportDuration 且视频时长超过限制，会自动进入视频裁剪界面。
+- **内存管理**：大量资源选择时，建议及时处理 contents 并释放内存。
+- **线程安全**：所有回调都在主线程执行，可以直接更新 UI。
 
 ### Database
 
@@ -1161,23 +1163,23 @@ class CustomUser: Initializable, TableColumnAssignment {
 
 #### 📝 注意事项
 
-1. **线程安全**：所有数据库操作都是线程安全的，可以在任意线程调用。
-2. **模型要求**：数据模型必须实现 `Initializable` 协议（提供 init() 方法）。
-3. **自动映射规则**：
+- **线程安全**：所有数据库操作都是线程安全的，可以在任意线程调用。
+- **模型要求**：数据模型必须实现 `Initializable` 协议（提供 init() 方法）。
+- **自动映射规则**：
   - `Int`、`Int64`、`Bool` → `.integer`
   - `Double`、`Float`、`CGFloat` → `.float`
   - `String`、`NSString` → `.text`
   - `Data`、`NSData` → `.blob`
   - 枚举类型会自动使用 `rawValue`
-4. **主键**：每个表自动包含一个名为 `id` 的自增主键，无需在模型中定义。
-5. **可选类型**：可选类型会被正确处理，`nil` 值会使用字段的默认值。
-6. **日期类型**：`Date` 类型会自动转换为时间戳（`Int64` 或 `Double`）存储。
-7. **性能优化**：
+- **主键**：每个表自动包含一个名为 `id` 的自增主键，无需在模型中定义。
+- **可选类型**：可选类型会被正确处理，`nil` 值会使用字段的默认值。
+- **日期类型**：`Date` 类型会自动转换为时间戳（`Int64` 或 `Double`）存储。
+- **性能优化**：
   - 批量插入时使用事务，性能更好
   - 查询结果会缓存表结构信息
   - 使用预编译语句缓存提升性能
-9. **错误处理**：在 DEBUG 模式下，所有 SQL 错误都会打印到控制台，便于调试。
-10. **数据库路径**：默认数据库路径为 `Documents/database.sqlite`，可通过初始化方法自定义。
+- **错误处理**：在 DEBUG 模式下，所有 SQL 错误都会打印到控制台，便于调试。
+- **数据库路径**：默认数据库路径为 `Documents/database.sqlite`，可通过初始化方法自定义。
 
 ### EmptyView
 
@@ -1537,18 +1539,837 @@ tableView.mn.autoDisplayEmpty = false
 
 ### 📝 注意事项
 
-1. **自动检测**：对于 `UITableView` 和 `UICollectionView`，模块会自动检测数据源的数量，无需手动实现 `dataEmptyViewShouldDisplay`。
-2. **滚动视图**：对于 `UIScrollView`，模块会监听 `contentSize` 的变化，自动判断是否显示空视图。
-3. **线程安全**：所有显示/隐藏操作都应在主线程执行，模块已使用 `@MainActor` 标记。
-4. **内存管理**：空视图使用弱引用关联到父视图，无需担心循环引用。
-5. **元素顺序**：通过 `emptyComponents` 可以控制元素的显示顺序，例如 [.text, .image, .button]。
-6. **自定义视图**：使用自定义视图时，需要设置正确的 frame 或使用 Auto Layout。
-7. **动画优先级**：如果同时实现了 `displayAnimationForDataEmptyView` 和 `fadeInDurationForDataEmptyView`，优先使用自定义动画。
-8. **滚动控制**：当空视图显示时，如果设置了 `dataEmptyViewShouldScroll` 为 `false`，会自动禁用滚动视图的滚动，隐藏时会恢复。
-9. **生命周期**：空视图的显示和隐藏会触发代理方法，可以在这些方法中执行相关操作。
-10. **数据源更新**：当数据源发生变化时，如果启用了 `autoDisplayEmpty`，空视图会自动更新显示状态。
+- **自动检测**：对于 `UITableView` 和 `UICollectionView`，模块会自动检测数据源的数量，无需手动实现 `dataEmptyViewShouldDisplay`。
+- **滚动视图**：对于 `UIScrollView`，模块会监听 `contentSize` 的变化，自动判断是否显示空视图。
+- **线程安全**：所有显示/隐藏操作都应在主线程执行，模块已使用 `@MainActor` 标记。
+- **内存管理**：空视图使用弱引用关联到父视图，无需担心循环引用。
+- **元素顺序**：通过 `emptyComponents` 可以控制元素的显示顺序，例如 [.text, .image, .button]。
+- **自定义视图**：使用自定义视图时，需要设置正确的 frame 或使用 Auto Layout。
+- **动画优先级**：如果同时实现了 `displayAnimationForDataEmptyView` 和 `fadeInDurationForDataEmptyView`，优先使用自定义动画。
+- **滚动控制**：当空视图显示时，如果设置了 `dataEmptyViewShouldScroll` 为 `false`，会自动禁用滚动视图的滚动，隐藏时会恢复。
+- **生命周期**：空视图的显示和隐藏会触发代理方法，可以在这些方法中执行相关操作。
+- **数据源更新**：当数据源发生变化时，如果启用了 `autoDisplayEmpty`，空视图会自动更新显示状态。
 
+### Request
 
+一套基于 `URLSession` 的网络请求解决方案，提供简洁的 API 和强大的功能。`Request` 模块构建在 `Networking` 模块之上，支持数据请求、文件上传、文件下载、断点续传、请求缓存、自动重试等特性，让网络请求变得简单高效。
+
+#### ✨ 特性
+
+- 🌐 **多种请求类型**：支持 GET、POST、PUT、DELETE、HEAD 等 HTTP 方法
+- 📤 **文件上传**：支持单文件上传，表单数据上传
+- 📥 **文件下载**：支持普通下载和断点续传
+- 💾 **智能缓存**：支持请求缓存策略，可设置缓存有效期
+- 🔄 **自动重试**：支持失败自动重试，可配置重试次数和间隔
+- 🎯 **灵活解析**：支持 JSON、纯文本等多种数据格式解析
+- 🔒 **安全策略**：支持 HTTPS 证书验证、域名验证等安全策略
+- 📊 **进度监控**：支持上传和下载进度实时回调
+- 🎨 **参数编码**：自动处理参数编码，支持 URL 编码和表单编码
+- 🛡️ **错误处理**：完善的错误类型定义，便于错误处理和调试
+- 🔌 **网络检测**：支持网络可达性检测
+- 🚀 **高性能**：基于 `URLSession`，性能优异，支持并发请求
+
+#### 🚀 快速开始
+
+```swift
+// Cocoapods 安装：
+import MNSwiftKit
+
+// SPM 安装可独立导入：
+import MNRequest
+import MNNetworking
+```
+
+**GET 请求**
+
+```swift
+let request = HTTPDataRequest(url: "https://api.example.com/users")
+request.method = .get
+request.start { 
+    print("请求开始")
+} completion: { result in
+    if result.isSuccess {
+        if let data = result.data as? [String: Any] {
+            print("请求成功：\(data)")
+        }
+    } else {
+        print("请求失败：\(result.msg)")
+    }
+}
+```
+
+**POST 请求**
+
+```swift
+let request = HTTPDataRequest(url: "https://api.example.com/login")
+request.method = .post
+request.param = [
+    "username": "user123",
+    "password": "password123"
+]
+request.contentType = .json
+
+request.start(completion: { result in
+    if result.isSuccess {
+        print("登录成功")
+    } else {
+        print("登录失败：\(result.msg)")
+    }
+})
+```
+
+**带 Header 的请求**
+
+```swift
+let request = HTTPDataRequest(url: "https://api.example.com/data")
+request.headerFields = [
+    "Authorization": "Bearer token123",
+    "Content-Type": "application/json"
+]
+request.start(completion: { result in
+    // 处理结果
+})
+```
+
+**请求缓存**
+
+```swift
+let request = HTTPDataRequest(url: "https://api.example.com/data")
+request.method = .get
+request.cachePolicy = .returnCacheElseLoad  // 优先使用缓存，失败后请求网络
+request.cacheValidInterval = 3600  // 缓存有效期1小时
+
+request.start(completion: { result in
+    if result.isSuccess {
+        if request.source == .cache {
+            print("使用缓存数据")
+        } else {
+            print("使用网络数据")
+        }
+    }
+})
+```
+
+**请求重试**
+
+```swift
+let request = HTTPDataRequest(url: "https://api.example.com/data")
+request.retyCount = 3  // 最多重试3次
+request.retryInterval = 1.0  // 重试间隔1秒
+
+request.start(completion: { result in
+    // 处理结果
+})
+```
+
+**自定义解析**
+
+```swift
+let request = HTTPDataRequest(url: "https://api.example.com/data")
+request.contentType = .json
+request.analyticHandler = { data, contentType in
+    // 自定义解析逻辑
+    if contentType == .json {
+        // 自定义 JSON 解析
+        return try? JSONSerialization.jsonObject(with: data, options: [])
+    }
+    return nil
+}
+
+request.start(completion: { result in
+    // 处理结果
+})
+```
+
+**文件上传**
+
+```swift
+let request = HTTPUploadRequest(url: "https://api.example.com/upload")
+request.start(body: {
+    // 返回要上传的文件路径、URL 或 Data
+    return "/path/to/file.jpg"
+}, progress: { progress in
+    print("上传进度：\(progress.fractionCompleted)")
+}) { result in
+    if result.isSuccess {
+        print("上传成功")
+    } else {
+        print("上传失败：\(result.msg)")
+    }
+}
+```
+
+**多文件上传（使用 HTTPUploadAssistant）**
+
+```swift
+let assistant = HTTPUploadAssistant(boundary: "Boundary-\(UUID().uuidString)")
+assistant.append(name: "username", value: "user123")
+assistant.append(image: image1, name: "avatar", filename: "avatar.jpg")
+assistant.append(image: image2, name: "cover", filename: "cover.jpg")
+
+let request = HTTPUploadRequest(url: "https://api.example.com/upload")
+request.boundary = assistant.boundary
+request.start(body: {
+    return assistant.data
+}, progress: { progress in
+    print("上传进度：\(progress.fractionCompleted)")
+}) { result in
+    // 处理结果
+}
+```
+
+**文件下载**
+
+```swift
+let request = HTTPDownloadRequest(url: "https://example.com/file.zip")
+request.downloadOptions = [.createIntermediateDirectories, .removeExistsFile]
+
+request.start(location: { response, url in
+    // 返回文件保存路径
+    let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
+    let fileName = response?.suggestedFilename ?? "download.zip"
+    return URL(fileURLWithPath: "\(documentsPath)/\(fileName)")
+}, progress: { progress in
+    print("下载进度：\(progress.fractionCompleted)")
+}) { result in
+    if result.isSuccess {
+        if let filePath = result.data as? String {
+            print("下载成功，文件路径：\(filePath)")
+        }
+    } else {
+        print("下载失败：\(result.msg)")
+    }
+}
+```
+
+**暂停和继续下载**
+
+```swift
+let request = HTTPDownloadRequest(url: "https://example.com/file.zip")
+
+// 开始下载
+request.start(location: { _, _ in
+    return URL(fileURLWithPath: "/path/to/file.zip")
+}, progress: { progress in
+    print("下载进度：\(progress.fractionCompleted)")
+}) { result in
+    // 处理结果
+}
+
+// 暂停下载
+request.suspend { resumeData in
+    if let resumeData = resumeData {
+        print("已暂停，可以继续下载")
+    }
+}
+
+// 继续下载
+request.resume { success in
+    if success {
+        print("继续下载成功")
+    }
+}
+```
+
+**文件下载（使用 HTTPFileRequest）**
+
+```swift
+let request = HTTPFileRequest(url: "https://example.com/file.zip")
+request.downloadOptions = [.createIntermediateDirectories]
+
+request.start(location: {
+    // 返回文件保存路径
+    let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
+    return URL(fileURLWithPath: "\(documentsPath)/file.zip")
+}, progress: { progress in
+    print("下载进度：\(progress.fractionCompleted)")
+}) { result in
+    if result.isSuccess {
+        print("下载成功")
+    }
+}
+```
+
+**自定义回调队列**
+
+```swift
+let request = HTTPDataRequest(url: "https://api.example.com/data")
+request.queue = DispatchQueue.global(qos: .userInitiated)  // 自定义回调队列
+
+request.start(completion: { result in
+    // 在指定队列中回调
+})
+```
+
+**错误处理**
+
+```swift
+request.start(completion: { result in
+    if result.isSuccess {
+        // 处理成功数据
+    } else {
+        // 处理错误
+        switch result.code {
+        case .badUrl:
+            print("请求🔗不合法")
+        case .cancelled:
+            print("请求取消")
+        // ....
+        default: break
+        }
+    }
+})
+```
+
+**取消请求**
+
+```swift
+let request = HTTPDataRequest(url: "https://api.example.com/data")
+request.start(completion: { result in
+    // 处理结果
+})
+
+// 取消请求
+request.cancel()
+```
+
+**忽略特定错误码**
+
+```swift
+let request = HTTPDataRequest(url: "https://api.example.com/data")
+request.ignoringErrorCodes = [HTTPErrorCancelled]  // 忽略取消错误
+
+request.start(completion: { result in
+    // 取消错误不会触发回调
+})
+```
+
+**接受的状态码和内容类型**
+
+```swift
+let request = HTTPDataRequest(url: "https://api.example.com/data")
+request.acceptableStatusCodes = IndexSet(integersIn: 200..<300)  // 只接受 200-299
+request.acceptableContentTypes = [.json, .plainText]  // 只接受 JSON 和纯文本
+
+request.start(completion: { result in
+    // 处理结果
+})
+```
+
+**网络缓存管理**
+
+```swift
+// 写入缓存
+HTTPDatabase.default.setCache(data, forKey: "cache_key") { success in
+    print("缓存写入：\(success)")
+}
+
+// 读取缓存
+if let cache = HTTPDatabase.default.cache(forKey: "cache_key", timeInterval: 3600) {
+    print("读取缓存：\(cache)")
+}
+
+// 删除缓存
+HTTPDatabase.default.removeCache(forKey: "cache_key") { success in
+    print("缓存删除：\(success)")
+}
+
+// 删除所有缓存
+HTTPDatabase.default.removeAll { success in
+    print("清空缓存：\(success)")
+}
+```
+
+**继承 HTTPRequest 自定义请求**
+
+```swift
+class CustomRequest: HTTPDataRequest {
+
+    override func didSuccess(responseData: Any) {
+        super.didSuccess(responseData: responseData)
+        // 自定义成功处理逻辑
+    }
+    
+    override func didFail(_ result: HTTPResult) {
+        super.didFail(result)
+        // 自定义失败处理逻辑
+    }
+}
+```
+
+**分页请求支持**
+
+```swift
+class PagingRequest: HTTPDataRequest, HTTPPagingSupported {
+
+    var page: Int = 1
+    var hasMore: Bool = true
+    var isPagingEnabled: Bool = true
+    
+    var isDataEmpty: Bool {
+        
+        return // 是否有缓存数据
+    }
+    
+    func clearCache() {
+        // 清除缓存数据
+    }
+    
+    override func prepareLoadData() {
+        if page == 1 {
+            clearCache()
+        }
+        param = ["page": page]
+    }
+}
+```
+
+**请求方法**
+
+`HTTPMethod` 枚举支持以下方法：
+- `.get`: GET 请求
+- `.post`: POST 请求
+- `.put`: PUT 请求
+- `.delete`: DELETE 请求
+- `.head`: HEAD 请求
+
+**缓存策略**
+
+`CachePolicy` 枚举支持以下策略：
+- `.never`: 不使用缓存
+- `.returnCacheElseLoad`: 优先使用缓存，失败后请求网络
+- `.returnCacheDontLoad`: 优先使用缓存，没有缓存或缓存过期则不加载
+
+**内容类型**
+
+`HTTPContentType` 枚举支持以下类型：
+- `.none`: 不做处理
+- `.json`: JSON 数据
+- `.plainText`: 纯文本
+- `.xml`: XML 数据
+- `.html`: HTML 数据
+- `.plist`: Plist 数据
+- `.formData`: 文件上传
+- `.formURLEncoded`: URL 编码数据
+- `.binary`: 二进制数据
+
+**下载选项**
+
+`HTTPDownloadOptions` 支持以下选项：
+- `.createIntermediateDirectories`: 自动创建中间目录
+- `.removeExistsFile`: 删除已存在的文件
+
+**错误类型**
+
+`HTTPError` 提供了完善的错误类型：
+- `requestSerializationFailure`: 请求序列化错误
+- `responseParseFailure`: 响应解析错误
+- `dataParseFailure`: 数据解析错误
+- `uploadFailure`: 上传失败
+- `downloadFailure`: 下载失败
+- `httpsChallengeFailure`: HTTPS 挑战失败
+- `custom`: 自定义错误
+
+### 📝 注意事项
+
+- **线程安全**：所有回调都在主线程执行（除非指定了自定义队列），可以直接更新 UI。
+- **内存管理**：请求对象会被强引用直到请求完成，无需担心提前释放。
+- **缓存机制**：缓存基于 `SQLite` 数据库，默认路径为 `Documents/http_caches.sqlite`。
+- **重试机制**：重试只对网络错误有效，不会对序列化错误、解析错误、取消操作进行重试。
+- **断点续传**：`HTTPDownloadRequest` 支持断点续传，暂停后可以继续下载。
+- **文件下载**：`HTTPFileRequest` 使用 DataTask 下载，适合小文件；`HTTPDownloadRequest` 使用 DownloadTask，支持断点续传，适合大文件。
+- **参数编码**：参数会自动进行 URL 编码，支持字典、字符串等多种格式。
+- **错误处理**：建议检查 `result.isSuccess` 判断请求是否成功，失败时查看 `result.msg` 获取错误信息。
+- **网络检测**：可以使用 `NetworkReachability` 检测网络状态，但请求本身会自动处理网络错误。
+- **并发请求**：模块支持多个请求并发执行，由 `URLSession` 统一管理。
+- **请求取消**：取消请求会触发错误回调，错误码为 `HTTPErrorCancelled`。
+
+### Refresh
+
+一个易于使用的下拉刷新和上拉加载更多组件，支持 UITableView、UICollectionView 等所有 UIScrollView 子类。提供默认实现和自定义扩展能力，让列表刷新变得简单优雅。
+
+#### ✨ 特性
+
+- 🔄 **下拉刷新**：支持下拉刷新数据，自动处理滚动视图的 `contentInset`
+- 📥 **上拉加载**：支持上拉加载更多数据，智能检测滚动位置
+- 🎨 **自定义组件**：支持自定义刷新头部和底部组件，灵活扩展
+- 🎯 **状态管理**：完善的状态管理（normal、pulling、preparing、refreshing、noMoreData）
+- 🔔 **多种回调**：支持 Block 回调和 Target-Action 两种方式
+- 📊 **进度反馈**：支持拖拽进度回调，可实现丰富的动画效果
+- 🎭 **默认实现**：提供开箱即用的默认刷新组件
+- 🔧 **灵活配置**：支持自定义偏移、内容边距、颜色等
+- 🚀 **自动布局**：自动处理组件位置和滚动视图的 `contentInset` 调整
+- 💪 **线程安全**：所有操作都在主线程执行，安全可靠
+
+#### 🚀 快速开始
+
+```swift
+// Cocoapods 安装：
+import MNSwiftKit
+
+// SPM 安装可独立导入：
+import MNRefresh
+```
+
+**下拉刷新**
+
+```swift
+class ViewController: UIViewController {
+
+    @IBOutlet weak var tableView: UITableView!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // 创建默认下拉刷新组件
+        let header = MNRefreshStateHeader()
+        header.beginRefreshHandler = { [weak self] in
+            // 开始刷新数据
+            self?.loadData()
+        }
+        
+        // 设置下拉刷新
+        tableView.mn.header = header
+    }
+    
+    func loadData() {
+        // 模拟网络请求
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+            // 刷新完成，结束刷新
+            self?.tableView.mn.endRefreshing()
+        }
+    }
+}
+```
+
+**上拉加载更多**
+
+```swift
+class ViewController: UIViewController {
+
+    @IBOutlet weak var tableView: UITableView!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // 创建默认上拉加载组件
+        let footer = MNRefreshStateFooter()
+        footer.beginRefreshHandler = { [weak self] in
+            // 开始加载更多数据
+            self?.loadMoreData()
+        }
+        
+        // 设置上拉加载
+        tableView.mn.footer = footer
+    }
+    
+    func loadMoreData() {
+        // 模拟网络请求
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+            // 加载完成，结束加载
+            self?.tableView.mn.endLoadMore()
+        }
+    }
+}
+```
+
+**同时使用下拉刷新和上拉加载**
+
+```swift
+class ViewController: UIViewController {
+
+    @IBOutlet weak var tableView: UITableView!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // 下拉刷新
+        let header = MNRefreshStateHeader()
+        header.beginRefreshHandler = { [weak self] in
+            self?.refreshData()
+        }
+        tableView.mn.header = header
+        
+        // 上拉加载更多
+        let footer = MNRefreshStateFooter()
+        footer.beginRefreshHandler = { [weak self] in
+            self?.loadMoreData()
+        }
+        tableView.mn.footer = footer
+    }
+    
+    func refreshData() {
+        // 刷新数据
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+            self?.tableView.mn.endRefreshing()
+        }
+    }
+    
+    func loadMoreData() {
+        // 加载更多数据
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+            self?.tableView.mn.endLoadMore()
+        }
+    }
+}
+```
+
+**使用 Target-Action 方式**
+
+```swift
+class ViewController: UIViewController {
+
+    @IBOutlet weak var tableView: UITableView!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // 使用 Target-Action
+        let header = MNRefreshStateHeader(target: self, action: #selector(headerRefresh))
+        tableView.mn.header = header
+    }
+    
+    @objc func headerRefresh() {
+        // 刷新数据
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+            self?.tableView.mn.endRefreshing()
+        }
+    }
+}
+```
+
+**自定义颜色**
+
+```swift
+let header = MNRefreshStateHeader()
+header.color = .systemBlue  // 设置指示器颜色
+tableView.mn.header = header
+
+let footer = MNRefreshStateFooter()
+footer.color = .systemBlue  // 设置指示器和文字颜色
+tableView.mn.footer = footer
+```
+
+**自定义偏移和边距**
+
+```swift
+let header = MNRefreshStateHeader()
+header.offset = UIOffset(horizontal: 0, vertical: 10)  // 设置偏移
+header.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)  // 设置内容边距
+tableView.mn.header = header
+```
+
+**无更多数据状态**
+
+```swift
+// 设置无更多数据
+tableView.mn.footer?.endRefreshingAndNoMoreData()
+
+// 恢复加载能力
+tableView.mn.footer?.relieveNoMoreData()
+
+// 或使用便捷属性
+tableView.mn.isLoadMoreEnabled = false  // 禁用加载更多
+tableView.mn.isLoadMoreEnabled = true   // 启用加载更多
+```
+
+**手动控制刷新**
+
+```swift
+// 手动开始刷新
+tableView.mn.header?.beginRefresh()
+
+// 手动结束刷新
+tableView.mn.endRefreshing()
+
+// 手动结束加载更多
+tableView.mn.endLoadMore()
+
+// 检查刷新状态
+if tableView.mn.isRefreshing {
+    print("正在刷新")
+}
+
+if tableView.mn.isLoadMore {
+    print("正在加载更多")
+}
+
+if tableView.mn.isLoading {
+    print("正在加载中（刷新或加载更多）")
+}
+```
+
+**自定义刷新组件 - 头部**
+
+```swift
+class CustomRefreshHeader: MNRefreshHeader {
+
+    private lazy var customView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .systemBlue
+        return view
+    }()
+    
+    override func commonInit() {
+        super.commonInit()
+        addSubview(customView)
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let rect = bounds.inset(by: contentInset)
+        customView.frame = rect
+    }
+    
+    override func headerViewDidDragging(_ percent: CGFloat) {
+        // 根据拖拽进度更新 UI
+        customView.alpha = percent
+        customView.transform = CGAffineTransform(scaleX: percent, y: percent)
+    }
+    
+    override func didChangeState(from oldState: State, to state: State) {
+        super.didChangeState(from: oldState, to: state)
+        switch state {
+        case .refreshing:
+            // 开始刷新动画
+            startAnimating()
+        case .normal:
+            // 停止动画
+            stopAnimating()
+        default:
+            break
+        }
+    }
+    
+    func startAnimating() {
+        // 自定义动画
+    }
+    
+    func stopAnimating() {
+        // 停止动画
+    }
+}
+
+// 使用自定义头部
+let customHeader = CustomRefreshHeader()
+customHeader.beginRefreshHandler = {
+    // 刷新数据
+}
+tableView.mn.header = customHeader
+```
+
+**自定义刷新组件 - 底部**
+
+```swift
+class CustomRefreshFooter: MNRefreshFooter {
+
+    private lazy var customLabel: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.text = "上拉加载更多"
+        return label
+    }()
+    
+    override func commonInit() {
+        super.commonInit()
+        addSubview(customLabel)
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let rect = bounds.inset(by: contentInset)
+        customLabel.frame = rect
+    }
+    
+    override func footerViewDidDragging(_ percent: CGFloat) {
+        // 根据拖拽进度更新文字
+        if percent >= 1.0 {
+            customLabel.text = "松开加载更多"
+        } else {
+            customLabel.text = "上拉加载更多"
+        }
+    }
+    
+    override func didChangeState(from oldState: State, to state: State) {
+        super.didChangeState(from: oldState, to: state)
+        switch state {
+        case .refreshing:
+            customLabel.text = "正在加载..."
+        case .noMoreData:
+            customLabel.text = "没有更多数据了"
+        case .normal:
+            customLabel.text = "上拉加载更多"
+        default:
+            break
+        }
+    }
+}
+
+// 使用自定义底部
+let customFooter = CustomRefreshFooter()
+customFooter.beginRefreshHandler = {
+    // 加载更多数据
+}
+tableView.mn.footer = customFooter
+```
+
+**刷新状态说明**
+
+`MNRefreshComponent.State` 枚举定义了以下状态：
+- `.normal`: 普通状态，未触发刷新
+- `.pulling`: 拖拽中，即将触发刷新
+- `.preparing`: 准备刷新（视图未显示时）
+- `.refreshing`: 正在刷新
+- `.noMoreData`: 无更多数据（仅用于底部组件）
+
+**生命周期回调**
+
+```swift
+let header = MNRefreshStateHeader()
+header.beginRefreshHandler = {
+    print("开始刷新")
+}
+header.endRefreshingHandler = {
+    print("结束刷新")
+}
+tableView.mn.header = header
+```
+
+**移除刷新组件**
+
+```swift
+// 移除下拉刷新
+tableView.mn.header = nil
+
+// 移除上拉加载
+tableView.mn.footer = nil
+```
+
+**刷新组件属性**
+
+`MNRefreshComponent` 提供以下可配置属性：
+- `color`: 组件颜色（影响组件的指示器和文字颜色）
+- `offset`: 组件偏移量
+- `contentInset`: 组件内容边距
+- `beginRefreshHandler`: 开始刷新回调
+- `endRefreshingHandler`: 结束刷新回调
+- `isRefreshing`: 是否正在刷新
+- `isNoMoreData`: 是否无更多数据状态
+
+### 📝 注意事项
+
+- **自动布局**：刷新组件会自动添加到滚动视图并处理布局，无需手动设置约束。
+- **contentInset 调整**：组件会自动调整滚动视图的 `contentInset`，刷新结束后会自动恢复。
+- **线程安全**：所有刷新操作都应在主线程执行，组件内部已做线程安全处理。
+- **状态管理**：刷新状态由组件内部管理，外部只需调用 `beginRefresh()` 和 `endRefreshing()` 方法。
+- **无更多数据**：当数据加载完毕时，调用 `endRefreshingAndNoMoreData()` 设置无更多数据状态，用户将无法继续上拉加载。
+- **恢复加载能力**：当需要重新启用加载更多时，调用 `relieveNoMoreData()` 恢复加载能力。
+- **自定义组件**：继承 `MNRefreshHeader` 或 `MNRefreshFooter` 时，需要重写相关方法来处理状态变化和拖拽进度。
+- **拖拽进度**：通过 `headerViewDidDragging(_:)` 和 `footerViewDidDragging(_:)` 方法可以获取拖拽进度（0.0-1.0），用于实现丰富的动画效果。
+- **视图生命周期**：组件会自动监听滚动视图的 `contentOffset` 和 `contentSize` 变化，无需手动处理。
+- **内存管理**：刷新组件使用弱引用关联到滚动视图，滚动视图销毁时组件会自动清理。
+- **默认组件**：`MNRefreshStateHeader` 和 `MNRefreshStateFooter` 提供了开箱即用的默认实现，适合大多数场景。
+- **iOS 11+ 适配**：组件已适配 iOS 11+ 的 `adjustedContentInset`，确保在各种情况下都能正常工作。
 
 
 ## 示例
