@@ -1540,7 +1540,7 @@ tableView.mn.autoDisplayEmpty = false
   - `displayAnimationForDataEmptyView`: 自定义动画
   - `fadeInDurationForDataEmptyView`: 渐现动画时长
 
-### 📝 注意事项
+#### 📝 注意事项
 
 - **自动检测**：对于 `UITableView` 和 `UICollectionView`，模块会自动检测数据源的数量，无需手动实现 `dataEmptyViewShouldDisplay`。
 - **滚动视图**：对于 `UIScrollView`，模块会监听 `contentSize` 的变化，自动判断是否显示空视图。
@@ -1973,7 +1973,7 @@ class PagingRequest: HTTPDataRequest, HTTPPagingSupported {
 - `httpsChallengeFailure`: HTTPS 挑战失败
 - `custom`: 自定义错误
 
-### 📝 注意事项
+#### 📝 注意事项
 
 - **线程安全**：所有回调都在主线程执行（除非指定了自定义队列），可以直接更新 UI。
 - **内存管理**：请求对象会被强引用直到请求完成，无需担心提前释放。
@@ -2359,7 +2359,7 @@ tableView.mn.footer = nil
 - `isRefreshing`: 是否正在刷新
 - `isNoMoreData`: 是否无更多数据状态
 
-### 📝 注意事项
+#### 📝 注意事项
 
 - **自动布局**：刷新组件会自动添加到滚动视图并处理布局，无需手动设置约束。
 - **contentInset 调整**：组件会自动调整滚动视图的 `contentInset`，刷新结束后会自动恢复。
@@ -2655,7 +2655,7 @@ class CustomSplitCell: UICollectionViewCell, MNSplitCellConvertible {
   - `backgroundColor`: 背景颜色
   - `splitColor`: 导航视图颜色
 
-### 📝 注意事项
+#### 📝 注意事项
 
 - **子页面协议**：子页面必须遵循 `MNSplitPageConvertible` 协议，并提供 `preferredPageScrollView` 属性。
 - **头部视图联动**：当子页面的 `preferredPageScrollView` 内容高度达到最小要求时，头部视图会与内容页面联动滚动。
@@ -2918,7 +2918,7 @@ collectionView.collectionViewLayout.invalidateLayout()
 - **列/行高度缓存**：缓存每列/行的高度，快速找到最短列/行
 - **布局属性缓存**：缓存所有布局属性，避免重复计算
 
-### 📝 注意事项
+#### 📝 注意事项
 
 - **代理设置**：如果 `delegate` 未设置，布局会自动尝试从 `collectionView.dataSource` 获取代理。
 - **item 尺寸**：如果通过代理方法返回了 item 尺寸，布局会根据尺寸比例自动计算实际显示尺寸。如果尺寸为正方形，会使用计算出的宽度作为高度。
@@ -3348,7 +3348,7 @@ Caches/MNSwiftKit/emoticons/
 ```
 每个表情包使用 MD5 后的名称作为文件夹名，JSON 配置文件与文件夹同名。
 
-### 📝 注意事项
+#### 📝 注意事项
 
 - **表情包加载**：表情包在键盘显示到窗口时才会加载，使用异步加载机制。
 - **表情包编辑**：只有"收藏夹"表情包可以编辑，其他内置表情包不可编辑。
