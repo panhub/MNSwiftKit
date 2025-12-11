@@ -8,20 +8,20 @@
 import UIKit
 
 /// 定制文字布局对象
-class MNCollectionViewWordLayout: MNCollectionViewLayout {
+public class MNCollectionViewWordLayout: MNCollectionViewLayout {
     
     /// 标签对齐方式
     /// - left: 居左
     /// - center: 居中
     /// - right: 居右
-    enum Alignment: Int {
+    public enum Alignment: Int {
         case left, center, right
     }
     
     /// 对齐方式
-    var alignment: Alignment = .left
+    public var alignment: Alignment = .left
     
-    override func prepare() {
+    public override func prepare() {
         super.prepare()
         
         // 区数

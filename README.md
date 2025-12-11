@@ -7,9 +7,9 @@
 
 一个Swift组件集合，可以安装任一模块。
 
-1. [要求](#要求)
-2. [安装](#安装)
-3. [使用](#使用)
+- [要求](#要求)
+- [安装](#安装)
+- [使用](#使用)
     - [MNToast](#MNToast)
     - [MediaExport](#MediaExport)
     - [AssetBrowser](#AssetBrowser)
@@ -18,9 +18,12 @@
     - [EmptyView](#EmptyView)
     - [Request](#Request)
     - [Refresh](#Refresh)
-4. [示例](#示例)
-5. [作者](#作者)
-6. [许可](#许可)
+    - [SplitController](#SplitController)
+    - [CollectionLayout](#CollectionLayout)
+    - [EmoticonKeyboard](#EmoticonKeyboard)
+- [示例](#示例)
+- [作者](#作者)
+- [许可](#许可)
 
 ## 要求
 
@@ -498,7 +501,7 @@ import MNSwiftKit
 import MNAssetBrowser
 ```
 
-**准备资源模型**
+准备资源模型
 
 实现 MNAssetBrowseSupported 协议，或直接使用内置的 MNAssetBrowser.Item：
 
@@ -512,7 +515,7 @@ item.container = thumbView // 缩略图所在视图，用于转场动画
 item.progress = 0.0 // 初始加载进度
 ```
 
-**创建浏览器**
+创建浏览器
 
 ```swift
 let browser = MNAssetBrowser(assets: [item1, item2, ...])
@@ -525,7 +528,7 @@ browser.maximumZoomScale = 3.0 // 双击放大倍率
 browser.delegate = self // 处理封面/内容获取与事件
 ```
 
-**展示**
+展示
 
 ```swift
 browser.present(in: view, from: startIndex, animated: true) { state in
@@ -538,7 +541,7 @@ browser.present(in: view, from: startIndex, animated: true) { state in
 MNAssetBrowser.present(container: thumbView, in: view, using: image, animated: true)
 ```
 
-**实现代理，提供封面/内容**
+实现代理，提供封面/内容
 
 ```swift
 extension YourVC: MNAssetBrowseDelegate {
@@ -564,7 +567,7 @@ extension YourVC: MNAssetBrowseDelegate {
 }
 ```
 
-**事件回调**
+事件回调
 
 ```swift
 func assetBrowser(_ browser: MNAssetBrowser, didScrollToItemAt index: Int) {
@@ -585,7 +588,7 @@ func assetBrowser(_ browser: MNAssetBrowser, navigationItemTouchUpInside event: 
 }
 ```
 
-**UI/交互说明**
+UI/交互说明
 
 - 手势：
   - 双击：放大/还原
@@ -633,7 +636,7 @@ import MNSwiftKit
 import MNAssetPicker
 ```
 
-**单选配置**
+单选配置
 
 ```swift
 let options = MNAssetPickerOptions()
@@ -653,7 +656,7 @@ picker.present(pickingHandler: { picker, assets in
 })
 ```
 
-**多选配置**
+多选配置
 
 ```swift
 let options = MNAssetPickerOptions()
@@ -666,7 +669,7 @@ options.allowsPickingLivePhoto = true
 options.allowsMixedPicking = true  // 允许混合选择
 ```
 
-**自定义主题样式**
+自定义主题样式
 
 ```swift
 let options = MNAssetPickerOptions()
@@ -678,7 +681,7 @@ options.minimumLineSpacing = 4.0
 options.minimumInteritemSpacing = 4.0
 ```
 
-**视频裁剪配置**
+视频裁剪配置
 
 ```swift
 let options = MNAssetPickerOptions()
@@ -690,7 +693,7 @@ options.maxExportDuration = 60.0  // 最大时长60秒
 options.allowsExportVideo = true  // 允许导出视频为MP4
 ```
 
-**使用代理**
+使用代理
 
 ```swift
 class ViewController: UIViewController, MNAssetPickerDelegate {
@@ -708,11 +711,11 @@ class ViewController: UIViewController, MNAssetPickerDelegate {
 }
 ```
 
-**配置选项说明**
+配置选项说明
 
 `MNAssetPickerOptions` 提供了丰富的配置选项：
 
-- **选择控制**：
+- 选择控制：
   - `maxPickingCount`: 最多选择数量（默认：1）
   - `minPickingCount`: 至少选择数量（默认：0）
   - `allowsPickingPhoto`: 是否允许选择图片（默认：true）
@@ -723,7 +726,7 @@ class ViewController: UIViewController, MNAssetPickerDelegate {
   - `allowsMultiplePickingVideo`: 是否允许多选视频（默认：true）
   - `allowsMixedPicking`: 是否允许混合选择（默认：true）
 
-- **UI 配置**：
+- UI 配置：
   - `mode`: 主题模式（.light / .dark，默认：.dark）
   - `themeColor`: 主题颜色
   - `tintColor`: 辅助颜色
@@ -731,7 +734,7 @@ class ViewController: UIViewController, MNAssetPickerDelegate {
   - `minimumLineSpacing`: 行间距（默认：4.0）
   - `minimumInteritemSpacing`: 列间距（默认：4.0）
   
-- **功能配置**：
+- 功能配置：
   - `allowsPreview`: 是否允许预览（默认：false）
   - `allowsSlidePicking`: 是否允许滑动选择（默认：false）
   - `allowsPickingAlbum`: 是否允许切换相册（默认：true）
@@ -739,21 +742,21 @@ class ViewController: UIViewController, MNAssetPickerDelegate {
   - `allowsExportHeifc`: 是否允许导出 HEIF/HEIC 格式（默认：false）
   - `allowsExportVideo`: 是否允许导出视频为 MP4（默认：false）
   
-- **视频配置**：
+- 视频配置：
   - `minExportDuration`: 视频最小时长（默认：0.0）
   - `maxExportDuration`: 视频最大时长（默认：0.0）
   - `videoExportURL`: 视频导出路径
   - `videoExportPreset`: 视频导出质量预设
   
-- **其他配置**：
+- 其他配置：
   - `compressionQuality`: 图片压缩质量（0.0-1.0，默认：1.0）
   - `renderSize`: 预览图渲染大小（默认：250x250）
   - `pageCount`: 分页数量（默认：140）
   - `sortAscending`: 是否升序排列（默认：false，降序）
   
-**资源模型**
+资源模型
   
-  选择完成后，返回的是 `MNAsset` 对象数组，对象包含：
+选择完成后，返回的是 `MNAsset` 对象数组，对象包含：
   
 - `type`: 资源类型（.photo / .gif / .livePhoto / .video）
 - `contents`: 资源内容
@@ -813,7 +816,7 @@ import MNSwiftKit
 import MNDatabase
 ```
 
-**初始化数据库**
+初始化数据库
 
 ```swift
 // 使用默认路径（/Documents/database.sqlite）
@@ -823,7 +826,7 @@ let database = MNDatabase.default
 let database = MNDatabase(path: "/path/to/your/database.sqlite")
 ```
 
-**定义数据模型**
+定义数据模型
 
 ```swift
 // 方式1：使用自动映射（推荐）
@@ -849,7 +852,7 @@ class User: Initializable, TableColumnSupported {
 }
 ```
 
-**创建表**
+创建表
 
 ```swift
 // 同步创建表
@@ -873,7 +876,7 @@ let columns: [String: MNTableColumn.FieldType] = [
 database.create(table: "users", using: columns)
 ```
 
-**插入数据**
+插入数据
 
 ```swift
 // 方式1：插入模型对象
@@ -906,7 +909,7 @@ database.insert(into: "users", using: user) { success in
 }
 ```
 
-**查询数据**
+查询数据
 
 ```swift
 // 查询所有数据
@@ -974,7 +977,7 @@ if let count = database.selectCount(from: "users", where: "age > 20") {
 }
 ```
 
-**更新数据**
+更新数据
 
 ```swift
 // 更新模型对象
@@ -1002,7 +1005,7 @@ database.update("users", where: "name = '张三'", using: fields) { success in
 }
 ```
 
-**删除数据**
+删除数据
 
 ```swift
 // 删除指定条件的数据
@@ -1024,7 +1027,7 @@ database.delete(from: "users", where: "age < 18") { success in
 }
 ```
 
-**聚合函数**
+聚合函数
 
 ```swift
 // 求和
@@ -1068,7 +1071,7 @@ if let min = database.selectFinite(
 }
 ```
 
-**表管理**
+表管理
 
 ```swift
 // 检查表是否存在
@@ -1093,7 +1096,7 @@ if database.update("users", name: "new_users") {
 }
 ```
 
-**字典转 SQL 条件**
+字典转 SQL 条件
 
 ```swift
 // 将字典自动转换为 SQL WHERE 条件
@@ -1110,7 +1113,7 @@ if let users = database.selectRows(from: "users", where: sql, type: User.self) {
 }
 ```
 
-**模糊查询类型**
+模糊查询类型
 
 ```swift
 // 前缀匹配（姓名以"张"开头）
@@ -1128,7 +1131,7 @@ let contains = MNTableColumn.MatchType.contains("name", "张")
 let customEscape = MNTableColumn.MatchType.contains("name", "张%", escape: "\\")
 ```
 
-**数据类型**
+数据类型
 
 `MNTableColumn.FieldType` 支持四种数据类型：
   - `.integer`: 整数类型（Int、Int64、Bool 等）
@@ -1136,7 +1139,7 @@ let customEscape = MNTableColumn.MatchType.contains("name", "张%", escape: "\\"
   - `.text`: 字符串类型（String、NSString）
   - `.blob`: 二进制数据类型（Data、NSData）
 
-**协议支持**
+协议支持
 
 ```swift
 // TableColumnAssignment：自定义赋值逻辑
@@ -1207,7 +1210,7 @@ import MNSwiftKit
 import MNEmptyView
 ```
 
-**基础使用**
+基础使用
 
 ```swift
 class ViewController: UIViewController {
@@ -1270,7 +1273,7 @@ extension ViewController: MNDataEmptyDelegate {
 }
 ```
 
-**自定义视图**
+自定义视图
 
 ```swift
 extension ViewController: MNDataEmptySource {
@@ -1300,7 +1303,7 @@ extension ViewController: MNDataEmptySource {
 }
 ```
 
-**配置元素组合**
+配置元素组合
 
 ```swift
 // 只显示图片和文字，不显示按钮
@@ -1313,7 +1316,7 @@ tableView.mn.emptyComponents = [.custom]
 tableView.mn.emptyComponents = [.image, .text, .button]
 ```
 
-**自定义布局**
+自定义布局
 
 ```swift
 extension ViewController: MNDataEmptySource {
@@ -1345,7 +1348,7 @@ extension ViewController: MNDataEmptySource {
 }
 ```
 
-**自定义样式**
+自定义样式
 
 ```swift
 extension ViewController: MNDataEmptySource {
@@ -1396,7 +1399,7 @@ extension ViewController: MNDataEmptySource {
 }
 ```
 
-**动画效果**
+动画效果
 
 ```swift
 extension ViewController: MNDataEmptySource {
@@ -1418,7 +1421,7 @@ extension ViewController: MNDataEmptySource {
 }
 ```
 
-**滚动控制**
+滚动控制
 
 ```swift
 extension ViewController: MNDataEmptySource {
@@ -1430,7 +1433,7 @@ extension ViewController: MNDataEmptySource {
 }
 ```
 
-**交互事件**
+交互事件
 
 ```swift
 extension ViewController: MNDataEmptySource {
@@ -1476,7 +1479,7 @@ extension ViewController: MNDataEmptyDelegate {
 }
 ```
 
-**手动控制显示/隐藏**
+手动控制显示/隐藏
 
 ```swift
 // 手动显示空视图
@@ -1489,7 +1492,7 @@ tableView.mn.emptyView?.dismiss()
 tableView.mn.emptyView?.showIfNeeded()
 ```
 
-**自动显示控制**
+自动显示控制
 
 ```swift
 // 启用自动显示（默认开启）
@@ -1499,30 +1502,30 @@ tableView.mn.autoDisplayEmpty = true
 tableView.mn.autoDisplayEmpty = false
 ```
 
-**协议方法说明**
+协议方法说明
 
 `MNDataEmptySource` 协议提供了丰富的配置方法，所有方法都是可选的：
 
-- **显示控制**：
+- 显示控制：
   - `dataEmptyViewShouldDisplay`: 是否显示空视图
   - `dataEmptyViewShouldScroll`: 是否允许滚动（`UIScrollView` 有效）
-- **布局配置**：
+- 布局配置：
   - `edgeInsetForDataEmptyView`: 边距
   - `offsetForDataEmptyView`: 内容偏移
   - `axisForDataEmptyView`: 布局方向（`.vertical` / `.horizontal`）
   - `spacingForDataEmptyView`: 元素间距
   - `alignmentForDataEmptyView`: 对齐方式
-- **图片配置**：
+- 图片配置：
   - `imageForDataEmptyView`: 图片
   - `imageSizeForDataEmptyView`: 图片尺寸
   - `imageModeForDataEmptyView`: 图片填充模式
   - `imageRadiusForDataEmptyView`: 图片圆角
   - `dataEmptyViewShouldTouchImage`: 图片是否可点击
-- **文字配置**：
+- 文字配置：
   - `descriptionForDataEmptyView`: 描述文字（富文本）
   - `descriptionFiniteMagnitudeForDataEmptyView`: 文字最大宽度
   - `dataEmptyViewShouldTouchDescription`: 文字是否可点击
-- **按钮配置**：
+- 按钮配置：
   - `buttonSizeForDataEmptyView`: 按钮尺寸
   - `buttonRadiusForDataEmptyView`: 按钮圆角
   - `buttonBorderWidthForDataEmptyView`: 按钮边框宽度
@@ -1530,7 +1533,7 @@ tableView.mn.autoDisplayEmpty = false
   - `buttonBackgroundColorForDataEmptyView`: 按钮背景颜色
   - `buttonBackgroundImageForDataEmptyView`: 按钮背景图片
   - `buttonAttributedTitleForDataEmptyView`: 按钮标题（富文本）
-- **其他配置**：
+- 其他配置：
   - `customViewForDataEmptyView`: 自定义视图
   - `backgroundColorForDataEmptyView`: 背景颜色
   - `userInfoForDataEmptyView`: 用户信息
@@ -1580,7 +1583,7 @@ import MNRequest
 import MNNetworking
 ```
 
-**GET 请求**
+GET 请求
 
 ```swift
 let request = HTTPDataRequest(url: "https://api.example.com/users")
@@ -1598,7 +1601,7 @@ request.start {
 }
 ```
 
-**POST 请求**
+POST 请求
 
 ```swift
 let request = HTTPDataRequest(url: "https://api.example.com/login")
@@ -1618,7 +1621,7 @@ request.start(completion: { result in
 })
 ```
 
-**带 Header 的请求**
+带 Header 的请求
 
 ```swift
 let request = HTTPDataRequest(url: "https://api.example.com/data")
@@ -1631,7 +1634,7 @@ request.start(completion: { result in
 })
 ```
 
-**请求缓存**
+请求缓存
 
 ```swift
 let request = HTTPDataRequest(url: "https://api.example.com/data")
@@ -1650,7 +1653,7 @@ request.start(completion: { result in
 })
 ```
 
-**请求重试**
+请求重试
 
 ```swift
 let request = HTTPDataRequest(url: "https://api.example.com/data")
@@ -1662,7 +1665,7 @@ request.start(completion: { result in
 })
 ```
 
-**自定义解析**
+自定义解析
 
 ```swift
 let request = HTTPDataRequest(url: "https://api.example.com/data")
@@ -1681,7 +1684,7 @@ request.start(completion: { result in
 })
 ```
 
-**文件上传**
+文件上传
 
 ```swift
 let request = HTTPUploadRequest(url: "https://api.example.com/upload")
@@ -1699,7 +1702,7 @@ request.start(body: {
 }
 ```
 
-**多文件上传（使用 HTTPUploadAssistant）**
+多文件上传（使用 HTTPUploadAssistant）
 
 ```swift
 let assistant = HTTPUploadAssistant(boundary: "Boundary-\(UUID().uuidString)")
@@ -1718,7 +1721,7 @@ request.start(body: {
 }
 ```
 
-**文件下载**
+文件下载
 
 ```swift
 let request = HTTPDownloadRequest(url: "https://example.com/file.zip")
@@ -1742,7 +1745,7 @@ request.start(location: { response, url in
 }
 ```
 
-**暂停和继续下载**
+暂停和继续下载
 
 ```swift
 let request = HTTPDownloadRequest(url: "https://example.com/file.zip")
@@ -1771,7 +1774,7 @@ request.resume { success in
 }
 ```
 
-**文件下载（使用 HTTPFileRequest）**
+文件下载（使用 HTTPFileRequest）
 
 ```swift
 let request = HTTPFileRequest(url: "https://example.com/file.zip")
@@ -1790,7 +1793,7 @@ request.start(location: {
 }
 ```
 
-**自定义回调队列**
+自定义回调队列
 
 ```swift
 let request = HTTPDataRequest(url: "https://api.example.com/data")
@@ -1801,7 +1804,7 @@ request.start(completion: { result in
 })
 ```
 
-**错误处理**
+错误处理
 
 ```swift
 request.start(completion: { result in
@@ -1821,7 +1824,7 @@ request.start(completion: { result in
 })
 ```
 
-**取消请求**
+取消请求
 
 ```swift
 let request = HTTPDataRequest(url: "https://api.example.com/data")
@@ -1833,7 +1836,7 @@ request.start(completion: { result in
 request.cancel()
 ```
 
-**忽略特定错误码**
+忽略特定错误码
 
 ```swift
 let request = HTTPDataRequest(url: "https://api.example.com/data")
@@ -1844,7 +1847,7 @@ request.start(completion: { result in
 })
 ```
 
-**接受的状态码和内容类型**
+接受的状态码和内容类型
 
 ```swift
 let request = HTTPDataRequest(url: "https://api.example.com/data")
@@ -1856,7 +1859,7 @@ request.start(completion: { result in
 })
 ```
 
-**网络缓存管理**
+网络缓存管理
 
 ```swift
 // 写入缓存
@@ -1880,7 +1883,7 @@ HTTPDatabase.default.removeAll { success in
 }
 ```
 
-**继承 HTTPRequest 自定义请求**
+继承 HTTPRequest 自定义请求
 
 ```swift
 class CustomRequest: HTTPDataRequest {
@@ -1897,7 +1900,7 @@ class CustomRequest: HTTPDataRequest {
 }
 ```
 
-**分页请求支持**
+分页请求支持
 
 ```swift
 class PagingRequest: HTTPDataRequest, HTTPPagingSupported {
@@ -1924,7 +1927,7 @@ class PagingRequest: HTTPDataRequest, HTTPPagingSupported {
 }
 ```
 
-**请求方法**
+请求方法
 
 `HTTPMethod` 枚举支持以下方法：
 - `.get`: GET 请求
@@ -1933,14 +1936,14 @@ class PagingRequest: HTTPDataRequest, HTTPPagingSupported {
 - `.delete`: DELETE 请求
 - `.head`: HEAD 请求
 
-**缓存策略**
+缓存策略
 
 `CachePolicy` 枚举支持以下策略：
 - `.never`: 不使用缓存
 - `.returnCacheElseLoad`: 优先使用缓存，失败后请求网络
 - `.returnCacheDontLoad`: 优先使用缓存，没有缓存或缓存过期则不加载
 
-**内容类型**
+内容类型
 
 `HTTPContentType` 枚举支持以下类型：
 - `.none`: 不做处理
@@ -1953,13 +1956,13 @@ class PagingRequest: HTTPDataRequest, HTTPPagingSupported {
 - `.formURLEncoded`: URL 编码数据
 - `.binary`: 二进制数据
 
-**下载选项**
+下载选项
 
 `HTTPDownloadOptions` 支持以下选项：
 - `.createIntermediateDirectories`: 自动创建中间目录
 - `.removeExistsFile`: 删除已存在的文件
 
-**错误类型**
+错误类型
 
 `HTTPError` 提供了完善的错误类型：
 - `requestSerializationFailure`: 请求序列化错误
@@ -2011,7 +2014,7 @@ import MNSwiftKit
 import MNRefresh
 ```
 
-**下拉刷新**
+下拉刷新
 
 ```swift
 class ViewController: UIViewController {
@@ -2042,7 +2045,7 @@ class ViewController: UIViewController {
 }
 ```
 
-**上拉加载更多**
+上拉加载更多
 
 ```swift
 class ViewController: UIViewController {
@@ -2073,7 +2076,7 @@ class ViewController: UIViewController {
 }
 ```
 
-**同时使用下拉刷新和上拉加载**
+同时使用下拉刷新和上拉加载
 
 ```swift
 class ViewController: UIViewController {
@@ -2114,7 +2117,7 @@ class ViewController: UIViewController {
 }
 ```
 
-**使用 Target-Action 方式**
+使用 Target-Action 方式
 
 ```swift
 class ViewController: UIViewController {
@@ -2138,7 +2141,7 @@ class ViewController: UIViewController {
 }
 ```
 
-**自定义颜色**
+自定义颜色
 
 ```swift
 let header = MNRefreshStateHeader()
@@ -2150,7 +2153,7 @@ footer.color = .systemBlue  // 设置指示器和文字颜色
 tableView.mn.footer = footer
 ```
 
-**自定义偏移和边距**
+自定义偏移和边距
 
 ```swift
 let header = MNRefreshStateHeader()
@@ -2159,7 +2162,7 @@ header.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)  //
 tableView.mn.header = header
 ```
 
-**无更多数据状态**
+无更多数据状态
 
 ```swift
 // 设置无更多数据
@@ -2173,7 +2176,7 @@ tableView.mn.isLoadMoreEnabled = false  // 禁用加载更多
 tableView.mn.isLoadMoreEnabled = true   // 启用加载更多
 ```
 
-**手动控制刷新**
+手动控制刷新
 
 ```swift
 // 手动开始刷新
@@ -2199,7 +2202,7 @@ if tableView.mn.isLoading {
 }
 ```
 
-**自定义刷新组件 - 头部**
+自定义刷新组件 - 头部
 
 ```swift
 class CustomRefreshHeader: MNRefreshHeader {
@@ -2258,7 +2261,7 @@ customHeader.beginRefreshHandler = {
 tableView.mn.header = customHeader
 ```
 
-**自定义刷新组件 - 底部**
+自定义刷新组件 - 底部
 
 ```swift
 class CustomRefreshFooter: MNRefreshFooter {
@@ -2313,7 +2316,7 @@ customFooter.beginRefreshHandler = {
 tableView.mn.footer = customFooter
 ```
 
-**刷新状态说明**
+刷新状态说明
 
 `MNRefreshComponent.State` 枚举定义了以下状态：
 - `.normal`: 普通状态，未触发刷新
@@ -2322,7 +2325,7 @@ tableView.mn.footer = customFooter
 - `.refreshing`: 正在刷新
 - `.noMoreData`: 无更多数据（仅用于底部组件）
 
-**生命周期回调**
+生命周期回调
 
 ```swift
 let header = MNRefreshStateHeader()
@@ -2335,7 +2338,7 @@ header.endRefreshingHandler = {
 tableView.mn.header = header
 ```
 
-**移除刷新组件**
+移除刷新组件
 
 ```swift
 // 移除下拉刷新
@@ -2345,7 +2348,7 @@ tableView.mn.header = nil
 tableView.mn.footer = nil
 ```
 
-**刷新组件属性**
+刷新组件属性
 
 `MNRefreshComponent` 提供以下可配置属性：
 - `color`: 组件颜色（影响组件的指示器和文字颜色）
@@ -2371,6 +2374,997 @@ tableView.mn.footer = nil
 - **默认组件**：`MNRefreshStateHeader` 和 `MNRefreshStateFooter` 提供了开箱即用的默认实现，适合大多数场景。
 - **iOS 11+ 适配**：组件已适配 iOS 11+ 的 `adjustedContentInset`，确保在各种情况下都能正常工作。
 
+### SplitController
+
+一个功能强大的分页控制器组件，支持顶部公共视图和内容页面的联动滑动，支持自定义导航项，提供丰富的自定义选项和流畅的交互体验。
+
+#### ✨ 特性
+
+- 📑 **分页展示**：支持多个子页面横向或纵向滑动切换
+- 🎨 **丰富配置**：提供丰富的配置选项，支持自定义导航项样式、标记线动画、角标等
+- 🔄 **布局方向**：支持横向和纵向两种布局方向
+- 📊 **头部视图**：支持公共头部视图，支持头部视图与内容页面联动滚动
+- 🎭 **标记线动画**：支持多种标记线动画效果（正常移动、吸附动画）
+- 🏷️ **角标支持**：支持在导航项上显示角标（数字、文字、布尔值）
+- 🔧 **动态管理**：支持动态插入、删除、替换页面
+- 🎬 **生命周期**：完善的子页面生命周期管理
+- 💪 **手势处理**：智能处理手势冲突，支持自定义手势优先级
+- 🚀 **高性能**：基于 UICollectionView 和 UIScrollView，性能优异
+
+#### 🚀 快速开始
+
+```swift
+// Cocoapods 安装：
+import MNSwiftKit
+
+// SPM 安装可独立导入：
+import MNSplitController
+```
+
+基础使用
+
+```swift
+class ViewController: UIViewController {
+    
+    var splitController: MNSplitViewController!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // 创建分页控制器
+        splitController = MNSplitViewController(frame: view.bounds, axis: .horizontal)
+        splitController.dataSource = self
+        splitController.delegate = self
+        
+        // 添加到视图
+        addChild(splitController)
+        view.addSubview(splitController.view)
+        splitController.didMove(toParent: self)
+    }
+}
+
+extension ViewController: MNSplitViewControllerDataSource {
+
+    // 页面标题
+    var preferredPageTitles: [String] {
+        return ["推荐", "关注", "热门", "最新"]
+    }
+    
+    // 初始页面索引
+    var preferredPageIndex: Int {
+        return 0
+    }
+    
+    // 获取子页面
+    func splitViewController(_ viewController: MNSplitViewController, contentForPageAt index: Int) -> MNSplitPageConvertible {
+        let pageVC = PageViewController()
+        pageVC.title = preferredPageTitles[index]
+        return pageVC
+    }
+}
+
+extension ViewController: MNSplitViewControllerDelegate {
+    // 页面切换回调
+    func splitViewController(_ splitController: MNSplitViewController, didChangePageAt index: Int) {
+        print("切换到页面：\(index)")
+    }
+}
+
+// 子页面需要遵循 MNSplitPageConvertible 协议
+class PageViewController: UIViewController, MNSplitPageConvertible {
+
+    @IBOutlet weak var tableView: UITableView!
+    
+    var preferredPageScrollView: UIScrollView {
+        return tableView
+    }
+}
+```
+
+自定义配置
+
+```swift
+// 配置导航栏样式
+splitController.options.titleColor = .gray
+splitController.options.highlightedTitleColor = .black
+splitController.options.titleFont = .systemFont(ofSize: 16, weight: .medium)
+
+// 配置标记线
+splitController.options.shadowColor = .systemBlue
+splitController.options.shadowSize = CGSize(width: 20, height: 3)
+splitController.options.shadowAnimation = .adsorb  // 吸附动画
+
+// 配置选中缩放
+splitController.options.highlightedScale = 1.2
+
+// 配置分割线
+splitController.options.separatorStyle = .all
+splitController.options.separatorColor = .lightGray
+```
+
+添加头部视图
+
+```swift
+extension ViewController: MNSplitViewControllerDataSource {
+    // 页头视图
+    var pageHeaderView: UIView? {
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 200))
+        headerView.backgroundColor = .systemBlue
+        
+        let label = UILabel()
+        label.text = "这是头部视图"
+        label.textAlignment = .center
+        label.frame = headerView.bounds
+        headerView.addSubview(label)
+        
+        return headerView
+    }
+}
+```
+
+设置角标
+
+```swift
+// 设置数字角标
+splitController.setBadge(5, for: 0)
+
+// 设置文字角标
+splitController.setBadge("New", for: 1)
+
+// 设置布尔角标（红点）
+splitController.setBadge(true, for: 2)
+
+// 删除角标
+splitController.setBadge(nil, for: 0)
+
+// 删除所有角标
+splitController.removeAllBadges()
+```
+
+动态管理页面
+
+```swift
+// 插入页面
+splitController.insertSplitters(with: ["新页面1", "新页面2"], at: 1)
+
+// 删除页面
+splitController.removeSplitter(at: 2)
+
+// 替换页面标题
+splitController.replaceSplitter(at: 0, with: "新标题")
+
+// 替换页面内容
+let newPage = NewPageViewController()
+splitController.replacePage(newPage, at: 0)
+
+// 重载页面
+splitController.reloadPage(at: 0)
+
+// 重载所有页面
+splitController.reloadSubpage()
+```
+
+切换页面
+
+```swift
+// 切换到指定页面（带动画）
+splitController.setCurrentPage(at: 2, animated: true)
+
+// 切换到指定页面（无动画）
+splitController.setCurrentPage(at: 2, animated: false)
+
+// 获取当前页面索引
+let currentIndex = splitController.currentPageIndex
+
+// 获取当前页面
+let currentPage = splitController.currentPage
+
+// 获取指定页面
+if let page = splitController.page(for: 1) {
+    // 使用页面
+}
+```
+
+纵向布局
+
+```swift
+// 创建纵向布局的分页控制器
+let splitController = MNSplitViewController(frame: view.bounds, axis: .vertical)
+splitController.dataSource = self
+splitController.delegate = self
+```
+
+自定义导航项
+
+```swift
+// 注册自定义导航项 Cell
+splitController.register(CustomSplitCell.self, forSplitterWithReuseIdentifier: "CustomCell")
+
+// 或从 Nib 注册
+let nib = UINib(nibName: "CustomSplitCell", bundle: nil)
+splitController.register(nib, forSplitterWithReuseIdentifier: "CustomCell")
+
+// 自定义 Cell 需要遵循 MNSplitCellConvertible 协议
+class CustomSplitCell: UICollectionViewCell, MNSplitCellConvertible {
+
+    func update(spliter: MNSpliter, at index: Int, axis: NSLayoutConstraint.Axis) {
+        // 更新 Cell 内容
+    }
+    
+    func updateTitleColor(_ color: UIColor?) {
+        // 更新标题颜色
+    }
+    
+    func updateTitleScale(_ scale: CGFloat) {
+        // 更新标题缩放
+    }
+    
+    // 实现其他可选方法...
+}
+```
+
+配置选项说明
+
+`MNSplitOptions` 提供了丰富的配置选项：
+
+- 基础配置：
+  - `spliterSize`: 导航项尺寸（横向：追加宽度和高度；纵向：宽度和每一项高度）
+  - `contentMode`: 内容补全方案（`.normal`、`.fit` 居中、`.fill`充满）
+  - `interSpliterSpacing`: 导航项间隔
+  - `splitInset`: 导航栏边距
+- 标记线配置：
+  - `shadowMask`: 标记线补充方案（.fit 与标题同宽、.fill 与项同宽、.constant 使用指定宽度）
+  - `shadowSize`: 标记线尺寸
+  - `shadowColor`: 标记线颜色
+  - `shadowImage`: 标记线图片
+  - `shadowOffset`: 标记线偏移
+  - `shadowRadius`: 标记线圆角
+  - `shadowAlignment`: 标记线对齐方式（`.head`、`.center`、`.tail`）
+  - `shadowAnimation`: 标记线动画类型（`.normal` 正常移动、`.adsorb` 吸附动画）
+  - `sendShadowToBack`: 是否将标记线放到背景视图
+- 标题配置：
+  - `titleColor`: 标题颜色
+  - `titleFont`: 标题字体
+  - `highlightedTitleColor`: 选中标题颜色
+  - `highlightedScale`: 选中时缩放因数
+导航项样式：
+  - `spliterBackgroundColor`: 导航项背景颜色
+  - `spliterHighlightedBackgroundColor`: 选中时背景颜色
+  - `spliterBackgroundImage`: 导航项背景图片
+  - `spliterHighlightedBackgroundImage`: 选中时背景图片
+  - `spliterBorderWidth`: 边框宽度
+  - `spliterBorderRadius`: 边框圆角
+  - `spliterBorderColor`: 边框颜色
+  - `spliterHighlightedBorderColor`: 选中时边框颜色
+- 分割线配置：
+  - `separatorStyle`: 分割线样式（`.none`、`.head`、`.tail`、`.all`）
+  - `separatorColor`: 分割线颜色
+  - `separatorInset`: 分割线约束
+  - `dividerColor`: 导航项之间分割线颜色
+  - `dividerInset`: 导航项分割线约束
+- 角标配置：
+  - `badgeFont`: 角标字体
+  - `badgeColor`: 角标背景颜色
+  - `badgeTextColor`: 角标文字颜色
+  - `badgeImage`: 角标背景图片
+  - `badgeInset`: 角标内边距
+  - `badgeOffset`: 角标偏移
+- 其他配置：
+  - `scrollPosition`: 导航滑动时选中位置（`.none`、`.head`、`.center`、`.tail`）
+  - `transitionDuration`: 转场动画时长
+  - `backgroundColor`: 背景颜色
+  - `splitColor`: 导航视图颜色
+
+### 📝 注意事项
+
+- **子页面协议**：子页面必须遵循 `MNSplitPageConvertible` 协议，并提供 `preferredPageScrollView` 属性。
+- **头部视图联动**：当子页面的 `preferredPageScrollView` 内容高度达到最小要求时，头部视图会与内容页面联动滚动。
+- **生命周期管理**：分页控制器会自动管理子页面的生命周期，子页面无需手动处理 `viewWillAppear` 等方法。
+- **页面缓存**：分页控制器会缓存已创建的页面，避免重复创建。
+- **布局方向**：支持横向（`.horizontal`）和纵向（`.vertical`）两种布局方向，创建时指定。
+- **标记线动画**：支持 `.normal`（正常移动）和 `.adsorb`（吸附动画）两种动画效果。
+- **角标类型**：角标支持 `String`、`Int`、`Bool` 三种类型，`Bool` 类型显示为红点。
+- **动态管理**：支持动态插入、删除、替换页面，操作后会自动更新导航栏和内容页面。
+- **手势冲突**：如果与其他手势冲突，可以使用 `requireFailTo(_:)` 方法设置手势优先级。
+- **自定义导航项**：可以通过注册自定义 Cell 来完全自定义导航项的外观和行为。
+- **头部视图保留高度**：通过 `reservedHeaderHeight` 属性可以设置头部视图的保留高度，超过此高度后头部视图会完全隐藏。
+- **内容尺寸要求**：子页面的滚动视图需要达到最小内容尺寸要求，才能触发头部视图联动滚动。
+
+### CollectionLayout
+
+一套 `UICollectionView` 自定义布局解决方案，提供瀑布流布局和文字标签布局。支持纵向和横向两种方向，支持多列/多行布局，支持区头区尾视图，让复杂的集合视图布局变得简单高效。
+
+#### ✨ 特性
+
+- 🌊 **瀑布流布局**：支持纵向和横向两种方向的瀑布流布局，自动计算最短列/行
+- 📐 **多列/多行**：支持自定义列数（纵向）或行数（横向），每个区可以设置不同的列数
+- 🎨 **灵活配置**：支持自定义每个 item 的尺寸、间距、边距等
+- 📊 **区头区尾**：支持区头视图和区尾视图，可自定义尺寸和边距
+- 🏷️ **标签布局**：提供文字标签布局，支持自动换行和对齐方式
+- 🔧 **代理定制**：通过代理方法可以精细控制每个区的布局参数
+- 💪 **高性能**：使用缓存机制优化布局计算，支持大量数据
+- 🚀 **易于使用**：简单的 API 设计，快速上手
+
+#### 🚀 快速开始
+
+```swift
+// Cocoapods 安装：
+import MNSwiftKit
+
+// SPM 安装可独立导入：
+import MNCollectionLayout
+```
+
+基础使用 - 纵向瀑布流
+
+```swift
+class ViewController: UIViewController {
+
+    @IBOutlet weak var collectionView: UICollectionView!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // 创建瀑布流布局
+        let layout = MNCollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.numberOfColumns = 2  // 2列
+        layout.minimumLineSpacing = 10  // 行间距
+        layout.minimumInteritemSpacing = 10  // 列间距
+        layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        layout.itemSize = CGSize(width: 100, height: 100)  // 默认 item 尺寸
+        
+        collectionView.collectionViewLayout = layout
+        collectionView.dataSource = self
+        collectionView.delegate = self
+    }
+}
+
+extension ViewController: UICollectionViewDataSource {
+
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 20
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath)
+        return cell
+    }
+}
+```
+
+横向瀑布流
+
+```swift
+let layout = MNCollectionViewFlowLayout()
+layout.scrollDirection = .horizontal
+layout.numberOfColumns = 3  // 3行（横向时表示行数）
+layout.minimumLineSpacing = 10
+layout.minimumInteritemSpacing = 10
+layout.itemSize = CGSize(width: 100, height: 100)
+
+collectionView.collectionViewLayout = layout
+```
+
+使用代理方法自定义布局
+
+```swift
+extension ViewController: MNCollectionViewLayoutDelegate {
+
+    // 自定义每个 item 的尺寸
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        // 根据数据返回不同的尺寸
+        if indexPath.item % 3 == 0 {
+            return CGSize(width: 100, height: 150)
+        } else {
+            return CGSize(width: 100, height: 100)
+        }
+    }
+    
+    // 自定义每个区的列数
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, numberOfColumnsInSection section: Int) -> Int {
+        if section == 0 {
+            return 2  // 第一区2列
+        } else {
+            return 3  // 其他区3列
+        }
+    }
+    
+    // 自定义每个区的间距
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 15.0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 10.0
+    }
+    
+    // 自定义每个区的边距
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, insetForSectionAt index: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 20, left: 15, bottom: 20, right: 15)
+    }
+}
+```
+
+添加区头区尾视图
+
+```swift
+// 设置区头区尾尺寸
+layout.headerReferenceSize = CGSize(width: 0, height: 50)
+layout.footerReferenceSize = CGSize(width: 0, height: 50)
+
+// 或通过代理方法自定义
+extension ViewController: MNCollectionViewLayoutDelegate {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: 0, height: section == 0 ? 60 : 50)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+        return CGSize(width: 0, height: 40)
+    }
+    
+    // 自定义区头区尾边距
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, insetForHeaderInSection section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, insetForFooterInSection section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+    }
+}
+
+// 注册区头区尾视图
+collectionView.register(HeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "Header")
+collectionView.register(FooterView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "Footer")
+
+// 实现数据源方法
+func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+    if kind == UICollectionView.elementKindSectionHeader {
+        let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "Header", for: indexPath)
+        return header
+    } else {
+        let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "Footer", for: indexPath)
+        return footer
+    }
+}
+```
+
+布局属性说明
+
+`MNCollectionViewLayout` 提供以下可配置属性：
+
+- `itemSize`: 默认 item 尺寸（当代理方法未实现时使用）
+- `minimumLineSpacing`: 滑动方向相邻间隔（纵向为行间距，横向为列间距）
+- `minimumInteritemSpacing`: 滑动相反方向间隔（纵向为列间距，横向为行间距）
+- `headerReferenceSize`: 区头尺寸（纵向取高度，横向取宽度）
+- `footerReferenceSize`: 区尾尺寸（纵向取高度，横向取宽度）
+- `headerInset`: 区头边距
+- `footerInset`: 区尾边距
+- `sectionInset`: 区边距
+- `numberOfColumns`: 列数（纵向）或行数（横向），默认 3
+- `preferredContentSize`: 指定内容尺寸
+
+代理方法说明
+
+`MNCollectionViewLayoutDelegate` 提供以下代理方法（所有方法都是可选的）：
+
+- `collectionView(_:layout:insetForSectionAt:)`: 定制区内容间隔
+- `collectionView(_:layout:insetForHeaderInSection:)`: 定制区头视图间隔
+- `collectionView(_:layout:insetForFooterInSection:)`: 定制区尾视图间隔
+- `collectionView(_:layout:minimumInteritemSpacingForSectionAt:)`: 定制相邻项间隔
+- `collectionView(_:layout:minimumLineSpacingForSectionAt:)`: 定制滑动方向相邻行间隔
+- `collectionView(_:layout:referenceSizeForHeaderInSection:)`: 定制区头尺寸
+- `collectionView(_:layout:referenceSizeForFooterInSection:)`: 定制区尾尺寸
+- `collectionView(_:layout:sizeForItemAt:)`: 定制每一项尺寸
+- `collectionView(_:layout:numberOfColumnsInSection:)`: 定制区列数/行数
+
+布局缓存
+
+布局对象提供了缓存机制，可以访问以下属性：
+
+- `caches`: 区内每一列/行的高/宽缓存（`[[CGFloat]]`）
+- `attributes`: 所有布局对象缓存（包括区头区尾）
+- `headerAttributes`: 区头布局对象缓存（`[Int: UICollectionViewLayoutAttributes]`）
+- `footerAttributes`: 区尾布局对象缓存（`[Int: UICollectionViewLayoutAttributes]`）
+- `sectionAttributes`: 区布局对象缓存（`[[UICollectionViewLayoutAttributes]]`）
+
+多区布局
+
+`MNCollectionViewWordLayout` 是专门用于文字标签的布局，支持自动换行和对齐方式：
+
+```swift
+extension ViewController: MNCollectionViewLayoutDelegate {
+
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 3
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return [10, 15, 20][section]
+    }
+    
+    // 不同区使用不同的列数
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, numberOfColumnsInSection section: Int) -> Int {
+        return [2, 3, 4][section]
+    }
+    
+    // 不同区使用不同的边距
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, insetForSectionAt index: Int) -> UIEdgeInsets {
+        return [
+            UIEdgeInsets(top: 20, left: 15, bottom: 20, right: 15),
+            UIEdgeInsets(top: 15, left: 10, bottom: 15, right: 10),
+            UIEdgeInsets(top: 10, left: 5, bottom: 10, right: 5)
+        ][index]
+    }
+}
+```
+
+动态更新布局
+
+```swift
+// 修改布局属性后会自动调用 invalidateLayout()
+layout.numberOfColumns = 4
+layout.minimumLineSpacing = 15
+
+// 或手动触发布局更新
+collectionView.collectionViewLayout.invalidateLayout()
+```
+
+性能优化
+
+布局对象使用缓存机制优化性能：
+
+- **区块缓存**：将布局属性分组缓存，提高查找效率
+- **列/行高度缓存**：缓存每列/行的高度，快速找到最短列/行
+- **布局属性缓存**：缓存所有布局属性，避免重复计算
+
+### 📝 注意事项
+
+- **代理设置**：如果 `delegate` 未设置，布局会自动尝试从 `collectionView.dataSource` 获取代理。
+- **item 尺寸**：如果通过代理方法返回了 item 尺寸，布局会根据尺寸比例自动计算实际显示尺寸。如果尺寸为正方形，会使用计算出的宽度作为高度。
+- **列数/行数**：`numberOfColumns` 在纵向布局时表示列数，在横向布局时表示行数。
+- **最短列/行算法**：布局使用最短列/行算法来放置新的 item，确保布局均匀。
+- **区头区尾**：区头区尾的尺寸在纵向布局时取高度，在横向布局时取宽度。
+- **布局方向**：`MNCollectionViewFlowLayout` 支持 `.vertical`（纵向）和 `.horizontal`（横向）两种方向。
+- **内容尺寸**：布局会自动计算内容尺寸，也可以通过 `preferredContentSize` 指定最小内容尺寸。
+- **布局更新**：修改布局属性后会自动调用 `invalidateLayout()`，无需手动调用。
+- **代理优先级**：代理方法的返回值优先级高于布局对象的属性值。
+- **性能考虑**：对于大量数据，布局使用缓存机制优化性能，但首次布局计算仍需要遍历所有 item。
+- **边界检查**：布局会自动处理边界情况，确保所有 item 都在可见区域内。
+- **iOS 11+ 适配**：布局已适配 iOS 11+ 的 `contentInsetAdjustmentBehavior`。
+
+### EmoticonKeyboard
+
+一个功能强大的表情键盘组件，支持多种表情类型（图片表情、Unicode 表情、自定义表情），提供完整的表情输入、显示、管理功能。支持表情包管理、收藏夹、表情预览等特性，让表情功能变得简单易用。
+
+#### ✨ 特性
+
+- 🎨 **多种表情类型**：支持图片表情、Unicode 表情、自定义表情
+- 📦 **表情包管理**：支持多个表情包，可动态添加、删除、编辑表情包
+- ⭐ **收藏夹功能**：内置收藏夹，支持收藏和删除表情
+- 🎯 **两种样式**：支持紧凑样式（纵向滑动）和分页样式（横向分页）
+- 🔍 **表情预览**：长按表情可预览，提升用户体验
+- 📝 **富文本支持**：自动将表情描述转换为富文本，支持在 UITextView 和 UILabel 中显示
+- 🔄 **自动匹配**：自动匹配字符串中的表情描述并转换为图片
+- 🎭 **表情包切换**：支持在多个表情包之间切换
+- 🗑️ **删除功能**：支持删除按钮，方便删除输入的内容
+- ⌨️ **Return 键**：支持自定义 Return 键类型和样式
+- 🔊 **音效反馈**：支持输入时的音效反馈
+- 🚀 **高性能**：使用缓存机制，优化表情加载和显示性能
+
+#### 🚀 快速开始
+
+```swift
+// Cocoapods 安装：
+import MNSwiftKit
+
+// SPM 安装可独立导入：
+import MNEmoticonKeyboard
+```
+
+基础使用 - 紧凑样式
+
+```swift
+class ViewController: UIViewController {
+
+    @IBOutlet weak var textView: UITextView!
+    
+    var emoticonKeyboard: MNEmoticonKeyboard!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // 创建表情键盘
+        let options = MNEmoticonKeyboard.Options()
+        options.packets = ["wechat", "收藏夹"]  // 表情包列表
+        
+        emoticonKeyboard = MNEmoticonKeyboard(
+            frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 300),
+            style: .compact,  // 紧凑样式
+            options: options
+        )
+        emoticonKeyboard.delegate = self
+        // 设置 plainText 会自动匹配表情
+        textView.mn.plainText = "今天很开心[微笑]"
+        
+        // 设置为输入视图
+        textView.inputView = emoticonKeyboard
+    }
+}
+
+extension ViewController: MNEmoticonKeyboardDelegate {
+    // 表情点击事件
+    func emoticonKeyboardShouldInput(emoticon: MNEmoticon) {
+        // 输入表情到 UITextView
+        textView.mn.input(emoticon: emoticon)
+    }
+    
+    // Return 键点击事件
+    func emoticonKeyboardReturnButtonTouchUpInside(_ keyboard: MNEmoticonKeyboard) {
+        // 处理 Return 键点击
+        textView.resignFirstResponder()
+    }
+    
+    // 删除按钮点击事件
+    func emoticonKeyboardDeleteButtonTouchUpInside(_ keyboard: MNEmoticonKeyboard) {
+        // ...
+    }
+}
+```
+
+分页样式
+
+```swift
+let options = MNEmoticonKeyboard.Options()
+options.packets = ["wechat", "收藏夹", "animal", "emotion"]
+
+let = emoticonKeyboard = MNEmoticonKeyboard(
+    frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 300),
+    style: .paging,  // 分页样式
+    options: options
+)
+emoticonKeyboard.delegate = self
+```
+
+自定义配置
+
+````swift
+let options = MNEmoticonKeyboard.Options()
+
+// 表情包列表
+options.packets = ["wechat", "收藏夹", "animal", "emotion", "food"]
+
+// Return 键类型
+options.returnKeyType = .send
+
+// 只有一个表情包时是否隐藏表情包栏
+options.hidesForSingle = true
+
+// 表情包栏高度
+options.packetBarHeight = 50.0
+
+// 表情包相邻间隔
+options.packetInteritemSpacing = 12.0
+
+// 表情包视图边距
+options.packetSectionInset = UIEdgeInsets(top: 6, left: 15, bottom: 6, right: 15)
+
+// 表情包选择背景颜色
+options.packetHighlightedColor = .systemBlue
+
+// 表情包栏背景颜色
+options.packetBarColor = UIColor(white: 0.96, alpha: 1.0)
+
+// Return 键宽度（仅分页样式有效）
+options.returnKeyWidth = 78.0
+
+// Return 键颜色
+options.returnKeyColor = .white
+
+// Return 键标题颜色
+options.returnKeyTitleColor = .black
+
+// 分割线颜色
+options.separatorColor = .lightGray
+
+// 背景颜色
+options.backgroundColor = UIColor(white: 0.95, alpha: 1.0)
+
+// 页码指示器配置（仅分页样式有效）
+options.pageControlHeight = 20.0
+options.pageIndicatorSize = CGSize(width: 7, height: 7)
+options.pageIndicatorColor = .gray
+options.currentPageIndicatorColor = .darkGray
+options.pageIndicatorSpacing = 11.0
+
+// 是否允许播放音效
+options.enableFeedbackWhenInputClicks = true
+
+emoticonKeyboard = MNEmoticonKeyboard(frame: frame, style: .compact, options: options)
+```
+
+在 UILabel 中显示表情
+
+```swift
+let label = UILabel()
+
+// 设置文本，自动匹配表情
+label.mn.plainText = "今天很开心[微笑][呲牙][偷笑]"
+
+// 或追加表情
+label.mn.append(emoticon.image, desc: "[开心]")
+```
+
+富文本中匹配表情
+
+```swift
+let attributedString = NSMutableAttributedString(string: "今天很开心[微笑][呲牙]")
+
+// 匹配表情并转换为图片
+attributedString.mn.matchsEmoticon(with: UIFont.systemFont(ofSize: 17))
+
+// 获取纯文本
+let plainText = attributedString.mn.plainString  // "今天很开心[微笑][呲牙]"
+```
+
+表情包管理
+
+```swift
+// 获取表情包
+MNEmoticonManager.fetchEmoticonPacket(["wechat", "收藏夹"]) { packets in
+    print("获取到 \(packets.count) 个表情包")
+}
+
+// 创建表情包
+MNEmoticonManager.shared.createEmoticonPacket(name: "我的表情包") { success in
+    if success {
+        print("创建成功")
+    }
+}
+
+// 删除表情包
+MNEmoticonManager.shared.removeEmoticonPacket(name: "我的表情包") { success in
+    if success {
+        print("删除成功")
+    }
+}
+
+// 添加表情到表情包
+let image = UIImage(named: "emoticon")!
+MNEmoticonManager.addEmoticon(image: image, desc: "[自定义表情]", to: "我的表情包") { success in
+    if success {
+        print("添加成功")
+    }
+}
+
+// 从表情包删除表情
+MNEmoticonManager.removeEmoticon(desc: "[自定义表情]", from: "我的表情包") { success in
+    if success {
+        print("删除成功")
+    }
+}
+
+// 更新表情包封面
+MNEmoticonManager.shared.updateCover(image: coverImage, to: "我的表情包") { success in
+    if success {
+        print("更新成功")
+    }
+}
+```
+
+收藏夹功能
+
+```swift
+// 收藏表情到收藏夹
+let image = UIImage(named: "emoticon")!
+MNEmoticonManager.addEmoticonToFavorites(image: image, desc: "[收藏的表情]") { success in
+    if success {
+        print("收藏成功")
+    }
+}
+
+// 从收藏夹删除表情
+MNEmoticonManager.removeEmoticonFromFavorites(desc: "[收藏的表情]") { success in
+    if success {
+        print("删除成功")
+    }
+}
+
+// 收藏夹会自动出现在表情包列表中（如果配置了 "收藏夹"）
+```
+
+获取表情图片
+
+```swift
+// 通过描述获取表情图片
+if let image = MNEmoticonManager.shared["[微笑]"] {
+    print("找到表情图片")
+}
+
+// 从指定表情包获取
+if let image = MNEmoticonManager.shared.emoticonImage(for: "[微笑]", in: "wechat") {
+    print("找到表情图片")
+}
+
+// 匹配字符串中的表情
+let attachments = MNEmoticonManager.shared.matchsEmoticon(in: "今天很开心[微笑][呲牙]")
+for attachment in attachments {
+    print("表情：\(attachment.desc), 范围：\(attachment.range)")
+}
+```
+
+切换表情包
+
+```swift
+// 切换到指定表情包
+emoticonKeyboard.setCurrentEmoticonPacket("收藏夹", animated: true)
+
+// 切换到指定索引的表情包
+emoticonKeyboard.setEmoticonPacket(at: 1, animated: true)
+```
+
+添加收藏功能
+
+```swift
+extension ViewController: MNEmoticonKeyboardDelegate {
+    // 收藏夹添加事件
+    func emoticonKeyboardShouldAddToFavorites(_ keyboard: MNEmoticonKeyboard) {
+        // 获取当前选中的表情（需要自己实现）
+        // 然后添加到收藏夹
+        MNEmoticonManager.addEmoticonToFavorites(image: currentEmoticon.image, desc: currentEmoticon.desc) { success in
+            if success {
+                print("收藏成功")
+            }
+        }
+    }
+}
+```
+
+表情类型说明
+
+`MNEmoticon.Style` 枚举定义了以下类型：
+
+- `.emoticon`: 图片表情（类似于微信表情）
+- `.unicode`: Unicode 表情（Emoji）
+- `.image`: 自定义图片表情
+
+内置表情包
+
+模块提供了以下内置表情包：
+
+- `wechat`: 微信表情包
+- `收藏夹`: 用户收藏夹（可编辑）
+- `animal`: Unicode 动物和自然表情
+- `emotion`: Unicode 笑脸和情感表情
+- `food`: Unicode 食物和饮料表情
+- `symbol`: Unicode 符号和对象表情
+- `vehicle`: Unicode 交通工具表情
+
+配置选项说明
+
+`MNEmoticonKeyboard.Options` 提供以下配置选项：
+
+- `packets`: 表情包列表（字符串数组）
+- `returnKeyType`: Return 键类型（`.default`、`.send`、`.done` 等）
+- `hidesForSingle`: 只有一个表情包时是否隐藏表情包栏（紧凑样式）或页码指示器（分页样式）
+- `packetBarHeight`: 表情包栏高度
+- `packetInteritemSpacing`: 表情包相邻间隔
+- `packetSectionInset`: 表情包视图边距
+- `packetItemInset`: 表情包图片边距
+- `packetHighlightedColor`: 表情包选择背景颜色
+- `packetBarColor`: 表情包栏背景颜色
+- `returnKeyWidth`: Return 键宽度（仅分页样式有效）
+- `returnKeyColor`: Return 键背景颜色
+- `returnKeyTitleColor`: Return 键标题颜色
+- `returnKeyTitleFont`: Return 键标题字体
+- `separatorColor`: 分割线颜色
+- `backgroundColor`: 键盘背景颜色
+- `pageControlHeight`: 页码指示器高度（仅分页样式有效）
+- `pageIndicatorSize`: 页码指示器尺寸
+- `pageIndicatorColor`: 页码指示器颜色
+- `pageIndicatorSpacing`: 页码指示器间隔
+- `currentPageIndicatorColor`: 当前页码指示器颜色
+- `pageIndicatorVerticalAlignment`: 页码指示器纵向对齐方式
+- `pageIndicatorHorizontalAlignment`: 页码指示器横向对齐方式
+- `enableFeedbackWhenInputClicks`: 是否允许播放音效
+
+代理方法说明
+
+`MNEmoticonKeyboardDelegate` 提供以下代理方法：
+
+- `emoticonKeyboardShouldInput(emoticon:)`: 表情点击事件（必需）
+- `emoticonKeyboardReturnButtonTouchUpInside(_:)`: Return 键点击事件（必需）
+- `emoticonKeyboardDeleteButtonTouchUpInside(_:)`: 删除按钮点击事件（必需）
+- `emoticonKeyboardShouldAddToFavorites(_:)`: 收藏夹添加事件（可选）
+
+通知
+
+模块提供了以下通知，可以监听表情包的变化：
+
+```swift
+// 添加表情包通知
+NotificationCenter.default.addObserver(
+    self,
+    selector: #selector(emoticonPacketAdded(_:)),
+    name: MNEmoticonPacketAddedNotification,
+    object: nil
+)
+
+// 删除表情包通知
+NotificationCenter.default.addObserver(
+    self,
+    selector: #selector(emoticonPacketRemoved(_:)),
+    name: MNEmoticonPacketRemovedNotification,
+    object: nil
+)
+
+// 表情包变化通知（添加/删除表情）
+NotificationCenter.default.addObserver(
+    self,
+    selector: #selector(emoticonPacketChanged(_:)),
+    name: MNEmoticonPacketChangedNotification,
+    object: nil
+)
+
+@objc func emoticonPacketAdded(_ notification: Notification) {
+    if let name = notification.userInfo?[MNEmoticonPacketNameUserInfoKey] as? String {
+        print("表情包已添加：\(name)")
+    }
+}
+```
+
+表情包 JSON 格式
+
+表情包使用 JSON 格式存储，结构如下：
+
+```swift
+{
+  "style": 0,
+  "name": "wechat",
+  "cover": "cover.png",
+  "emoticons": [
+    {
+      "img": "weixiao.png",
+      "desc": "[微笑]"
+    },
+    {
+      "img": "touxiao.png",
+      "desc": "[偷笑]"
+    }
+  ]
+}
+```
+- `style`: 表情类型（0: emoticon, 1: unicode, 2: image）
+- `name`: 表情包名称
+- `cover`: 封面图片文件名
+- `emoticons`: 表情数组，每个表情包含 `img`（图片文件名）和 `desc`（描述）
+
+用户表情包目录
+
+用户自定义的表情包存储在：
+
+```swift
+Caches/MNSwiftKit/emoticons/
+```
+每个表情包使用 MD5 后的名称作为文件夹名，JSON 配置文件与文件夹同名。
+
+### 📝 注意事项
+
+- **表情包加载**：表情包在键盘显示到窗口时才会加载，使用异步加载机制。
+- **表情包编辑**：只有"收藏夹"表情包可以编辑，其他内置表情包不可编辑。
+- **表情描述格式**：表情描述使用 `[描述]` 格式，例如 `[微笑]`、`[呲牙]`。
+- **富文本显示**：表情在 `UITextView` 和 `UILabel` 中显示为 `NSTextAttachment`，需要设置 `attributedText`。
+- **纯文本获取**：使用 `plainText` 属性可以获取去除表情后的纯文本，表情会被转换为描述字符串。
+- **表情匹配**：模块使用正则表达式 `\\[[0-9a-zA-Z\\u4e00-\\u9fa5]+\\]` 匹配表情描述。
+- **表情包切换**：切换表情包时会自动更新表情视图，无需手动刷新。
+- **收藏夹自动创建**：如果收藏夹不存在，模块会自动创建。
+- **通知机制**：表情包的添加、删除、变化都会发送通知，可以监听这些通知来更新 UI。
+- **线程安全**：表情包管理操作支持异步执行，回调在主线程执行。
+- **内存管理**：表情图片使用文件路径加载，不会占用过多内存。
+- **样式选择**：`.compact` 样式适合纵向滑动查看，`.paging` 样式适合横向分页查看。
+- **Return 键**：Return 键的标题会根据 `returnKeyType` 自动设置，支持中文标题。
+- **表情预览**：长按表情会显示预览视图，松开后隐藏。
+- **删除功能**：删除按钮会删除光标前的一个字符或表情，需要自己实现删除逻辑。
 
 ## 示例
 
