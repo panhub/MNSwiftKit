@@ -5,28 +5,31 @@
 [![License](https://img.shields.io/cocoapods/l/MNSwiftKit.svg?style=flat)](https://cocoapods.org/pods/MNSwiftKit)
 [![Platform](https://img.shields.io/cocoapods/p/MNSwiftKit.svg?style=flat)](https://cocoapods.org/pods/MNSwiftKit)
 
-## Example
+## 要求
 
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
+- iOS 9.0+ | Swift 5.0
+- Xcode 12
 
-## Requirements
+## 安装
 
-## Installation
+### CocoaPods (iOS 9+, Swift 5+)
 
-MNSwiftKit is available through [CocoaPods](https://cocoapods.org). To install
-it, simply add the following line to your Podfile:
+MNSwiftKit可以通过[CocoaPods](https://cocoapods.org)安装，只需添加以下行到您的Podfile:
 
 ```ruby
 pod 'MNSwiftKit'
+```
+或按需添加以下一个或多个命令行到您的Podfile:
+
+```ruby
 pod 'MNSwiftKit/Base'
-pod 'MNSwiftKit/Toast'
-pod 'MNSwiftKit/Slider'
 pod 'MNSwiftKit/Utility'
+pod 'MNSwiftKit/Slider'
+pod 'MNSwiftKit/Toast'
 pod 'MNSwiftKit/Player'
 pod 'MNSwiftKit/Layout'
 pod 'MNSwiftKit/Refresh'
 pod 'MNSwiftKit/Request'
-pod 'MNSwiftKit/Exporter'
 pod 'MNSwiftKit/Purchase'
 pod 'MNSwiftKit/Database'
 pod 'MNSwiftKit/Definition'
@@ -37,6 +40,7 @@ pod 'MNSwiftKit/AssetPicker'
 pod 'MNSwiftKit/NameSpace'
 pod 'MNSwiftKit/PageControl'
 pod 'MNSwiftKit/Components'
+pod 'MNSwiftKit/MediaExport'
 pod 'MNSwiftKit/Transitioning'
 pod 'MNSwiftKit/AssetBrowser'
 pod 'MNSwiftKit/SplitController'
@@ -44,11 +48,33 @@ pod 'MNSwiftKit/AnimatedImage'
 pod 'MNSwiftKit/CollectionLayout'
 pod 'MNSwiftKit/EmoticonKeyboard'
 ```
+### Swift软件包管理器 (iOS 9+, Swift 5+)
 
-## Author
+同时也可以通过在您的Package.swift文件中添加适当的描述使用[Swift软件包管理器](https://docs.swift.org/swiftpm/documentation/packagemanagerdocs/)来安装`MNSwiftKit`：
+
+```swift
+// swift-tools-version:5.4
+import PackageDescription
+
+let package = Package(
+    name: "您的项目名称",
+    dependencies: [
+        .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "版本号")
+    ]
+)
+```
+### 手动导入 (iOS 9+, Swift 5+)
+
+要在项目中手动使用此库，您可以将`MNSwiftKit`文件夹整个拖入项目。
+
+## 示例
+
+要运行示例项目，克隆repo，从Example目录运行`pod install`。
+
+## 作者
 
 panhub, fengpann@163.com
 
-## License
+## 许可证
 
-MNSwiftKit is available under the MIT license. See the LICENSE file for more info.
+MNSwiftKit在MIT许可下可用，更多信息请参见LICENSE文件。
