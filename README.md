@@ -21,6 +21,7 @@
     - [SplitController](#SplitController)
     - [CollectionLayout](#CollectionLayout)
     - [EmoticonKeyboard](#EmoticonKeyboard)
+    - [Purchase](#Purchase)
 - [示例](#示例)
 - [作者](#作者)
 - [许可](#许可)
@@ -3313,6 +3314,292 @@ Caches/MNSwiftKit/emoticons/
 - **Return 键**：Return 键的标题会根据 `returnKeyType` 自动设置，支持中文标题。
 - **表情预览**：长按表情会显示预览视图，松开后隐藏。
 - **删除功能**：删除按钮会删除光标前的一个字符或表情，需要自己实现删除逻辑。
+
+
+### Purchase
+
+用于处理 iOS 应用内购买（In-App Purchase）的模块。它基于 StoreKit 框架构建，提供了完整的购买流程管理、凭据校验、恢复购买等功能。模块采用单例模式，支持本地凭据缓存和自动重试机制，确保购买流程的可靠性和用户体验。
+
+#### ✨ 特性
+
+-  **购买流程**：完整的应用内购买流程管理
+-  **恢复购买**：支持恢复已购买的项目
+-  **凭据校验**：本地凭据缓存和服务器校验支持
+-  **自动重试**：失败的凭据自动重试，可配置最大重试次数
+-  **状态回调**：实时购买状态更新（加载中、支付中、校验中等）
+-  **本地存储**：使用 `SQLite` 数据库缓存未校验的凭据
+-  **错误处理**：完善的错误码和错误描述
+-  **通知机制**：支持代理回调和通知中心两种方式获取结果
+-  **事务管理**：自动管理交易事务的完成和清理
+
+#### 🚀 快速开始
+
+```swift
+// Cocoapods 安装：
+import MNSwiftKit
+
+// SPM 安装可独立导入：
+import MNPurchase
+```
+
+**设置代理（必需）**
+
+实现 MNPurchaseDelegate 协议，用于校验凭据：
+
+```swift
+class ViewController: UIViewController, MNPurchaseDelegate {
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // 设置代理
+        MNPurchaseManager.default.delegate = self
+        
+        // 开启内购监听（建议在 AppDelegate 中调用）
+        MNPurchaseManager.default.becomeTransactionObserver()
+    }
+    
+    // MARK: - MNPurchaseDelegate
+    
+    /// 校验内购凭据（必需实现）
+    func purchaseManagerShouldCheckoutReceipt(_ receipt: MNPurchaseReceipt, resultHandler: @escaping (MNPurchaseResult.Code) -> Void) {
+        // 将凭据发送到您的服务器进行校验
+        // receipt.content 是 Base64 编码的凭据数据
+        // receipt.product 是产品标识
+        // receipt.transactionIdentifier 是交易标识
+        
+        // 示例：发送到服务器校验
+        sendReceiptToServer(receipt.content) { success in
+            if success {
+                resultHandler(.succeed)  // 校验成功
+            } else {
+                resultHandler(.receiptInvalid)  // 校验失败
+            }
+        }
+    }
+    
+    /// 内购结束回调（可选）
+    func purchaseManagerDidFinishPurchasing(_ result: MNPurchaseResult) {
+        print("内购结果: \(result.msg)")
+    }
+}
+```
+
+**发起购买**
+
+```swift
+// 购买产品
+MNPurchaseManager.default.startPurchasing(
+    "com.yourapp.productid",  // 产品 ID
+    userInfo: "user123",       // 可选的用户信息
+    status: { status, description in
+        // 状态回调
+        print("状态: \(description)")
+        // status: .idle, .loading, .purchasing, .checking, .completed
+    },
+    completion: { result in
+        // 完成回调
+        if result.code == .succeed {
+            print("购买成功！")
+            if let receipt = result.receipt {
+                print("产品: \(receipt.product)")
+                print("价格: \(receipt.price)")
+            }
+        } else {
+            print("购买失败: \(result.msg)")
+        }
+    }
+)
+```
+
+**恢复购买**
+
+```swift
+MNPurchaseManager.default.startRestore(
+    status: { status, description in
+        print("恢复状态: \(description)")
+    },
+    completion: { result in
+        if result.code == .succeed {
+            print("恢复购买成功")
+        } else {
+            print("恢复失败: \(result.msg)")
+        }
+    }
+)
+```
+
+**校验本地凭据**
+
+```swift
+// 校验所有本地未校验的凭据
+MNPurchaseManager.default.startCheckout(
+    status: { status, description in
+        print("校验状态: \(description)")
+    },
+    completion: { result in
+        print("校验结果: \(result.msg)")
+    }
+)
+
+// 校验指定凭据
+let receipt = MNPurchaseReceipt(receiptData: receiptData)
+MNPurchaseManager.default.startCheckout(
+    receipt,
+    status: nil,
+    completion: { result in
+        // 处理结果
+    }
+)
+```
+
+**主要方法**
+
+```swift
+// 开启内购监听（必需，建议在 AppDelegate 中调用）
+manager.becomeTransactionObserver()
+
+// 发起购买
+manager.startPurchasing(_ productId: String, 
+                       userInfo: String?, 
+                       status: MNPurchaseStatusHandler?, 
+                       completion: @escaping MNPurchaseCompletionHandler)
+
+// 恢复购买
+manager.startRestore(status: MNPurchaseStatusHandler?, 
+                    completion: @escaping MNPurchaseCompletionHandler)
+
+// 校验本地凭据
+manager.startCheckout(status: MNPurchaseStatusHandler?, 
+                     completion: @escaping MNPurchaseCompletionHandler)
+
+// 校验指定凭据
+manager.startCheckout(_ receipt: MNPurchaseReceipt, 
+                     status: MNPurchaseStatusHandler?, 
+                     completion: @escaping MNPurchaseCompletionHandler)
+
+// 恢复购买操作（用于恢复中断的购买流程）
+manager.resumePurchasing(status: MNPurchaseStatusHandler?, 
+                        completion: @escaping MNPurchaseCompletionHandler)
+```
+
+**MNPurchaseResult**
+
+内购结果类。
+
+```swift
+public enum Code: Int {
+    case succeed = 1                    // 成功
+    case failed = 0                     // 失败
+    case unknown = -1                   // 未知错误
+    case none = -2                      // 无结果
+    case busying = -3                   // 正在处理中
+    case notAllowed = -4                // 不允许购买
+    case notAvailable = -5              // 产品不可用
+    case receiptInvalid = -6            // 凭据无效
+    case priceInvalid = -7              // 价格无效
+    case paymentInvalid = -8            // 支付无效
+    case timedOut = -9                  // 超时
+    case cloudDenied = -10              // 云服务拒绝
+    case cancelled = -999               // 已取消
+    case notConnectedToInternet = -1009  // 无网络连接
+}
+```
+
+**MNPurchaseReceipt**
+
+内购凭据模型。
+
+```swift
+var identifier: String                    // 凭据标识（时间戳）
+var product: String                       // 产品标识
+var price: Double                         // 价格
+var userInfo: String?                     // 用户信息
+var content: String                       // Base64 编码的凭据内容
+var transactionIdentifier: String?        // 交易标识
+var originalTransactionIdentifier: String? // 原始交易标识
+var transactionDate: TimeInterval        // 交易时间
+var originalTransactionDate: TimeInterval // 原始交易时间
+var failCount: Int                        // 失败次数
+var isLocal: Bool                         // 是否是本地凭据
+var isRestore: Bool                       // 是否是恢复购买
+```
+
+**MNPurchaseRequest**
+
+内购请求类。
+
+```swift
+// 请求类型
+public enum Action {
+    case purchase   // 购买
+    case restore    // 恢复购买
+    case checkout   // 校验凭据
+}
+
+// 状态
+public enum Status {
+    case idle       // 空闲
+    case loading    // 加载中
+    case purchasing // 支付中
+    case checking   // 校验中
+    case completed  // 已完成
+}
+```
+
+**通知机制**
+
+除了代理回调，模块还支持通过通知中心获取结果：
+
+```swift
+// 监听内购完成通知
+NotificationCenter.default.addObserver(
+    forName: MNPurchaseDidFinishNotification,
+    object: nil,
+    queue: .main
+) { notification in
+    if let result = notification.userInfo?[MNPurchaseResultNotificationKey] as? MNPurchaseResult {
+        print("内购结果: \(result.msg)")
+    }
+}
+```
+
+**凭据校验流程**
+
+- **购买完成**：系统返回交易凭据
+- **本地缓存**：凭据保存到 SQLite 数据库
+- **服务器校验**：调用 `purchaseManagerShouldCheckoutReceipt` 方法
+- **校验结果**：
+  - 成功：删除本地凭据，完成交易
+  - 失败：更新失败次数，如果超过最大次数则删除
+  - 网络错误：保留凭据，等待下次校验
+  
+**常见错误码**
+
+| 错误码                            | 说明             | 建议                                              |
+| :-------------------  | :---------  | :---------------------------- |
+| `.succeed`                       | 成功             | 正常处理                                        |
+| `.cancelled`                      | 用户取消      | 提示用户已取消                                |
+| `.notAllowed`                   | 不允许购买    | 检查设备是否支持内购，是否在模拟器  |
+| `.notConnectedToInternet` | 无网络          | 提示用户检查网络连接                       |
+| `.receiptInvalid`                | 凭据无效       | 检查服务器校验逻辑                          |
+| `.busying`                        | 正在处理       | 避免重复发起购买                             |
+| `.none`                           | 无结果           | 检查产品 ID 是否正确                        |
+
+#### 📝 注意事项
+
+- **必需设置代理**：`purchaseManagerShouldCheckoutReceipt` 方法必须实现，否则凭据无法校验
+- **开启监听**：在应用启动时调用 `becomeTransactionObserver()`，建议在 `AppDelegate` 中调用
+- **服务器校验**：凭据必须在您的服务器端进行校验，不能仅依赖客户端
+- **模拟器限制**：模拟器不支持应用内购买，会在回调中返回 `.notAllowed`
+- **网络环境**：购买和校验需要网络连接，无网络时会返回相应错误码
+- **凭据存储**：未校验的凭据会保存在本地 SQLite 数据库，路径为 `Documents/receipts.sqlite`
+- **重试机制**：失败的凭据会自动重试，超过 `maxCheckoutCount` 次后会删除
+- **事务管理**：模块会自动管理交易事务的完成，无需手动调用 `finishTransaction`
+
+
+
+
 
 ## 示例
 
