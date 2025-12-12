@@ -10,7 +10,7 @@
 - [要求](#要求)
 - [安装](#安装)
 - [使用](#使用)
-    - [MNToast](#MNToast)
+    - [Toast](#Toast)
     - [MediaExport](#MediaExport)
     - [AssetBrowser](#AssetBrowser)
     - [AssetPicker](#AssetPicker)
@@ -27,12 +27,12 @@
 
 ## 要求
 
-- iOS 9.0+ | Swift 5.0
-- Xcode 12
+- iOS 12.0+ | Swift 5.0
+- Xcode 10.2+
 
 ## 安装
 
-### CocoaPods (iOS 9+, Swift 5+)
+### CocoaPods (iOS 12+, Swift 5+)
 
 `MNSwiftKit` 可以通过[CocoaPods](https://cocoapods.org)安装，只需添加以下行到您的Podfile:
 
@@ -68,7 +68,7 @@ pod 'MNSwiftKit/AnimatedImage'
 pod 'MNSwiftKit/CollectionLayout'
 pod 'MNSwiftKit/EmoticonKeyboard'
 ```
-### Swift软件包管理器 (iOS 9+, Swift 5+)
+### Swift软件包管理器 (iOS 12+, Swift 5+)
 
 `MNSwiftKit` 也可以通过在您的`Package.swift`文件中添加适当的描述使用[Swift软件包管理器](https://docs.swift.org/swiftpm/documentation/packagemanagerdocs/)来安装：
 
@@ -83,7 +83,7 @@ let package = Package(
     ]
 )
 ```
-### 手动导入 (iOS 9+, Swift 5+)
+### 手动导入 (iOS 12+, Swift 5+)
 
 要在项目中手动安装 `MNSwiftKit`，您可以：
 
@@ -95,7 +95,7 @@ let package = Package(
 
 ## 使用
 
-### MNToast
+### Toast
 
 一个功能丰富、易于使用的 Swift 提示组件，适用于 iOS 应用。
 
@@ -356,6 +356,7 @@ session.exportAsynchronously { progressValue in
 ```swift
 // 从文件路径获取
 let duration = MNMediaExportSession.seconds(fileAtPath: "媒体文件路径")
+
 // 从本地 URL 获取
 let duration = MNMediaExportSession.seconds(mediaOfURL: videoURL)
 ```
@@ -365,6 +366,7 @@ let duration = MNMediaExportSession.seconds(mediaOfURL: videoURL)
 ```swift
 // 从文件路径获取
 let size = MNMediaExportSession.naturalSize(videoAtPath: "视频文件路径")
+
 // 从本地 URL 获取
 let size = MNMediaExportSession.naturalSize(videoOfURL: videoURL)
 ```
@@ -374,25 +376,28 @@ let size = MNMediaExportSession.naturalSize(videoOfURL: videoURL)
 ```swift
 // 生成第5秒处的截图，若文件是音频则忽略时间，检查文件内封面输出
 let image = MNMediaExportSession.generateImage(fileAtPath: "视频路径", at: 5.0, maximum: CGSize(width: 300, height: 300))
+
 let image = MNMediaExportSession.generateImage(mediaOfURL: videoURL, at: 5.0, maximum: CGSize(width: 300, height: 300))
 ```
 
-**视频格式**
+**格式**
 
-- `.mp4` - MPEG-4 视频（最常用）
-- `.m4v` - Apple 受保护的 MPEG-4 视频
-- `.mov` - QuickTime 电影
-- `.mobile3GPP` - 3GPP 视频
+- 视频格式
 
-**音频格式**
+  - `.mp4` - MPEG-4 视频（最常用）
+  - `.m4v` - Apple 受保护的 MPEG-4 视频
+  - `.mov` - QuickTime 电影
+  - `.mobile3GPP` - 3GPP 视频
 
-- `.m4a` - Apple 音频（最常用）
-- `.wav` - WAV 音频
-- `.caf` - Core Audio 格式
-- `.aiff` - AIFF 音频
-- `.aifc` - AIFC 音频
+- 音频格式
 
-**质量枚举**
+  - `.m4a` - Apple 音频（最常用）
+  - `.wav` - WAV 音频
+  - `.caf` - Core Audio 格式
+  - `.aiff` - AIFF 音频
+  - `.aifc` - AIFC 音频
+
+**输出质量**
 
 ```swift
 public enum Quality {
@@ -534,10 +539,8 @@ browser.delegate = self // 处理封面/内容获取与事件
 browser.present(in: view, from: startIndex, animated: true) { state in
     // willAppear / didAppear / willDisappear / didDisappear
 }
-```
-或浏览单张图：
 
-```swift
+// 单个资源浏览
 MNAssetBrowser.present(container: thumbView, in: view, using: image, animated: true)
 ```
 
@@ -1034,7 +1037,7 @@ database.delete(from: "users", where: "age < 18") { success in
 if let sum = database.selectFinite(
     from: "users",
     field: "score",
-    operation: .SUM,
+    operation: .sum,
     default: 0.0
 ) {
     print("总分：\(sum)")
@@ -1044,7 +1047,7 @@ if let sum = database.selectFinite(
 if let avg = database.selectFinite(
     from: "users",
     field: "score",
-    operation: .AVG,
+    operation: .avg,
     default: 0.0
 ) {
     print("平均分：\(avg)")
@@ -1054,7 +1057,7 @@ if let avg = database.selectFinite(
 if let max = database.selectFinite(
     from: "users",
     field: "age",
-    operation: .MAX,
+    operation: .max,
     default: 0
 ) {
     print("最大年龄：\(max)")
@@ -1064,7 +1067,7 @@ if let max = database.selectFinite(
 if let min = database.selectFinite(
     from: "users",
     field: "age",
-    operation: .MIN,
+    operation: .min,
     default: 0
 ) {
     print("最小年龄：\(min)")
@@ -2695,7 +2698,7 @@ import MNSwiftKit
 import MNCollectionLayout
 ```
 
-基础使用 - 纵向瀑布流
+纵向瀑布流
 
 ```swift
 class ViewController: UIViewController {
@@ -2749,10 +2752,10 @@ collectionView.collectionViewLayout = layout
 使用代理方法自定义布局
 
 ```swift
-extension ViewController: MNCollectionViewLayoutDelegate {
+extension ViewController: MNCollectionViewDelegateFlowLayout {
 
     // 自定义每个 item 的尺寸
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         // 根据数据返回不同的尺寸
         if indexPath.item % 3 == 0 {
             return CGSize(width: 100, height: 150)
@@ -2771,16 +2774,16 @@ extension ViewController: MNCollectionViewLayoutDelegate {
     }
     
     // 自定义每个区的间距
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 15.0
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 10.0
     }
     
     // 自定义每个区的边距
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, insetForSectionAt index: Int) -> UIEdgeInsets {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt index: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 20, left: 15, bottom: 20, right: 15)
     }
 }
@@ -2794,22 +2797,14 @@ layout.headerReferenceSize = CGSize(width: 0, height: 50)
 layout.footerReferenceSize = CGSize(width: 0, height: 50)
 
 // 或通过代理方法自定义
-extension ViewController: MNCollectionViewLayoutDelegate {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+extension ViewController: UICollectionViewLayoutDelegate {
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return CGSize(width: 0, height: section == 0 ? 60 : 50)
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
         return CGSize(width: 0, height: 40)
-    }
-    
-    // 自定义区头区尾边距
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, insetForHeaderInSection section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, insetForFooterInSection section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
     }
 }
 
@@ -2819,6 +2814,7 @@ collectionView.register(FooterView.self, forSupplementaryViewOfKind: UICollectio
 
 // 实现数据源方法
 func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+
     if kind == UICollectionView.elementKindSectionHeader {
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "Header", for: indexPath)
         return header
@@ -2829,36 +2825,26 @@ func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElem
 }
 ```
 
-布局属性说明
+**布局属性说明**
 
 `MNCollectionViewLayout` 提供以下可配置属性：
 
 - `itemSize`: 默认 item 尺寸（当代理方法未实现时使用）
-- `minimumLineSpacing`: 滑动方向相邻间隔（纵向为行间距，横向为列间距）
-- `minimumInteritemSpacing`: 滑动相反方向间隔（纵向为列间距，横向为行间距）
+- `minimumLineSpacing`: 滑动方向相邻表格间隔（纵向为行间距，横向为列间距）
+- `minimumInteritemSpacing`: 滑动相反方向相邻表格间隔（纵向为列间距，横向为行间距）
 - `headerReferenceSize`: 区头尺寸（纵向取高度，横向取宽度）
 - `footerReferenceSize`: 区尾尺寸（纵向取高度，横向取宽度）
-- `headerInset`: 区头边距
-- `footerInset`: 区尾边距
 - `sectionInset`: 区边距
 - `numberOfColumns`: 列数（纵向）或行数（横向），默认 3
-- `preferredContentSize`: 指定内容尺寸
+- `preferredContentSize`: 预设内容内容尺寸（即最小的内容尺寸）
 
-代理方法说明
+**代理方法说明**
 
-`MNCollectionViewLayoutDelegate` 提供以下代理方法（所有方法都是可选的）：
+`MNCollectionViewDelegateFlowLayout` 继承 `UICollectionViewDelegateFlowLayout` ，根据 `collectionView` 的 `dataSource` 转化。提供以下代理方法：
 
-- `collectionView(_:layout:insetForSectionAt:)`: 定制区内容间隔
-- `collectionView(_:layout:insetForHeaderInSection:)`: 定制区头视图间隔
-- `collectionView(_:layout:insetForFooterInSection:)`: 定制区尾视图间隔
-- `collectionView(_:layout:minimumInteritemSpacingForSectionAt:)`: 定制相邻项间隔
-- `collectionView(_:layout:minimumLineSpacingForSectionAt:)`: 定制滑动方向相邻行间隔
-- `collectionView(_:layout:referenceSizeForHeaderInSection:)`: 定制区头尺寸
-- `collectionView(_:layout:referenceSizeForFooterInSection:)`: 定制区尾尺寸
-- `collectionView(_:layout:sizeForItemAt:)`: 定制每一项尺寸
 - `collectionView(_:layout:numberOfColumnsInSection:)`: 定制区列数/行数
 
-布局缓存
+**布局缓存**
 
 布局对象提供了缓存机制，可以访问以下属性：
 
@@ -2868,49 +2854,11 @@ func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElem
 - `footerAttributes`: 区尾布局对象缓存（`[Int: UICollectionViewLayoutAttributes]`）
 - `sectionAttributes`: 区布局对象缓存（`[[UICollectionViewLayoutAttributes]]`）
 
-多区布局
+**文字标签布局**
 
-`MNCollectionViewWordLayout` 是专门用于文字标签的布局，支持自动换行和对齐方式：
+`MNCollectionViewWordLayout` 是专门用于文字标签的布局，支持自动换行和对齐方式。
 
-```swift
-extension ViewController: MNCollectionViewLayoutDelegate {
-
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 3
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return [10, 15, 20][section]
-    }
-    
-    // 不同区使用不同的列数
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, numberOfColumnsInSection section: Int) -> Int {
-        return [2, 3, 4][section]
-    }
-    
-    // 不同区使用不同的边距
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, insetForSectionAt index: Int) -> UIEdgeInsets {
-        return [
-            UIEdgeInsets(top: 20, left: 15, bottom: 20, right: 15),
-            UIEdgeInsets(top: 15, left: 10, bottom: 15, right: 10),
-            UIEdgeInsets(top: 10, left: 5, bottom: 10, right: 5)
-        ][index]
-    }
-}
-```
-
-动态更新布局
-
-```swift
-// 修改布局属性后会自动调用 invalidateLayout()
-layout.numberOfColumns = 4
-layout.minimumLineSpacing = 15
-
-// 或手动触发布局更新
-collectionView.collectionViewLayout.invalidateLayout()
-```
-
-性能优化
+**性能优化**
 
 布局对象使用缓存机制优化性能：
 

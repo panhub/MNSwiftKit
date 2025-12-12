@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "MNSwiftKit",
     platforms: [
-        .iOS(.v9)
+        .iOS(.v12)
     ],
     products: [
         .library(name: "MNSwiftKit", targets: ["MNSwiftKit"]),
@@ -122,6 +122,7 @@ let package = Package(
             linkerSettings: [
                 .linkedFramework("UIKit"),
                 .linkedFramework("Foundation"),
+                .linkedFramework("QuartzCore"),
                 .linkedFramework("CoreFoundation")
             ]
         ),
@@ -144,6 +145,7 @@ let package = Package(
             ],
             path: "MNSwiftKit/Request",
             linkerSettings: [
+                .linkedLibrary("sqlite3"),
                 .linkedFramework("UIKit"),
                 .linkedFramework("ImageIO"),
                 .linkedFramework("Foundation"),

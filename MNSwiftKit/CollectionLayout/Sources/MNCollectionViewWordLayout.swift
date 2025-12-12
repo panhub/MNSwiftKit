@@ -8,18 +8,21 @@
 import UIKit
 
 /// 定制文字布局对象
-public class MNCollectionViewWordLayout: MNCollectionViewLayout {
+@IBDesignable public class MNCollectionViewWordLayout: MNCollectionViewLayout {
     
     /// 标签对齐方式
     /// - left: 居左
     /// - center: 居中
     /// - right: 居右
+    @objc(MNCollectionViewLayoutAlignment)
     public enum Alignment: Int {
         case left, center, right
     }
     
     /// 对齐方式
-    public var alignment: Alignment = .left
+    @IBInspectable public var alignment: MNCollectionViewWordLayout.Alignment = .left {
+        didSet { invalidateLayout() }
+    }
     
     public override func prepare() {
         super.prepare()
@@ -41,30 +44,26 @@ public class MNCollectionViewWordLayout: MNCollectionViewLayout {
         
         // 分区约束
         for section in 0..<numberOfSections {
-            // 区边缘约束
-            let sectionInset = sectionInset(atIndex: section)
-            // 区顶部间隔
-            top += sectionInset.top
             // 区头间隔
-            let headerInset = headerInset(inSection: section)
-            let headerHeight = referenceSizeForHeader(inSection: section).height
-            top += headerInset.top
+            let headerHeight = referenceSizeForHeader(in: section).height
             if headerHeight > 0.0 {
                 let attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, with: IndexPath(item: 0, section: section))
-                attributes.frame = CGRect(x: sectionInset.left + headerInset.left, y: top, width: contentSize.width - sectionInset.left - sectionInset.right - headerInset.left - headerInset.right, height: headerHeight)
+                attributes.frame = CGRect(x: 0.0, y: top, width: contentSize.width, height: headerHeight)
                 headerAttributes[section] = attributes
                 self.attributes.append(attributes)
                 top = attributes.frame.maxY
             }
-            top += headerInset.bottom
+            // 区边缘约束
+            let sectionInset = sectionInset(at: section)
+            top += sectionInset.top
             
             let left: CGFloat = sectionInset.left
             let right: CGFloat = sectionInset.right
             let itemCount = collectionView.numberOfItems(inSection: section)
             var items: [UICollectionViewLayoutAttributes] = [UICollectionViewLayoutAttributes]()
             var itemAttributes: [UICollectionViewLayoutAttributes] = [UICollectionViewLayoutAttributes]()
-            let minimumLineSpacing: CGFloat = minimumLineSpacing(inSection: section)
-            let minimumInteritemSpacing: CGFloat = minimumInteritemSpacing(inSection: section)
+            let minimumLineSpacing: CGFloat = minimumLineSpacing(at: section)
+            let minimumInteritemSpacing: CGFloat = minimumInteritemSpacing(at: section)
             
             var x: CGFloat = left
             var y: CGFloat = top
@@ -108,21 +107,18 @@ public class MNCollectionViewWordLayout: MNCollectionViewLayout {
                 top = itemAttributes.reduce(0.0, { max($0, $1.frame.maxY) })
             }
             
-            // 区尾间隔
-            let footerInset = footerInset(inSection: section)
-            let footerHeight = referenceSizeForFooter(inSection: section).height
-            top += footerInset.top
+            // 区底部间隔
+            top += sectionInset.bottom
+            
+            // 区尾
+            let footerHeight = referenceSizeForFooter(in: section).height
             if footerHeight > 0.0 {
                 let attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, with: IndexPath(item: 0, section: section))
-                attributes.frame = CGRect(x: sectionInset.left + footerInset.left, y: top, width: contentSize.width - sectionInset.left - sectionInset.right - footerInset.left - footerInset.right, height: footerHeight)
+                attributes.frame = CGRect(x: 0.0, y: top, width: contentSize.width, height: footerHeight)
                 footerAttributes[section] = attributes
                 self.attributes.append(attributes)
                 top = attributes.frame.maxY
             }
-            top += footerInset.bottom
-            
-            // 区底部间隔
-            top += sectionInset.bottom
             
             // 标记此时高度
             caches[section][0] = top

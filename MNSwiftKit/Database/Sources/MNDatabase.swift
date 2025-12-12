@@ -102,13 +102,13 @@ public struct MNTableColumn {
     /// 运算类型
     public enum OperationType: String {
         /// 和
-        case SUM
+        case sum = "SUM"
         /// 平均值
-        case AVG
+        case avg = "AVG"
         /// 最小值
-        case MIN
+        case min = "MIN"
         /// 最大值
-        case MAX
+        case max = "MAX"
     }
     
     /// 排序方式

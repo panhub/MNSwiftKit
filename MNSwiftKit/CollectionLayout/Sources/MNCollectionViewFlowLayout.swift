@@ -7,11 +7,11 @@
 
 import UIKit
 
-/// 定制瀑布流布局对象
-public class MNCollectionViewFlowLayout: MNCollectionViewLayout {
+/// 定制CollectionView布局对象
+@IBDesignable public class MNCollectionViewFlowLayout: MNCollectionViewLayout {
     
     /// 滑动方向
-    public var scrollDirection: UICollectionView.ScrollDirection = .vertical {
+    @IBInspectable public var scrollDirection: UICollectionView.ScrollDirection = .vertical {
         didSet { invalidateLayout() }
     }
     
@@ -54,7 +54,7 @@ public class MNCollectionViewFlowLayout: MNCollectionViewLayout {
         
         // 占位
         for section in 0..<numberOfSections {
-            let columnCount = numberOfColumns(inSection: section)
+            let columnCount = numberOfColumns(in: section)
             let sectionColumnHeights: [CGFloat] = [CGFloat](repeating: 0.0, count: columnCount)
             caches.append(sectionColumnHeights)
         }
@@ -63,37 +63,35 @@ public class MNCollectionViewFlowLayout: MNCollectionViewLayout {
         
         // 区
         for section in 0..<numberOfSections {
-            // 区边缘约束
-            let sectionInset = sectionInset(atIndex: section)
-            // 区顶部间隔
-            top += sectionInset.top
-            // 区头间隔
-            let headerInset = headerInset(inSection: section)
-            let headerHeight = referenceSizeForHeader(inSection: section).height
-            top += headerInset.top
+            
+            // 区头
+            let headerHeight = referenceSizeForHeader(in: section).height
             if headerHeight > 0.0 {
                 let attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, with: IndexPath(item: 0, section: section))
-                attributes.frame = CGRect(x: sectionInset.left + headerInset.left, y: top, width: contentSize.width - sectionInset.left - sectionInset.right - headerInset.left - headerInset.right, height: headerHeight)
+                attributes.frame = CGRect(x: 0.0, y: top, width: contentSize.width, height: headerHeight)
                 headerAttributes[section] = attributes
                 self.attributes.append(attributes)
                 top = attributes.frame.maxY
             }
-            top += headerInset.bottom
+            
+            // 区边缘约束
+            let sectionInset = sectionInset(at: section)
+            top += sectionInset.top
             
             // 区内数量
-            let columnCount = numberOfColumns(inSection: section)
+            let columnCount = numberOfColumns(in: section)
             
             // 标记此时高度
             for idx in 0..<columnCount {
                 caches[section][idx] = top
             }
             
-            let minimumInteritemSpacing = minimumInteritemSpacing(inSection: section)
+            let minimumInteritemSpacing = minimumInteritemSpacing(at: section)
             let itemWidth: CGFloat = floor((contentSize.width - sectionInset.left - sectionInset.right - CGFloat(columnCount - 1)*minimumInteritemSpacing)/CGFloat(columnCount)*10.0)/10.0
             
             assert(itemWidth >= 0.0, "每一项宽度需要大于0.0才能布局")
             
-            let minimumLineSpacing = minimumLineSpacing(inSection: section)
+            let minimumLineSpacing = minimumLineSpacing(at: section)
             let itemCount = collectionView.numberOfItems(inSection: section)
             var itemAttributes:[UICollectionViewLayoutAttributes] = []
             
@@ -113,7 +111,7 @@ public class MNCollectionViewFlowLayout: MNCollectionViewLayout {
                     itemHeight = floor(itemSize.height/itemSize.width*itemWidth*10.0)/10.0
                 }
                 // 需要追加的列
-                let appendIndex = shortestColumnIndex(inSection: section)
+                let appendIndex = shortestColumnIndex(in: section)
                 // 寻找起始位置
                 var y: CGFloat = caches[section][appendIndex]
                 if y > top, itemHeight > 0.0 {
@@ -131,24 +129,21 @@ public class MNCollectionViewFlowLayout: MNCollectionViewLayout {
             sectionAttributes.append(itemAttributes)
             
             // 更新顶部标记
-            let longestColumnIndex = longestColumnIndex(inSection: section)
+            let longestColumnIndex = longestColumnIndex(in: section)
             top = caches[section][longestColumnIndex]
             
+            // 区底部约束
+            top += sectionInset.bottom
+            
             // 区尾间隔
-            let footerInset = footerInset(inSection: section)
-            let footerHeight = referenceSizeForFooter(inSection: section).height
-            top += footerInset.top
+            let footerHeight = referenceSizeForFooter(in: section).height
             if footerHeight > 0.0 {
                 let attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, with: IndexPath(item: 0, section: section))
-                attributes.frame = CGRect(x: sectionInset.left + footerInset.left, y: top, width: contentSize.width - sectionInset.left - sectionInset.right - footerInset.left - footerInset.right, height: footerHeight)
+                attributes.frame = CGRect(x: 0.0, y: top, width: contentSize.width, height: footerHeight)
                 footerAttributes[section] = attributes
                 self.attributes.append(attributes)
                 top = attributes.frame.maxY
             }
-            top += footerInset.bottom
-            
-            // 区底部间隔
-            top += sectionInset.bottom
             
             // 标记此时高度
             for idx in 0..<columnCount {
@@ -173,7 +168,7 @@ public class MNCollectionViewFlowLayout: MNCollectionViewLayout {
         
         // 占位
         for section in 0..<numberOfSections {
-            let columnCount = numberOfColumns(inSection: section)
+            let columnCount = numberOfColumns(in: section)
             let sectionColumnWidths: [CGFloat] = [CGFloat](repeating: 0.0, count: columnCount)
             caches.append(sectionColumnWidths)
         }
@@ -183,39 +178,35 @@ public class MNCollectionViewFlowLayout: MNCollectionViewLayout {
         // 区
         for section in 0..<numberOfSections {
             
-            let sectionInset = sectionInset(atIndex: section)
-            
-            // 区顶部间隔
-            right += sectionInset.left
-            
-            // 区头间隔
-            let headerInset = headerInset(inSection: section)
-            let headerWidth = referenceSizeForHeader(inSection: section).width
-            right += headerInset.left
+            // 区头宽度
+            let headerWidth = referenceSizeForHeader(in: section).width
             if headerWidth > 0.0 {
                 let attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, with: IndexPath(item: 0, section: section))
-                attributes.frame = CGRect(x: right, y: sectionInset.top + headerInset.top, width: headerWidth, height: contentSize.height - sectionInset.top - headerInset.top - sectionInset.bottom - headerInset.bottom)
+                attributes.frame = CGRect(x: right, y: 0.0, width: headerWidth, height: contentSize.height)
                 headerAttributes[section] = attributes
                 self.attributes.append(attributes)
                 right = attributes.frame.maxX
             }
-            right += headerInset.right
+            
+            // 区边缘约束
+            let sectionInset = sectionInset(at: section)
+            right += sectionInset.left
             
             // 区行数
-            let columnCount = numberOfColumns(inSection: section)
+            let columnCount = numberOfColumns(in: section)
             
             // 标记此时宽度
             for idx in 0..<columnCount {
                 caches[section][idx] = right
             }
             
-            let minimumLineSpacing: CGFloat = minimumLineSpacing(inSection: section)
+            let minimumInteritemSpacing: CGFloat = minimumInteritemSpacing(at: section)
             
-            let itemHeight: CGFloat = floor((contentSize.height - sectionInset.top - sectionInset.bottom - CGFloat(columnCount - 1)*minimumLineSpacing)/Double(columnCount)*10.0)/10.0
+            let itemHeight: CGFloat = floor((contentSize.height - sectionInset.top - sectionInset.bottom - CGFloat(columnCount - 1)*minimumInteritemSpacing)/Double(columnCount)*10.0)/10.0
             
             assert(itemHeight >= 0.0, "每一项高度需要大于0.0才能布局")
             
-            let minimumInteritemSpacing: CGFloat = minimumInteritemSpacing(inSection: section)
+            let minimumLineSpacing: CGFloat = minimumLineSpacing(at: section)
             let itemCount = collectionView.numberOfItems(inSection: section)
             var itemAttributes:[UICollectionViewLayoutAttributes] = []
             
@@ -235,13 +226,13 @@ public class MNCollectionViewFlowLayout: MNCollectionViewLayout {
                     itemWidth = floor(itemSize.width/itemSize.height*itemHeight*10.0)/10.0
                 }
                 // 需要追加的行
-                let appendIndex = shortestColumnIndex(inSection: section)
+                let appendIndex = shortestColumnIndex(in: section)
                 // 这里不添加间隔 避免第一列出错
                 var x = caches[section][appendIndex]
                 if x > right, itemWidth > 0.0 {
-                    x += minimumInteritemSpacing
+                    x += minimumLineSpacing
                 }
-                let y = sectionInset.top + (itemHeight + minimumLineSpacing)*CGFloat(appendIndex)
+                let y = sectionInset.top + (itemHeight + minimumInteritemSpacing)*CGFloat(appendIndex)
                 let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
                 attributes.frame = CGRect(x: x, y: y, width: itemWidth, height: itemHeight)
                 itemAttributes.append(attributes)
@@ -253,30 +244,28 @@ public class MNCollectionViewFlowLayout: MNCollectionViewLayout {
             sectionAttributes.append(itemAttributes)
             
             // 更新右标记
-            let longestColumnIndex = longestColumnIndex(inSection: section)
+            let longestColumnIndex = longestColumnIndex(in: section)
             right = caches[section][longestColumnIndex]
             
+            // 区底部间隔
+            right += sectionInset.right
+            
             // 区尾间隔
-            let footerInset = footerInset(inSection: section)
-            let footerWidth = referenceSizeForFooter(inSection: section).width
-            right += footerInset.right
+            let footerWidth = referenceSizeForFooter(in: section).width
             if footerWidth > 0.0 {
                 let attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, with: IndexPath(item: 0, section: section))
-                attributes.frame = CGRect(x: right, y: sectionInset.top + footerInset.top, width: footerWidth, height: contentSize.height - sectionInset.left - sectionInset.right - headerInset.left - headerInset.right)
+                attributes.frame = CGRect(x: right, y: 0.0, width: footerWidth, height: contentSize.height)
                 footerAttributes[section] = attributes
                 self.attributes.append(attributes)
                 right = attributes.frame.maxX
             }
-            right += footerInset.right
-            
-            // 区底部间隔
-            right += sectionInset.right
             
             // 标记此时高度
             for idx in 0..<columnCount {
                 caches[section][idx] = right
             }
         }
+        
         // 更新区块
         updateUnions()
     }

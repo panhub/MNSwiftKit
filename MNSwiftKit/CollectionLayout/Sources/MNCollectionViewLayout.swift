@@ -7,81 +7,21 @@
 
 import UIKit
 
-public extension UICollectionView {
+extension UICollectionView {
+    
     /// 自定义标识符
-    struct Identifier {
+    public struct Identifier {
+        /// Cell 标识符
         static let cell: String = "com.mn.collection.cell.reuseIdentifier"
+        /// 头视图标识符
         static let header: String = "com.mn.collection.section.header.reuseIdentifier"
+        /// 尾视图标识符
         static let footer: String = "com.mn.collection.section.footer.reuseIdentifier"
     }
 }
 
 /// 布局对象定制代理
-@objc public protocol MNCollectionViewLayoutDelegate: NSObjectProtocol {
-    
-    /// 定制区内容间隔
-    /// - Parameters:
-    ///   - collectionView: 视图
-    ///   - collectionViewLayout: 约束对象
-    ///   - index: 区索引
-    /// - Returns: 区四周间隔
-    @objc optional func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, insetForSectionAt index: Int) -> UIEdgeInsets
-    
-    /// 定制区头视图间隔
-    /// - Parameters:
-    ///   - collectionView: 视图
-    ///   - collectionViewLayout: 约束对象
-    ///   - section: 区索引
-    /// - Returns: 区头视图间隔
-    @objc optional func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, insetForHeaderInSection section: Int) -> UIEdgeInsets
-    
-    /// 定制区尾视图间隔
-    /// - Parameters:
-    ///   - collectionView: 视图
-    ///   - collectionViewLayout: 约束对象
-    ///   - section: 区索引
-    /// - Returns: 区尾视图间隔
-    @objc optional func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, insetForFooterInSection section: Int) -> UIEdgeInsets
-    
-    /// 定制相邻项间隔
-    /// - Parameters:
-    ///   - collectionView: 视图
-    ///   - collectionViewLayout: 约束对象
-    ///   - section: 区索引
-    /// - Returns: 相邻项间隔
-    @objc optional func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat
-    
-    /// 定制滑动方向相邻行间隔
-    /// - Parameters:
-    ///   - collectionView: 视图
-    ///   - collectionViewLayout: 约束对象
-    ///   - section: 区索引
-    /// - Returns: 相邻行间隔
-    @objc optional func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat
-    
-    /// 定制区头尺寸
-    /// - Parameters:
-    ///   - collectionView: 视图
-    ///   - collectionViewLayout: 约束对象
-    ///   - section: 区索引
-    /// - Returns: 区头尺寸
-    @objc optional func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize
-    
-    /// 定制区尾尺寸
-    /// - Parameters:
-    ///   - collectionView: 视图
-    ///   - collectionViewLayout: 约束对象
-    ///   - section: 区索引
-    /// - Returns: 区尾尺寸
-    @objc optional func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize
-    
-    /// 定制每一项尺寸
-    /// - Parameters:
-    ///   - collectionView: 视图
-    ///   - collectionViewLayout: 约束对象
-    ///   - indexPath: 索引
-    /// - Returns: 尺寸
-    @objc optional func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize
+@MainActor public protocol MNCollectionViewDelegateFlowLayout: UICollectionViewDelegateFlowLayout {
     
     /// 定制区列数/行数
     /// - Parameters:
@@ -89,66 +29,66 @@ public extension UICollectionView {
     ///   - collectionViewLayout: 约束对象
     ///   - section: 区索引
     /// - Returns: 列数/行数
-    @objc optional func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, numberOfColumnsInSection section: Int) -> Int
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: MNCollectionViewLayout, numberOfColumnsInSection section: Int) -> Int
 }
 
-public class MNCollectionViewLayout: UICollectionViewLayout {
+/// CollectionView约束对象
+@IBDesignable public class MNCollectionViewLayout: UICollectionViewLayout {
+    
     /// 尺寸
-    public var itemSize: CGSize = .zero {
+    @IBInspectable public var itemSize: CGSize = .zero {
         didSet { invalidateLayout() }
     }
-    /// 滑动方向相邻间隔
-    public var minimumLineSpacing: CGFloat = 0.0 {
+    
+    /// 滑动方向相邻两个表格的间隔
+    @IBInspectable public var minimumLineSpacing: CGFloat = 0.0 {
         didSet { invalidateLayout() }
     }
-    /// 滑动相反方向间隔
-    public var minimumInteritemSpacing: CGFloat = 0.0 {
+    
+    /// 滑动相反方向两个表格的间隔
+    @IBInspectable public var minimumInteritemSpacing: CGFloat = 0.0 {
         didSet { invalidateLayout() }
     }
+    
     /// 区头大小(竖向取高度, 纵向取宽度)
-    public var headerReferenceSize: CGSize = .zero {
+    @IBInspectable public var headerReferenceSize: CGSize = .zero {
         didSet { invalidateLayout() }
     }
+    
     /// 区尾大小(竖向取高度, 纵向取宽度)
-    public var footerReferenceSize: CGSize = .zero {
+    @IBInspectable public var footerReferenceSize: CGSize = .zero {
         didSet { invalidateLayout() }
     }
-    /// 区头间隔
-    public var headerInset: UIEdgeInsets = .zero {
-        didSet { invalidateLayout() }
-    }
-    /// 区尾间隔
-    public var footerInset: UIEdgeInsets = .zero {
-        didSet { invalidateLayout() }
-    }
+    
     /// 区间隔
-    public var sectionInset: UIEdgeInsets = .zero {
+    @IBInspectable public var sectionInset: UIEdgeInsets = .zero {
         didSet { invalidateLayout() }
     }
+    
     /// 纵向列数, 横向行数
-    public var numberOfColumns: Int = 3 {
+    @IBInspectable public var numberOfColumns: Int = 3 {
         didSet { invalidateLayout() }
     }
+    
     /// 指定内容尺寸
-    public var preferredContentSize: CGSize = .zero {
+    @IBInspectable public var preferredContentSize: CGSize = .zero {
         didSet { invalidateLayout() }
     }
-    /// 单位区块包含的数量
-    private static let AttributesUnion: Int = 20
-    /// 区内每一列/行的高/宽缓存
-    public var caches: [[CGFloat]] = []
-    /// 所有布局对象(包括区头区尾)缓存
-    public var attributes: [UICollectionViewLayoutAttributes] = []
-    /// 区头布局对象缓存
-    public var headerAttributes: [Int: UICollectionViewLayoutAttributes] = [:]
-    /// 区尾布局对象缓存
-    public var footerAttributes: [Int: UICollectionViewLayoutAttributes] = [:]
-    /// 区布局对象缓存
-    public var sectionAttributes: [[UICollectionViewLayoutAttributes]] = []
+    
+    /// 定义单位区块包含的数量
+    private let numberOfAttributesInUnion: Int = 20
     /// 周期内布局对象的范围, 便于后期计算返回
-    private var unions: [CGRect] = [CGRect]()
-    /// 数据源代理
-    public weak var delegate: MNCollectionViewLayoutDelegate?
+    private var unions: [CGRect] = []
+    /// 区内每一列/行的高/宽缓存
+    var caches: [[CGFloat]] = []
+    /// 所有布局对象(包括区头区尾)缓存
+    var attributes: [UICollectionViewLayoutAttributes] = []
+    /// 区头布局对象缓存
+    var headerAttributes: [Int: UICollectionViewLayoutAttributes] = [:]
+    /// 区尾布局对象缓存
+    var footerAttributes: [Int: UICollectionViewLayoutAttributes] = [:]
+    /// 区布局对象缓存
+    var sectionAttributes: [[UICollectionViewLayoutAttributes]] = []
     
     
     public override func prepare() {
@@ -159,9 +99,6 @@ public class MNCollectionViewLayout: UICollectionViewLayout {
         footerAttributes.removeAll()
         headerAttributes.removeAll()
         sectionAttributes.removeAll()
-        if delegate == nil {
-            delegate = collectionView?.dataSource as? MNCollectionViewLayoutDelegate
-        }
     }
     
     public override var collectionViewContentSize: CGSize {
@@ -201,14 +138,14 @@ public class MNCollectionViewLayout: UICollectionViewLayout {
         
         for i in 0..<unions.count {
             if rect.intersects(unions[i]) {
-                begin = i*MNCollectionViewLayout.AttributesUnion
+                begin = i*numberOfAttributesInUnion
                 break
             }
         }
         
         for i in (0..<unions.count).reversed() {
             if rect.intersects(unions[i]) {
-                end = min((i + 1)*MNCollectionViewLayout.AttributesUnion, attributes.count)
+                end = min((i + 1)*numberOfAttributesInUnion, attributes.count)
                 break
             }
         }
@@ -254,53 +191,82 @@ public class MNCollectionViewLayout: UICollectionViewLayout {
 
 // MARK: - 获取约束信息
 extension MNCollectionViewLayout {
-    /**列数/行数*/
-    func numberOfColumns(inSection section: Int) -> Int {
-        guard let columns = delegate?.collectionView?(collectionView!, layout: self, numberOfColumnsInSection: section) else { return max(numberOfColumns, 1) }
-        return max(columns, 1)
+    
+    /// 获取区列数、行数
+    /// - Parameter section: 区索引
+    /// - Returns: 列数、行数
+    func numberOfColumns(in section: Int) -> Int {
+        if let collectionView = collectionView, let dataSource = collectionView.dataSource as? MNCollectionViewDelegateFlowLayout {
+            let numberOfColumns = dataSource.collectionView(collectionView, layout: self, numberOfColumnsInSection: section)
+            return max(numberOfColumns, 1)
+        }
+        return max(numberOfColumns, 1)
     }
-    /**行间隔*/
-    func minimumLineSpacing(inSection section: Int) -> CGFloat {
-        guard let height = delegate?.collectionView?(collectionView!, layout: self, minimumLineSpacingForSectionAt: section) else { return minimumLineSpacing }
-        return height
+    
+    /// 滑动方向上间隔
+    /// - Parameter section: 区索引
+    /// - Returns: 间隔
+    func minimumLineSpacing(at section: Int) -> CGFloat {
+        if let collectionView = collectionView, let dataSource = collectionView.dataSource as? UICollectionViewDelegateFlowLayout, let minimumLineSpacing = dataSource.collectionView?(collectionView, layout: self, minimumLineSpacingForSectionAt: section) {
+            return minimumLineSpacing
+        }
+        return minimumLineSpacing
     }
-    /**相邻间隔*/
-    func minimumInteritemSpacing(inSection section: Int) -> CGFloat {
-        guard let height = delegate?.collectionView?(collectionView!, layout: self, minimumInteritemSpacingForSectionAt: section) else { return minimumInteritemSpacing }
-        return height
+    
+    /// 与滑动方向相反方向的相邻表格间隔
+    /// - Parameter section: 区索引
+    /// - Returns: 间隔
+    func minimumInteritemSpacing(at section: Int) -> CGFloat {
+        if let collectionView = collectionView, let dataSource = collectionView.dataSource as? UICollectionViewDelegateFlowLayout, let minimumInteritemSpacing = dataSource.collectionView?(collectionView, layout: self, minimumInteritemSpacingForSectionAt: section) {
+            return minimumInteritemSpacing
+        }
+        return minimumInteritemSpacing
     }
-    /**区间隔*/
-    func sectionInset(atIndex section: Int) -> UIEdgeInsets {
-        guard let inset = delegate?.collectionView?(collectionView!, layout: self, insetForSectionAt: section) else { return sectionInset }
-        return inset
+    
+    /// 区四周约束
+    /// - Parameter section: 区索引
+    /// - Returns: 约束
+    func sectionInset(at section: Int) -> UIEdgeInsets {
+        if let collectionView = collectionView, let dataSource = collectionView.dataSource as? UICollectionViewDelegateFlowLayout, let sectionInset = dataSource.collectionView?(collectionView, layout: self, insetForSectionAt: section) {
+            return sectionInset
+        }
+        return sectionInset
     }
-    /**每一项尺寸*/
+    
+    /// 表格尺寸
+    /// - Parameter indexPath: 表格索引
+    /// - Returns: 表格尺寸
     func itemSize(at indexPath: IndexPath) -> CGSize {
-        guard let size = delegate?.collectionView?(collectionView!, layout: self, sizeForItemAt: indexPath) else { return itemSize }
-        return size
+        if let collectionView = collectionView, let dataSource = collectionView.dataSource as? UICollectionViewDelegateFlowLayout, let itemSize = dataSource.collectionView?(collectionView, layout: self, sizeForItemAt: indexPath) {
+            return itemSize
+        }
+        return itemSize
     }
-    /**区头尺寸*/
-    func referenceSizeForHeader(inSection section: Int) -> CGSize {
-        guard let size = delegate?.collectionView?(collectionView!, layout: self, referenceSizeForHeaderInSection: section) else { return headerReferenceSize }
-        return size
+    
+    /// 区头视图尺寸
+    /// - Parameter section: 区索引
+    /// - Returns: 区头尺寸
+    func referenceSizeForHeader(in section: Int) -> CGSize {
+        if let collectionView = collectionView, let dataSource = collectionView.dataSource as? UICollectionViewDelegateFlowLayout, let headerReferenceSize = dataSource.collectionView?(collectionView, layout: self, referenceSizeForHeaderInSection: section) {
+            return headerReferenceSize
+        }
+        return headerReferenceSize
     }
-    /**区尾尺寸*/
-    func referenceSizeForFooter(inSection section: Int) -> CGSize {
-        guard let size = delegate?.collectionView?(collectionView!, layout: self, referenceSizeForFooterInSection: section) else { return footerReferenceSize }
-        return size
+    
+    /// 区尾尺寸
+    /// - Parameter section: 区索引
+    /// - Returns: 区尾尺寸
+    func referenceSizeForFooter(in section: Int) -> CGSize {
+        if let collectionView = collectionView, let dataSource = collectionView.dataSource as? UICollectionViewDelegateFlowLayout, let footerReferenceSize = dataSource.collectionView?(collectionView, layout: self, referenceSizeForFooterInSection: section) {
+            return footerReferenceSize
+        }
+        return footerReferenceSize
     }
-    /**区头间隔*/
-    func headerInset(inSection section: Int) -> UIEdgeInsets {
-        guard let inset = delegate?.collectionView?(collectionView!, layout: self, insetForHeaderInSection: section) else { return headerInset }
-        return inset
-    }
-    /**区尾间隔*/
-    func footerInset(inSection section: Int) -> UIEdgeInsets {
-        guard let inset = delegate?.collectionView?(collectionView!, layout: self, insetForFooterInSection: section) else { return footerInset }
-        return inset
-    }
-    /**寻找最短一列/行*/
-    public func shortestColumnIndex(inSection section: Int) -> Int {
+    
+    /// 寻找最短一列/行
+    /// - Parameter section: 区索引
+    /// - Returns: 最短列/行索引
+    public func shortestColumnIndex(in section: Int) -> Int {
         var index: Int = 0
         let items = caches[section]
         var height: CGFloat = CGFloat.greatestFiniteMagnitude
@@ -311,8 +277,11 @@ extension MNCollectionViewLayout {
         }
         return index
     }
-    /**寻找最长一列/行*/
-    public func longestColumnIndex(inSection section: Int) -> Int {
+    
+    /// 寻找最长一列/行
+    /// - Parameter section: 区索引
+    /// - Returns: 最长列/行索引
+    public func longestColumnIndex(in section: Int) -> Int {
         var index: Int = 0
         var height: CGFloat = 0.0
         let items = caches[section]
@@ -324,13 +293,13 @@ extension MNCollectionViewLayout {
         return index
     }
     
-    /**更新区块*/
+    /// 更新区块
     public func updateUnions() {
         // 保存区域便于查找
         var idx: Int = 0
         while idx < attributes.count {
             var rect = attributes[idx].frame
-            let endIndex = min(idx + MNCollectionViewLayout.AttributesUnion, attributes.count)
+            let endIndex = min(idx + numberOfAttributesInUnion, attributes.count)
             for i in (idx + 1)..<endIndex {
                 rect = rect.union(attributes[i].frame)
             }

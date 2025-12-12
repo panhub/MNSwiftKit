@@ -82,7 +82,7 @@ Pod::Spec.new do |s|
   
   # Layout <UI布局快速获取>
   s.subspec 'Layout' do |a|
-    a.frameworks = 'UIKit', 'Foundation', 'CoreFoundation'
+    a.frameworks = 'UIKit', 'Foundation', 'QuartzCore', 'CoreFoundation'
     a.source_files = 'MNSwiftKit/Layout/Sources/**/*.swift'
     a.dependency 'MNSwiftKit/NameSpace'
   end
@@ -96,6 +96,7 @@ Pod::Spec.new do |s|
   
   # Request <网络请求封装>
   s.subspec 'Request' do |r|
+    r.libraries = 'sqlite3'
     r.frameworks = 'UIKit', 'ImageIO', 'Foundation', 'CoreServices', 'CoreFoundation', 'UniformTypeIdentifiers'
     r.source_files = 'MNSwiftKit/Request/Sources/**/*.swift'
     r.dependency 'MNSwiftKit/Networking'
