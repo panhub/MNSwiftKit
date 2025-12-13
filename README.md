@@ -2395,7 +2395,7 @@ if slider.isDragging {
 
 ```ruby
 // Podfile 文件
-pod 'MNSwiftKit/Refresh'
+pod 'MNSwiftKit/Networking'
 ```
 
 SPM 安装：
@@ -2407,9 +2407,9 @@ dependencies: [
 ],
 targets: [
     .target(
-        name: "MNRefresh",
+        name: "MNNetworking",
         dependencies: [
-            .product(name: "MNRefresh", package: "MNSwiftKit")
+            .product(name: "MNNetworking", package: "MNSwiftKit")
         ]
     )
 ]
