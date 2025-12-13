@@ -192,7 +192,7 @@ Pod::Spec.new do |s|
   
   # NameSpace <命名空间>
   s.subspec 'NameSpace' do |n|
-    n.frameworks = 'UIKit', 'Foundation', 'CoreGraphics', 'CoreFoundation'
+    n.frameworks = 'UIKit', 'Foundation', 'QuartzCore', 'CoreFoundation'
     n.source_files = 'MNSwiftKit/NameSpace/Sources/**/*.swift'
   end
   

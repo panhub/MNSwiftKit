@@ -31,9 +31,6 @@ public let MN_TAB_BAR_HEIGHT: CGFloat = UITabBar.mn.height
 /// 标签栏总高度
 public let MN_BOTTOM_BAR_HEIGHT: CGFloat = (MN_TAB_BAR_HEIGHT + MN_BOTTOM_SAFE_HEIGHT)
 
-/// 分割线高度
-public let MN_SEPARATOR_HEIGHT: CGFloat = 0.7
-
 /// 是否是调试模式
 #if DEBUG
 public let MN_IS_DEBUG: Bool = true

@@ -7,6 +7,7 @@
 
 import UIKit
 import Foundation
+import QuartzCore
 import CoreFoundation
 import ObjectiveC.runtime
 
@@ -45,52 +46,52 @@ extension NameSpaceSupported {
 }
 
 /// 为Int添加`MNSwiftKit`命名空间
-extension Int: NameSpaceSupported {}
+extension Swift.Int: NameSpaceSupported {}
 
 /// 为UInt添加`MNSwiftKit`命名空间
-extension UInt: NameSpaceSupported {}
+extension Swift.UInt: NameSpaceSupported {}
 
 /// 为Int64添加`MNSwiftKit`命名空间
-extension Int64: NameSpaceSupported {}
+extension Swift.Int64: NameSpaceSupported {}
 
 /// 为UInt64添加`MNSwiftKit`命名空间
-extension UInt64: NameSpaceSupported {}
+extension Swift.UInt64: NameSpaceSupported {}
 
 /// 为Int64添加`MNSwiftKit`命名空间
-extension Int32: NameSpaceSupported {}
+extension Swift.Int32: NameSpaceSupported {}
 
 /// 为UInt64添加`MNSwiftKit`命名空间
-extension UInt32: NameSpaceSupported {}
+extension Swift.UInt32: NameSpaceSupported {}
 
 /// 为URL添加`MNSwiftKit`命名空间
-extension URL: NameSpaceSupported {}
+extension Foundation.URL: NameSpaceSupported {}
 
 /// 为Data添加`MNSwiftKit`命名空间
-extension Data: NameSpaceSupported {}
+extension Foundation.Data: NameSpaceSupported {}
 
 /// 为Date添加`MNSwiftKit`命名空间
-extension Date: NameSpaceSupported {}
+extension Foundation.Date: NameSpaceSupported {}
 
 /// 为Array添加`MNSwiftKit`命名空间
-extension Array: NameSpaceSupported {}
+extension Swift.Array: NameSpaceSupported {}
 
 /// 为String添加`MNSwiftKit`命名空间
-extension String: NameSpaceSupported {}
+extension Swift.String: NameSpaceSupported {}
 
 /// 为CGSize添加`MNSwiftKit`命名空间
-extension CGSize: NameSpaceSupported {}
+extension CoreFoundation.CGSize: NameSpaceSupported {}
 
 /// 为CGRect添加`MNSwiftKit`命名空间
-extension CGRect: NameSpaceSupported {}
+extension CoreFoundation.CGRect: NameSpaceSupported {}
 
 /// 为Calendar添加`MNSwiftKit`命名空间
-extension Calendar: NameSpaceSupported {}
+extension Foundation.Calendar: NameSpaceSupported {}
 
 /// 为Objective-C对象添加`MNSwiftKit`命名空间
 extension NSObject: NameSpaceSupported {}
 
 /// 为UIView.ContentMode添加`MNSwiftKit`命名空间
-extension UIView.ContentMode: NameSpaceSupported {}
+extension UIKit.UIView.ContentMode: NameSpaceSupported {}
 
 /// 为CALayerContentsGravity添加`MNSwiftKit`命名空间
-extension CALayerContentsGravity: NameSpaceSupported {}
+extension QuartzCore.CALayerContentsGravity: NameSpaceSupported {}

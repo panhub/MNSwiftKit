@@ -62,6 +62,39 @@ extension AppleLoginError {
     }
 }
 
+extension AppleLoginError: CustomNSError {
+    
+    public static var errorDomain: String {
+        
+        if #available(iOS 13.0, *) {
+            return ASAuthorizationErrorDomain
+        }
+        return "ASAuthorizationErrorDomain"
+    }
+    
+    public var errorUserInfo: [String : Any] {
+        
+        [NSLocalizedDescriptionKey:msg]
+    }
+    
+    public var errorCode: Int {
+        code
+    }
+}
+
+extension AppleLoginError: CustomDebugStringConvertible {
+    
+    public var debugDescription: String {
+        var string = msg
+        switch self {
+        case .authenticationFailure(let error):
+            string.append("\n\(error)")
+        default: break
+        }
+        return string
+    }
+}
+
 public typealias AppleLoginFailureHandler = (_ error: AppleLoginError)->Void
 public typealias AppleLoginSuccessHandler = (_ user: String, _ token: String, _ email: String)->Void
 

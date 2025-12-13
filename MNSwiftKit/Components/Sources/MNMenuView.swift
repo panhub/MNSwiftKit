@@ -29,8 +29,8 @@ public class MNMenuOptions: NSObject {
     public enum Layout {
         /// 以内容约束并追加长度
         case fit(apped: CGFloat = 0.0)
-        /// 以最大内容约束并追加长度
-        case max(apped: CGFloat = 0.0)
+        /// 以最长内容约束并追加长度
+        case longest(apped: CGFloat = 0.0)
         /// 指定长度
         case equal(_ value: CGFloat)
     }
@@ -58,7 +58,7 @@ public class MNMenuOptions: NSObject {
     /// 边框宽度
     public var borderWidth: CGFloat = 2.0
     /// 宽度描述
-    public var widthLayout: MNMenuOptions.Layout = .max(apped: 15.0)
+    public var widthLayout: MNMenuOptions.Layout = .longest(apped: 15.0)
     /// 高度描述
     public var heightLayout: MNMenuOptions.Layout = .equal(35.0)
     /// 填充颜色
@@ -153,7 +153,7 @@ public class MNMenuView: UIView {
             switch options.widthLayout {
             case .fit(apped: let value):
                 itemSize.width += value
-            case .max(apped: let value):
+            case .longest(apped: let value):
                 itemSize.width = ceil(maxWidth + value)
             case .equal(let value):
                 itemSize.width = value
@@ -162,7 +162,7 @@ public class MNMenuView: UIView {
             switch options.heightLayout {
             case .fit(apped: let value):
                 itemSize.height += value
-            case .max(apped: let value):
+            case .longest(apped: let value):
                 itemSize.height = ceil(maxHeight + value)
             case .equal(let value):
                 itemSize.height = value

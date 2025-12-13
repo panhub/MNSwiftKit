@@ -255,6 +255,7 @@ let package = Package(
             linkerSettings: [
                 .linkedFramework("UIKit"),
                 .linkedFramework("Foundation"),
+                .linkedFramework("QuartzCore"),
                 .linkedFramework("CoreFoundation")
             ]
         ),
