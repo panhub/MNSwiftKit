@@ -15,8 +15,9 @@ extension UIColor {
     /// - Parameters:
     ///   - hex: 16进制颜色值
     ///   - alpha: 透明度
-    @objc public convenience init(hex: String) {
-        var alpha: CGFloat = 1.0
+    @objc(mn_initWithHexString:alpha:)
+    public convenience init(hex: String, alpha: CGFloat = 1.0) {
+        var alpha = alpha
         var string = hex.replacingOccurrences(of: " ", with: "")
         // 存储转换后的数值
         var red: UInt64 = 0, green: UInt64 = 0, blue: UInt64 = 0
@@ -42,6 +43,19 @@ extension UIColor {
         Scanner(string: String(string[string.index(string.startIndex, offsetBy: 4)...])).scanHexInt64(&blue)
         // 实例化
         self.init(red: CGFloat(red)/255.0, green: CGFloat(green)/255.0, blue: CGFloat(blue)/255.0, alpha: alpha)
+    }
+    
+    /// 实例化颜色
+    /// - Parameters:
+    ///   - hex: 6进制颜色值
+    ///   - alpha: 透明度
+    @objc(mn_initWithHex:alpha:)
+    public convenience init(hex: Int, alpha: CGFloat = 1.0) {
+        if (0x000000 ... 0xFFFFFF) ~= hex {
+            self.init(red: CGFloat((hex & 0xFF0000) >> 16)/255.0, green: CGFloat((hex & 0x00FF00) >> 8)/255.0, blue: CGFloat((hex & 0x0000FF) >> 0)/255.0, alpha: alpha)
+        } else {
+            self.init(red: 0.0, green: 0.0, blue: 0.0, alpha: alpha)
+        }
     }
     
     /// 实例化颜色
@@ -74,14 +88,14 @@ extension MNNameSpaceWrapper where Base: UIColor {
     }
     
     /// 反色
-    public var filter: UIColor? {
+    public var reversed: UIColor? {
         var red: CGFloat = 0.0, green: CGFloat = 0.0, blue: CGFloat = 0.0, alpha: CGFloat = 0.0
         guard base.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else { return nil }
         return UIColor(red: 1.0 - red, green: 1.0 - green, blue: 1.0 - blue, alpha: alpha)
     }
     
     /// 16进制颜色值
-    public var hex: String {
+    public var hexString: String {
         let multiplier: CGFloat = 255.999999
         var red: CGFloat = 0.0, green: CGFloat = 0.0, blue: CGFloat = 0.0, alpha: CGFloat = 0.0
         guard base.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else { return "#000000" }

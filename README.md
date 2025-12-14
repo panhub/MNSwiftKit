@@ -5166,40 +5166,40 @@ database.delete(from: "users", where: "age < 18") { success in
 
 ```swift
 // 求和
-if let sum = database.selectFinite(
+if let sum = database.calculate(
     from: "users",
     field: "score",
-    operation: .sum,
+    math: .sum,
     default: 0.0
 ) {
     print("总分：\(sum)")
 }
 
 // 平均值
-if let avg = database.selectFinite(
+if let avg = database.calculate(
     from: "users",
     field: "score",
-    operation: .avg,
+    math: .avg,
     default: 0.0
 ) {
     print("平均分：\(avg)")
 }
 
 // 最大值
-if let max = database.selectFinite(
+if let max = database.calculate(
     from: "users",
     field: "age",
-    operation: .max,
+    math: .max,
     default: 0
 ) {
     print("最大年龄：\(max)")
 }
 
 // 最小值
-if let min = database.selectFinite(
+if let min = database.calculate(
     from: "users",
     field: "age",
-    operation: .min,
+    math: .min,
     default: 0
 ) {
     print("最小年龄：\(min)")

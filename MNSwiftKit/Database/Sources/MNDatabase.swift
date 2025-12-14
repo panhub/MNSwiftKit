@@ -100,7 +100,7 @@ public struct MNTableColumn {
     }
     
     /// 运算类型
-    public enum OperationType: String {
+    public enum Math: String {
         /// 和
         case sum = "SUM"
         /// 平均值
@@ -1026,84 +1026,6 @@ extension MNDatabase {
         }
     }
     
-    /// 计算极限值
-    /// - Parameters:
-    ///   - tableName: 表名
-    ///   - field: 字段名
-    ///   - condition: 限制条件
-    ///   - operator: 运算符
-    ///   - defaultValue: 若查询不到符合条件的数据, 则使用默认值
-    public func selectFinite<T>(from tableName: String, field: String, where condition: String? = nil, operation operator: MNTableColumn.OperationType, default defaultValue: T) -> T? where T: Comparable {
-        guard field.isEmpty == false else { return nil }
-        guard exists(table: tableName) else { return nil }
-        semaphore.wait()
-        defer {
-            semaphore.signal()
-        }
-        var sql: String = "SELECT \(`operator`.rawValue)(\(field)) FROM '\(tableName)'"
-        if let condition = condition, condition.isEmpty == false {
-            sql.append(" WHERE \(condition)")
-        }
-        sql.append(";")
-        guard let stmt = stmt(sql) else { return nil }
-        var value: Any?
-        let result = sqlite3_step(stmt)
-        if result == SQLITE_ROW {
-            let type = sqlite3_column_type(stmt, 0)
-            switch type {
-            case SQLITE_INTEGER:
-                value = sqlite3_column_int64(stmt, 0)
-            case SQLITE_FLOAT:
-                value = sqlite3_column_double(stmt, 0)
-            case SQLITE_TEXT, SQLITE3_TEXT:
-                if let text = sqlite3_column_text(stmt, 0) {
-                    value = String(cString: text)
-                }
-            case SQLITE_BLOB:
-                if let bytes = sqlite3_column_blob(stmt, 0) {
-                    let count = sqlite3_column_bytes(stmt, 0)
-                    value = Data(bytes: bytes, count: Int(count))
-                }
-            case SQLITE_NULL:
-                // 没有符合条件的数据会出现NULL
-                value = defaultValue
-            default:
-#if DEBUG
-                print("\n[\(#line)] sql <\(sql)> column type unknown (\(type)).")
-#endif
-            }
-        } else {
-#if DEBUG
-            print("\n[\(#line)] sql <\(sql)> failed (\(result))")
-            if let errmsg = sqlite3_errmsg(db) {
-                let msg = String(cString: errmsg)
-                print(": \(msg)")
-            }
-#endif
-        }
-        if let value = value, Swift.type(of: value) == Swift.type(of: defaultValue) {
-            return value as? T
-        }
-        return nil
-    }
-    
-    /// 计算极限值
-    /// - Parameters:
-    ///   - tableName: 表名
-    ///   - field: 表字段
-    ///   - condition: 限制条件
-    ///   - operator: 运算符
-    ///   - type: 返回类型
-    ///   - queue: 执行队列
-    ///   - completionHandler: 回调结果
-    public func selectFinite<T>(from tableName: String, field: String, where condition: String? = nil, operation operator: MNTableColumn.OperationType, default defaultValue: T, queue: DispatchQueue? = nil, completion completionHandler: ((_ result: T?)->Void)?) where T: Comparable {
-        (queue ?? self.queue).async { [weak self] in
-            guard let self = self else { return }
-            let result = self.selectFinite(from: tableName, field: field, where: condition, operation: `operator`, default: defaultValue)
-            completionHandler?(result)
-        }
-    }
-    
     /// 查询符合条件的数据模型
     /// - Parameters:
     ///   - tableName: 表名
@@ -1256,6 +1178,88 @@ extension MNDatabase {
         } while true
         sqlite3_finalize(stmt)
         return rows
+    }
+}
+
+// MARK: - 运算
+extension MNDatabase {
+    
+    /// 计算极限值
+    /// - Parameters:
+    ///   - tableName: 表名
+    ///   - field: 字段名
+    ///   - condition: 限制条件
+    ///   - math: 运算类型
+    ///   - defaultValue: 若查询不到符合条件的数据, 则使用默认值
+    public func calculate<T>(from tableName: String, field: String, where condition: String? = nil, math: MNTableColumn.Math, default defaultValue: T) -> T? where T: Comparable {
+        guard field.isEmpty == false else { return nil }
+        guard exists(table: tableName) else { return nil }
+        semaphore.wait()
+        defer {
+            semaphore.signal()
+        }
+        var sql: String = "SELECT \(math.rawValue)(\(field)) FROM '\(tableName)'"
+        if let condition = condition, condition.isEmpty == false {
+            sql.append(" WHERE \(condition)")
+        }
+        sql.append(";")
+        guard let stmt = stmt(sql) else { return nil }
+        var value: Any?
+        let result = sqlite3_step(stmt)
+        if result == SQLITE_ROW {
+            let type = sqlite3_column_type(stmt, 0)
+            switch type {
+            case SQLITE_INTEGER:
+                value = sqlite3_column_int64(stmt, 0)
+            case SQLITE_FLOAT:
+                value = sqlite3_column_double(stmt, 0)
+            case SQLITE_TEXT, SQLITE3_TEXT:
+                if let text = sqlite3_column_text(stmt, 0) {
+                    value = String(cString: text)
+                }
+            case SQLITE_BLOB:
+                if let bytes = sqlite3_column_blob(stmt, 0) {
+                    let count = sqlite3_column_bytes(stmt, 0)
+                    value = Data(bytes: bytes, count: Int(count))
+                }
+            case SQLITE_NULL:
+                // 没有符合条件的数据会出现NULL
+                value = defaultValue
+            default:
+#if DEBUG
+                print("\n[\(#line)] sql <\(sql)> column type unknown (\(type)).")
+#endif
+            }
+        } else {
+#if DEBUG
+            print("\n[\(#line)] sql <\(sql)> failed (\(result))")
+            if let errmsg = sqlite3_errmsg(db) {
+                let msg = String(cString: errmsg)
+                print(": \(msg)")
+            }
+#endif
+        }
+        if let value = value, Swift.type(of: value) == Swift.type(of: defaultValue) {
+            return value as? T
+        }
+        return nil
+    }
+    
+    /// 计算极限值
+    /// - Parameters:
+    ///   - tableName: 表名
+    ///   - field: 表字段
+    ///   - condition: 限制条件
+    ///   - math: 运算类型
+    ///   - type: 返回类型
+    ///   - queue: 执行队列
+    ///   - completionHandler: 回调结果
+    public func calculate<T>(from tableName: String, field: String, where condition: String? = nil, math: MNTableColumn.Math, default defaultValue: T, queue: DispatchQueue? = nil, completion completionHandler: ((_ result: T?)->Void)?) where T: Comparable {
+        (queue ?? self.queue).async { [weak self] in
+            guard let self = self else { return }
+            let result = self.calculate(from: tableName, field: field, where: condition, math: math, default: defaultValue)
+            completionHandler?(result)
+        }
     }
 }
 
