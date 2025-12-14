@@ -24,6 +24,7 @@ let package = Package(
         .library(name: "MNExtension", targets: ["MNExtension"]),
         .library(name: "MNEmptyView", targets: ["MNEmptyView"]),
         .library(name: "MNNetworking", targets: ["MNNetworking"]),
+        .library(name: "MNEditingView", targets: ["MNEditingView"]),
         .library(name: "MNAssetPicker", targets: ["MNAssetPicker"]),
         .library(name: "MNNameSpace", targets: ["MNNameSpace"]),
         .library(name: "MNPageControl", targets: ["MNPageControl"]),
@@ -40,7 +41,7 @@ let package = Package(
         .target(
             name: "MNSwiftKit",
             dependencies: [
-                "MNBase", "MNUtility", "MNSlider", "MNToast", "MNPlayer", "MNLayout", "MNRefresh", "MNRequest", "MNPurchase", "MNDatabase", "MNDefinition", "MNExtension", "MNEmptyView", "MNNetworking", "MNAssetPicker", "MNNameSpace", "MNPageControl", "MNComponents", "MNMediaExport", "MNTransitioning", "MNAssetBrowser", "MNSplitController", "MNAnimatedImage", "MNCollectionLayout", "MNEmoticonKeyboard"
+                "MNBase", "MNUtility", "MNSlider", "MNToast", "MNPlayer", "MNLayout", "MNRefresh", "MNRequest", "MNPurchase", "MNDatabase", "MNDefinition", "MNExtension", "MNEmptyView", "MNNetworking", "MNEditingView", "MNAssetPicker", "MNNameSpace", "MNPageControl", "MNComponents", "MNMediaExport", "MNTransitioning", "MNAssetBrowser", "MNSplitController", "MNAnimatedImage", "MNCollectionLayout", "MNEmoticonKeyboard"
             ],
             path: "MNSwiftKit/MNSwiftKit"
         ),
@@ -227,6 +228,18 @@ let package = Package(
                 .linkedFramework("CoreTelephony"),
                 .linkedFramework("CoreFoundation"),
                 .linkedFramework("SystemConfiguration")
+            ]
+        ),
+        .target(
+            name: "MNEditingView",
+            dependencies: [
+                "MNNameSpace"
+            ],
+            path: "MNSwiftKit/EditingView",
+            linkerSettings: [
+                .linkedFramework("UIKit"),
+                .linkedFramework("Foundation"),
+                .linkedFramework("CoreFoundation")
             ]
         ),
         .target(

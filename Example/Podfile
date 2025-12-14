@@ -22,6 +22,7 @@ target 'MNSwiftKit_Example' do
   #pod 'MNSwiftKit/Networking', :path => '../'
   #pod 'MNSwiftKit/AssetPicker', :path => '../'
   #pod 'MNSwiftKit/NameSpace', :path => '../'
+  #pod 'MNSwiftKit/EditingView', :path => '../'
   #pod 'MNSwiftKit/PageControl', :path => '../'
   #pod 'MNSwiftKit/Components', :path => '../'
   #pod 'MNSwiftKit/MediaExport', :path => '../'

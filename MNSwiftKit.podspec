@@ -190,6 +190,13 @@ Pod::Spec.new do |s|
     a.dependency 'MNSwiftKit/AnimatedImage'
   end
   
+  # EditingView <表格编辑视图>
+  s.subspec 'EditingView' do |e|
+    e.frameworks = 'UIKit', 'Foundation', 'CoreFoundation'
+    e.source_files = 'MNSwiftKit/EditingView/Sources/**/*.swift'
+    e.dependency 'MNSwiftKit/NameSpace'
+  end
+  
   # NameSpace <命名空间>
   s.subspec 'NameSpace' do |n|
     n.frameworks = 'UIKit', 'Foundation', 'QuartzCore', 'CoreFoundation'
@@ -274,6 +281,7 @@ Pod::Spec.new do |s|
     full.dependency 'MNSwiftKit/EmptyView'
     full.dependency 'MNSwiftKit/Networking'
     full.dependency 'MNSwiftKit/AssetPicker'
+    full.dependency 'MNSwiftKit/EditingView'
     full.dependency 'MNSwiftKit/NameSpace'
     full.dependency 'MNSwiftKit/PageControl'
     full.dependency 'MNSwiftKit/Components'

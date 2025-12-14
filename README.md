@@ -21,6 +21,7 @@
     - [Slider](#Slider)
     - [Refresh](#Refresh)
     - [EmptyView](#EmptyView)
+    - [EditingView](#EditingView)
     - [PageControl](#PageControl)
     - [Transitioning](#Transitioning)
     - [CollectionLayout](#CollectionLayout)
@@ -3409,6 +3410,295 @@ tableView.mn.autoDisplayEmpty = false
 - **滚动控制**：当空视图显示时，如果设置了 `dataEmptyViewShouldScroll` 为 `false`，会自动禁用滚动视图的滚动，隐藏时会恢复。
 - **生命周期**：空视图的显示和隐藏会触发代理方法，可以在这些方法中执行相关操作。
 - **数据源更新**：当数据源发生变化时，如果启用了 `autoDisplayEmpty`，空视图会自动更新显示状态。
+
+### EditingView
+
+滑动编辑模块，为 `UITableView` 和 `UICollectionView` 提供了类似系统原生滑动删除的功能，但功能更加丰富。支持左右双向滑动、自定义编辑按钮、二次编辑视图、自动状态管理等特性，让列表编辑变得简单易用。
+
+#### ✨ 特性
+
+- 👈👉 **双向滑动**：支持向左或向右滑动触发编辑
+- 🎨 **自定义按钮**：支持完全自定义编辑按钮视图
+- 🔄 **二次编辑**：点击按钮后可以替换为新的编辑视图
+- 🎬 **流畅动画**：提供流畅的弹簧动画效果
+- 🔄 **自动管理**：自动管理编辑状态，滚动时自动关闭
+- 📱 **双列表支持**：同时支持 `UITableView` 和 `UICollectionView`
+- 🎯 **智能手势**：智能识别横向滑动，避免与纵向滚动冲突
+- ⚙️ **灵活配置**：支持圆角、背景色、内容边距等配置
+
+#### 🚀 快速开始
+
+```ruby
+// Podfile 文件
+pod 'MNSwiftKit/EditingView'
+```
+
+SPM 安装：
+
+```swift
+// Package.swift
+dependencies: [
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "版本号")
+],
+targets: [
+    .target(
+        name: "MNEditingView",
+        dependencies: [
+            .product(name: "MNEditingView", package: "MNSwiftKit")
+        ]
+    )
+]
+```
+
+UITableView 使用
+
+```swift
+class ViewController: UIViewController, UITableViewDataSource, UITableViewEditingDelegate {
+    
+    @IBOutlet weak var tableView: UITableView!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // 配置编辑选项
+        tableView.mn.editingOptions.cornerRadius = 10.0
+        tableView.mn.editingOptions.backgroundColor = .systemBackground
+        tableView.mn.editingOptions.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 8)
+        tableView.mn.editingOptions.usingInnerInteraction = true
+        
+        tableView.dataSource = self
+    }
+    
+    // MARK: - UITableViewDataSource
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 20
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        cell.textLabel?.text = "Row \(indexPath.row)"
+        
+        // 启用编辑功能
+        cell.mn.allowsEditing = true
+        
+        return cell
+    }
+    
+    // MARK: - UITableViewEditingDelegate
+    
+    // 返回支持的编辑方向
+    func tableView(_ tableView: UITableView, editingDirectionsForRowAt indexPath: IndexPath) -> [MNEditingDirection] {
+        return [.left, .right]  // 支持左右双向
+    }
+    
+    // 返回编辑按钮视图
+    func tableView(_ tableView: UITableView, editingActionsForRowAt indexPath: IndexPath, direction: MNEditingDirection) -> [UIView] {
+        switch direction {
+        case .left:
+            // 向左滑动显示删除和更多按钮
+            let deleteButton = createButton(title: "删除", color: .systemRed, width: 80)
+            let moreButton = createButton(title: "更多", color: .systemBlue, width: 80)
+            return [deleteButton, moreButton]
+        case .right:
+            // 向右滑动显示标记按钮
+            let markButton = createButton(title: "标记", color: .systemOrange, width: 80)
+            return [markButton]
+        }
+    }
+    
+    // 点击按钮后的二次编辑视图（可选）
+    func tableView(_ tableView: UITableView, commitEditing action: UIView, forRowAt indexPath: IndexPath, direction: MNEditingDirection) -> UIView? {
+        // 如果点击的是删除按钮，返回确认视图
+        if let button = action as? UIButton, button.title(for: .normal) == "删除" {
+            let confirmButton = createButton(title: "确认删除", color: .systemRed, width: 100)
+            return confirmButton
+        }
+        return nil  // 返回 nil 表示不替换
+    }
+    
+    // 创建按钮
+    private func createButton(title: String, color: UIColor, width: CGFloat) -> UIButton {
+        let button = UIButton(type: .system)
+        button.setTitle(title, for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = color
+        button.frame = CGRect(x: 0, y: 0, width: width, height: 60)
+        button.layer.cornerRadius = 8.0
+        return button
+    }
+}
+```
+
+UICollectionView 使用
+
+```swift
+class ViewController: UIViewController, UICollectionViewDataSource, UICollectionViewEditingDelegate {
+    
+    @IBOutlet weak var collectionView: UICollectionView!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // 配置编辑选项
+        collectionView.mn.editingOptions.cornerRadius = 10.0
+        collectionView.mn.editingOptions.backgroundColor = .systemBackground
+        collectionView.mn.editingOptions.contentInset = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        
+        collectionView.dataSource = self
+    }
+    
+    // MARK: - UICollectionViewDataSource
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 20
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! CustomCell
+        cell.titleLabel.text = "Item \(indexPath.item)"
+        
+        // 启用编辑功能
+        cell.mn.allowsEditing = true
+        
+        return cell
+    }
+    
+    // MARK: - UICollectionViewEditingDelegate
+    
+    func collectionView(_ collectionView: UICollectionView, editingDirectionsForItemAt indexPath: IndexPath) -> [MNEditingDirection] {
+        return [.left]
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, editingActionsForItemAt indexPath: IndexPath, direction: MNEditingDirection) -> [UIView] {
+        let deleteButton = createButton(title: "删除", color: .systemRed, width: 80)
+        let shareButton = createButton(title: "分享", color: .systemBlue, width: 80)
+        return [deleteButton, shareButton]
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, commitEditing action: UIView, forItemAt indexPath: IndexPath, direction: MNEditingDirection) -> UIView? {
+        return nil
+    }
+    
+    private func createButton(title: String, color: UIColor, width: CGFloat) -> UIButton {
+        let button = UIButton(type: .system)
+        button.setTitle(title, for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = color
+        button.frame = CGRect(x: 0, y: 0, width: width, height: 60)
+        return button
+    }
+}
+```
+
+自定义编辑按钮视图
+
+```swift
+// 创建自定义视图作为编辑按钮
+func tableView(_ tableView: UITableView, editingActionsForRowAt indexPath: IndexPath, direction: MNEditingDirection) -> [UIView] {
+    // 方式1：使用按钮
+    let button = UIButton(type: .system)
+    button.setTitle("删除", for: .normal)
+    button.setTitleColor(.white, for: .normal)
+    button.backgroundColor = .systemRed
+    button.frame = CGRect(x: 0, y: 0, width: 80, height: 60)
+    
+    // 方式2：使用自定义视图
+    let customView = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 60))
+    customView.backgroundColor = .systemBlue
+    
+    let label = UILabel(frame: customView.bounds)
+    label.text = "自定义"
+    label.textAlignment = .center
+    label.textColor = .white
+    customView.addSubview(label)
+    
+    return [button, customView]
+}
+```
+
+编辑状态管理
+
+```swift
+// 手动结束编辑
+tableView.mn.endEditing(animated: true)
+collectionView.mn.endEditing(animated: true)
+
+// 在 Cell 中结束编辑
+cell.mn.endEditing(animated: true)
+
+// 监听编辑状态变化（在 Cell 子类中重写）
+class CustomCell: UITableViewCell {
+    
+    override func willBeginUpdateEditing(_ editing: Bool, animated: Bool) {
+        super.willBeginUpdateEditing(editing, animated: animated)
+        // 编辑状态即将改变
+    }
+    
+    override func didEndUpdateEditing(_ editing: Bool, animated: Bool) {
+        super.didEndUpdateEditing(editing, animated: animated)
+        // 编辑状态改变完成
+    }
+}
+```
+
+配置选项
+
+```swift
+let options = tableView.mn.editingOptions
+
+// 圆角
+options.cornerRadius = 10.0
+
+// 背景颜色
+options.backgroundColor = .systemBackground
+
+// 内容边距
+// left: direction = .right 时有效
+// right: direction = .left 时有效
+options.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 8)
+
+// 是否使用内部按钮响应事件
+// true: 编辑视图内部处理点击事件（推荐）
+// false: 按钮视图自己处理点击事件
+options.usingInnerInteraction = true
+```
+
+编辑方向说明
+
+```swift
+public enum MNEditingDirection: Int {
+    case left   // 向左滑动触发编辑（按钮在右侧）
+    case right  // 向右滑动触发编辑（按钮在左侧）
+}
+
+// 示例：只支持向左滑动
+func tableView(_ tableView: UITableView, editingDirectionsForRowAt indexPath: IndexPath) -> [MNEditingDirection] {
+    return [.left]
+}
+
+// 示例：只支持向右滑动
+func tableView(_ tableView: UITableView, editingDirectionsForRowAt indexPath: IndexPath) -> [MNEditingDirection] {
+    return [.right]
+}
+
+// 示例：支持双向滑动
+func tableView(_ tableView: UITableView, editingDirectionsForRowAt indexPath: IndexPath) -> [MNEditingDirection] {
+    return [.left, .right]
+}
+```
+
+#### 📝 注意事项
+
+- **数据源协议**：`UITableViewEditingDelegate` 和 `UICollectionViewEditingDelegate` 需要由 `dataSource` 实现，不是 `delegate`。
+- **编辑方向**：根据滑动方向自动判断，需要在代理方法中返回支持的方向数组。
+- **按钮宽度**：编辑按钮的宽度由视图的 `frame.width` 决定，确保设置正确的宽度。
+- **自动关闭**：当列表滚动或内容尺寸改变时，会自动关闭编辑状态。
+- **手势冲突**：模块会自动处理横向滑动和纵向滚动的冲突，只响应横向滑动。
+- **二次编辑**：点击按钮后可以返回新的视图替换原按钮，实现二次确认等功能。
+- **内存管理**：编辑视图使用关联对象存储，无需手动管理内存。
+- **动画效果**：使用弹簧动画，提供流畅的交互体验。
+- **阻尼效果**：当拖拽超过最优距离时，会自动添加阻尼效果，减缓拖拽。
 
 ### PageControl
 
