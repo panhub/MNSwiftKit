@@ -9,7 +9,7 @@
 import Foundation
 import CoreFoundation
 
-extension NameSpaceWrapper where Base == CGSize {
+extension MNNameSpaceWrapper where Base == CGSize {
     
     public var isEmpty: Bool {
         return (base.width.isNaN || base.height.isNaN || base.width <= 0.0 || base.height <= 0.0)

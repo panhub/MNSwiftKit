@@ -26,7 +26,7 @@ extension UIView {
     }
 }
 
-extension NameSpaceWrapper where Base: UIView {
+extension MNNameSpaceWrapper where Base: UIView {
     
     /// 设置触发区域
     @MainActor public var touchInset: UIEdgeInsets {

@@ -9,7 +9,7 @@ import Foundation
 import QuartzCore
 import CoreFoundation
 
-extension NameSpaceWrapper where Base: CALayer {
+extension MNNameSpaceWrapper where Base: CALayer {
     
     /// 原点
     public var origin: CGPoint {

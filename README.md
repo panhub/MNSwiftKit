@@ -71,6 +71,7 @@ pod 'MNSwiftKit/EmptyView'
 pod 'MNSwiftKit/Networking'
 pod 'MNSwiftKit/AssetPicker'
 pod 'MNSwiftKit/NameSpace'
+pod 'MNSwiftKit/EditingView'
 pod 'MNSwiftKit/PageControl'
 pod 'MNSwiftKit/Components'
 pod 'MNSwiftKit/MediaExport'
@@ -116,7 +117,7 @@ let package = Package(
 
 - 🎯 **统一命名空间**：为所有类型提供 `.mn` 命名空间入口
 - 🔧 **类型支持**：支持基础类型、UIKit 类型、Foundation 类型等多种类型
-- 🚀 **易于扩展**：其他模块可以通过扩展 `NameSpaceWrapper` 来添加功能
+- 🚀 **易于扩展**：其他模块可以通过扩展 `MNNameSpaceWrapper` 来添加功能
 - 💪 **避免冲突**：通过命名空间避免与系统方法或其他库的方法名冲突
 - 🎨 **代码清晰**：使用命名空间让代码意图更加明确
 
@@ -148,15 +149,15 @@ targets: [
 
 **基础使用**
 
-`NameSpace` 模块为各种类型提供了 `.mn` 命名空间入口，其他模块通过扩展 `NameSpaceWrapper` 来添加功能：
+`NameSpace` 模块为各种类型提供了 `.mn` 命名空间入口，其他模块通过扩展 `MNNameSpaceWrapper` 来添加功能：
 
 **自定义扩展**
 
-其他模块可以通过扩展 NameSpaceWrapper 来为类型添加功能：
+其他模块可以通过扩展 MNNameSpaceWrapper 来为类型添加功能：
 
 ```swift
 // 为 UIView 添加自定义功能
-extension NameSpaceWrapper where Base: UIView {
+extension MNNameSpaceWrapper where Base: UIView {
     
     /// 自定义方法
     public func customMethod() {
@@ -180,7 +181,7 @@ let value = view.mn.customProperty
 
 ```swift
 // 为 String 类型添加扩展
-extension NameSpaceWrapper where Base == String {
+extension MNNameSpaceWrapper where Base == String {
     
     /// 字符串长度（字符数）
     public var characterCount: Int {
@@ -221,7 +222,7 @@ view.frame.origin.x = 10.0  // 系统方法
 
 - **命名空间入口**：所有支持的类型都可以通过 `.mn` 访问扩展功能。
 - **模块依赖**：`NameSpace` 模块是基础模块，其他模块依赖它来提供扩展功能。
-- **扩展方式**：其他模块通过 `extension NameSpaceWrapper where Base: Type` 来添加功能。
+- **扩展方式**：其他模块通过 `extension MNNameSpaceWrapper where Base: Type` 来添加功能。
 - **类型安全**：命名空间扩展使用泛型约束，保证类型安全。
 - **性能**：命名空间包装器是轻量级的，不会影响性能。
 - **兼容性**：命名空间机制不会影响原有系统 API 的使用。

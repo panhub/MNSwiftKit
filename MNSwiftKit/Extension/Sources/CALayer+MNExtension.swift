@@ -9,7 +9,7 @@ import UIKit
 import Foundation
 import QuartzCore
 
-extension NameSpaceWrapper where Base: CALayer {
+extension MNNameSpaceWrapper where Base: CALayer {
     
     /// 背景图片
     public var contents: UIImage? {
@@ -85,7 +85,7 @@ extension CALayer {
     }
 }
 
-extension NameSpaceWrapper where Base: CALayer {
+extension MNNameSpaceWrapper where Base: CALayer {
     
     /// 摆动
     /// - Parameters:
@@ -129,7 +129,7 @@ extension NameSpaceWrapper where Base: CALayer {
     }
 }
 
-extension NameSpaceWrapper where Base == CALayerContentsGravity {
+extension MNNameSpaceWrapper where Base == CALayerContentsGravity {
     
     /// CALayerContentsGravity => UIView.ContentMode
     public var contentMode: UIView.ContentMode {

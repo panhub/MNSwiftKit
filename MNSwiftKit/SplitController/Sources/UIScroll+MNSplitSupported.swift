@@ -36,7 +36,7 @@ extension UIScrollView {
 }
 
 
-extension NameSpaceWrapper where Base: UIScrollView {
+extension MNNameSpaceWrapper where Base: UIScrollView {
     
     /// 是否展示了页面
     public var isAppear: Bool { transitionState == .didAppear }

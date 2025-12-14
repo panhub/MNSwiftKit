@@ -8,7 +8,7 @@
 import Foundation
 import CommonCrypto
 
-extension NameSpaceWrapper where Base == String {
+extension MNNameSpaceWrapper where Base == String {
     
     /// md5加密(小写)
     public var md5: String {

@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension NameSpaceWrapper where Base: BinaryInteger {
+extension MNNameSpaceWrapper where Base: BinaryInteger {
     
     /// 文件存储形式字符串
     public var fileSizeString: String {

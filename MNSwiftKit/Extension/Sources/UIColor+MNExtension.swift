@@ -63,7 +63,7 @@ extension UIColor {
     }
 }
 
-extension NameSpaceWrapper where Base: UIColor {
+extension MNNameSpaceWrapper where Base: UIColor {
     
     /// 随机颜色
     public class var random: UIColor {

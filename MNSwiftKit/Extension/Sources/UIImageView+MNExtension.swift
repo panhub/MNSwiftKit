@@ -8,7 +8,7 @@
 import UIKit
 import Foundation
 
-extension NameSpaceWrapper where Base: UIImageView {
+extension MNNameSpaceWrapper where Base: UIImageView {
     
     /// 以自身宽度约束尺寸
     public func sizeFitToWidth() {

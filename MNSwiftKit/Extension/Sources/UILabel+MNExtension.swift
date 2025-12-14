@@ -8,7 +8,7 @@
 import UIKit
 import Foundation
 
-extension NameSpaceWrapper where Base: UILabel {
+extension MNNameSpaceWrapper where Base: UILabel {
     
     /// 以宽度约束尺寸
     public func sizeFitToWidth() {

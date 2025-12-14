@@ -12,7 +12,7 @@ import CoreFoundation
 /// 内部保留导航栏高度
 fileprivate var MNNavigationBarHeight: CGFloat?
 
-extension NameSpaceWrapper where Base: UINavigationBar {
+extension MNNameSpaceWrapper where Base: UINavigationBar {
     
     /// 导航栏高度
     public class var height: CGFloat {

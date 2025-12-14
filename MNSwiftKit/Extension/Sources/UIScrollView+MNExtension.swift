@@ -9,7 +9,7 @@ import UIKit
 import Foundation
 
 // MARK: - 滑动至边缘
-extension NameSpaceWrapper where Base: UIScrollView {
+extension MNNameSpaceWrapper where Base: UIScrollView {
     
     /// 滑动到顶部
     public func scrollToTop(animated: Bool = true) {

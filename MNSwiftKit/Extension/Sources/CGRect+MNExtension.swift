@@ -9,7 +9,7 @@ import UIKit
 import Foundation
 import CoreFoundation
 
-extension NameSpaceWrapper where Base == CGRect {
+extension MNNameSpaceWrapper where Base == CGRect {
     
     /// 九宫格布局
     /// - Parameters:

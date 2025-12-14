@@ -9,7 +9,7 @@ import UIKit
 import Foundation
 import CoreFoundation
 
-extension NameSpaceWrapper where Base: NSAttributedString {
+extension MNNameSpaceWrapper where Base: NSAttributedString {
     
     /// 自身范围
     public var rangeOfAll: NSRange {

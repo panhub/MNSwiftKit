@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension NameSpaceWrapper where Base == Array<Any> {
+extension MNNameSpaceWrapper where Base == Array<Any> {
     
     /// 遍历元素
     /// - Parameter block: 回调外界使用
@@ -31,7 +31,7 @@ extension NameSpaceWrapper where Base == Array<Any> {
     }
 }
 
-//extension NameSpaceWrapper where Base == Array<any Equatable> {
+//extension MNNameSpaceWrapper where Base == Array<any Equatable> {
 //    
 //    /// 删除数组内相同元素
 //    /// - Returns: 删除相同元素后的数组

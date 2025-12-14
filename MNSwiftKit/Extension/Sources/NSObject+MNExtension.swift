@@ -37,7 +37,7 @@ extension NSObject {
     }
 }
 
-extension NameSpaceWrapper where Base: NSObject {
+extension MNNameSpaceWrapper where Base: NSObject {
     
     /// 关联信息
     public var userInfo: Any? {
@@ -63,7 +63,7 @@ extension NameSpaceWrapper where Base: NSObject {
     }
 }
 
-extension NameSpaceWrapper where Base: NSObject {
+extension MNNameSpaceWrapper where Base: NSObject {
     
     /// 替换实例方法
     /// - Parameters:

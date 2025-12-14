@@ -8,7 +8,7 @@
 import UIKit
 import Foundation
 
-extension NameSpaceWrapper where Base: UIResponder {
+extension MNNameSpaceWrapper where Base: UIResponder {
     
     /// 寻找符合条件的响应者
     /// - Parameter cls: 指定类型

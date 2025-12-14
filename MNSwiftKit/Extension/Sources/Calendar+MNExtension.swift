@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension NameSpaceWrapper where Base == Calendar {
+extension MNNameSpaceWrapper where Base == Calendar {
     
     /// 某个日期的结束时间
     public func endOfDay(for date: Date) -> Date {

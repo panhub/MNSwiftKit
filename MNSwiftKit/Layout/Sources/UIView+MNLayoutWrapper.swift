@@ -8,7 +8,7 @@
 import UIKit
 import CoreFoundation
 
-extension NameSpaceWrapper where Base: UIView {
+extension MNNameSpaceWrapper where Base: UIView {
     
     /// 原点
     public var origin: CGPoint {

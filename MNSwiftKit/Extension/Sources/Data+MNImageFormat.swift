@@ -13,7 +13,7 @@ public enum MNImageFormat: Int {
     case undefined, jpeg, png, gif, tiff, webp, heic
 }
 
-extension NameSpaceWrapper where Base == Data {
+extension MNNameSpaceWrapper where Base == Data {
     
     /// 图片格式
     public var imageFormat: MNImageFormat {

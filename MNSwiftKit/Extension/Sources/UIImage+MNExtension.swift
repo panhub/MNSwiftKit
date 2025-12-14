@@ -28,7 +28,7 @@ extension UIImage {
     }
 }
 
-extension NameSpaceWrapper where Base: UIImage {
+extension MNNameSpaceWrapper where Base: UIImage {
     
     /// 灰度图
     public var grayed: UIImage? {
@@ -235,7 +235,7 @@ extension NameSpaceWrapper where Base: UIImage {
     }
 }
 
-extension NameSpaceWrapper where Base: UIImage {
+extension MNNameSpaceWrapper where Base: UIImage {
     
     /// 将图片写入本地
     /// - Parameter filePath: 本地路径

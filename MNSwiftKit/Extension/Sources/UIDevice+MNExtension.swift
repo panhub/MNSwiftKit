@@ -15,7 +15,7 @@ fileprivate var MNDeviceModel: String?
 /// 标记是否是越狱设备
 fileprivate var MNDeviceJailbroken: Bool?
 
-extension NameSpaceWrapper where Base: UIDevice {
+extension MNNameSpaceWrapper where Base: UIDevice {
     
     /// 系统版本号 Double
     public var version: Double {

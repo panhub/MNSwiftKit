@@ -8,7 +8,7 @@
 import Foundation
 import QuartzCore
 
-extension NameSpaceWrapper where Base: CALayer {
+extension MNNameSpaceWrapper where Base: CALayer {
     
     public var rotation: Double {
         set {

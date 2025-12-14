@@ -9,7 +9,7 @@ import UIKit
 import Foundation
 import ObjectiveC.runtime
 
-extension NameSpaceWrapper where Base: UIView {
+extension MNNameSpaceWrapper where Base: UIView {
     
     /// 从xib加载类
     /// - Parameters:

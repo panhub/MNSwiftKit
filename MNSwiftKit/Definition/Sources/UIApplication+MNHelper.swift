@@ -11,7 +11,7 @@ import Foundation
 /// 内部保留状态栏高度
 fileprivate var MNApplicationStatusBarHeight: CGFloat?
 
-extension NameSpaceWrapper where Base: UIApplication {
+extension MNNameSpaceWrapper where Base: UIApplication {
     
     /// 状态栏高度
     public class var statusBarHeight: CGFloat {

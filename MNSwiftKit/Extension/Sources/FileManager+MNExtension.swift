@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension NameSpaceWrapper where Base: FileManager {
+extension MNNameSpaceWrapper where Base: FileManager {
     
     /// 磁盘容量
     public var diskSize: Int64 {
@@ -100,7 +100,7 @@ extension NameSpaceWrapper where Base: FileManager {
 }
 
 // MARK: - 创建文件夹
-extension NameSpaceWrapper where Base: FileManager {
+extension MNNameSpaceWrapper where Base: FileManager {
     
     /// 创建目录
     /// - Parameters:
@@ -138,7 +138,7 @@ extension NameSpaceWrapper where Base: FileManager {
 }
 
 // MARK: - 复制文件
-extension NameSpaceWrapper where Base: FileManager {
+extension MNNameSpaceWrapper where Base: FileManager {
     
     /// 拷贝文件
     /// - Parameters:
@@ -202,7 +202,7 @@ extension NameSpaceWrapper where Base: FileManager {
 }
 
 // MARK: - 移动文件
-extension NameSpaceWrapper where Base: FileManager {
+extension MNNameSpaceWrapper where Base: FileManager {
     
     /// 移动文件
     /// - Parameters:
@@ -264,7 +264,7 @@ extension NameSpaceWrapper where Base: FileManager {
 }
 
 // MARK: - 删除文件
-extension NameSpaceWrapper where Base: FileManager {
+extension MNNameSpaceWrapper where Base: FileManager {
     
     /// 删除文件
     /// - Parameter path: 文件路径

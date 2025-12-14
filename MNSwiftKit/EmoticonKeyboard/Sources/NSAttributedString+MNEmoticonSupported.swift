@@ -9,7 +9,7 @@ import UIKit
 import Foundation
 
 
-extension NameSpaceWrapper where Base: NSAttributedString {
+extension MNNameSpaceWrapper where Base: NSAttributedString {
     
     /// 主要字体
     public var font: UIFont? {
@@ -77,7 +77,7 @@ extension NameSpaceWrapper where Base: NSAttributedString {
     }
 }
 
-extension NameSpaceWrapper where Base: NSMutableAttributedString {
+extension MNNameSpaceWrapper where Base: NSMutableAttributedString {
     
     /// 匹配表情
     /// - Parameter font: 字体

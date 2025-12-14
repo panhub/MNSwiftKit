@@ -17,7 +17,7 @@ extension UIScrollView {
     }
 }
 
-extension NameSpaceWrapper where Base: UIScrollView {
+extension MNNameSpaceWrapper where Base: UIScrollView {
     
     public var contentInset: UIEdgeInsets {
         if #available(iOS 11.0, *) {
@@ -64,7 +64,7 @@ extension NameSpaceWrapper where Base: UIScrollView {
     }
 }
 
-extension NameSpaceWrapper where Base: UIScrollView {
+extension MNNameSpaceWrapper where Base: UIScrollView {
     
     /// 头部刷新控件
     public var header: MNRefreshHeader? {

@@ -8,7 +8,7 @@
 import UIKit
 import Foundation
 
-extension NameSpaceWrapper where Base: UIWindow {
+extension MNNameSpaceWrapper where Base: UIWindow {
     
     /// 当前Window
     public class var current: UIWindow! {

@@ -17,7 +17,7 @@ extension UIView {
     }
 }
 
-extension NameSpaceWrapper where Base: UIView {
+extension MNNameSpaceWrapper where Base: UIView {
     
     /// 是否存在toast弹窗
     public var isToastAppearing: Bool {
@@ -31,7 +31,7 @@ extension NameSpaceWrapper where Base: UIView {
     }
 }
 
-extension NameSpaceWrapper where Base: UIView {
+extension MNNameSpaceWrapper where Base: UIView {
     
     /// 显示系统活动视图Toast
     /// - Parameters:

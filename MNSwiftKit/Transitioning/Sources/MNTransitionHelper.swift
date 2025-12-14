@@ -8,7 +8,7 @@
 import UIKit
 import ObjectiveC.runtime
 
-extension NameSpaceWrapper where Base: UIView {
+extension MNNameSpaceWrapper where Base: UIView {
     
     /// 转场截图
     public var transitioningSnapshotView: UIImageView {
@@ -62,7 +62,7 @@ extension UIViewController {
     }
 }
 
-extension NameSpaceWrapper where Base: UIViewController {
+extension MNNameSpaceWrapper where Base: UIViewController {
     
     /// 转场标签栏
     public var transitioningBottomBar: UIView? {

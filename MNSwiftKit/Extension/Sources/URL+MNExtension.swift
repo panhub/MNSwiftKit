@@ -21,7 +21,7 @@ extension URL {
 }
 
 
-extension NameSpaceWrapper where Base == URL {
+extension MNNameSpaceWrapper where Base == URL {
     
     /// 获取参数列表, 若链接不合法, 则为空
     public var queryItems: [String:String]? {

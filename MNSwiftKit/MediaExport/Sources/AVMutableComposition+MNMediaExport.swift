@@ -8,7 +8,7 @@
 import Foundation
 import AVFoundation
 
-extension NameSpaceWrapper where Base: AVMutableComposition {
+extension MNNameSpaceWrapper where Base: AVMutableComposition {
     
     /// 获取合成轨道
     /// - Parameter mediaType: 媒体类型
@@ -30,7 +30,7 @@ extension NameSpaceWrapper where Base: AVMutableComposition {
     }
 }
 
-extension NameSpaceWrapper where Base: AVMutableComposition {
+extension MNNameSpaceWrapper where Base: AVMutableComposition {
     
     /// 拼接媒体资源内音视频轨道
     /// - Parameter path: 媒体资源路径或远程地址

@@ -9,7 +9,7 @@ import UIKit
 import Foundation
 import CoreFoundation
 
-extension NameSpaceWrapper where Base == String {
+extension MNNameSpaceWrapper where Base == String {
     
     // String => Bool
     public var boolValue: Bool {
@@ -113,7 +113,7 @@ extension NameSpaceWrapper where Base == String {
 }
 
 
-extension NameSpaceWrapper where Base == String {
+extension MNNameSpaceWrapper where Base == String {
     
     /// 根据下标获取字符串
     public subscript(of index: Int) -> String {

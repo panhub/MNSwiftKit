@@ -10,7 +10,7 @@ import Foundation
 /// 内部保留播放时间格式化起
 fileprivate var MNPlayTimeFormatter: DateFormatter?
 
-extension NameSpaceWrapper where Base == Date {
+extension MNNameSpaceWrapper where Base == Date {
     
     /// 时间戳 - 秒
     public var second: Int { Int(base.timeIntervalSince1970) }

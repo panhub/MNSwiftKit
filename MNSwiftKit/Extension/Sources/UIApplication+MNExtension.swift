@@ -18,7 +18,7 @@ public enum MNOpenScoreMode {
     case store(_ appId: String)
 }
 
-extension NameSpaceWrapper where Base: UIApplication {
+extension MNNameSpaceWrapper where Base: UIApplication {
     
     /// 判断是否可打开链接
     /// - Parameter string: 资源定位
@@ -105,7 +105,7 @@ extension NameSpaceWrapper where Base: UIApplication {
     }
 }
 
-extension NameSpaceWrapper where Base: UIApplication {
+extension MNNameSpaceWrapper where Base: UIApplication {
     
     /// 获取状态栏的方向
     public var statusBarOrientation: UIInterfaceOrientation {

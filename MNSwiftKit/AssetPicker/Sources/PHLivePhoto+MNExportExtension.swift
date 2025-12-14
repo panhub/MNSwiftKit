@@ -23,7 +23,7 @@ extension PHLivePhoto {
 }
 
 @available(iOS 9.1, *)
-extension NameSpaceWrapper where Base: PHLivePhoto {
+extension MNNameSpaceWrapper where Base: PHLivePhoto {
     
     /// 视频文件定位器
     public var videoFileURL: URL? {

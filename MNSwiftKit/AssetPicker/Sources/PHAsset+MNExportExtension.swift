@@ -9,7 +9,7 @@ import Photos
 import Foundation
 import UniformTypeIdentifiers
 
-extension NameSpaceWrapper where Base: PHAsset {
+extension MNNameSpaceWrapper where Base: PHAsset {
     
     /// 资源类型
     public var contentType: MNAssetType {

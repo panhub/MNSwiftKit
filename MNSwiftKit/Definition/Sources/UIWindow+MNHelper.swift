@@ -12,7 +12,7 @@ import CoreFoundation
 /// 内部保留屏幕安全区域
 fileprivate var MNWindowSafeAreaInsets: UIEdgeInsets?
 
-extension NameSpaceWrapper where Base: UIWindow {
+extension MNNameSpaceWrapper where Base: UIWindow {
     
     /// 安全区域
     public class var safeAreaInsets: UIEdgeInsets {

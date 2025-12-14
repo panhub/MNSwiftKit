@@ -9,7 +9,7 @@ import Foundation
 import AVFoundation
 import CoreFoundation
 
-extension NameSpaceWrapper where Base: AVAssetTrack {
+extension MNNameSpaceWrapper where Base: AVAssetTrack {
     
     /// 视频轨道原始形变
     public var preferredTransform: CGAffineTransform {

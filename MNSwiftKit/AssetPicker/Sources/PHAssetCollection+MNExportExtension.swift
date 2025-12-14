@@ -8,7 +8,7 @@
 import Photos
 import Foundation
 
-extension NameSpaceWrapper where Base: PHAssetCollection {
+extension MNNameSpaceWrapper where Base: PHAssetCollection {
     
     /// 是否是`相机胶卷`资源
     public var isCameraRoll: Bool {

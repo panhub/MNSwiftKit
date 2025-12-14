@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension NameSpaceWrapper where Base: BinaryFloatingPoint {
+extension MNNameSpaceWrapper where Base: BinaryFloatingPoint {
     
     /// 百分比形式字符串, 不允许小数部分
     public var percent: String {

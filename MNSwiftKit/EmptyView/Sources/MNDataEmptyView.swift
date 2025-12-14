@@ -841,7 +841,7 @@ extension UIView {
     }
 }
 
-extension NameSpaceWrapper where Base: UIView {
+extension MNNameSpaceWrapper where Base: UIView {
     
     /// 空数据视图数据源
     @MainActor

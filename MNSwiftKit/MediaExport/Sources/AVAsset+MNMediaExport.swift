@@ -38,7 +38,7 @@ extension AVURLAsset {
     }
 }
 
-extension NameSpaceWrapper where Base: AVAsset {
+extension MNNameSpaceWrapper where Base: AVAsset {
     
     /// 媒体资源时长(CMTime)
     public var duration: CMTime {
@@ -119,7 +119,7 @@ extension NameSpaceWrapper where Base: AVAsset {
     }
 }
 
-extension NameSpaceWrapper where Base: AVAsset {
+extension MNNameSpaceWrapper where Base: AVAsset {
     
     
     /// 获取视频资源在某个时间的截图

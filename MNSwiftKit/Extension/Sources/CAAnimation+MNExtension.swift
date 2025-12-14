@@ -8,7 +8,7 @@
 import Foundation
 import QuartzCore
 
-extension NameSpaceWrapper where Base == String {
+extension MNNameSpaceWrapper where Base == String {
     
     /// 形变
     public class var transform: String { "transform" }

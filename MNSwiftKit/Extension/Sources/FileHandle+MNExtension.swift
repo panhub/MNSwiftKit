@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension NameSpaceWrapper where Base: FileHandle {
+extension MNNameSpaceWrapper where Base: FileHandle {
     
     /// 构造读取句柄
     /// - Parameter url: 文件位置
@@ -55,7 +55,7 @@ extension NameSpaceWrapper where Base: FileHandle {
     }
 }
 
-extension NameSpaceWrapper where Base: FileHandle {
+extension MNNameSpaceWrapper where Base: FileHandle {
     
     /// 当前偏移位置
     public var offset: UInt64 {
@@ -124,7 +124,7 @@ extension NameSpaceWrapper where Base: FileHandle {
 }
 
 // MARK: - Seek
-extension NameSpaceWrapper where Base: FileHandle {
+extension MNNameSpaceWrapper where Base: FileHandle {
     
     /// 跳转到结尾处
     /// - Returns: 数据长度
@@ -163,7 +163,7 @@ extension NameSpaceWrapper where Base: FileHandle {
 }
 
 // MARK: - Read
-extension NameSpaceWrapper where Base: FileHandle {
+extension MNNameSpaceWrapper where Base: FileHandle {
     
     /// 读取到结尾
     /// - Returns: 读取到的数据
@@ -203,7 +203,7 @@ extension NameSpaceWrapper where Base: FileHandle {
 }
 
 // MARK: - Write
-extension NameSpaceWrapper where Base: FileHandle {
+extension MNNameSpaceWrapper where Base: FileHandle {
     
     /// 写入数据
     /// - Parameter data: 数据流
@@ -228,7 +228,7 @@ extension NameSpaceWrapper where Base: FileHandle {
 }
 
 // MARK: - Helper
-extension NameSpaceWrapper where Base: FileHandle {
+extension MNNameSpaceWrapper where Base: FileHandle {
     
     /// 复制文件
     /// - Parameters:

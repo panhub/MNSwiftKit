@@ -12,7 +12,7 @@ extension DispatchQueue {
     nonisolated(unsafe) fileprivate static var MNQueueOnceTracker: [String] = [String]()
 }
 
-extension NameSpaceWrapper where Base == DispatchQueue {
+extension MNNameSpaceWrapper where Base == DispatchQueue {
     
     /// 执行一次
     /// - Parameters:

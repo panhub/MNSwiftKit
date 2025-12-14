@@ -15,7 +15,7 @@ import UniformTypeIdentifiers
 import MNNameSpace
 #endif
 
-extension NameSpaceWrapper where Base: UIImage {
+extension MNNameSpaceWrapper where Base: UIImage {
     
     /// 是否是动态图
     public var isAnimatedImage: Bool {

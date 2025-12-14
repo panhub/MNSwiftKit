@@ -49,7 +49,7 @@ extension UITableView {
     }
 }
 
-extension NameSpaceWrapper where Base: UITableView {
+extension MNNameSpaceWrapper where Base: UITableView {
     
     /// 是否处于编辑状态
     fileprivate var isEditing: Bool {
@@ -106,7 +106,7 @@ extension UITableViewCell {
 }
 
 // MARK: - 开启编辑
-extension NameSpaceWrapper where Base: UITableViewCell {
+extension MNNameSpaceWrapper where Base: UITableViewCell {
     
     /// 记录编辑开始时的x
     fileprivate var contentViewX: CGFloat {
@@ -168,7 +168,7 @@ extension NameSpaceWrapper where Base: UITableViewCell {
 }
 
 // MARK: - 寻找集合视图
-extension NameSpaceWrapper where Base: UITableViewCell {
+extension MNNameSpaceWrapper where Base: UITableViewCell {
     
     /// 当前行索引
     public var indexPath: IndexPath? {

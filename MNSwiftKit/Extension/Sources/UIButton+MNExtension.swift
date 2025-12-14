@@ -8,7 +8,7 @@
 import UIKit
 import Foundation
 
-extension NameSpaceWrapper where Base: UIButton {
+extension MNNameSpaceWrapper where Base: UIButton {
     
     /// 以自身宽度约束尺寸
     public func sizeFitToWidth() {

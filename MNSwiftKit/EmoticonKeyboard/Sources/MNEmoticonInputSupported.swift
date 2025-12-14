@@ -8,7 +8,7 @@
 import UIKit
 import Foundation
 
-extension NameSpaceWrapper where Base: UITextView {
+extension MNNameSpaceWrapper where Base: UITextView {
     
     /// 对attributedText解析表情后的内容
     public var plainText: String {
@@ -105,7 +105,7 @@ extension NameSpaceWrapper where Base: UITextView {
     }
 }
 
-extension NameSpaceWrapper where Base: UILabel {
+extension MNNameSpaceWrapper where Base: UILabel {
     
     /// 对attributedText解析表情后的内容
     public var plainText: String {

@@ -17,7 +17,7 @@ extension UINavigationController {
 }
 
 
-extension NameSpaceWrapper where Base: UINavigationController {
+extension MNNameSpaceWrapper where Base: UINavigationController {
     
     /// 转场代理
     public var transitioningDelegate: MNTransitionDelegate? {

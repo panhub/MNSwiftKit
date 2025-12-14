@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension NameSpaceWrapper where Base == String {
+extension MNNameSpaceWrapper where Base == String {
     
     /// 文档目录
     public class var documentDirectory: String {
@@ -59,7 +59,7 @@ extension NameSpaceWrapper where Base == String {
 }
 
 // MARK: - Path
-extension NameSpaceWrapper where Base == String {
+extension MNNameSpaceWrapper where Base == String {
     
     /// 路径分割
     public var pathComponents: [String] {

@@ -8,7 +8,7 @@
 import UIKit
 import Foundation
 
-extension NameSpaceWrapper where Base: UIView {
+extension MNNameSpaceWrapper where Base: UIView {
     
     /// 设置锚点但不改变相对位置
     public var anchor: CGPoint {
@@ -75,7 +75,7 @@ extension NameSpaceWrapper where Base: UIView {
     }
 }
 
-extension NameSpaceWrapper where Base == UIView.ContentMode {
+extension MNNameSpaceWrapper where Base == UIView.ContentMode {
     
     /// UIView.ContentMode => CALayerContentsGravity
     public var gravity: CALayerContentsGravity {

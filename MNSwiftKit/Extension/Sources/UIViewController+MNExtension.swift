@@ -7,7 +7,7 @@
 
 import UIKit
 
-extension NameSpaceWrapper where Base: UIViewController {
+extension MNNameSpaceWrapper where Base: UIViewController {
     
     /// 依据情况出栈或模态弹出
     /// - Parameters:

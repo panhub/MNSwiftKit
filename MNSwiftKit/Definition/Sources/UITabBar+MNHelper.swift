@@ -12,7 +12,7 @@ import CoreFoundation
 /// 内部保留标签栏高度
 fileprivate var MNTabBarHeight: CGFloat?
 
-extension NameSpaceWrapper where Base: UITabBar {
+extension MNNameSpaceWrapper where Base: UITabBar {
     
     /// 标签栏高度
     public class var height: CGFloat {

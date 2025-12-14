@@ -7,7 +7,7 @@
 
 import UIKit
 
-extension NameSpaceWrapper where Base: UINavigationController {
+extension MNNameSpaceWrapper where Base: UINavigationController {
     
     /// 当前导航控制器
     public class var present: UINavigationController? {

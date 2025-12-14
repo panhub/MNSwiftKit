@@ -49,7 +49,7 @@ extension UICollectionView {
     }
 }
 
-extension NameSpaceWrapper where Base: UICollectionView {
+extension MNNameSpaceWrapper where Base: UICollectionView {
     
     /// 是否有表格处于编辑状态
     fileprivate var isEditing: Bool {
@@ -106,7 +106,7 @@ extension UICollectionViewCell {
 }
 
 // MARK: - 开启表格编辑
-extension NameSpaceWrapper where Base: UICollectionViewCell {
+extension MNNameSpaceWrapper where Base: UICollectionViewCell {
     
     /// 编辑开始时的x
     fileprivate var contentViewX: CGFloat {
@@ -167,7 +167,7 @@ extension NameSpaceWrapper where Base: UICollectionViewCell {
 }
 
 // MARK: - 寻找集合视图
-extension NameSpaceWrapper where Base: UICollectionViewCell {
+extension MNNameSpaceWrapper where Base: UICollectionViewCell {
     
     /// 所在集合视图的索引
     public var indexPath: IndexPath? {

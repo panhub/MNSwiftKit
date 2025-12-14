@@ -12,7 +12,7 @@ import CoreFoundation
 /// 内部保留屏幕尺寸
 fileprivate var MNScreenSize: CGSize?
 
-extension NameSpaceWrapper where Base: UIScreen {
+extension MNNameSpaceWrapper where Base: UIScreen {
     
     /// 屏幕尺寸最小值
     public class var min: CGFloat {
