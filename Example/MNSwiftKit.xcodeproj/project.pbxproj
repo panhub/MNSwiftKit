@@ -17,7 +17,6 @@
 		E92C80162ECF3AAE0088CA5A /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = E92C80142ECF3AAE0088CA5A /* ViewController.xib */; };
 		E9CE85EA2EEBBA9300154F35 /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9CE85E82EEBBA9300154F35 /* CollectionViewCell.swift */; };
 		E9CE85EB2EEBBA9300154F35 /* CollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = E9CE85E92EEBBA9300154F35 /* CollectionViewCell.xib */; };
-		E9CE85ED2EEBBB9000154F35 /* TempView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9CE85EC2EEBBB9000154F35 /* TempView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,7 +51,6 @@
 		E92C80142ECF3AAE0088CA5A /* ViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ViewController.xib; sourceTree = "<group>"; };
 		E9CE85E82EEBBA9300154F35 /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		E9CE85E92EEBBA9300154F35 /* CollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CollectionViewCell.xib; sourceTree = "<group>"; };
-		E9CE85EC2EEBBB9000154F35 /* TempView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TempView.swift; sourceTree = "<group>"; };
 		E9F4F5782EB46DDA00B52798 /* AVFAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFAudio.framework; path = System/Library/Frameworks/AVFAudio.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -65,6 +63,11 @@
 		E9E266682EEFAD6C003F6717 /* model */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = model;
+			sourceTree = "<group>";
+		};
+		E9E2667D2EEFC0F5003F6717 /* controller */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = controller;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -136,6 +139,7 @@
 			children = (
 				E9E266682EEFAD6C003F6717 /* model */,
 				3BEB0B0D2EEF120900ADBEB2 /* view */,
+				E9E2667D2EEFC0F5003F6717 /* controller */,
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				E92C80132ECF3AAE0088CA5A /* ViewController.swift */,
 				E92C80142ECF3AAE0088CA5A /* ViewController.xib */,
@@ -144,7 +148,6 @@
 				607FACD31AFB9204008FA782 /* Supporting Files */,
 				E9CE85E82EEBBA9300154F35 /* CollectionViewCell.swift */,
 				E9CE85E92EEBBA9300154F35 /* CollectionViewCell.xib */,
-				E9CE85EC2EEBBB9000154F35 /* TempView.swift */,
 			);
 			name = "Example for MNSwiftKit";
 			path = MNSwiftKit;
@@ -205,6 +208,7 @@
 			fileSystemSynchronizedGroups = (
 				3BEB0B0D2EEF120900ADBEB2 /* view */,
 				E9E266682EEFAD6C003F6717 /* model */,
+				E9E2667D2EEFC0F5003F6717 /* controller */,
 			);
 			name = MNSwiftKit_Example;
 			productName = MNSwiftKit;
@@ -363,7 +367,6 @@
 			files = (
 				E92C80152ECF3AAE0088CA5A /* ViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
-				E9CE85ED2EEBBB9000154F35 /* TempView.swift in Sources */,
 				E9CE85EA2EEBBA9300154F35 /* CollectionViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

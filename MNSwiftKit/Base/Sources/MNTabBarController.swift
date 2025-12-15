@@ -31,7 +31,8 @@ open class MNTabBarController: UITabBarController {
             var viewControllers: [UIViewController] = [UIViewController]()
             for (index, element) in controllers.enumerated() {
                 if element is String {
-                    guard let nameSpace = Bundle.main.infoDictionary?["CFBundleExecutable"] as? String else { continue }
+                    guard var nameSpace = Bundle.main.infoDictionary?["CFBundleExecutable"] as? String else { continue }
+                    nameSpace = nameSpace.replacingOccurrences(of: " ", with: "_")
                     let cls: AnyClass? = NSClassFromString("\(nameSpace).\(element as! String)")
                     guard let type = cls as? UIViewController.Type else { continue }
                     var vc = type.init()
