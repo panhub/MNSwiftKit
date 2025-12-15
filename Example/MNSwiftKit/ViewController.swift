@@ -11,6 +11,12 @@ import MNSwiftKit
 
 class ViewController: UIViewController {
     
+    private var rows: [HomeListRow] = []
+    
+    private var isAppear: Bool = false
+    
+    @IBOutlet weak var tableView: UITableView!
+    
     @IBOutlet weak var titleTop: NSLayoutConstraint!
     
     @IBOutlet weak var titleHeight: NSLayoutConstraint!
@@ -22,9 +28,57 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        view.backgroundColor = .white
-        
         navHeight.constant = MN_TOP_BAR_HEIGHT
         titleTop.constant = (MN_NAV_BAR_HEIGHT - titleHeight.constant)/2.0 + MN_STATUS_BAR_HEIGHT
+        
+        let clss: [String] = ["EditingViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController"]
+        let names: [String] = ["表格编辑", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器"]
+        for (index, name) in names.enumerated() {
+            let row = HomeListRow(index: index, name: name, cls: clss[index])
+            rows.append(row)
+        }
+        
+        tableView.rowHeight = 50.0
+        tableView.register(UINib(nibName: "HomeTableCell", bundle: .main), forCellReuseIdentifier: "HomeTableCell")
+        tableView.tableFooterView = UIView(frame: .init(origin: .zero, size: .init(width: MN_SCREEN_WIDTH, height: MN_BOTTOM_SAFE_HEIGHT)))
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard isAppear == false else { return }
+        isAppear = true
+        let indexPaths: [IndexPath] = (0..<rows.count).compactMap { IndexPath(row: $0, section: 0) }
+        tableView.insertRows(at: indexPaths, with: .fade)
+    }
+}
+
+extension ViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        isAppear ? rows.count : 0
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        tableView.dequeueReusableCell(withIdentifier: "HomeTableCell", for: indexPath)
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let cell = cell as? HomeTableCell else { return }
+        cell.update(row: rows[indexPath.row])
+        
+        let animation = CASpringAnimation(keyPath: "transform.scale")
+        animation.fromValue = 0.8
+        animation.toValue = 1.0
+        animation.autoreverses = false
+        animation.repeatCount = 1
+        animation.isRemovedOnCompletion = true
+        animation.mass = 0.38 // 值越大，惯性越大，振动越慢
+        animation.stiffness = 180 // 值越大，弹簧越硬，回弹越快
+        animation.damping = 5 // 值越大，衰减越快
+        animation.duration = animation.settlingDuration
+        cell.contentView.layer.removeAllAnimations()
+        cell.contentView.layer.add(animation, forKey: "transform.scale")
     }
 }

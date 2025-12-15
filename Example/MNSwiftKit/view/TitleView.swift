@@ -14,18 +14,21 @@ import UIKit
     
     private let foregroundLabel = UILabel()
     
+    /// 文本颜色
     @IBInspectable var backgroundTextColor: UIColor = UIColor(hex: 0x545454) {
         didSet {
             updateBackgroundText()
         }
     }
     
+    /// 前置颜色（高亮色）
     @IBInspectable var foregroundTextColor: UIColor = UIColor(hex: 0x4699D9) {
         didSet {
             updateForegroundText()
         }
     }
     
+    /// 文本内容
     @IBInspectable var text: String = "MNSwiftKit" {
         didSet {
             updateBackgroundText()
@@ -33,6 +36,15 @@ import UIKit
         }
     }
     
+    /// 高亮文字
+    @IBInspectable var highlightText: String = "w" {
+        didSet {
+            updateBackgroundText()
+            updateForegroundText()
+        }
+    }
+    
+    /// 字体
     var font: UIFont = UIFont(name: "Avenir-Light", size: 28.0)! {
         didSet {
             updateBackgroundText()
@@ -83,13 +95,19 @@ import UIKit
     
     private func updateBackgroundText() {
         let attributedText = NSMutableAttributedString(string: text, attributes: [.font:font, .foregroundColor:backgroundTextColor])
-        attributedText.addAttribute(.foregroundColor, value: UIColor.clear, range: (text as NSString).range(of: "w"))
+        let range = (text as NSString).range(of: highlightText)
+        if range.location != NSNotFound {
+            attributedText.addAttribute(.foregroundColor, value: UIColor.clear, range: range)
+        }
         backgroundLabel.attributedText = attributedText
     }
     
     private func updateForegroundText() {
         let attributedText = NSMutableAttributedString(string: text, attributes: [.font:font, .foregroundColor:UIColor.clear])
-        attributedText.addAttribute(.foregroundColor, value: foregroundTextColor, range: (text as NSString).range(of: "w"))
+        let range = (text as NSString).range(of: highlightText)
+        if range.location != NSNotFound {
+            attributedText.addAttribute(.foregroundColor, value: foregroundTextColor, range: range)
+        }
         foregroundLabel.attributedText = attributedText
     }
 }

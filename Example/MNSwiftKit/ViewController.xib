@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23727"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -11,6 +11,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ViewController" customModule="MNSwiftKit_Example" customModuleProvider="target">
             <connections>
                 <outlet property="navHeight" destination="hK3-SS-1Fw" id="sch-YM-tvL"/>
+                <outlet property="tableView" destination="QTF-SC-gvd" id="w5B-NN-UT9"/>
                 <outlet property="titleHeight" destination="zVi-iD-4XD" id="RHa-qb-yVc"/>
                 <outlet property="titleTop" destination="QOF-db-Cqi" id="dYE-d8-hda"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
@@ -32,24 +33,46 @@
                                 <constraint firstAttribute="height" constant="40" id="zVi-iD-4XD"/>
                             </constraints>
                         </view>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wtX-b6-dIe" userLabel="Divider">
+                            <rect key="frame" x="0.0" y="94.333333333333329" width="393" height="0.6666666666666714"/>
+                            <color key="backgroundColor" red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="0.02" colorSpace="custom" customColorSpace="sRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="0.69999999999999996" id="2Ci-xy-skS"/>
+                            </constraints>
+                        </view>
                     </subviews>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     <constraints>
                         <constraint firstItem="GIu-OU-vtB" firstAttribute="centerX" secondItem="cGh-2T-q2B" secondAttribute="centerX" id="7iQ-As-ypk"/>
+                        <constraint firstItem="wtX-b6-dIe" firstAttribute="leading" secondItem="cGh-2T-q2B" secondAttribute="leading" id="907-KU-rI8"/>
                         <constraint firstItem="GIu-OU-vtB" firstAttribute="top" secondItem="cGh-2T-q2B" secondAttribute="top" constant="67" id="QOF-db-Cqi"/>
+                        <constraint firstAttribute="trailing" secondItem="wtX-b6-dIe" secondAttribute="trailing" id="SnS-cI-0II"/>
                         <constraint firstAttribute="height" constant="95" id="hK3-SS-1Fw"/>
+                        <constraint firstAttribute="bottom" secondItem="wtX-b6-dIe" secondAttribute="bottom" id="ivD-pe-4yw"/>
                     </constraints>
                 </view>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" contentInsetAdjustmentBehavior="never" bouncesZoom="NO" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="QTF-SC-gvd">
+                    <rect key="frame" x="0.0" y="95" width="393" height="757"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <connections>
+                        <outlet property="dataSource" destination="-1" id="OSR-KR-2Oz"/>
+                        <outlet property="delegate" destination="-1" id="kvd-tk-F1l"/>
+                    </connections>
+                </tableView>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="cGh-2T-q2B" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="12b-t1-gSx"/>
+                <constraint firstAttribute="bottom" secondItem="QTF-SC-gvd" secondAttribute="bottom" id="HKT-VM-tkF"/>
+                <constraint firstItem="QTF-SC-gvd" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="LuU-Ud-Iq9"/>
+                <constraint firstItem="QTF-SC-gvd" firstAttribute="top" secondItem="cGh-2T-q2B" secondAttribute="bottom" id="fjO-4z-CuF"/>
                 <constraint firstItem="cGh-2T-q2B" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="rIS-55-rBM"/>
+                <constraint firstAttribute="trailing" secondItem="QTF-SC-gvd" secondAttribute="trailing" id="tbS-IZ-HZO"/>
                 <constraint firstAttribute="trailing" secondItem="cGh-2T-q2B" secondAttribute="trailing" id="uN3-Mf-Ve4"/>
             </constraints>
             <nil key="simulatedTopBarMetrics"/>
             <nil key="simulatedBottomBarMetrics"/>
-            <point key="canvasLocation" x="60" y="-8"/>
+            <point key="canvasLocation" x="-787" y="11"/>
         </view>
     </objects>
     <resources>

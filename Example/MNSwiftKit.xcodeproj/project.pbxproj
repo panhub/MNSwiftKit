@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -57,7 +57,16 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		3BEB0B0D2EEF120900ADBEB2 /* view */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = view; sourceTree = "<group>"; };
+		3BEB0B0D2EEF120900ADBEB2 /* view */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = view;
+			sourceTree = "<group>";
+		};
+		E9E266682EEFAD6C003F6717 /* model */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = model;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +134,7 @@
 		607FACD21AFB9204008FA782 /* Example for MNSwiftKit */ = {
 			isa = PBXGroup;
 			children = (
+				E9E266682EEFAD6C003F6717 /* model */,
 				3BEB0B0D2EEF120900ADBEB2 /* view */,
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				E92C80132ECF3AAE0088CA5A /* ViewController.swift */,
@@ -194,6 +204,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				3BEB0B0D2EEF120900ADBEB2 /* view */,
+				E9E266682EEFAD6C003F6717 /* model */,
 			);
 			name = MNSwiftKit_Example;
 			productName = MNSwiftKit;
@@ -241,7 +252,6 @@
 				};
 			};
 			buildConfigurationList = 607FACCB1AFB9204008FA782 /* Build configuration list for PBXProject "MNSwiftKit" */;
-			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -250,6 +260,7 @@
 				Base,
 			);
 			mainGroup = 607FACC71AFB9204008FA782;
+			preferredProjectObjectVersion = 77;
 			productRefGroup = 607FACD11AFB9204008FA782 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -309,13 +320,12 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MNSwiftKit_Example/Pods-MNSwiftKit_Example-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/MNSwiftKit/MNSwiftKit.framework",
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MNSwiftKit_Example/Pods-MNSwiftKit_Example-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MNSwiftKit.framework",
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MNSwiftKit_Example/Pods-MNSwiftKit_Example-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
