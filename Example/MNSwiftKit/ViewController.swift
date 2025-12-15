@@ -11,9 +11,9 @@ import MNSwiftKit
 
 class ViewController: UIViewController {
     
-    private var rows: [HomeListRow] = []
-    
     private var isAppear: Bool = false
+    
+    private var rows: [HomeListRow] = []
     
     @IBOutlet weak var tableView: UITableView!
     
