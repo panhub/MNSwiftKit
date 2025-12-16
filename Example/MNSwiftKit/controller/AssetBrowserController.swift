@@ -15,8 +15,6 @@ class AssetBrowserController: UIViewController {
     
     private var items: [BrowserListItem] = []
     
-    @IBOutlet weak var titleLabel: UILabel!
-    
     @IBOutlet weak var switchButton: UISwitch!
     
     @IBOutlet weak var collectionView: UICollectionView!
@@ -35,8 +33,6 @@ class AssetBrowserController: UIViewController {
         
         navHeight.constant = MN_TOP_BAR_HEIGHT
         backTop.constant = (MN_NAV_BAR_HEIGHT - backHeight.constant)/2.0 + MN_STATUS_BAR_HEIGHT
-        
-        titleLabel.text = title
         
         let width = floor((MN_SCREEN_WIDTH - 32.0)/3.0)
         collectionLayout.numberOfColumns = 3

@@ -11,8 +11,6 @@ import MNSwiftKit
 
 class ToastViewController: UIViewController {
     
-    @IBOutlet weak var titleLabel: UILabel!
-    
     @IBOutlet weak var stackView: UIStackView!
     
     @IBOutlet weak var backTop: NSLayoutConstraint!

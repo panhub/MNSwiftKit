@@ -7,24 +7,27 @@
 //
 
 import UIKit
+import MNSwiftKit
 
 class AssetPickerController: UIViewController {
+    
+    @IBOutlet weak var backTop: NSLayoutConstraint!
+    
+    @IBOutlet weak var navHeight: NSLayoutConstraint!
+    
+    @IBOutlet weak var backHeight: NSLayoutConstraint!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         // Do any additional setup after loading the view.
+        
+        navHeight.constant = MN_TOP_BAR_HEIGHT
+        backTop.constant = (MN_NAV_BAR_HEIGHT - backHeight.constant)/2.0 + MN_STATUS_BAR_HEIGHT
     }
 
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    @IBAction func back() {
+        
+        navigationController?.popViewController(animated: true)
     }
-    */
-
 }
