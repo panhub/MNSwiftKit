@@ -37,19 +37,19 @@ class BrowserListItem {
 
 extension BrowserListItem {
     
-    var asAsset: MNAsset {
-        let asset = MNAsset()
-        asset.container = containerView
+    var asItem: MNAssetBrowser.Item {
+        let item = MNAssetBrowser.Item()
+        item.container = containerView
         switch type {
         case .photo:
-            asset.type = .photo
-            asset.cover = UIImage(named: name)
-            asset.contents = UIImage(named: name)
+            item.type = .photo
+            item.cover = UIImage(named: name)
+            item.contents = UIImage(named: name)
         default:
-            asset.type = .video
-            asset.cover = UIImage(contentsOfFile: name)
-            asset.contents = name.mn.deletingPathExtension.mn.appendingPathExtension("mp4")
+            item.type = .video
+            item.cover = UIImage(contentsOfFile: name)
+            item.contents = name.mn.deletingPathExtension.mn.appendingPathExtension("mp4")
         }
-        return asset
+        return item
     }
 }

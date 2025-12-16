@@ -33,7 +33,7 @@ class ViewController: UIViewController {
         
         let clss: [String] = ["ToastViewController", "AssetBrowserController", "AssetPickerController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController", "SplitViewController", "MenuViewController", "RequestViewController"]
         let modules: [String] = ["AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser", "AssetBrowser"]
-        let names: [String] = ["Toast 提示控制器", "图片浏览", "资源选择控制器", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器"]
+        let names: [String] = ["Toast 提示控制器", "资源浏览器", "资源选择器", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器", "分页控制器", "菜单视图", "请求控制器"]
         for (index, name) in names.enumerated() {
             let row = HomeListRow(index: index, title: name, cls: clss[index], module: modules[index])
             rows.append(row)
@@ -84,11 +84,13 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let row = rows[indexPath.row]
         guard var nameSpace = Bundle.main.infoDictionary?["CFBundleExecutable"] as? String else { return }
         nameSpace = nameSpace.replacingOccurrences(of: " ", with: "_")
-        let cls: AnyClass? = NSClassFromString("\(nameSpace).\(rows[indexPath.row].cls)")
+        let cls: AnyClass? = NSClassFromString("\(nameSpace).\(row.cls)")
         guard let type = cls as? UIViewController.Type else { return }
         let vc = type.init()
+        vc.title = row.title.string
         navigationController?.pushViewController(vc, animated: true)
     }
 }

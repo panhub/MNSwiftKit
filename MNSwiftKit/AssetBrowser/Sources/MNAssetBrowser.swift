@@ -554,7 +554,7 @@ extension MNAssetBrowser {
     ///   - container: 资源容器
     ///   - superview: 父视图
     ///   - image: 过渡动画图片
-    ///   - animated: 是否动态展示
+    ///   - animated: 是否动态转场过渡
     ///   - handler: 状态更新提醒
     public class func present(container: UIView, in superview: UIView? = nil, using image: UIImage? = nil, animated: Bool = true, state handler: ((_ state: MNAssetBrowser.State)->Void)? = nil) {
         var animatedImage: UIImage?
@@ -582,9 +582,20 @@ extension MNAssetBrowser {
         item.contents = animatedImage
         item.container = container
         item.type = animatedImage.mn.isAnimatedImage ? .gif : .photo
-        let browser = MNAssetBrowser(assets: [item])
+        present([item], in: superview, from: 0, animated: animated, state: handler)
+    }
+    
+    /// 浏览一组资源
+    /// - Parameters:
+    ///   - assets: 资源数组
+    ///   - superview: 父视图
+    ///   - index: 起始索引
+    ///   - animated: 是否动态转场过渡
+    ///   - handler: 状态更新提醒
+    public class func present(_ assets: [MNAssetBrowseSupported], in superview: UIView? = nil, from index: Int = 0, animated: Bool = true, state handler: ((_ state: MNAssetBrowser.State)->Void)? = nil) {
+        let browser = MNAssetBrowser(assets: assets)
         browser.backgroundColor = .black
-        browser.present(in: superview, from: 0, animated: animated, state: handler)
+        browser.present(in: superview, from: index, animated: animated, state: handler)
     }
 }
 

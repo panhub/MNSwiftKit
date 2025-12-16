@@ -15,6 +15,10 @@ class AssetBrowserController: UIViewController {
     
     private var items: [BrowserListItem] = []
     
+    @IBOutlet weak var titleLabel: UILabel!
+    
+    @IBOutlet weak var switchButton: UISwitch!
+    
     @IBOutlet weak var collectionView: UICollectionView!
     
     @IBOutlet weak var collectionLayout: MNCollectionViewFlowLayout!
@@ -31,6 +35,8 @@ class AssetBrowserController: UIViewController {
         
         navHeight.constant = MN_TOP_BAR_HEIGHT
         backTop.constant = (MN_NAV_BAR_HEIGHT - backHeight.constant)/2.0 + MN_STATUS_BAR_HEIGHT
+        
+        titleLabel.text = title
         
         let width = floor((MN_SCREEN_WIDTH - 32.0)/3.0)
         collectionLayout.numberOfColumns = 3
@@ -93,13 +99,26 @@ extension AssetBrowserController: UICollectionViewDelegate, UICollectionViewData
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let assets = items.compactMap { $0.asAsset }
-        let browser = MNAssetBrowser(assets: assets)
-        browser.autoPlay = true
-        browser.dragToDismiss = true
-        browser.leftBarItemEvent = .back
-        browser.backgroundColor = .black
-        browser.present(in: view, from: indexPath.item, animated: true)
+        if switchButton.isOn {
+            // 浏览全部
+            let assets = items.compactMap { $0.asItem }
+            let browser = MNAssetBrowser(assets: assets)
+            browser.autoPlay = true
+            browser.dragToDismiss = true
+            browser.leftBarItemEvent = .none
+            browser.backgroundColor = .black
+            browser.present(in: view, from: indexPath.item, animated: true)
+        } else {
+            // 浏览单张
+            let item = items[indexPath.item]
+            switch item.type {
+            case .photo:
+                guard let containerView = item.containerView else { break }
+                MNAssetBrowser.present(container: containerView, in: view)
+            case .video:
+                MNAssetBrowser.present([item.asItem], in: view)
+            }
+        }
     }
 }
 
