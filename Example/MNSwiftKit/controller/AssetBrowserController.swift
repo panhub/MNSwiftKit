@@ -1,5 +1,5 @@
 //
-//  BrowserViewController.swift
+//  AssetBrowserController.swift
 //  MNSwiftKit_Example
 //
 //  Created by mellow on 2025/12/15.
@@ -9,7 +9,7 @@
 import UIKit
 import MNSwiftKit
 
-class BrowserViewController: UIViewController {
+class AssetBrowserController: UIViewController {
     
     private var isReloaded: Bool = false
     
@@ -69,7 +69,7 @@ class BrowserViewController: UIViewController {
     }
 }
 
-extension BrowserViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+extension AssetBrowserController: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
@@ -104,7 +104,7 @@ extension BrowserViewController: UICollectionViewDelegate, UICollectionViewDataS
     }
 }
 
-extension BrowserViewController: UICollectionViewDelegateFlowLayout {
+extension AssetBrowserController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let layout = collectionViewLayout as! MNCollectionViewFlowLayout

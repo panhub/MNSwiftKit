@@ -14,6 +14,11 @@ class HomeTableCell: UITableViewCell {
     
     @IBOutlet weak var nameLabel: UILabel!
     
+    @IBOutlet weak var podLabel: UILabel!
+    
+    @IBOutlet weak var spmLabel: UILabel!
+    
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -25,7 +30,11 @@ class HomeTableCell: UITableViewCell {
         
         clsLabel.text = row.cls
         
-        contentView.backgroundColor = row.index%2 == 0 ? .white : .gray.withAlphaComponent(0.05)
+        podLabel.text = "'\(row.module)'"
+        
+        spmLabel.text = "MN\(row.module)"
+        
+        contentView.backgroundColor = row.index%2 == 0 ? .white : .gray.withAlphaComponent(0.04)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

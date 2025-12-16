@@ -15,20 +15,22 @@ class HomeListRow {
     
     let index: Int
     
+    let module: String
     
     let title: NSAttributedString!
     
-    init(index: Int, name: String, cls: String) {
+    init(index: Int, title: String, cls: String, module: String) {
         
         let prefix = String(format: "%02ld.", index + 1)
         
-        let fullName = prefix + " " + name
+        let fullTitle = prefix + " " + title
         
-        let attributedText = NSMutableAttributedString(string: fullName, attributes: [.font:UIFont(name: "Heiti SC", size: 16.0)!, .foregroundColor:UIColor.black.withAlphaComponent(0.65)])
-        attributedText.addAttribute(.font, value: UIFont(name: "GillSans-Italic", size: 16.0)!, range: (fullName as NSString).range(of: prefix))
-        attributedText.addAttribute(.foregroundColor, value: UIColor.systemRed.withAlphaComponent(0.65), range: (fullName as NSString).range(of: prefix))
-        title = attributedText
+        let attributedText = NSMutableAttributedString(string: fullTitle, attributes: [.font:UIFont(name: "Heiti SC", size: 16.0)!, .foregroundColor:UIColor.black.withAlphaComponent(0.65)])
+        attributedText.addAttribute(.font, value: UIFont(name: "GillSans-Italic", size: 16.0)!, range: (fullTitle as NSString).range(of: prefix))
+        attributedText.addAttribute(.foregroundColor, value: UIColor.systemRed.withAlphaComponent(0.65), range: (fullTitle as NSString).range(of: prefix))
+        self.title = attributedText
         self.cls = cls
         self.index = index
+        self.module = module
     }
 }
