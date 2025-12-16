@@ -1120,11 +1120,11 @@ item.progress = 0.0 // 初始加载进度
 
 ```swift
 let browser = MNAssetBrowser(assets: [item1, item2, ...])
-browser.leftBarEvent = .back // 左按钮：返回
-browser.rightBarEvent = .save // 右按钮：保存/分享/完成等
-browser.autoPlaying = true // 自动播放视频/LivePhoto
-browser.exitWhenPulled = true // 下拉退出
-browser.exitWhenTouched = false // 单击退出
+browser.leftBarItemEvent = .back // 左按钮：返回
+browser.rightBarItemEvent = .save // 右按钮：保存/分享/完成等
+browser.autoPlay = true // 自动播放视频/LivePhoto
+browser.tapToDismiss = false // 单击退出
+browser.dragToDismiss = true // 下拉退出
 browser.maximumZoomScale = 3.0 // 双击放大倍率
 browser.delegate = self // 处理封面/内容获取与事件
 ```

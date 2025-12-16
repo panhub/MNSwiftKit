@@ -136,17 +136,17 @@ public class MNAssetBrowser: UIView {
     /// 资源集合
     private var assets: [MNAssetBrowseSupported] = []
     /// 左按钮事件
-    @objc public var leftBarEvent: MNAssetBrowser.Event = .none
+    @objc public var leftBarItemEvent: MNAssetBrowser.Event = .none
     /// 右按钮事件
-    @objc public var rightBarEvent: MNAssetBrowser.Event = .none
+    @objc public var rightBarItemEvent: MNAssetBrowser.Event = .none
     /// 是否允许自动播放
-    @objc public var autoPlaying: Bool = true
-    /// 是否在销毁时删除本地资源文件
-    @objc public var clearWhenExit: Bool = false
-    /// 是否在下拉时退出
-    @objc public var exitWhenPulled: Bool = true
+    @objc public var autoPlay: Bool = true
     /// 是否在点击时退出
-    @objc public var exitWhenTouched: Bool = false
+    @objc public var tapToDismiss: Bool = false
+    /// 是否在下拉时退出
+    @objc public var dragToDismiss: Bool = true
+    /// 是否在销毁时删除本地资源文件
+    @objc public var shouldClearWhenDismiss: Bool = false
     /// 间隔
     @objc public var interItemSpacing: CGFloat = 14.0
     /// 双击时的缩放比例
@@ -168,7 +168,9 @@ public class MNAssetBrowser: UIView {
     /// 记录交互比例
     private var interactiveRatio: CGPoint = .zero
     /// 是否允许缩放退出
-    private var isAllowsZoomInteractive: Bool = false
+    private var isAllowZoomDismiss: Bool = false
+    /// 拖拽开始时记录是否应该结束时继续播放
+    private var resumeWhenEndDragging = false
     /// 起始视图
     private var fromView: UIView!
     /// 起始索引
@@ -197,7 +199,7 @@ public class MNAssetBrowser: UIView {
     }
     
     deinit {
-        if clearWhenExit {
+        if shouldClearWhenDismiss {
             assets.forEach { $0.contents = nil }
         }
         NotificationCenter.default.removeObserver(self)
@@ -282,11 +284,11 @@ public class MNAssetBrowser: UIView {
         ])
         
         // 导航左按钮
-        let leftBarItemImg = leftBarEvent.img
+        let leftBarItemImg = leftBarItemEvent.img
         if leftBarItemImg.isEmpty == false {
             let leftBarItemImage = AssetBrowserResource.image(named: leftBarItemImg)
             let button = UIButton(type: .custom)
-            button.tag = leftBarEvent.rawValue
+            button.tag = leftBarItemEvent.rawValue
             button.translatesAutoresizingMaskIntoConstraints = false
             button.addTarget(self, action: #selector(self.navigationBarItemTouchUpInside(_:)), for: .touchUpInside)
             if #available(iOS 15.0, *) {
@@ -314,11 +316,11 @@ public class MNAssetBrowser: UIView {
         }
         
         // 导航右按钮
-        let rightBarItemImg = rightBarEvent.img
+        let rightBarItemImg = rightBarItemEvent.img
         if rightBarItemImg.isEmpty == false {
             let rightBarItemImage = AssetBrowserResource.image(named: rightBarItemImg)
             let button = UIButton(type: .custom)
-            button.tag = rightBarEvent.rawValue
+            button.tag = rightBarItemEvent.rawValue
             button.translatesAutoresizingMaskIntoConstraints = false
             button.addTarget(self, action: #selector(navigationBarItemTouchUpInside(_:)), for: .touchUpInside)
             if #available(iOS 15.0, *) {
@@ -353,18 +355,19 @@ public class MNAssetBrowser: UIView {
         }
     }
     
-    /// 设置事件
-    private func addRecognizer() {
+    /// 添加手势识别
+    private func addGestureRecognizer() {
+        // 缩放
         let doubleTap = UITapGestureRecognizer(target: self, action: #selector(tapped(_:)))
         doubleTap.numberOfTapsRequired = 2
         addGestureRecognizer(doubleTap)
-        if exitWhenTouched {
-            let singleTap = UITapGestureRecognizer(target: self, action: #selector(tap(_:)))
-            singleTap.numberOfTapsRequired = 1
-            singleTap.require(toFail: doubleTap)
-            addGestureRecognizer(singleTap)
-        }
-        if exitWhenPulled {
+        // 退出/清屏
+        let singleTap = UITapGestureRecognizer(target: self, action: #selector(tap(_:)))
+        singleTap.numberOfTapsRequired = 1
+        singleTap.require(toFail: doubleTap)
+        addGestureRecognizer(singleTap)
+        // 拖拽时退出
+        if dragToDismiss {
             let pan = UIPanGestureRecognizer(target: self, action: #selector(pan(_:)))
             addGestureRecognizer(pan)
         }
@@ -494,7 +497,7 @@ extension MNAssetBrowser {
         
         superview.addSubview(self)
         createSubview()
-        addRecognizer()
+        addGestureRecognizer()
         
         layoutIfNeeded()
         collectionView.isHidden = true
@@ -710,7 +713,7 @@ extension MNAssetBrowser {
         var toRect = interactiveView.frame
         var contentMode = interactiveView.contentMode
         var cornerRadius = interactiveView.layer.cornerRadius
-        if isAllowsZoomInteractive, let interactiveToView = interactiveToView {
+        if isAllowZoomDismiss, let interactiveToView = interactiveToView {
             contentMode = interactiveToView.contentMode
             cornerRadius = interactiveToView.layer.cornerRadius
             toRect = interactiveToView.superview!.convert(interactiveToView.frame, to: self)
@@ -765,7 +768,7 @@ extension MNAssetBrowser: UICollectionViewDelegate, UICollectionViewDataSource {
         if cell is MNAssetBrowserCell {
             let cell = cell as! MNAssetBrowserCell
             cell.delegate = self
-            cell.isAllowsAutoPlaying = autoPlaying
+            cell.autoPlay = autoPlay
             cell.maximumZoomScale = maximumZoomScale
         }
         return cell
@@ -776,6 +779,7 @@ extension MNAssetBrowser: UICollectionViewDelegate, UICollectionViewDataSource {
         guard indexPath.item < assets.count else { return }
         let asset = assets[indexPath.item]
         cell.willDisplay(asset)
+        cell.updateToolBar(visible: navigationView.transform == .identity, animated: false)
     }
     
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -836,10 +840,30 @@ extension MNAssetBrowser {
 extension MNAssetBrowser: UIGestureRecognizerDelegate {
     
     @objc private func tap(_ recognizer: UITapGestureRecognizer) {
-        guard let cell = currentDisplayCell, cell.scrollView.zoomScale == 1.0 else { return }
-        let location = recognizer.location(in: cell.scrollView.contentView)
-        guard cell.scrollView.contentView.bounds.contains(location) else { return }
-        dismiss()
+        let visible = navigationView.transform == .identity
+        if visible, navigationView.subviews.isEmpty == false {
+            let location = recognizer.location(in: self)
+            guard bounds.inset(by: UIEdgeInsets(top: navigationView.frame.maxY, left: 0.0, bottom: 0.0, right: 0.0)).contains(location) else { return }
+        }
+        guard let cell = currentDisplayCell else { return }
+        var shouldDismiss = false
+        if tapToDismiss, cell.scrollView.zoomScale == 1.0 {
+            let location = recognizer.location(in: cell.scrollView.contentView)
+            if cell.scrollView.contentView.bounds.contains(location) {
+                shouldDismiss = true
+            }
+        }
+        if shouldDismiss {
+            // 退出浏览
+            dismiss()
+        } else {
+            // 控制是否清屏
+            cell.updateToolBar(visible: visible == false, animated: true)
+            UIView.animate(withDuration: 0.25, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+                guard let self = self else { return }
+                self.navigationView.transform = visible ? .init(translationX: 0.0, y: -self.navigationView.frame.maxY) : .identity
+            }
+        }
     }
     
     @objc private func tapped(_ recognizer: UITapGestureRecognizer) {
@@ -860,15 +884,16 @@ extension MNAssetBrowser: UIGestureRecognizerDelegate {
         switch recognizer.state {
         case .began:
             
-            guard let cell = currentDisplayCell, cell.scrollView.zoomScale <= 1.0 else { return }
+            guard let cell = currentDisplayCell, cell.scrollView.zoomScale == 1.0 else { break }
             let location = recognizer.location(in: cell.scrollView.contentView)
-            guard cell.scrollView.contentView.bounds.contains(location) else { return }
+            guard cell.scrollView.contentView.bounds.contains(location) else { break }
             
             UIView.animate(withDuration: 0.25) { [weak self] in
                 guard let self = self else { return }
                 self.navigationView.alpha = 0.0
             }
             
+            resumeWhenEndDragging = cell.isPlaying
             cell.pauseDisplaying()
             
             let asset = assets[displayIndex]
@@ -905,11 +930,11 @@ extension MNAssetBrowser: UIGestureRecognizerDelegate {
             if toSize.width > bounds.size.width || toSize.height > bounds.size.height { toSize = toSize.mn.scaleFit(in: CGSize(width: bounds.width, height: bounds.height - 1.0)) }
             interactiveDelay = (bounds.height - toSize.height)/2.0
             interactiveRatio = CGPoint(x: toSize.width/interactiveFrame.width, y: toSize.height/interactiveFrame.height)
-            isAllowsZoomInteractive = max(frame.width, frame.height) - max(interactiveView.frame.width, interactiveView.frame.height) >= 50.0
+            isAllowZoomDismiss = max(frame.width, frame.height) - max(interactiveView.frame.width, interactiveView.frame.height) >= 50.0
 
         case .changed:
             
-            guard interactiveView.isHidden == false else { return }
+            guard interactiveView.isHidden == false else { break }
             
             let ratio = abs(bounds.height/2.0 - interactiveView.frame.midY)/interactiveDelay
             
@@ -919,7 +944,7 @@ extension MNAssetBrowser: UIGestureRecognizerDelegate {
             var center = interactiveView.center
             center.y += translation.y
             
-            if isAllowsZoomInteractive {
+            if isAllowZoomDismiss {
                 center.x += translation.x
                 var rect = interactiveFrame
                 rect.size.width = (1.0 - (1.0 - self.interactiveRatio.x)*ratio)*rect.width
@@ -940,7 +965,7 @@ extension MNAssetBrowser: UIGestureRecognizerDelegate {
             
         case .ended:
             
-            guard interactiveView.isHidden == false else { return }
+            guard interactiveView.isHidden == false else { break }
             
             if interactiveView.frame.midY >= (bounds.midY + 50.0) {
                 dismissFromCurrent()
@@ -948,10 +973,9 @@ extension MNAssetBrowser: UIGestureRecognizerDelegate {
                 endPanFromCurrent()
             }
         case .cancelled:
-            guard interactiveView.isHidden == false else { return }
+            guard interactiveView.isHidden == false else { break }
             endPanFromCurrent()
-        default:
-            break
+        default: break
         }
     }
     
@@ -968,6 +992,9 @@ extension MNAssetBrowser: UIGestureRecognizerDelegate {
             if let image = self.lastBackgroundImage {
                 self.backgroundView.image = image
                 self.lastBackgroundImage = nil
+            }
+            if self.resumeWhenEndDragging, let cell = self.currentDisplayCell {
+                cell.resume()
             }
         }
     }

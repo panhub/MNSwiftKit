@@ -26,13 +26,13 @@ class MNAssetPreviewController: UIViewController {
     /// 配置信息
     private let options: MNAssetPickerOptions
     /// 是否在销毁时删除本地资源文件
-    var clearWhenExit: Bool = false
+    var shouldClearWhenPop: Bool = false
     /// 是否允许自动播放
-    var isAllowsAutoPlaying: Bool = true
+    var autoPlay: Bool = true
     /// 事件代理
     weak var delegate: MNAssetPreviewControllerDelegate?
     /// 顶部导航栏
-    private let navView = UIImageView()
+    private let navigationView = UIImageView()
     /// 导航右侧选择按钮
     private let rightBarButton = UIButton(type: .custom)
     /// 底部选择栏
@@ -55,7 +55,7 @@ class MNAssetPreviewController: UIViewController {
     }
     
     deinit {
-        if clearWhenExit {
+        if shouldClearWhenPop {
             assets.forEach { $0.contents = nil }
         }
     }
@@ -105,16 +105,16 @@ class MNAssetPreviewController: UIViewController {
         ])
         
         // 导航
-        navView.contentMode = .scaleToFill
-        navView.isUserInteractionEnabled = true
-        navView.image = AssetPickerResource.image(named: "picker_preview_top")
-        navView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(navView)
+        navigationView.contentMode = .scaleToFill
+        navigationView.isUserInteractionEnabled = true
+        navigationView.image = AssetPickerResource.image(named: "picker_preview_top")
+        navigationView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(navigationView)
         NSLayoutConstraint.activate([
-            navView.topAnchor.constraint(equalTo: view.topAnchor),
-            navView.leftAnchor.constraint(equalTo: view.leftAnchor),
-            navView.rightAnchor.constraint(equalTo: view.rightAnchor),
-            navView.heightAnchor.constraint(equalToConstant: options.topBarHeight)
+            navigationView.topAnchor.constraint(equalTo: view.topAnchor),
+            navigationView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            navigationView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            navigationView.heightAnchor.constraint(equalToConstant: options.topBarHeight)
         ])
         
         // 返回
@@ -137,12 +137,12 @@ class MNAssetPreviewController: UIViewController {
             back.adjustsImageWhenHighlighted = false
             back.setBackgroundImage(backImage, for: .normal)
         }
-        navView.addSubview(back)
+        navigationView.addSubview(back)
         NSLayoutConstraint.activate([
             back.widthAnchor.constraint(equalToConstant: 24.0),
             back.heightAnchor.constraint(equalToConstant: 24.0),
-            back.leftAnchor.constraint(equalTo: navView.leftAnchor, constant: 16.0),
-            back.topAnchor.constraint(equalTo: navView.topAnchor, constant: options.statusBarHeight + (options.navBarHeight - 24.0)/2.0)
+            back.leftAnchor.constraint(equalTo: navigationView.leftAnchor, constant: 16.0),
+            back.topAnchor.constraint(equalTo: navigationView.topAnchor, constant: options.statusBarHeight + (options.navBarHeight - 24.0)/2.0)
         ])
         
         // 选择
@@ -173,11 +173,11 @@ class MNAssetPreviewController: UIViewController {
             rightBarButton.setBackgroundImage(normalImage, for: .normal)
             rightBarButton.setBackgroundImage(selectedImage, for: .selected)
         }
-        navView.addSubview(rightBarButton)
+        navigationView.addSubview(rightBarButton)
         NSLayoutConstraint.activate([
             rightBarButton.widthAnchor.constraint(equalToConstant: 23.0),
             rightBarButton.heightAnchor.constraint(equalToConstant: 23.0),
-            rightBarButton.rightAnchor.constraint(equalTo: navView.rightAnchor, constant: -16.0),
+            rightBarButton.rightAnchor.constraint(equalTo: navigationView.rightAnchor, constant: -16.0),
             rightBarButton.centerYAnchor.constraint(equalTo: back.centerYAnchor)
         ])
         
@@ -193,12 +193,12 @@ class MNAssetPreviewController: UIViewController {
         ])
         
         // 放大
-        let doubleTap = UITapGestureRecognizer(target: self, action: #selector(double(recognizer:)))
+        let doubleTap = UITapGestureRecognizer(target: self, action: #selector(doubleTap(recognizer:)))
         doubleTap.numberOfTapsRequired = 2
         view.addGestureRecognizer(doubleTap)
         
         // 清屏
-        let singleTap = UITapGestureRecognizer(target: self, action: #selector(single(recognizer:)))
+        let singleTap = UITapGestureRecognizer(target: self, action: #selector(singleTap(recognizer:)))
         singleTap.numberOfTapsRequired = 1
         singleTap.require(toFail: doubleTap)
         view.addGestureRecognizer(singleTap)
@@ -240,7 +240,7 @@ extension MNAssetPreviewController: UICollectionViewDataSource, UICollectionView
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "com.mn.asset.preview.cell", for: indexPath)
         if let cell = cell as? MNAssetBrowserCell {
             cell.delegate = self
-            cell.isAllowsAutoPlaying = isAllowsAutoPlaying
+            cell.autoPlay = autoPlay
         }
         return cell
     }
@@ -249,7 +249,7 @@ extension MNAssetPreviewController: UICollectionViewDataSource, UICollectionView
         guard let cell = cell as? MNAssetBrowserCell, indexPath.item < assets.count else { return }
         let asset = assets[indexPath.item]
         cell.willDisplay(asset)
-        cell.updateToolBar(visible: navView.transform == .identity, animated: false)
+        cell.updateToolBar(visible: navigationView.transform == .identity, animated: false)
     }
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -308,7 +308,7 @@ private extension MNAssetPreviewController {
         if let index = assets.firstIndex(where: { $0.isSelected == false }) {
             // 删除无效资源
             let model = assets.remove(at: index)
-            if clearWhenExit {
+            if shouldClearWhenPop {
                 model.contents = nil
             }
             currentIndex = assets.firstIndex(of: asset)!
@@ -333,7 +333,7 @@ extension MNAssetPreviewController {
     
     /// 双击事件
     /// - Parameter recognizer: 手势
-    @objc func double(recognizer: UITapGestureRecognizer) {
+    @objc private func doubleTap(recognizer: UITapGestureRecognizer) {
         guard let cell = currentDisplayCell else { return }
         let location = recognizer.location(in: cell.scrollView.contentView)
         guard cell.scrollView.contentView.bounds.contains(location) else { return }
@@ -349,14 +349,14 @@ extension MNAssetPreviewController {
     
     /// 单击事件
     /// - Parameter recognizer: 手势
-    @objc func single(recognizer: UITapGestureRecognizer) {
-        let visible = navView.transform == .identity
+    @objc private func singleTap(recognizer: UITapGestureRecognizer) {
+        let visible = navigationView.transform == .identity
         if visible {
             let location = recognizer.location(in: view)
             if selectView.isHidden == false {
                 guard selectView.frame.contains(location) == false else { return }
             }
-            guard view.bounds.inset(by: UIEdgeInsets(top: navView.frame.maxY, left: 0.0, bottom: 0.0, right: 0.0)).contains(location) else { return }
+            guard view.bounds.inset(by: UIEdgeInsets(top: navigationView.frame.maxY, left: 0.0, bottom: 0.0, right: 0.0)).contains(location) else { return }
         }
         guard let cell = currentDisplayCell else { return }
         let location = recognizer.location(in: cell.scrollView.contentView)
@@ -364,7 +364,7 @@ extension MNAssetPreviewController {
         cell.updateToolBar(visible: visible == false, animated: true)
         UIView.animate(withDuration: 0.25, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
             guard let self = self else { return }
-            self.navView.transform = visible ? .init(translationX: 0.0, y: -self.navView.frame.maxY) : .identity
+            self.navigationView.transform = visible ? .init(translationX: 0.0, y: -self.navigationView.frame.maxY) : .identity
             self.selectView.alpha = visible ? 0.0 : 1.0
         }
     }

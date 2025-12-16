@@ -498,10 +498,10 @@ extension MNAssetPickerController: MNAssetCellEventHandler {
         }
         let browser = MNAssetBrowser(assets: [asset])
         browser.delegate = self
-        browser.leftBarEvent = .back
-        browser.clearWhenExit = true
-        browser.exitWhenPulled = true
+        browser.dragToDismiss = true
+        browser.leftBarItemEvent = .back
         browser.backgroundColor = .black
+        browser.shouldClearWhenDismiss = true
         browser.present(in: view) { [weak self] state in
             guard let self = self else { return }
             switch state {
@@ -649,7 +649,7 @@ extension MNAssetPickerController: MNAssetPickerToolDelegate {
     func previewButtonTouchUpInside(_ toolBar: MNAssetPickerToolBar) {
         let previewController = MNAssetPreviewController(assets: selections, options: options)
         previewController.delegate = self
-        previewController.clearWhenExit = true
+        previewController.shouldClearWhenPop = true
         navigationController?.pushViewController(previewController, animated: true)
     }
     

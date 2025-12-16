@@ -95,10 +95,9 @@ extension AssetBrowserController: UICollectionViewDelegate, UICollectionViewData
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let assets = items.compactMap { $0.asAsset }
         let browser = MNAssetBrowser(assets: assets)
-        browser.autoPlaying = true
-        browser.leftBarEvent = .back
-        browser.exitWhenPulled = true
-        browser.exitWhenTouched = true
+        browser.autoPlay = true
+        browser.dragToDismiss = true
+        browser.leftBarItemEvent = .back
         browser.backgroundColor = .black
         browser.present(in: view, from: indexPath.item, animated: true)
     }

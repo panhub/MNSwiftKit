@@ -47,8 +47,8 @@ public class MNAssetBrowserCell: UICollectionViewCell {
     
     /// 当前状态
     private var state: State = .idle
-    /// 是否允许自动播放
-    public var isAllowsAutoPlaying: Bool = false
+    /// 是否自动播放
+    public var autoPlay: Bool = false
     /// 资源模型
     private(set) var asset: (any MNAssetBrowseSupported)!
     /// 事件代理
@@ -343,14 +343,14 @@ extension MNAssetBrowserCell {
             livePhotoView.livePhoto = livePhoto
             scrollView.imageView.isHidden = true
             livePhotoView.isHidden = false
-            if isAllowsAutoPlaying {
+            if autoPlay {
                 livePhotoView.startPlayback(with: .full)
             }
         case .video:
             // 视频
             guard let videoPath = contents as? String else { break }
             player.add([URL(fileAtPath: videoPath)])
-            if isAllowsAutoPlaying {
+            if autoPlay {
                 player.play()
             }
         }
@@ -390,6 +390,14 @@ extension MNAssetBrowserCell {
             player.pause()
         default: break
         }
+    }
+    
+    /// 继续播放视频
+    public func resume() {
+        guard let asset = asset, asset.type == .video else { return }
+        guard state == .displaying else { return }
+        guard player.status == .pause else { return }
+        player.play()
     }
     
     /// 更新控制栏是否可见
@@ -434,7 +442,7 @@ extension MNAssetBrowserCell {
     }
 }
 
-// MARK: - 当前视图
+// MARK: - 当前状态
 extension MNAssetBrowserCell {
     
     /// 获取当前显示的图片
@@ -450,6 +458,13 @@ extension MNAssetBrowserCell {
             if #available(iOS 16.0, *), let image = scrollView.playView.displayedImage { return image }
             return asset.cover
         }
+    }
+    
+    /// 是否在播放
+    public var isPlaying: Bool {
+        guard let asset = asset, asset.type == .video else { return false }
+        guard state == .displaying else { return false }
+        return player.isPlaying
     }
 }
 
