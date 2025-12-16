@@ -14,7 +14,7 @@ class MNSuccessToast {
     lazy var activityLayer: CAShapeLayer = {
         
         let lineWidth: CGFloat = 2.2
-        let borderSize: CGSize = .init(width: 50.0, height: 28.0)
+        let borderSize: CGSize = .init(width: 36.0, height: 22.0)
         
         let path = UIBezierPath()
         path.move(to: CGPoint(x: lineWidth/2.0, y: lineWidth/2.0))
@@ -25,12 +25,12 @@ class MNSuccessToast {
         activityLayer.frame = .init(origin: .zero, size: borderSize)
         activityLayer.path = path.cgPath
         activityLayer.fillColor = UIColor.clear.cgColor
-        activityLayer.strokeColor = MNToast.Configuration.shared.primaryColor.withAlphaComponent(0.88).cgColor
+        activityLayer.strokeColor = MNToast.Configuration.shared.activityColor.cgColor
         activityLayer.lineWidth = lineWidth
         activityLayer.lineCap = .round
         activityLayer.lineJoin = .round
-        activityLayer.strokeStart = 0.31
-        activityLayer.strokeEnd = 0.31
+        activityLayer.strokeStart = 0.23
+        activityLayer.strokeEnd = 0.23
         
         return activityLayer
     }()
@@ -68,7 +68,7 @@ extension MNSuccessToast: MNToastBuilder {
         paragraph.paragraphSpacing = 1.0
         paragraph.lineHeightMultiple = 1.0
         paragraph.paragraphSpacingBefore = 1.0
-        return [.font:MNToast.Configuration.shared.font, .foregroundColor:MNToast.Configuration.shared.primaryColor, .paragraphStyle:paragraph]
+        return [.font:MNToast.Configuration.shared.font, .foregroundColor:MNToast.Configuration.shared.textColor, .paragraphStyle:paragraph]
     }
     
     var fadeInForToast: Bool {
@@ -83,7 +83,7 @@ extension MNSuccessToast: MNToastBuilder {
     
     var allowUserInteraction: Bool {
         
-        false
+        MNToast.Configuration.shared.allowUserInteraction
     }
 }
 
@@ -96,7 +96,7 @@ extension MNSuccessToast: MNToastAnimationSupported {
         let animation = CABasicAnimation(keyPath: #keyPath(CAShapeLayer.strokeEnd))
         animation.fromValue = activityLayer.strokeStart
         animation.toValue = 1.0
-        animation.duration = 0.55
+        animation.duration = 0.35
         animation.fillMode = .forwards
         animation.autoreverses = false
         animation.isRemovedOnCompletion = false

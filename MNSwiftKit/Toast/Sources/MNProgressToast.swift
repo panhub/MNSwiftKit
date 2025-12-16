@@ -15,7 +15,7 @@ public class MNProgressToast {
         /// 填充至100%
         case fill
         /// 线条至100%
-        case line
+        case circular
     }
     
     /// 进度弹框样式
@@ -31,7 +31,7 @@ public class MNProgressToast {
     lazy var activityLayer: CAShapeLayer = {
         
         let borderSize: CGSize = .init(width: 40.0, height: 40.0)
-        let lineWidth: CGFloat = style == .line ? 2.2 : borderSize.width/2.0
+        let lineWidth: CGFloat = style == .circular ? 2.2 : borderSize.width/2.0
         
         let path = UIBezierPath(arcCenter: .init(x: borderSize.width/2.0, y: borderSize.height/2.0), radius: (borderSize.width - lineWidth)/2.0, startAngle: -.pi/2.0, endAngle: .pi/2.0*3.0, clockwise: true)
         
@@ -41,12 +41,10 @@ public class MNProgressToast {
         activityLayer.fillColor = UIColor.clear.cgColor
         activityLayer.lineWidth = lineWidth
         activityLayer.strokeEnd = 0.0
-        if style == .line {
+        activityLayer.strokeColor = MNToast.Configuration.shared.activityColor.cgColor
+        if style == .circular {
             activityLayer.lineCap = .round
             activityLayer.lineJoin = .round
-            activityLayer.strokeColor = MNToast.Configuration.shared.primaryColor.withAlphaComponent(0.86).cgColor
-        } else {
-            activityLayer.strokeColor = MNToast.Configuration.shared.primaryColor.withAlphaComponent(0.86).cgColor
         }
         
         return activityLayer
@@ -57,8 +55,8 @@ public class MNProgressToast {
         let percentLabel = UILabel()
         percentLabel.numberOfLines = 1
         percentLabel.textAlignment = .center
-        percentLabel.textColor = MNToast.Configuration.shared.primaryColor
-        percentLabel.font = .systemFont(ofSize: 10.0, weight: .medium)
+        percentLabel.textColor = MNToast.Configuration.shared.textColor
+        percentLabel.font = .systemFont(ofSize: 9.0, weight: .medium)
         return percentLabel
     }()
 }
@@ -99,7 +97,7 @@ extension MNProgressToast: MNToastBuilder {
         activityView.layer.addSublayer(trackLayer)
         activityView.layer.addSublayer(activityLayer)
         
-        if style == .line {
+        if style == .circular {
             percentLabel.translatesAutoresizingMaskIntoConstraints = false
             activityView.addSubview(percentLabel)
             NSLayoutConstraint.activate([
@@ -119,7 +117,7 @@ extension MNProgressToast: MNToastBuilder {
         paragraph.paragraphSpacing = 1.0
         paragraph.lineHeightMultiple = 1.0
         paragraph.paragraphSpacingBefore = 1.0
-        return [.font:MNToast.Configuration.shared.font, .foregroundColor:MNToast.Configuration.shared.primaryColor, .paragraphStyle:paragraph]
+        return [.font:MNToast.Configuration.shared.font, .foregroundColor:MNToast.Configuration.shared.textColor, .paragraphStyle:paragraph]
     }
     
     public var fadeInForToast: Bool {
@@ -134,7 +132,7 @@ extension MNProgressToast: MNToastBuilder {
     
     public var allowUserInteraction: Bool {
         
-        false
+        MNToast.Configuration.shared.allowUserInteraction
     }
 }
 
@@ -145,7 +143,7 @@ extension MNProgressToast: MNToastProgressSupported {
         CATransaction.setDisableActions(true)
         activityLayer.strokeEnd = value
         CATransaction.commit()
-        if style == .line {
+        if style == .circular {
             let percentFormatter = NumberFormatter()
             percentFormatter.numberStyle = .percent
             percentFormatter.minimumFractionDigits = 0

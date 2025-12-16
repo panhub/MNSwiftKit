@@ -61,20 +61,26 @@ extension MNToast {
         /// 布局方向
         public var axis: MNToast.Axis = .vertical(spacing: 8.0)
         
+        /// 圆角大小
+        public var cornerRadius: CGFloat = 8.0
+        
         /// 键盘弹起时, 与键盘的距离
         public var spacingToKeyboard: CGFloat = 20.0
+        
+        /// 显示时是否允许交互
+        public var allowUserInteraction: Bool = false
         
         /// 内容四周约束
         public var contentInset: UIEdgeInsets = .init(top: 13.0, left: 13.0, bottom: 13.0, right: 13.0)
         
-        /// 主要颜色(主题颜色)
-        public var primaryColor: UIColor = UIColor(hue: 0.0, saturation: 0.0, brightness: 0.95, alpha: 1.0)
-        
-        /// 次要颜色(配色)
-        public var secondaryColor: UIColor = UIColor(hue: 0.0, saturation: 0.0, brightness: 0.3, alpha: 1.0)
-        
         /// 字体
         public var font: UIFont = .systemFont(ofSize: 15.0, weight: .regular)
+        
+        /// 文字颜色
+        public var textColor: UIColor = UIColor(hue: 0.0, saturation: 0.0, brightness: 0.95, alpha: 1.0)
+        
+        /// 活动视图颜色
+        public var activityColor: UIColor = UIColor(hue: 0.0, saturation: 0.0, brightness: 0.95, alpha: 0.86)
         
         /// 状态文字最大宽度
         public var greatestFiniteStatusWidth: CGFloat = 200.0
@@ -142,7 +148,7 @@ extension MNToast {
     ///   - cancellation: 是否支持手动取消
     ///   - timeInterval: 显示时长后自动关闭
     ///   - handler: 关闭后回调(是否是手动取消)
-    public class func showProgress(_ status: String? = nil, style: MNProgressToast.Style = .line, value: (any BinaryFloatingPoint)? = nil, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellation: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ cancellation: Bool)->Void)? = nil) {
+    public class func showProgress(_ status: String? = nil, style: MNProgressToast.Style = .circular, value: (any BinaryFloatingPoint)? = nil, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellation: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ cancellation: Bool)->Void)? = nil) {
         
         show(builder: MNProgressToast(style: style), at: position, status: status, progress: value, cancellation: cancellation, delay: timeInterval, close: handler)
     }

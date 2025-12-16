@@ -26,17 +26,11 @@ class MNInfoToast: MNToastBuilder {
     }
     
     var activityViewForToast: UIView? {
-        
-        var image: UIImage!
-        if #available(iOS 13.0, *) {
-            image = UIImage(systemName: "info.circle")
-        } else {
-            image = ToastResource.image(named: "toast_info")
-        }
-        let imageView = UIImageView(frame: .init(origin: .zero, size: .init(width: 40.0, height: 40.0)))
-        imageView.image = image?.withRenderingMode(.alwaysTemplate)
+        // info.circle
+        let imageView = UIImageView(frame: .init(origin: .zero, size: .init(width: 38.0, height: 38.0)))
+        imageView.image = ToastResource.image(named: "toast_info")?.withRenderingMode(.alwaysTemplate)
         imageView.contentMode = .scaleAspectFit
-        imageView.tintColor = MNToast.Configuration.shared.primaryColor
+        imageView.tintColor = MNToast.Configuration.shared.activityColor
         return imageView
     }
     
@@ -48,7 +42,7 @@ class MNInfoToast: MNToastBuilder {
         paragraph.paragraphSpacing = 1.0
         paragraph.lineHeightMultiple = 1.0
         paragraph.paragraphSpacingBefore = 1.0
-        return [.font:MNToast.Configuration.shared.font, .foregroundColor:MNToast.Configuration.shared.primaryColor, .paragraphStyle:paragraph]
+        return [.font:MNToast.Configuration.shared.font, .foregroundColor:MNToast.Configuration.shared.textColor, .paragraphStyle:paragraph]
     }
     
     var fadeInForToast: Bool {
@@ -63,6 +57,6 @@ class MNInfoToast: MNToastBuilder {
     
     var allowUserInteraction: Bool {
         
-        false
+        MNToast.Configuration.shared.allowUserInteraction
     }
 }

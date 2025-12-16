@@ -37,7 +37,7 @@ class MNMsgToast: MNToastBuilder {
         paragraph.paragraphSpacing = 1.0
         paragraph.lineHeightMultiple = 1.0
         paragraph.paragraphSpacingBefore = 1.0
-        return [.font:MNToast.Configuration.shared.font, .foregroundColor:MNToast.Configuration.shared.primaryColor, .paragraphStyle:paragraph]
+        return [.font:MNToast.Configuration.shared.font, .foregroundColor:MNToast.Configuration.shared.textColor, .paragraphStyle:paragraph]
     }
     
     var fadeInForToast: Bool {

@@ -250,7 +250,7 @@ public class MNToast: UIView {
         super.init(frame: .zero)
         
         visualView.clipsToBounds = true
-        visualView.layer.cornerRadius = 8.0
+        visualView.layer.cornerRadius = MNToast.Configuration.shared.cornerRadius
         visualView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(visualView)
         NSLayoutConstraint.activate([visualView.centerXAnchor.constraint(equalTo: centerXAnchor)])
@@ -311,7 +311,7 @@ public class MNToast: UIView {
         if cancellation {
             let closeImage = ToastResource.image(named: "toast_close")?.withRenderingMode(.alwaysTemplate)
             closeButton = UIButton(type: .custom)
-            closeButton.tintColor = MNToast.Configuration.shared.primaryColor
+            closeButton.tintColor = MNToast.Configuration.shared.activityColor
             closeButton.translatesAutoresizingMaskIntoConstraints = false
             closeButton.addTarget(self, action: #selector(cancel), for: .touchUpInside)
             if #available(iOS 15.0, *) {
@@ -454,8 +454,11 @@ extension MNToast {
         if let toast = superview.mn.toast {
             // 判断是否是当前类型, 存在则更新
             if type(of: toast.builder) == type(of: builder) {
+                // 停止当前定时器
+                if let delay = delay, delay > 0.0 {
+                    toast.destroyTimer()
+                }
                 // 取消当前动画
-                //let isAnimating = toast.visualView.layer.animationKeys() != nil
                 if toast.state == .willDisappear {
                     toast.visualView.layer.removeAllAnimations()
                     toast.visualView.transform = .identity
@@ -467,17 +470,24 @@ extension MNToast {
                 if let progress = progress {
                     toast.update(progress: progress)
                 }
-                if let delay = delay {
-                    toast.destroyTimer()
-                    toast.delayTimeInterval = delay
-                }
                 if let handler = handler {
                     toast.closeHandler = handler
                 }
                 // 重新展示动画
-                if toast.state == .willDisappear {
-                    superview.bringSubviewToFront(toast)
-                    toast.show(animated: builder.fadeInForToast)
+                switch toast.state {
+                case .willAppear, .willDisappear:
+                    if let delay = delay, delay > 0.0 {
+                        toast.delayTimeInterval = delay
+                    }
+                    if toast.state == .willDisappear {
+                        superview.bringSubviewToFront(toast)
+                        toast.show(animated: builder.fadeInForToast)
+                    }
+                case .appearing:
+                    if let delay = delay, delay > 0.0 {
+                        toast.close(delay: delay)
+                    }
+                default: break
                 }
                 return
             }

@@ -435,7 +435,7 @@ extension MNTailorViewController {
                 return
             }
             exportSession.timeRange = exportSession.asset.mn.timeRange(withProgress: begin, to: end)
-            MNToast.showProgress("正在导出", style: .line, cancellation: true) { [weak exportSession] cancellation in
+            MNToast.showProgress("正在导出", style: .circular, cancellation: true) { [weak exportSession] cancellation in
                 guard cancellation else { return }
                 guard let exportSession = exportSession else { return }
                 exportSession.cancel()

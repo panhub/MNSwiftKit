@@ -12,8 +12,8 @@ public class MNRotationToast {
     
     /// 线条样式
     public enum Style {
-        /// 纯色线条
-        case line
+        /// 圆弧线条
+        case arc
         /// 一对儿
         case pair
         /// 渐变颜色线条
@@ -32,25 +32,25 @@ public class MNRotationToast {
     lazy var activityLayer: CAShapeLayer = {
         
         let lineWidth: CGFloat = 2.2
-        let borderSize: CGSize = .init(width: 40.0, height: 40.0)
+        let borderSize: CGSize = .init(width: 38.0, height: 38.0)
         
         let path = UIBezierPath(arcCenter: CGPoint(x: borderSize.width/2.0, y: borderSize.height/2.0), radius: (borderSize.width - lineWidth)/2.0, startAngle: -.pi/2.0, endAngle: .pi/2.0*3.0, clockwise: true)
         let activityLayer = CAShapeLayer()
         activityLayer.frame = .init(origin: .zero, size: borderSize)
         activityLayer.path = path.cgPath
         activityLayer.fillColor = UIColor.clear.cgColor
-        activityLayer.strokeColor = MNToast.Configuration.shared.primaryColor.withAlphaComponent(0.88).cgColor
+        activityLayer.strokeColor = MNToast.Configuration.shared.activityColor.cgColor
         activityLayer.lineWidth = lineWidth
         activityLayer.lineCap = .round
         activityLayer.lineJoin = .round
         
         switch style {
-        case .line:
-            activityLayer.strokeStart = 0.09
-            activityLayer.strokeEnd = 0.91
+        case .arc:
+            activityLayer.strokeStart = 0.08
+            activityLayer.strokeEnd = 0.92
         case .pair:
             activityLayer.strokeStart = 0.0
-            activityLayer.strokeEnd = 0.12
+            activityLayer.strokeEnd = 0.13
         case .gradient:
             let mask = CALayer()
             mask.frame = activityLayer.bounds
@@ -90,7 +90,7 @@ extension MNRotationToast: MNToastBuilder {
             trackLayer.frame = activityView.bounds
             trackLayer.path = path.cgPath
             trackLayer.fillColor = UIColor.clear.cgColor
-            trackLayer.strokeColor = activityLayer.strokeColor?.copy(alpha: 0.18)
+            trackLayer.strokeColor = activityLayer.strokeColor?.copy(alpha: 0.15)
             trackLayer.lineWidth = activityLayer.lineWidth
             activityView.layer.addSublayer(trackLayer)
         }
@@ -106,7 +106,7 @@ extension MNRotationToast: MNToastBuilder {
         paragraph.paragraphSpacing = 1.0
         paragraph.lineHeightMultiple = 1.0
         paragraph.paragraphSpacingBefore = 1.0
-        return [.font:MNToast.Configuration.shared.font, .foregroundColor:MNToast.Configuration.shared.primaryColor, .paragraphStyle:paragraph]
+        return [.font:MNToast.Configuration.shared.font, .foregroundColor:MNToast.Configuration.shared.textColor, .paragraphStyle:paragraph]
     }
     
     public var fadeInForToast: Bool {
@@ -121,7 +121,7 @@ extension MNRotationToast: MNToastBuilder {
     
     public var allowUserInteraction: Bool {
         
-        false
+        MNToast.Configuration.shared.allowUserInteraction
     }
 }
 

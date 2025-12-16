@@ -11,7 +11,7 @@ import MNSwiftKit
 
 class AssetBrowserController: UIViewController {
     
-    private var isReloaded: Bool = false
+    private var isLoaded: Bool = false
     
     private var items: [BrowserListItem] = []
     
@@ -63,7 +63,7 @@ class AssetBrowserController: UIViewController {
             }
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
-                self.isReloaded = true
+                self.isLoaded = true
                 self.collectionView.reloadData()
             }
         }
@@ -79,7 +79,7 @@ extension AssetBrowserController: UICollectionViewDelegate, UICollectionViewData
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        isReloaded ? items.count : 0
+        isLoaded ? items.count : 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
