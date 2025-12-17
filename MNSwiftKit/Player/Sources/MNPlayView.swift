@@ -39,7 +39,7 @@ extension AVLayerVideoGravity {
 }
 
 /// 播放器画布
-public class MNPlayView: UIView {
+@IBDesignable public class MNPlayView: UIView {
     
     /// 代理
     @objc public weak var delegate: MNPlayViewDelegate?
@@ -48,7 +48,7 @@ public class MNPlayView: UIView {
     public override class var layerClass: AnyClass { AVPlayerLayer.self }
     
     /// 播放器
-    public var player: AVPlayer? {
+    @objc public var player: AVPlayer? {
         get {
             let layer = layer as! AVPlayerLayer
             return layer.player
@@ -81,16 +81,27 @@ public class MNPlayView: UIView {
     }()
     
     /// 是否响应点击事件
-    @objc public var isTouchEnabled: Bool {
+    @objc @IBInspectable public var isTouchEnabled: Bool {
         get { tap.isEnabled }
         set { tap.isEnabled = newValue }
     }
     
     /// 封面视图
-    public let coverView = UIImageView()
+    @objc public let coverView = UIImageView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
+        commonInit()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        
+        commonInit()
+    }
+    
+    private func commonInit() {
         
         coverView.clipsToBounds = true
         coverView.backgroundColor = .clear
@@ -108,13 +119,9 @@ public class MNPlayView: UIView {
         addGestureRecognizer(tap)
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     /// 正在显示的图片
     @available(iOS 16.0, *)
-    public var displayedImage: UIImage? {
+    @objc public var displayedImage: UIImage? {
         let layer = layer as! AVPlayerLayer
         guard let pixelBuffer = layer.displayedPixelBuffer() else { return nil }
         CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
