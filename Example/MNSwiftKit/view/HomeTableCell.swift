@@ -27,13 +27,9 @@ class HomeTableCell: UITableViewCell {
     func update(row: HomeListRow) {
         
         nameLabel.attributedText = row.title
-        
         clsLabel.text = row.cls
-        
         podLabel.text = "'\(row.module)'"
-        
         spmLabel.text = "MN\(row.module)"
-        
         contentView.backgroundColor = row.index%2 == 0 ? .white : .gray.withAlphaComponent(0.04)
     }
 

@@ -90,7 +90,6 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         let cls: AnyClass? = NSClassFromString("\(nameSpace).\(row.cls)")
         guard let type = cls as? UIViewController.Type else { return }
         let vc = type.init()
-        vc.title = row.title.string
         navigationController?.pushViewController(vc, animated: true)
     }
 }

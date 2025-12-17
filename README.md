@@ -955,9 +955,9 @@ view.mn.showRotationToast("加载中...", style: .gradient)
 
 ```swift
 // 默认线条样式, 更新进度时，重新调用即可
-MNToast.showProgress("正在下载", style: .line, value: 0.0)
+MNToast.showProgress("正在下载", style: .circular, value: 0.0)
 
-view.mn.showProgressToast("正在下载", style: .line, value: 0.0)
+view.mn.showProgressToast("正在下载", style: .circular, value: 0.0)
 ```
 
 关闭当前 Toast
