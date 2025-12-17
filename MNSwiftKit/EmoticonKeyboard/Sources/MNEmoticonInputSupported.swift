@@ -82,6 +82,7 @@ extension MNNameSpaceWrapper where Base: UITextView {
         if selectedRange.location != NSNotFound {
             base.selectedRange = NSRange(location: selectedRange.location + attributedString.length, length: 0)
         }
+        NotificationCenter.default.post(name: UITextView.textDidChangeNotification, object: base, userInfo: nil)
     }
     
     /// 输入内容
@@ -102,6 +103,7 @@ extension MNNameSpaceWrapper where Base: UITextView {
         if selectedRange.location != NSNotFound {
             base.selectedRange = NSRange(location: selectedRange.location + attributedString.length, length: 0)
         }
+        NotificationCenter.default.post(name: UITextView.textDidChangeNotification, object: base, userInfo: nil)
     }
 }
 
