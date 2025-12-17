@@ -147,10 +147,6 @@ public class MNAssetPickerOptions: NSObject, NSCopying {
      主题颜色 UIColor(red: 23.0/255.0, green: 79.0/255.0, blue: 218.0/255.0, alpha: 1.0)
      */
     @objc public var themeColor: UIColor = UIColor(red: 72.0/255.0, green: 122.0/255.0, blue: 245.0/255.0, alpha: 1.0)
-//    /**
-//     辅助颜色
-//     */
-//    @objc public var tintColor: UIColor = .black
     /**
      背景样式
      */
@@ -198,7 +194,6 @@ public class MNAssetPickerOptions: NSObject, NSCopying {
         options.videoExportURL = videoExportURL
         options.videoExportPreset = videoExportPreset
         options.renderSize = renderSize
-//        options.tintColor = tintColor
         options.themeColor = themeColor
         options.mode = mode
         options.presentationStyle = presentationStyle

@@ -1290,7 +1290,6 @@ options.allowsMixedPicking = true  // 允许混合选择
 let options = MNAssetPickerOptions()
 options.mode = .dark  // 暗黑模式
 options.themeColor = UIColor(red: 72.0/255.0, green: 122.0/255.0, blue: 245.0/255.0, alpha: 1.0)
-options.tintColor = .white
 options.numberOfColumns = 4  // 每行显示4列
 options.minimumLineSpacing = 4.0
 options.minimumInteritemSpacing = 4.0
@@ -1344,7 +1343,6 @@ class ViewController: UIViewController, MNAssetPickerDelegate {
 - UI 配置：
   - `mode`: 主题模式（.light / .dark，默认：.dark）
   - `themeColor`: 主题颜色
-  - `tintColor`: 辅助颜色
   - `numberOfColumns`: 每行显示列数（默认：4）
   - `minimumLineSpacing`: 行间距（默认：4.0）
   - `minimumInteritemSpacing`: 列间距（默认：4.0）
@@ -5438,13 +5436,13 @@ let currentIndex = player.playIndex
 ```swift
 // 添加文件到播放列表
 let newURL = URL(fileURLWithPath: "/path/to/new.mp3")
-player.add([newURL])
+player.append(urls: [newURL])
 
 // 插入文件到指定位置
 player.insert(newURL, at: 1)
 
 // 更新指定位置的播放地址
-player.update(url: newURL, index: 0)
+player.update(url: newURL, at: 0)
 
 // 检查是否包含某个地址
 if player.contains(newURL) {

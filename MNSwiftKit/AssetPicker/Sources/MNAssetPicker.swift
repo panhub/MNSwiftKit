@@ -30,8 +30,6 @@ public class MNAssetPicker: UINavigationController {
     /// 资源选择器结束回调
     public typealias ResultHandler = (_ picker: MNAssetPicker, _ assets: [MNAsset])->Void
     
-    /// 是否动态展示
-    private var isAnimated: Bool = true
     /// 取消回调
     private var cancelHandler: CancelHandler?
     /// 选择回调
@@ -80,7 +78,7 @@ extension MNAssetPicker {
     /// - Parameters:
     ///   - pickingHandler: 选择结束回调
     ///   - cancelHandler: 取消事件回调
-    @objc public func present(pickingHandler: @escaping ResultHandler, cancelHandler: CancelHandler? = nil) {
+    public func present(pickingHandler: @escaping ResultHandler, cancelHandler: CancelHandler? = nil) {
         present(in: nil, animated: true, pickingHandler: pickingHandler, cancelHandler: cancelHandler)
     }
     
@@ -90,40 +88,14 @@ extension MNAssetPicker {
     ///   - animated: 是否动态展示
     ///   - pickingHandler: 选择结束回调
     ///   - cancelHandler: 取消事件回调
-    @objc public func present(in viewController: UIViewController?, animated: Bool = true, pickingHandler: @escaping ResultHandler, cancelHandler: CancelHandler? = nil) {
-        picking(pickingHandler).cancel(cancelHandler).present(in: viewController, animated: animated)
-    }
-    
-    /// 设置选择结果回调
-    /// - Parameter pickingHandler: 选择结束回调代码块
-    /// - Returns: 选择器
-    @discardableResult
-    @objc public func picking(_ pickingHandler: @escaping ResultHandler) -> MNAssetPicker {
-        self.pickingHandler = pickingHandler
-        return self
-    }
-    
-    /// 设置取消选择回调
-    /// - Parameter cancelHandler: 回调代码块
-    /// - Returns: 选择器
-    @discardableResult
-    @objc public func cancel(_ cancelHandler: CancelHandler!) -> MNAssetPicker {
-        self.cancelHandler = cancelHandler
-        return self
-    }
-    
-    /// 弹出资源选择器
-    /// - Parameters:
-    ///   - parent: 指定父控制器 (nil则寻找上层控制器)
-    ///   - animated: 是否动态
-    ///   - completion: 弹出结束回调
-    @objc public func present(in parent: UIViewController? = nil, animated: Bool = true, completion: (() -> Void)? = nil) {
-        let parentViewController: UIViewController? = parent ?? .mn.current
-        guard let parentViewController = parentViewController else { return }
+    public func present(in viewController: UIViewController?, animated: Bool = true, pickingHandler: @escaping ResultHandler, cancelHandler: CancelHandler? = nil) {
+        let vc: UIViewController? = viewController ?? .mn.current
+        guard let vc = vc else { return }
         delegate = self
-        isAnimated = animated
+        self.cancelHandler = cancelHandler
+        self.pickingHandler = pickingHandler
         modalPresentationStyle = options.presentationStyle
-        parentViewController.present(self, animated: (animated && UIApplication.shared.applicationState == .active), completion: completion)
+        vc.present(self, animated: (animated && UIApplication.shared.applicationState == .active))
     }
 }
 
@@ -131,14 +103,14 @@ extension MNAssetPicker {
 extension MNAssetPicker: MNAssetPickerDelegate {
     
     public func assetPickerDidCancel(_ picker: MNAssetPicker) {
-        dismiss(animated: (isAnimated && UIApplication.shared.applicationState == .active)) { [weak self] in
+        dismiss(animated: UIApplication.shared.applicationState == .active) { [weak self] in
             guard let self = self else { return }
             self.cancelHandler?(self)
         }
     }
     
     public func assetPicker(_ picker: MNAssetPicker, didFinishPicking assets: [MNAsset]) {
-        dismiss(animated: (isAnimated && UIApplication.shared.applicationState == .active)) { [weak self] in
+        dismiss(animated: UIApplication.shared.applicationState == .active) { [weak self] in
             guard let self = self else { return }
             self.pickingHandler?(self, assets)
         }

@@ -413,7 +413,7 @@ extension MNPlayer {
     /// - Parameters:
     ///   - url: 文件地址
     ///   - index: 索引
-    public func update(url: URL, index: Int) {
+    public func update(url: URL, at index: Int) {
         guard index < urls.count else { return }
         let old = urls[index]
         let key = old.isFileURL ? old.path : old.absoluteString
@@ -443,9 +443,15 @@ extension MNPlayer {
         urls.contains { $0.path == url.path || $0.absoluteString == url.absoluteString }
     }
     
-    /// 添加内容
-    /// - Parameter urls: 播放链接
-    public func add(_ urls: [URL]) {
+    /// 追加资源
+    /// - Parameter url: 资源定位器
+    public func append(_ url: URL) {
+        append(urls: [url])
+    }
+    
+    /// 追加资源内容
+    /// - Parameter urls: 资源集合
+    public func append(urls: [URL]) {
         for url in urls {
             guard url.isFileURL, FileManager.default.fileExists(atPath: url.path) else { continue }
             self.urls.append(url)

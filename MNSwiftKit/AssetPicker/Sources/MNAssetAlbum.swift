@@ -55,13 +55,13 @@ public class MNAssetAlbum: NSObject {
         self.name = collection.mn.localizedName
         super.init()
         if options.allowsPickingVideo == false {
-            self.options.predicate = NSPredicate(format: "mediaType == %d", PHAssetMediaType.image.rawValue)
+            self.options.predicate = NSPredicate(format: "\(#keyPath(PHAsset.mediaType)) == %ld", PHAssetMediaType.image.rawValue)
         } else if options.allowsPickingPhoto == false, options.allowsPickingGif == false, options.allowsPickingLivePhoto == false {
-            self.options.predicate = NSPredicate(format: "mediaType == %d", PHAssetMediaType.video.rawValue)
+            self.options.predicate = NSPredicate(format: "\(#keyPath(PHAsset.mediaType)) == %ld", PHAssetMediaType.video.rawValue)
         } else {
-            self.options.predicate = NSPredicate(format: "mediaType == %d || mediaType == %d", PHAssetMediaType.image.rawValue, PHAssetMediaType.video.rawValue)
+            self.options.predicate = NSPredicate(format: "\(#keyPath(PHAsset.mediaType)) == %ld || \(#keyPath(PHAsset.mediaType)) == %ld", PHAssetMediaType.image.rawValue, PHAssetMediaType.video.rawValue)
         }
-        self.options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: options.sortAscending)]
+        self.options.sortDescriptors = [NSSortDescriptor(key: #keyPath(PHAsset.creationDate), ascending: options.sortAscending)]
         let result = PHAsset.fetchAssets(in: collection, options: self.options)
         self.count = result.count
         if let first = result.firstObject {
