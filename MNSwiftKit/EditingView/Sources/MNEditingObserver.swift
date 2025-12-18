@@ -7,19 +7,19 @@
 
 import UIKit
 
-protocol MNEditingObserverHandler: NSObjectProtocol {
+protocol MNEditingObserveDelegate: NSObjectProtocol {
     
     /// 内容尺寸变化
     /// - Parameters:
     ///   - scrollView: 滑动控件
     ///   - change: 尺寸变化
-    func scrollView(_ scrollView: UIScrollView, contentSize change: [NSKeyValueChangeKey : Any]?) -> Void
+    func scrollView(_ scrollView: UIScrollView, didChangeContentSize change: [NSKeyValueChangeKey : Any]?)
     
     /// 内容偏移改变
     /// - Parameters:
     ///   - scrollView: 滑动控件
     ///   - change: 偏移变化
-    func scrollView(_ scrollView: UIScrollView, contentOffset change: [NSKeyValueChangeKey : Any]?) -> Void
+    func scrollView(_ scrollView: UIScrollView, didChangeContentOffset change: [NSKeyValueChangeKey : Any]?)
 }
 
 class MNEditingObserver: NSObject {
@@ -28,7 +28,7 @@ class MNEditingObserver: NSObject {
     weak var scrollView: UIScrollView?
     
     /// 事件通知代理
-    weak var delegate: MNEditingObserverHandler?
+    weak var delegate: MNEditingObserveDelegate?
     
     /// 构造监听
     /// - Parameter scrollView: 滑动控件
@@ -46,15 +46,14 @@ class MNEditingObserver: NSObject {
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        guard let keyPath = keyPath else { return }
         guard let delegate = delegate else { return }
+        guard let keyPath = keyPath else { return }
         guard let scrollView = scrollView else { return }
         switch keyPath {
         case #keyPath(UIScrollView.contentSize):
-            delegate.scrollView(scrollView, contentSize: change)
+            delegate.scrollView(scrollView, didChangeContentSize: change)
         case #keyPath(UIScrollView.contentOffset):
-            if let oldValue = change?[.oldKey] as? CGPoint, let newValue = change?[.newKey] as? CGPoint, newValue == oldValue { break }
-            delegate.scrollView(scrollView, contentOffset: change)
+            delegate.scrollView(scrollView, didChangeContentOffset: change)
         default: break
         }
     }

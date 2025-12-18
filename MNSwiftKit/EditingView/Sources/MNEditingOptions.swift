@@ -10,16 +10,14 @@ import CoreFoundation
 
 public class MNEditingOptions: NSObject {
     
-    /// 圆角
-    @objc public var cornerRadius: CGFloat = 0.0
+    /// 圆角大小
+    public var cornerRadius: CGFloat = 0.0
     
-    /// 内容偏移
-    /// left: 'direction = right'时有效, right: 'direction = left'时有效
-    @objc public var contentInset: UIEdgeInsets = .zero
+    /// 内容四周约束
+    /// - left: direction = .right 时有效
+    /// - right: direction = .left 时有效
+    public var contentInset: UIEdgeInsets = .zero
     
     /// 背景颜色
-    @objc public var backgroundColor: UIColor? = .clear
-    
-    /// 使用内部按钮响应事件
-    @objc public var usingInnerInteraction: Bool = true
+    public var backgroundColor: UIColor? = .clear
 }

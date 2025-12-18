@@ -17,7 +17,7 @@ public protocol UICollectionViewEditingDelegate {
     ///   - collectionView: 集合视图
     ///   - indexPath: 索引
     /// - Returns: 编辑方向
-    func collectionView(_ collectionView: UICollectionView, editingDirectionsForItemAt indexPath: IndexPath) -> [MNEditingDirection]
+    func collectionView(_ collectionView: UICollectionView, editingDirectionsForItemAt indexPath: IndexPath) -> MNEditingView.Direction
     
     /// 提交编辑视图
     /// - Parameters:
@@ -25,7 +25,7 @@ public protocol UICollectionViewEditingDelegate {
     ///   - indexPath: 索引
     ///   - direction: 拖拽方向
     /// - Returns: 编辑视图
-    func collectionView(_ collectionView: UICollectionView, editingActionsForItemAt indexPath: IndexPath, direction: MNEditingDirection) -> [UIView]
+    func collectionView(_ collectionView: UICollectionView, editingActionsForItemAt indexPath: IndexPath, direction: MNEditingView.Direction) -> [UIView]
     
     /// 提交二次编辑视图
     /// - Parameters:
@@ -34,7 +34,7 @@ public protocol UICollectionViewEditingDelegate {
     ///   - indexPath: 索引
     ///   - direction: 拖拽方向
     /// - Returns: 二次编辑视图
-    func collectionView(_ collectionView: UICollectionView, commitEditing action: UIView, forItemAt indexPath: IndexPath, direction: MNEditingDirection) -> UIView?
+    func collectionView(_ collectionView: UICollectionView, commitEditing action: UIView, forItemAt indexPath: IndexPath, direction: MNEditingView.Direction) -> UIView?
 }
 
 extension UICollectionView {
@@ -81,14 +81,14 @@ extension MNNameSpaceWrapper where Base: UICollectionView {
     }
 }
 
-// MARK: - MNEditingObserverHandler
-extension UICollectionView: MNEditingObserverHandler {
+// MARK: - MNEditingObserveDelegate
+extension UICollectionView: MNEditingObserveDelegate {
     
-    func scrollView(_ scrollView: UIScrollView, contentSize change: [NSKeyValueChangeKey : Any]?) {
+    func scrollView(_ scrollView: UIScrollView, didChangeContentSize change: [NSKeyValueChangeKey : Any]?) {
         mn.endEditing(animated: false)
     }
     
-    func scrollView(_ scrollView: UIScrollView, contentOffset change: [NSKeyValueChangeKey : Any]?) {
+    func scrollView(_ scrollView: UIScrollView, didChangeContentOffset change: [NSKeyValueChangeKey : Any]?) {
         mn.endEditing(animated: (scrollView.isDragging || scrollView.isDecelerating))
     }
 }
@@ -133,7 +133,7 @@ extension MNNameSpaceWrapper where Base: UICollectionViewCell {
             if allowsEditing == newValue { return }
             objc_setAssociatedObject(base, &UICollectionViewCell.MNEditingAssociated.allowsEditing, newValue, .OBJC_ASSOCIATION_ASSIGN)
             if newValue {
-                let pan = MNEditingRecognizer(target: base, action: #selector(base.mn_handleItemEditing(_:)))
+                let pan = MNEditingRecognizer(target: base, action: #selector(base.mn_handle_editing(_:)))
                 base.contentView.addGestureRecognizer(pan)
             } else {
                 guard let gestureRecognizers = base.contentView.gestureRecognizers else { return }
@@ -154,13 +154,23 @@ extension MNNameSpaceWrapper where Base: UICollectionViewCell {
     
     /// 约束编辑视图
     public func layoutEditingView() {
-        guard let editingView = editingView, editingView.frame.width > 0.0 else { return }
+        guard let editingView = editingView else { return }
+        layout(offset: editingView.frame.width, direction: editingView.direction)
+    }
+    
+    /// 指定更新偏移量
+    /// - Parameters:
+    ///   - offset: 偏移量
+    ///   - direction: 编辑方向
+    fileprivate func layout(offset: CGFloat, direction: MNEditingView.Direction) {
         var rect = base.contentView.frame
         rect.origin.x = contentViewX
-        if editingView.direction == .left {
-            rect.origin.x -= editingView.frame.width
-        } else {
-            rect.origin.x += editingView.frame.width
+        if offset > 0.0 {
+            if direction == .left || direction.contains(.left) {
+                rect.origin.x -= offset
+            } else {
+                rect.origin.x += offset
+            }
         }
         base.contentView.frame = rect
     }
@@ -194,11 +204,15 @@ extension MNNameSpaceWrapper where Base: UICollectionViewCell {
         guard let editingView = editingView else { return }
         base.willBeginUpdateEditing(editing, animated: animated)
         if animated {
+            let cell = base
             editingView.isAnimating = true
-            let completionHandler: (Bool)->Void = { [weak self] _ in
-                guard let self = self else { return }
-                editingView.isAnimating = false
-                self.base.didEndUpdateEditing(editing, animated: animated)
+            let completionHandler: (Bool)->Void = { [weak cell, weak editingView] _ in
+                if let editingView = editingView {
+                    editingView.isAnimating = false
+                }
+                if let cell = cell {
+                    cell.didEndUpdateEditing(editing, animated: animated)
+                }
             }
             if editing {
                 UIView.animate(withDuration: 0.7, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 1.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
@@ -243,7 +257,7 @@ extension UICollectionViewCell {
     
     /// 处理拖拽手势
     /// - Parameter recognizer: 手势
-    @objc fileprivate func mn_handleItemEditing(_ recognizer: UIPanGestureRecognizer) {
+    @objc fileprivate func mn_handle_editing(_ recognizer: UIPanGestureRecognizer) {
         switch recognizer.state {
         case .changed:
             guard let collectionView = mn.collectionView else { break }
@@ -253,9 +267,9 @@ extension UICollectionViewCell {
                 // 依据方向更新视图
                 guard let indexPath = collectionView.indexPath(for: self) else { break }
                 guard let delegate = collectionView.dataSource as? UICollectionViewEditingDelegate else { break }
-                let direction: MNEditingDirection = velocity.x > 0.0 ? .right : .left
+                let direction: MNEditingView.Direction = velocity.x > 0.0 ? .right : .left
                 let directions = delegate.collectionView(collectionView, editingDirectionsForItemAt: indexPath)
-                guard directions.contains(direction) else { break }
+                guard direction == directions || directions.contains(direction) else { break }
                 let actions = delegate.collectionView(collectionView, editingActionsForItemAt: indexPath, direction: direction)
                 guard actions.isEmpty == false else { break }
                 collectionView.mn.endEditing(animated: true)
@@ -277,12 +291,11 @@ extension UICollectionViewCell {
                 // 超过最优距离, 加阻尼, 减缓拖拽效果
                 m = m/3.0*2.0
             }
-            switch editingView.direction {
-            case .left:
+            if editingView.direction == .left || editingView.direction.contains(.left) {
                 let spacing = collectionView.mn.editingOptions.contentInset.right
                 rect.size.width = max(0.0, floor(rect.width - m))
                 rect.origin.x = frame.width - rect.width - spacing
-            case .right:
+            } else {
                 rect.size.width = max(0.0, floor(rect.width + m))
             }
             editingView.frame = rect
@@ -316,7 +329,12 @@ extension UICollectionViewCell: MNEditingViewDelegate {
         guard let indexPath = collectionView.indexPath(for: self) else { return }
         guard let delegate = collectionView.dataSource as? UICollectionViewEditingDelegate else { return }
         guard let newAction = delegate.collectionView(collectionView, commitEditing: action, forItemAt: indexPath, direction: editingView.direction) else { return }
-        editingView.replaceAction(with: newAction, at: index)
+        let offset = newAction.frame.width
+        let direction = editingView.direction
+        editingView.replaceAction(with: newAction, at: index) { [weak self] in
+            guard let self = self else { return }
+            self.mn.layout(offset: offset, direction: direction)
+        }
     }
 }
 

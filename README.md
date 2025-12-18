@@ -1828,7 +1828,7 @@ emoticonKeyboard.delegate = self
 let options = MNEmoticonKeyboard.Options()
 
 // 表情包列表
-options.packets = ["wechat", "收藏夹", "animal", "emotion", "food"]
+options.packets = [.wechat, .animal]
 
 // Return 键类型
 options.returnKeyType = .send
@@ -2029,18 +2029,19 @@ extension ViewController: MNEmoticonKeyboardDelegate {
 模块提供了以下内置表情包：
 
 - `wechat`: 微信表情包
-- `收藏夹`: 用户收藏夹（可编辑）
+- `favorites`: 用户收藏夹（可编辑）
 - `animal`: Unicode 动物和自然表情
-- `emotion`: Unicode 笑脸和情感表情
+- `face`: Unicode 笑脸和情感表情
 - `food`: Unicode 食物和饮料表情
-- `symbol`: Unicode 符号和对象表情
-- `vehicle`: Unicode 交通工具表情
+- `object`: Unicode 物品和符号表情
+- `travel`: Unicode 旅游和地点表情
+- `exercise`: Unicode 活动和运动表情
 
 配置选项说明
 
 `MNEmoticonKeyboard.Options` 提供以下配置选项：
 
-- `packets`: 表情包列表（字符串数组）
+- `packets`: 表情包列表（`MNEmoticon.Packet`类型）
 - `returnKeyType`: Return 键类型（`.default`、`.send`、`.done` 等）
 - `hidesForSingle`: 只有一个表情包时是否隐藏表情包栏（紧凑样式）或页码指示器（分页样式）
 - `packetBarHeight`: 表情包栏高度
@@ -3228,7 +3229,6 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewEditin
         tableView.mn.editingOptions.cornerRadius = 10.0
         tableView.mn.editingOptions.backgroundColor = .systemBackground
         tableView.mn.editingOptions.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 8)
-        tableView.mn.editingOptions.usingInnerInteraction = true
         
         tableView.dataSource = self
     }
@@ -3410,22 +3410,14 @@ class CustomCell: UITableViewCell {
 
 ```swift
 let options = tableView.mn.editingOptions
-
 // 圆角
 options.cornerRadius = 10.0
-
 // 背景颜色
 options.backgroundColor = .systemBackground
-
 // 内容边距
 // left: direction = .right 时有效
 // right: direction = .left 时有效
 options.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 8)
-
-// 是否使用内部按钮响应事件
-// true: 编辑视图内部处理点击事件（推荐）
-// false: 按钮视图自己处理点击事件
-options.usingInnerInteraction = true
 ```
 
 编辑方向说明

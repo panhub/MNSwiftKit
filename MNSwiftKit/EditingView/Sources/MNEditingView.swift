@@ -18,24 +18,31 @@ protocol MNEditingViewDelegate: NSObjectProtocol {
     func editingView(_ editingView: MNEditingView, actionButtonTouchUpInside action: UIView, index: Int) -> Void
 }
 
-/// 定义编辑触发方向
-public enum MNEditingDirection: Int {
-    /// 向左滑动以触发编辑
-    case left
-    // 向右滑动以触发编辑
-    case right
-}
-
-private class MNEditingAction: UIControl {}
+private class MNEditingControl: UIControl {}
 
 /// 集合视图表格的编辑视图
-class MNEditingView: UIView {
+public class MNEditingView: UIView {
+    
+    /// 定义编辑触发方向
+    public struct Direction: OptionSet {
+        /// 向左滑动以触发编辑
+        public static let left = Direction(rawValue: 1 << 0)
+        /// 向右滑动以触发编辑
+        public static let right = Direction(rawValue: 1 << 1)
+        /// 左右滑动均可触发编辑
+        public static let all: Direction = [.left, .right]
+        
+        public let rawValue: UInt
+        public init(rawValue: UInt) {
+            self.rawValue = rawValue
+        }
+    }
     
     /// 配置信息
     let options: MNEditingOptions
     
     /// 当前的拖拽方向
-    private(set) var direction: MNEditingDirection = .left
+    private(set) var direction: MNEditingView.Direction = .left
     
     /// 事件代理
     weak var delegate: MNEditingViewDelegate?
@@ -61,14 +68,13 @@ class MNEditingView: UIView {
     }
     
     /// 添加至父视图时 决定自身高度
-    override func didMoveToSuperview() {
+    public override func didMoveToSuperview() {
         super.didMoveToSuperview()
         guard let superview = superview else { return }
         var rect = superview.bounds
-        switch direction {
-        case .left:
+        if direction == .left || direction.contains(.left) {
             rect.origin.x = rect.width - options.contentInset.right
-        case .right:
+        } else {
             rect.origin.x = options.contentInset.left
         }
         rect.size.width = 0.0
@@ -81,16 +87,15 @@ class MNEditingView: UIView {
     
     /// 更新编辑方向
     /// - Parameter direction: 指定方向
-    func update(direction: MNEditingDirection) {
-        if self.direction == direction { return }
+    func update(direction: MNEditingView.Direction) {
+        if self.direction == direction || direction.contains(self.direction) { return }
         self.direction = direction
         // 更新位置
         if let superview = superview {
             var rect = frame
-            switch direction {
-            case .left:
-                rect.origin.x = superview.frame.width - rect.width - options.contentInset.right
-            case .right:
+            if direction == .left || direction.contains(.left) {
+                rect.origin.x = superview.frame.width - options.contentInset.right - rect.width
+            } else {
                 rect.origin.x = options.contentInset.left
             }
             autoresizingMask = []
@@ -121,9 +126,7 @@ class MNEditingView: UIView {
         // 先隐藏旧视图
         for subview in subviews {
             subview.isHidden = true
-            for view in subview.subviews.reversed() {
-                view.removeFromSuperview()
-            }
+            subview.subviews.reversed().forEach { $0.removeFromSuperview() }
         }
         // 更新宽度
         constant = actions.reduce(0.0, { $0 + $1.frame.width })
@@ -131,14 +134,14 @@ class MNEditingView: UIView {
         // 添加子视图
         let subviews: [UIView] = subviews
         for (index, action) in actions.enumerated() {
-            var control: MNEditingAction
+            var control: MNEditingControl
             if index < subviews.count {
-                control = subviews[index] as! MNEditingAction
+                control = subviews[index] as! MNEditingControl
                 control.isHidden = false
                 control.autoresizingMask = []
                 bringSubviewToFront(control)
             } else {
-                control = MNEditingAction()
+                control = MNEditingControl()
                 control.tag = index
                 control.clipsToBounds = true
                 control.addTarget(self, action: #selector(buttonTouchUpInside(_:)), for: .touchUpInside)
@@ -151,13 +154,9 @@ class MNEditingView: UIView {
             action.removeConstraints(action.constraints)
             action.translatesAutoresizingMaskIntoConstraints = true
             action.center = CGPoint(x: control.bounds.midX, y: control.bounds.midY)
-            if options.usingInnerInteraction {
-                action.isUserInteractionEnabled = false
-            }
-            switch direction {
-            case .left:
+            if direction == .left || direction.contains(.left) {
                 action.autoresizingMask = [.flexibleTopMargin, .flexibleBottomMargin]
-            case .right:
+            } else {
                 action.autoresizingMask = [.flexibleLeftMargin, .flexibleTopMargin, .flexibleBottomMargin]
             }
             control.addSubview(action)
@@ -181,16 +180,15 @@ class MNEditingView: UIView {
         }
     }
     
-    /// 替换新视图
+    /// 替换新动作视图
     /// - Parameters:
-    ///   - action: 新的视图
-    ///   - index: 索引
-    func replaceAction(with action: UIView, at index: Int) {
+    ///   - action: 动作视图
+    ///   - index: 替换索引
+    ///   - animations: 动画
+    func replaceAction(with action: UIView, at index: Int, animations: @escaping () -> Void) {
         guard let subview = subviews.first(where: { $0.tag == index }) else { return }
         constant = action.frame.width
-        for view in subview.subviews.reversed() {
-            view.removeFromSuperview()
-        }
+        subview.subviews.reversed().forEach { $0.removeFromSuperview() }
         subview.backgroundColor = action.backgroundColor
         var rect = action.frame
         rect.origin.x = 0.0
@@ -199,14 +197,12 @@ class MNEditingView: UIView {
         action.removeConstraints(action.constraints)
         action.translatesAutoresizingMaskIntoConstraints = true
         action.frame = rect
-        if options.usingInnerInteraction {
-            action.isUserInteractionEnabled = false
-        }
         subview.addSubview(action)
         bringSubviewToFront(subview)
         isAnimating = true
         UIView.animate(withDuration: 0.7, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 1.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
             guard let self = self else { return }
+            animations()
             var rect = subview.frame
             rect.origin = .zero
             rect.size.width = action.frame.width
@@ -222,24 +218,21 @@ class MNEditingView: UIView {
         } completion: { [weak self] _ in
             guard let self = self else { return }
             self.isAnimating = false
-            switch self.direction {
-            case .left:
+            if self.direction == .left || self.direction.contains(.left) {
                 action.autoresizingMask = [.flexibleTopMargin, .flexibleBottomMargin]
-            case .right:
+            } else {
                 action.autoresizingMask = [.flexibleLeftMargin, .flexibleTopMargin, .flexibleBottomMargin]
             }
             for subview in self.subviews.filter ({ ($0.isHidden == false && $0.tag != index) }) {
                 subview.isHidden = true
-                for view in subview.subviews.reversed() {
-                    view.removeFromSuperview()
-                }
+                subview.subviews.reversed().forEach { $0.removeFromSuperview() }
             }
         }
     }
     
     /// 按钮点击事件
     /// - Parameter sender: 按钮
-    @objc private func buttonTouchUpInside(_ sender: MNEditingAction) {
+    @objc private func buttonTouchUpInside(_ sender: MNEditingControl) {
         guard isAnimating == false else { return }
         guard let delegate = delegate else { return }
         guard let action = sender.subviews.first else { return }
