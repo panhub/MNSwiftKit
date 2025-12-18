@@ -31,9 +31,7 @@ class MNEmoticonCell: UICollectionViewCell {
         
         emotionLabel.numberOfLines = 1
         emotionLabel.textAlignment = .center
-        emotionLabel.minimumScaleFactor = 0.1
-        emotionLabel.adjustsFontSizeToFitWidth = true
-        emotionLabel.font = .systemFont(ofSize: 20.0)
+        emotionLabel.font = .systemFont(ofSize: min(contentView.frame.width, contentView.frame.height) - 2.0)
         emotionLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(emotionLabel)
         NSLayoutConstraint.activate([

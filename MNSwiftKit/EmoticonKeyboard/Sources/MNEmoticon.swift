@@ -11,6 +11,7 @@ import Foundation
 /// 表情
 public class MNEmoticon: NSObject {
     
+    /// 表情样式
     @objc(MNEmoticonStyle)
     public enum Style: Int {
         /// 类似于微信表情
@@ -21,6 +22,7 @@ public class MNEmoticon: NSObject {
         case image
     }
     
+    /// 表情属性
     public struct Key: RawRepresentable {
         
         public let rawValue: String
@@ -31,13 +33,13 @@ public class MNEmoticon: NSObject {
     }
     
     /// 图片名
-    public private(set) var img: String!
+    @objc public private(set) var img: String!
     /// 表情描述
-    public private(set) var desc: String!
+    @objc public private(set) var desc: String!
     /// 图像实例
-    public private(set) var image: UIImage!
+    @objc public private(set) var image: UIImage!
     /// 类型
-    public private(set) var style: MNEmoticon.Style = .emoticon
+    @objc public private(set) var style: MNEmoticon.Style = .emoticon
     
     fileprivate override init() {
         super.init()
@@ -81,8 +83,8 @@ extension MNEmoticon {
 // 表情解析字段
 extension MNEmoticon.Key {
     /// 图片字段
-    public static let img: MNEmoticon.Key = MNEmoticon.Key(rawValue: "img")
+    public static let img: MNEmoticon.Key = MNEmoticon.Key(rawValue: #keyPath(MNEmoticon.img))
     /// 描述字段
-    public static let desc: MNEmoticon.Key = MNEmoticon.Key(rawValue: "desc")
+    public static let desc: MNEmoticon.Key = MNEmoticon.Key(rawValue: #keyPath(MNEmoticon.desc))
 }
 

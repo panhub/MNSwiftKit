@@ -10,13 +10,13 @@ import UIKit
 import MNSwiftKit
 
 class ToastViewController: UIViewController {
-    
+    // 多个Toast展示视图的组合控件
     @IBOutlet weak var stackView: UIStackView!
-    
+    // 返回按钮顶部约束
     @IBOutlet weak var backTop: NSLayoutConstraint!
-    
+    // 导航栏高度
     @IBOutlet weak var navHeight: NSLayoutConstraint!
-    
+    // 返回高度约束
     @IBOutlet weak var backHeight: NSLayoutConstraint!
     
 

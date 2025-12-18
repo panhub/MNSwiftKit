@@ -11,45 +11,45 @@ import PhotosUI
 import MNSwiftKit
 
 class AssetPickerController: UIViewController {
-    
+    // 播放视频
     private let player = MNPlayer()
-    
+    // 播放LivePhoto
     private let livePhotoView = PHLivePhotoView()
-    
+    // 控制是否选择GIF资源
     @IBOutlet weak var pickGifSwitch: UISwitch!
-    
+    // 控制是否选择LivePhoto资源
     @IBOutlet weak var pickLivePhotoSwitch: UISwitch!
-    
+    // 控制是否选择照片资源
     @IBOutlet weak var pickPhotoSwitch: UISwitch!
-    
+    // 控制是否选择视频资源
     @IBOutlet weak var pickVideoSwitch: UISwitch!
-    
+    // 控制是否允许混合选择
     @IBOutlet weak var mixedPickSwitch: UISwitch!
-    
+    // 最多可选择多少资源
     @IBOutlet weak var countTextField: UITextField!
-    
+    // 最长可导出的视频时长
     @IBOutlet weak var durationTextField: UITextField!
-    
+    // 控制选择器样式
     @IBOutlet weak var darkModeSwitch: UISwitch!
-    
+    // 显示主题颜色
     @IBOutlet weak var themeColorView: UIView!
-    
+    // 调节主题颜色-R
     @IBOutlet weak var themeColorRSlider: UISlider!
-    
+    // 调节主题颜色-G
     @IBOutlet weak var themeColorGSlider: UISlider!
-    
+    // 调节主题颜色-B
     @IBOutlet weak var themeColorBSlider: UISlider!
-    
+    // 选择结果展示
     @IBOutlet weak var contentView: UIView!
-    
+    // 播放视频的视图
     @IBOutlet weak var playView: MNPlayView!
-    
+    // 显示照片、GIF
     @IBOutlet weak var imageView: UIImageView!
-    
+    // 返回按钮顶部约束
     @IBOutlet weak var backTop: NSLayoutConstraint!
-    
+    // 导航高度约束
     @IBOutlet weak var navHeight: NSLayoutConstraint!
-    
+    // 返回按钮高度约束
     @IBOutlet weak var backHeight: NSLayoutConstraint!
 
     override func viewDidLoad() {

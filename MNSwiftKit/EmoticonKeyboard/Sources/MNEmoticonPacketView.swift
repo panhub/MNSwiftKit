@@ -207,7 +207,7 @@ extension MNEmoticonPacketView {
         guard let userInfo = notify.userInfo else { return }
         guard let name = userInfo[MNEmoticonPacketNameUserInfoKey] as? String else { return }
         guard let pageIndex = packets.firstIndex(where: { $0.name == name }) else { return }
-        MNEmoticonManager.fetchEmoticonPacket([name]) { [weak self] packets in
+        MNEmoticonManager.fetchEmoticonPacket([MNEmoticon.Packet.Name(rawValue: name)]) { [weak self] packets in
             guard let self = self, let packet = packets.first else { return }
             self.packets[pageIndex] = packet
             UIView.performWithoutAnimation {

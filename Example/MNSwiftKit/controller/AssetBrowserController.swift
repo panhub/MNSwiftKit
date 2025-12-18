@@ -10,21 +10,21 @@ import UIKit
 import MNSwiftKit
 
 class AssetBrowserController: UIViewController {
-    
+    // 异步加载图片后再显示
     private var isLoaded: Bool = false
-    
+    // 图片数组
     private var items: [BrowserListItem] = []
-    
+    // 控制是否单张浏览
     @IBOutlet weak var switchButton: UISwitch!
-    
+    // 显示图片
     @IBOutlet weak var collectionView: UICollectionView!
-    
+    // 集合视图约束
     @IBOutlet weak var collectionLayout: MNCollectionViewFlowLayout!
-    
+    // 返回按钮顶部约束
     @IBOutlet weak var backTop: NSLayoutConstraint!
-    
+    // 返回高度约束
     @IBOutlet weak var backHeight: NSLayoutConstraint!
-    
+    // 导航栏高度
     @IBOutlet weak var navHeight: NSLayoutConstraint!
 
     override func viewDidLoad() {

@@ -55,13 +55,14 @@ public class MNEmoticonManager {
 extension MNEmoticonManager {
     
     /// 获取表情包
-    /// - Parameter names: 表情包文件名集合
+    /// - Parameter names: 表情包名集合
     /// - Returns: 查询结果
-    public func fetchEmoticonPacket(_ names: [String]) -> [MNEmoticon.Packet] {
+    public func fetchEmoticonPacket(_ names: [MNEmoticon.Packet.Name]) -> [MNEmoticon.Packet] {
         // 先去重
         let elements = names.reduce(into: [String]()) { partialResult, name in
-            guard partialResult.contains(name) == false else { return }
-            partialResult.append(name)
+            let rawValue = name.rawValue
+            guard partialResult.contains(rawValue) == false else { return }
+            partialResult.append(rawValue)
         }
         // 解析表情
         var urls: [URL] = []
@@ -94,30 +95,9 @@ extension MNEmoticonManager {
     ///   - names: 表情包文件名集合
     ///   - queue: 执行队列
     ///   - completionHandler: 结果回调
-    public class func fetchEmoticonPacket(_ names: [String], using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: @escaping ([MNEmoticon.Packet])->Void) {
+    public class func fetchEmoticonPacket(_ names: [MNEmoticon.Packet.Name], using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: @escaping ([MNEmoticon.Packet])->Void) {
         queue.async {
             let packets = MNEmoticonManager.shared.fetchEmoticonPacket(names)
-            DispatchQueue.main.async {
-                completionHandler(packets)
-            }
-        }
-    }
-    
-    /// 获取表情包
-    /// - Parameter names: 表情包名称集合
-    /// - Returns: 查询结果
-    public func fetchEmoticonPacket(names: [MNEmoticon.Packet.Name]) -> [MNEmoticon.Packet] {
-        fetchEmoticonPacket(names.compactMap({ $0.rawValue }))
-    }
-    
-    /// 获取表情包
-    /// - Parameters:
-    ///   - names: 表情包名称集合
-    ///   - queue: 执行队列
-    ///   - completionHandler: 结果回调
-    public class func fetchEmoticonPacket(names: [MNEmoticon.Packet.Name], using queue: DispatchQueue = DispatchQueue.global(qos: .default), completion completionHandler: @escaping ([MNEmoticon.Packet])->Void) {
-        queue.async {
-            let packets = MNEmoticonManager.shared.fetchEmoticonPacket(names: names)
             DispatchQueue.main.async {
                 completionHandler(packets)
             }

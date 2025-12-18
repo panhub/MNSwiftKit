@@ -10,19 +10,21 @@ import UIKit
 import MNSwiftKit
 
 class EmoticonKeyboardController: UIViewController {
-    
+    // 显示内容
     @IBOutlet weak var textView: UITextView!
-    
+    // 显示选中的图片表情
     @IBOutlet weak var imageView: UIImageView!
-    
-    @IBOutlet weak var switchButton: UISwitch!
-    
+    // 控制表情键盘样式
+    @IBOutlet weak var styleSwitch: UISwitch!
+    // 控制是否启用表情键盘
+    @IBOutlet weak var keyboardSwitch: UISwitch!
+    // 候选文字
     @IBOutlet weak var placeholderLabel: UILabel!
-    
+    // 返回按钮顶部约束
     @IBOutlet weak var backTop: NSLayoutConstraint!
-    
+    // 导航栏高度
     @IBOutlet weak var navHeight: NSLayoutConstraint!
-    
+    // 返回按钮高度
     @IBOutlet weak var backHeight: NSLayoutConstraint!
     
     deinit {
@@ -41,7 +43,7 @@ class EmoticonKeyboardController: UIViewController {
         textView.textContainerInset = .init(top: 8.0, left: 8.0, bottom: 8.0, right: 8.0)
         textView.textContainer.lineFragmentPadding = 0.0
         
-        switchValueChanged(switchButton)
+        keyboardValueChanged(keyboardSwitch)
         
         NotificationCenter.default.addObserver(self, selector: #selector(textDidChangeNotification(_:)), name: UITextView.textDidChangeNotification, object: nil)
     }
@@ -63,15 +65,26 @@ class EmoticonKeyboardController: UIViewController {
         navigationController?.popViewController(animated: true)
     }
     
-    @IBAction func switchValueChanged(_ sender: UISwitch) {
+    @IBAction func styleValueChanged(_ sender: UISwitch) {
+        guard keyboardSwitch.isOn else { return }
+        let isFirstResponder = textView.isFirstResponder
+        textView.resignFirstResponder()
+        keyboardValueChanged(keyboardSwitch)
+        if isFirstResponder {
+            textView.becomeFirstResponder()
+        }
+    }
+    
+    @IBAction func keyboardValueChanged(_ sender: UISwitch) {
         let isFirstResponder = textView.isFirstResponder
         textView.resignFirstResponder()
         if sender.isOn {
             // 表情键盘
             let options = MNEmoticonKeyboard.Options()
-            options.packets = [MNEmoticon.Packet.Name.wechat.rawValue, MNEmoticon.Packet.Name.emotion.rawValue, MNEmoticon.Packet.Name.animal.rawValue, MNEmoticon.Packet.Name.food.rawValue, MNEmoticon.Packet.Name.favorites.rawValue]
+            options.hidesForSingle = true
+            options.packets = [.wechat, .favorites, .face, .animal, .food, .favorites, .object, .travel, .exercise]
             options.enableFeedbackWhenInputClicks = true
-            let emoticonKeyboard = MNEmoticonKeyboard(frame: .init(origin: .zero, size: .init(width: MN_SCREEN_WIDTH, height: 310.0)), options: options)
+            let emoticonKeyboard = MNEmoticonKeyboard(frame: .init(origin: .zero, size: .init(width: MN_SCREEN_WIDTH, height: 310.0)), style: styleSwitch.isOn ? .compact : .paging, options: options)
             emoticonKeyboard.delegate = self
             textView.inputView = emoticonKeyboard
         } else {

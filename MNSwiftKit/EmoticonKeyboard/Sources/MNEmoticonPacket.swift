@@ -10,8 +10,10 @@ import Foundation
 
 extension MNEmoticon {
     
+    /// 表情包
     public class Packet {
         
+        /// 表情包名称
         public struct Name: RawRepresentable {
             
             public let rawValue: String
@@ -21,6 +23,7 @@ extension MNEmoticon {
             }
         }
         
+        /// 表情包内容字段的Key
         public struct Key: RawRepresentable {
             
             public let rawValue: String
@@ -31,16 +34,16 @@ extension MNEmoticon {
         }
         
         /// 名称
-        public let name: String
+        @objc public let name: String
         
         /// 封面文件名
-        public let cover: String
+        @objc public let cover: String
         
         /// 文件目录
-        public let directory: String
+        @objc public let directory: String
         
         /// 类型
-        public let style: MNEmoticon.Style
+        @objc public let style: MNEmoticon.Style
         
         /// 是否允许编辑
         private(set) var allowsEditing: Bool = false
@@ -104,24 +107,26 @@ extension MNEmoticon.Packet.Name {
     /// 收藏夹
     public static let favorites: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "收藏夹")
     /// Unicode - 动物和自然
-    public static let animal: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "animal")
+    public static let animal: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "animals")
     /// Unicode - 笑脸和情感
-    public static let emotion: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "emotion")
+    public static let face: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "faces")
     /// Unicode - 食物和饮料
-    public static let food: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "food")
-    /// Unicode - 符号和对象
-    public static let symbol: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "symbol")
-    /// Unicode - 交通工具
-    public static let vehicle: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "vehicle")
+    public static let food: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "foods")
+    /// Unicode - 物品与符号
+    public static let object: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "objects")
+    /// Unicode - 旅游与地点
+    public static let travel: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "travels")
+    /// Unicode - 活动与运动
+    public static let exercise: MNEmoticon.Packet.Name = MNEmoticon.Packet.Name(rawValue: "exercises")
 }
 
 extension MNEmoticon.Packet.Key {
-    /// 样式字段
+    /// 样式
     public static let style: MNEmoticon.Packet.Key = MNEmoticon.Packet.Key(rawValue: "style")
-    /// 名字字段
+    /// 名字
     public static let name: MNEmoticon.Packet.Key = MNEmoticon.Packet.Key(rawValue: "name")
-    /// 封面字段
+    /// 封面
     public static let cover: MNEmoticon.Packet.Key = MNEmoticon.Packet.Key(rawValue: "cover")
-    /// 表情字段
+    /// 表情内容
     public static let emoticons: MNEmoticon.Packet.Key = MNEmoticon.Packet.Key(rawValue: "emoticons")
 }

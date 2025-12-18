@@ -87,10 +87,12 @@ public class EmoticonKeyboardResource {
     }
     
     /// 获取资源束内json内容
-    /// - Parameter named: json文件名
+    /// - Parameters:
+    ///   - named: json文件名
+    ///   - subpath: 所在子目录
     /// - Returns: json内容
-    public class func json(named: String) -> Any? {
-        guard let jsonURL = bundle.url(forResource: named, withExtension: "json") else { return nil }
+    public class func json(named: String, in subpath: String? = nil) -> Any? {
+        guard let jsonURL = bundle.url(forResource: named, withExtension: "json", subdirectory: subpath) else { return nil }
         do {
             let jsonData = try Data(contentsOf: jsonURL, options: [])
             let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])

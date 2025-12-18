@@ -331,22 +331,25 @@ private extension MNEmoticonView {
 // MARK: - 预览
 private extension MNEmoticonView {
     
-    @objc func longPress(_ recognizer: UILongPressGestureRecognizer) {
+    /// 长按手势响应
+    /// - Parameter recognizer: 手势识别器
+    @objc private func longPress(_ recognizer: UILongPressGestureRecognizer) {
         switch recognizer.state {
         case .began:
-            preview(at: recognizer.location(in: self))
+            preview(at: recognizer.location(in: collectionView))
         case .changed:
-            preview(at: recognizer.location(in: self))
+            preview(at: recognizer.location(in: collectionView))
         default:
             guard let delegate = delegate else { break }
             delegate.emoticonViewShouldPreviewEmoticon(nil, at: .zero)
         }
     }
     
+    /// 预览表情
+    /// - Parameter location: 表情所在位置
     private func preview(at location: CGPoint) {
         guard let delegate = delegate else { return }
-        let point = CGPoint(x: location.x + collectionView.contentOffset.x, y: location.y)
-        if let indexPath = collectionView.indexPathForItem(at: point), let cell = collectionView.cellForItem(at: indexPath) as? MNEmoticonCell, cell.contentView.alpha == 1.0 {
+        if let indexPath = collectionView.indexPathForItem(at: location), let cell = collectionView.cellForItem(at: indexPath) as? MNEmoticonCell, cell.contentView.alpha == 1.0 {
             let rect = collectionView.convert(cell.frame, to: self)
             let emoticon = emoticons[indexPath.section][indexPath.item]
             delegate.emoticonViewShouldPreviewEmoticon(emoticon, at: rect)

@@ -21,7 +21,7 @@ extension MNEmoticonKeyboard {
     @objc(MNEmoticonKeyboardOptions)
     public class Options: NSObject {
         /// 表情包
-        @objc public var packets: [String] = [MNEmoticon.Packet.Name.wechat.rawValue, MNEmoticon.Packet.Name.favorites.rawValue]
+        public var packets: [MNEmoticon.Packet.Name] = [.wechat, .face, .favorites]
         /// returnKey类型
         @objc public var returnKeyType: UIReturnKeyType = .default
         /// compact: 只有一个表情包时 是否隐藏表情包栏
@@ -67,6 +67,16 @@ extension MNEmoticonKeyboard {
         @objc public var pageIndicatorHorizontalAlignment: UIControl.ContentHorizontalAlignment = .center
         /// 是否允许播放音效
         @objc public var enableFeedbackWhenInputClicks: Bool = false
+        /// 表情包名称 OC入口
+        @objc public var packetNames: [String] = [] {
+            didSet {
+                packets.removeAll()
+                for packetName in packetNames {
+                    let packet = MNEmoticon.Packet.Name(rawValue: packetName)
+                    packets.append(packet)
+                }
+            }
+        }
     }
 }
 
