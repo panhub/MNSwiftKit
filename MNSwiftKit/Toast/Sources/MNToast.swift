@@ -115,6 +115,8 @@ public class MNToast: UIView {
     private let position: MNToast.Position
     /// 是否支持手动取消
     private let cancellation: Bool
+    /// 记录是否是手动触发的关闭操作, 手动关闭时，不再显示
+    private var isManualClose: Bool = false
     /// 消失后回调
     public var closeHandler: ((Bool)->Void)?
     /// 当前状态
@@ -313,7 +315,7 @@ public class MNToast: UIView {
             closeButton = UIButton(type: .custom)
             closeButton.tintColor = MNToast.Configuration.shared.activityColor
             closeButton.translatesAutoresizingMaskIntoConstraints = false
-            closeButton.addTarget(self, action: #selector(cancel), for: .touchUpInside)
+            closeButton.addTarget(self, action: #selector(closeToast), for: .touchUpInside)
             if #available(iOS 15.0, *) {
                 var configuration = UIButton.Configuration.plain()
                 configuration.background.backgroundColor = .clear
@@ -395,7 +397,7 @@ public class MNToast: UIView {
     
     /// 定时器事件
     @objc private func timerStrike() {
-        close(cancellation: false)
+        close(manual: false)
     }
     
     /// 销毁定时器
@@ -405,9 +407,9 @@ public class MNToast: UIView {
         self.timer = nil
     }
     
-    /// 取消Toast
-    @objc private func cancel() {
-        close(cancellation: true)
+    /// 关闭Toast
+    @objc private func closeToast() {
+        close(manual: true)
     }
     
     /// 依据状态文字计算Toast显示时长
@@ -452,6 +454,7 @@ extension MNToast {
     ///   - handler: 展示结束回调
     public class func show(builder: MNToastBuilder, in superview: UIView, at position: MNToast.Position = MNToast.Configuration.shared.position, status: String?, progress: (any BinaryFloatingPoint)? = nil, cancellation: Bool = false, delay: TimeInterval? = nil, close handler: ((Bool)->Void)? = nil) {
         if let toast = superview.mn.toast {
+            guard toast.isManualClose == false else { return }
             // 判断是否是当前类型, 存在则更新
             if type(of: toast.builder) == type(of: builder) {
                 // 停止当前定时器
@@ -563,8 +566,9 @@ extension MNToast {
 extension MNToast {
     
     /// 关闭Toast
-    /// - Parameter cancellation: 是否是手动关闭的
-    @objc func close(cancellation: Bool) {
+    /// - Parameter manual: 是否是手动关闭的
+    @objc func close(manual: Bool) {
+        isManualClose = manual
         guard state == .willAppear || state == .appearing else { return }
         destroyTimer()
         let animationHandler: ()->Void = { [weak self] in
@@ -591,7 +595,7 @@ extension MNToast {
             if let closeHandler = self.closeHandler {
                 // 延迟执行, 确保Toast已释放
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                    closeHandler(cancellation)
+                    closeHandler(manual)
                 }
             }
         }
