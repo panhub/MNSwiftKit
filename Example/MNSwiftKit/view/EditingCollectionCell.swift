@@ -1,15 +1,16 @@
 //
-//  EditingTableCell.swift
+//  EditingCollectionCell.swift
 //  MNSwiftKit_Example
 //
-//  Created by 冯盼 on 2025/12/18.
+//  Created by mellow on 2025/12/19.
 //  Copyright © 2025 CocoaPods. All rights reserved.
 //
 
 import UIKit
+import MNSwiftKit
 
-class EditingTableCell: UITableViewCell {
-    
+class EditingCollectionCell: UICollectionViewCell {
+
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -20,11 +21,4 @@ class EditingTableCell: UITableViewCell {
         
         mn.layoutContentView()
     }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-    
 }

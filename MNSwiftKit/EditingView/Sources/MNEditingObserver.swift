@@ -46,9 +46,9 @@ class MNEditingObserver: NSObject {
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        guard let scrollView = scrollView else { return }
         guard let delegate = delegate else { return }
         guard let keyPath = keyPath else { return }
-        guard let scrollView = scrollView else { return }
         switch keyPath {
         case #keyPath(UIScrollView.contentSize):
             delegate.scrollView(scrollView, didChangeContentSize: change)

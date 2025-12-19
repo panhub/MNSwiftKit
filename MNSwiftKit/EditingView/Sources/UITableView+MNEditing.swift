@@ -10,6 +10,7 @@ import Foundation
 import CoreFoundation
 import ObjectiveC.runtime
 
+// MARK: - UITableViewEditingDelegate
 public protocol UITableViewEditingDelegate {
     
     /// 提交表格的编辑方向
@@ -37,6 +38,7 @@ public protocol UITableViewEditingDelegate {
     func tableView(_ tableView: UITableView, commitEditing action: UIView, forRowAt indexPath: IndexPath, direction: MNEditingView.Direction) -> UIView?
 }
 
+// MARK: - Table Associated Key
 extension UITableView {
     
     fileprivate struct MNEditingAssociated {
@@ -49,6 +51,7 @@ extension UITableView {
     }
 }
 
+// MARK: - UITableView
 extension MNNameSpaceWrapper where Base: UITableView {
     
     /// 是否处于编辑状态
@@ -93,19 +96,22 @@ extension UITableView: MNEditingObserveDelegate {
     }
 }
 
+// MARK: - Cell Associated Key
 extension UITableViewCell {
     
     fileprivate struct MNEditingAssociated {
         // 内容视图位置
-        static var contentX = "com.mn.table.view.cell.content.view.x"
+        static var contentX = "com.mn.table.cell.content.x"
         // 编辑视图
-        static var editingView = "com.mn.table.view.cell.editing.view"
+        static var editingView = "com.mn.table.cell.editing.view"
         // 是否允许编辑
-        static var allowsEditing = "com.mn.table.view.cell.allows.editing"
+        static var allowsEditing = "com.mn.table.cell.allows.editing"
+        // 拖拽手势交互前记录是否处于编辑状态, 交互后根据此状态决定是否更改 TableView 的编辑状态
+        static var referenceEditing = "com.mn.table.cell.is.editing"
     }
 }
 
-// MARK: - 开启编辑
+// MARK: - UITableViewCell
 extension MNNameSpaceWrapper where Base: UITableViewCell {
     
     /// 记录编辑开始时的x
@@ -120,8 +126,14 @@ extension MNNameSpaceWrapper where Base: UITableViewCell {
         set { objc_setAssociatedObject(base, &UITableViewCell.MNEditingAssociated.editingView, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
     }
     
+    /// 记录编辑状态
+    fileprivate var referenceEditing: Bool {
+        get { objc_getAssociatedObject(base, &UITableViewCell.MNEditingAssociated.referenceEditing) as? Bool ?? false }
+        set { objc_setAssociatedObject(base, &UITableViewCell.MNEditingAssociated.referenceEditing, newValue, .OBJC_ASSOCIATION_ASSIGN) }
+    }
+    
     /// 是否处于编辑状态
-    fileprivate var isEditing: Bool {
+    public var isEditing: Bool {
         guard let editingView = editingView, editingView.frame.width > 0.0 else { return false }
         return true
     }
@@ -152,17 +164,17 @@ extension MNNameSpaceWrapper where Base: UITableViewCell {
         updateEditing(false, animated: animated)
     }
     
-    /// 约束编辑视图
-    public func layoutEditingView() {
+    /// 约束内容视图
+    public func layoutContentView() {
         guard let editingView = editingView else { return }
-        layout(offset: editingView.frame.width, direction: editingView.direction)
+        layoutContent(offset: editingView.frame.width, direction: editingView.direction)
     }
     
     /// 指定更新偏移量
     /// - Parameters:
     ///   - offset: 偏移量
     ///   - direction: 编辑方向
-    fileprivate func layout(offset: CGFloat, direction: MNEditingView.Direction) {
+    fileprivate func layoutContent(offset: CGFloat, direction: MNEditingView.Direction) {
         var rect = base.contentView.frame
         rect.origin.x = contentViewX
         if offset > 0.0 {
@@ -176,7 +188,7 @@ extension MNNameSpaceWrapper where Base: UITableViewCell {
     }
 }
 
-// MARK: - 寻找集合视图
+// MARK: - UITableViewCell
 extension MNNameSpaceWrapper where Base: UITableViewCell {
     
     /// 当前行索引
@@ -219,23 +231,23 @@ extension MNNameSpaceWrapper where Base: UITableViewCell {
             if editing {
                 UIView.animate(withDuration: 0.7, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 1.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
                     guard let self = self else { return }
-                    self.update(editing: true)
+                    self.layoutEditingView(true)
                 }, completion: completionHandler)
             } else {
                 UIView.animate(withDuration: 0.25, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
                     guard let self = self else { return }
-                    self.update(editing: false)
+                    self.layoutEditingView(false)
                 }, completion: completionHandler)
             }
         } else {
-            update(editing: editing)
+            layoutEditingView(editing)
             base.didEndUpdateEditing(editing, animated: animated)
         }
     }
     
-    /// 更新编辑状态
+    /// 根据编辑状态约束编辑视图
     /// - Parameter editing: 是否编辑
-    fileprivate func update(editing: Bool) {
+    fileprivate func layoutEditingView(_ editing: Bool) {
         guard let editingView = editingView else { return }
         var rect = editingView.frame
         if editing {
@@ -243,7 +255,7 @@ extension MNNameSpaceWrapper where Base: UITableViewCell {
         } else {
             rect.size.width = 0.0
         }
-        if editingView.direction == .left, let tableView = tableView {
+        if (editingView.direction == .left || editingView.direction.contains(.left)), let tableView = tableView {
             let spacing = tableView.mn.editingOptions.contentInset.right
             rect.origin.x = base.frame.width - rect.width - spacing
         }
@@ -261,6 +273,9 @@ extension UITableViewCell {
     /// - Parameter recognizer: 手势
     @objc fileprivate func mn_handle_editing(_ recognizer: UIPanGestureRecognizer) {
         switch recognizer.state {
+        case .began:
+            // 开始拖拽, 记录此时是否处于编辑状态, 解决无效拖拽导致更改 TableView 编辑状态的问题
+            mn.referenceEditing = mn.isEditing
         case .changed:
             guard let tableView = mn.tableView else { break }
             var editingView: MNEditingView! = mn.editingView
@@ -309,11 +324,17 @@ extension UITableViewCell {
             let constant = editingView.constant
             let velocity = recognizer.velocity(in: recognizer.view)
             if editingView.frame.width <= 0.0 {
-                mn.tableView?.mn.isEditing = false
+                // 解决无效拖拽导致更改 TableView 编辑状态的问题
+                guard mn.referenceEditing else { break }
+                if let tableView = mn.tableView {
+                    tableView.mn.isEditing = false
+                }
             } else if editingView.frame.width == constant {
-                mn.tableView?.mn.isEditing = true
+                if let tableView = mn.tableView {
+                    tableView.mn.isEditing = true
+                }
             } else if editingView.frame.width > constant || (editingView.frame.width >= 40.0 && ((editingView.direction == .left && velocity.x < 0.0) || (editingView.direction == .right && velocity.x > 0.0))) {
-                // 询问是否可以回归编辑状态
+                // 恢复编辑状态
                 mn.updateEditing(true, animated: true)
             } else {
                 // 结束编辑
@@ -336,7 +357,7 @@ extension UITableViewCell: MNEditingViewDelegate {
         let direction = editingView.direction
         editingView.replaceAction(with: newAction, at: index) { [weak self] in
             guard let self = self else { return }
-            self.mn.layout(offset: offset, direction: direction)
+            self.mn.layoutContent(offset: offset, direction: direction)
         }
     }
 }

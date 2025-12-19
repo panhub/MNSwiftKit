@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -13,6 +13,8 @@
                 <outlet property="backHeight" destination="EvJ-sh-euR" id="Uk6-V4-q1t"/>
                 <outlet property="backTop" destination="qUr-GB-lkr" id="QXQ-0W-Gjc"/>
                 <outlet property="bottomTextField" destination="Al7-Kt-8mN" id="Dfi-oF-I9b"/>
+                <outlet property="collectionLayout" destination="gRn-TB-dNm" id="Mgu-ja-jJY"/>
+                <outlet property="collectionView" destination="lkx-uQ-qKS" id="ePg-OL-Vh3"/>
                 <outlet property="directionSegment" destination="qe1-9B-jB1" id="3i0-Lq-nGI"/>
                 <outlet property="leftTextField" destination="yaQ-kA-cIq" id="1di-yx-nmu"/>
                 <outlet property="listSegment" destination="SKJ-vE-jQv" id="NUa-Tw-iZJ"/>
@@ -411,6 +413,20 @@
                         <outlet property="delegate" destination="-1" id="0nY-oa-f2m"/>
                     </connections>
                 </tableView>
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" contentInsetAdjustmentBehavior="never" bouncesZoom="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="lkx-uQ-qKS">
+                    <rect key="frame" x="0.0" y="187" width="393" height="665"/>
+                    <color key="backgroundColor" systemColor="systemGray6Color"/>
+                    <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="gRn-TB-dNm">
+                        <size key="itemSize" width="128" height="128"/>
+                        <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                        <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                        <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    </collectionViewFlowLayout>
+                    <connections>
+                        <outlet property="dataSource" destination="-1" id="iQw-Qt-kle"/>
+                        <outlet property="delegate" destination="-1" id="O8b-NV-U3o"/>
+                    </connections>
+                </collectionView>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
@@ -418,7 +434,10 @@
                 <constraint firstItem="oBb-hD-daD" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="7EE-Iz-fW4"/>
                 <constraint firstItem="oBb-hD-daD" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="7yw-V9-mZ1"/>
                 <constraint firstAttribute="trailing" secondItem="q2r-ja-5hi" secondAttribute="trailing" id="AYg-5B-q0y"/>
+                <constraint firstItem="lkx-uQ-qKS" firstAttribute="bottom" secondItem="q2r-ja-5hi" secondAttribute="bottom" id="E5f-4Y-SBj"/>
                 <constraint firstItem="EgD-ae-vTW" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="13" id="NBv-Gg-H0e"/>
+                <constraint firstItem="lkx-uQ-qKS" firstAttribute="leading" secondItem="q2r-ja-5hi" secondAttribute="leading" id="Ol1-UA-yFy"/>
+                <constraint firstItem="lkx-uQ-qKS" firstAttribute="top" secondItem="q2r-ja-5hi" secondAttribute="top" id="Tb2-d0-Bo6"/>
                 <constraint firstAttribute="trailing" secondItem="EgD-ae-vTW" secondAttribute="trailing" constant="13" id="VhD-Cn-gyg"/>
                 <constraint firstItem="q2r-ja-5hi" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="XcC-wG-TXF"/>
                 <constraint firstItem="q2r-ja-5hi" firstAttribute="top" secondItem="cJj-WZ-PhR" secondAttribute="bottom" id="XvY-fR-693"/>
@@ -426,13 +445,14 @@
                 <constraint firstAttribute="trailing" secondItem="oBb-hD-daD" secondAttribute="trailing" id="ZV7-Qh-hNt"/>
                 <constraint firstItem="EgD-ae-vTW" firstAttribute="top" secondItem="c7f-71-oVg" secondAttribute="bottom" constant="13" id="nuX-d0-bSs"/>
                 <constraint firstItem="cJj-WZ-PhR" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="oiz-vr-2Fd"/>
+                <constraint firstItem="lkx-uQ-qKS" firstAttribute="trailing" secondItem="q2r-ja-5hi" secondAttribute="trailing" id="ry9-TW-kaA"/>
                 <constraint firstAttribute="bottom" secondItem="q2r-ja-5hi" secondAttribute="bottom" id="t1c-mW-Oat"/>
                 <constraint firstItem="cJj-WZ-PhR" firstAttribute="top" secondItem="EgD-ae-vTW" secondAttribute="bottom" constant="10" id="t8R-Ma-loN"/>
                 <constraint firstAttribute="trailing" secondItem="cJj-WZ-PhR" secondAttribute="trailing" id="wdH-qW-qnn"/>
             </constraints>
             <nil key="simulatedTopBarMetrics"/>
             <nil key="simulatedBottomBarMetrics"/>
-            <point key="canvasLocation" x="-158" y="-458"/>
+            <point key="canvasLocation" x="-94" y="38"/>
         </view>
     </objects>
     <resources>

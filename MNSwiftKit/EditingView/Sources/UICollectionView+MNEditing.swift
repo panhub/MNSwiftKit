@@ -10,6 +10,7 @@ import Foundation
 import CoreFoundation
 import ObjectiveC.runtime
 
+// MARK: - UICollectionViewEditingDelegate
 public protocol UICollectionViewEditingDelegate {
     
     /// 提交表格的编辑方向
@@ -37,6 +38,7 @@ public protocol UICollectionViewEditingDelegate {
     func collectionView(_ collectionView: UICollectionView, commitEditing action: UIView, forItemAt indexPath: IndexPath, direction: MNEditingView.Direction) -> UIView?
 }
 
+// MARK: - Collection Associated Key
 extension UICollectionView {
     
     fileprivate struct MNEditingAssociated {
@@ -49,6 +51,7 @@ extension UICollectionView {
     }
 }
 
+// MARK: - UICollectionView
 extension MNNameSpaceWrapper where Base: UICollectionView {
     
     /// 是否有表格处于编辑状态
@@ -93,19 +96,22 @@ extension UICollectionView: MNEditingObserveDelegate {
     }
 }
 
+// MARK: - Cell Associated Key
 extension UICollectionViewCell {
     
     fileprivate struct MNEditingAssociated {
         // 内容视图位置
-        static var contentX = "com.mn.collection.view.cell.content.view.x"
+        static var contentX = "com.mn.collection.cell.content.x"
         // 编辑视图
-        static var editingView = "com.mn.collection.view.cell.editing.view"
+        static var editingView = "com.mn.collection.cell.editing.view"
         // 是否允许编辑
-        static var allowsEditing = "com.mn.collection.view.cell.allows.editing"
+        static var allowsEditing = "com.mn.collection.cell.allows.editing"
+        // 拖拽手势交互前记录是否处于编辑状态, 交互后根据此状态决定是否更改 CollectionView 的编辑状态
+        static var referenceEditing = "com.mn.collection.cell.is.editing"
     }
 }
 
-// MARK: - 开启表格编辑
+// MARK: - UICollectionViewCell
 extension MNNameSpaceWrapper where Base: UICollectionViewCell {
     
     /// 编辑开始时的x
@@ -118,6 +124,12 @@ extension MNNameSpaceWrapper where Base: UICollectionViewCell {
     fileprivate var editingView: MNEditingView? {
         get { objc_getAssociatedObject(base, &UICollectionViewCell.MNEditingAssociated.editingView) as? MNEditingView }
         set { objc_setAssociatedObject(base, &UICollectionViewCell.MNEditingAssociated.editingView, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
+    }
+    
+    /// 记录编辑状态
+    fileprivate var referenceEditing: Bool {
+        get { objc_getAssociatedObject(base, &UICollectionViewCell.MNEditingAssociated.referenceEditing) as? Bool ?? false }
+        set { objc_setAssociatedObject(base, &UICollectionViewCell.MNEditingAssociated.referenceEditing, newValue, .OBJC_ASSOCIATION_ASSIGN) }
     }
     
     /// 是否处于编辑状态
@@ -152,17 +164,17 @@ extension MNNameSpaceWrapper where Base: UICollectionViewCell {
         updateEditing(false, animated: animated)
     }
     
-    /// 约束编辑视图
-    public func layoutEditingView() {
+    /// 约束内容视图
+    public func layoutContentView() {
         guard let editingView = editingView else { return }
-        layout(offset: editingView.frame.width, direction: editingView.direction)
+        layoutContent(offset: editingView.frame.width, direction: editingView.direction)
     }
     
-    /// 指定更新偏移量
+    /// 约束内容偏移量
     /// - Parameters:
     ///   - offset: 偏移量
     ///   - direction: 编辑方向
-    fileprivate func layout(offset: CGFloat, direction: MNEditingView.Direction) {
+    fileprivate func layoutContent(offset: CGFloat, direction: MNEditingView.Direction) {
         var rect = base.contentView.frame
         rect.origin.x = contentViewX
         if offset > 0.0 {
@@ -176,7 +188,7 @@ extension MNNameSpaceWrapper where Base: UICollectionViewCell {
     }
 }
 
-// MARK: - 寻找集合视图
+// MARK: - 集合视图
 extension MNNameSpaceWrapper where Base: UICollectionViewCell {
     
     /// 所在集合视图的索引
@@ -200,7 +212,9 @@ extension MNNameSpaceWrapper where Base: UICollectionViewCell {
     ///   - editing: 是否开启编辑
     ///   - animated: 是否显示动画过程
     fileprivate func updateEditing(_ editing: Bool, animated: Bool) {
-        collectionView?.mn.isEditing = editing
+        if let collectionView = collectionView {
+            collectionView.mn.isEditing = editing
+        }
         guard let editingView = editingView else { return }
         base.willBeginUpdateEditing(editing, animated: animated)
         if animated {
@@ -217,23 +231,23 @@ extension MNNameSpaceWrapper where Base: UICollectionViewCell {
             if editing {
                 UIView.animate(withDuration: 0.7, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 1.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
                     guard let self = self else { return }
-                    self.update(editing: true)
+                    self.layoutEditingView(true)
                 }, completion: completionHandler)
             } else {
                 UIView.animate(withDuration: 0.25, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
                     guard let self = self else { return }
-                    self.update(editing: false)
+                    self.layoutEditingView(false)
                 }, completion: completionHandler)
             }
         } else {
-            update(editing: editing)
+            layoutEditingView(editing)
             base.didEndUpdateEditing(editing, animated: animated)
         }
     }
     
-    /// 更新编辑状态
+    /// 根据编辑状态约束编辑视图
     /// - Parameter editing: 是否编辑
-    fileprivate func update(editing: Bool) {
+    fileprivate func layoutEditingView(_ editing: Bool) {
         guard let editingView = editingView else { return }
         var rect = editingView.frame
         if editing {
@@ -241,7 +255,7 @@ extension MNNameSpaceWrapper where Base: UICollectionViewCell {
         } else {
             rect.size.width = 0.0
         }
-        if editingView.direction == .left, let collectionView = collectionView {
+        if (editingView.direction == .left || editingView.direction.contains(.left)), let collectionView = collectionView {
             let spacing = collectionView.mn.editingOptions.contentInset.right
             rect.origin.x = base.frame.width - rect.width - spacing
         }
@@ -259,6 +273,9 @@ extension UICollectionViewCell {
     /// - Parameter recognizer: 手势
     @objc fileprivate func mn_handle_editing(_ recognizer: UIPanGestureRecognizer) {
         switch recognizer.state {
+        case .began:
+            // 开始拖拽, 记录此时是否处于编辑状态, 解决无效拖拽导致更改 CollectionView 编辑状态的问题
+            mn.referenceEditing = mn.isEditing
         case .changed:
             guard let collectionView = mn.collectionView else { break }
             var editingView: MNEditingView! = mn.editingView
@@ -276,7 +293,7 @@ extension UICollectionViewCell {
                 if editingView == nil {
                     editingView = MNEditingView(options: collectionView.mn.editingOptions)
                     editingView.delegate = self
-                    insertSubview(editingView, belowSubview: contentView)
+                    insertSubview(editingView, aboveSubview: contentView)
                     mn.editingView = editingView
                     mn.contentViewX = contentView.frame.minX
                 }
@@ -307,9 +324,15 @@ extension UICollectionViewCell {
             let constant = editingView.constant
             let velocity = recognizer.velocity(in: recognizer.view)
             if editingView.frame.width <= 0.0 {
-                mn.collectionView?.mn.isEditing = false
+                // 解决无效拖拽导致更改 CollectionView 编辑状态的问题
+                guard mn.referenceEditing else { break }
+                if let collectionView = mn.collectionView {
+                    collectionView.mn.isEditing = false
+                }
             } else if editingView.frame.width == constant {
-                mn.collectionView?.mn.isEditing = true
+                if let collectionView = mn.collectionView {
+                    collectionView.mn.isEditing = true
+                }
             } else if editingView.frame.width > constant || (editingView.frame.width >= 40.0 && ((editingView.direction == .left && velocity.x < 0.0) || (editingView.direction == .right && velocity.x > 0.0))) {
                 mn.updateEditing(true, animated: true)
             } else {
@@ -333,7 +356,7 @@ extension UICollectionViewCell: MNEditingViewDelegate {
         let direction = editingView.direction
         editingView.replaceAction(with: newAction, at: index) { [weak self] in
             guard let self = self else { return }
-            self.mn.layout(offset: offset, direction: direction)
+            self.mn.layoutContent(offset: offset, direction: direction)
         }
     }
 }
