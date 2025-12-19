@@ -78,7 +78,7 @@ extension MNNameSpaceWrapper where Base: UICollectionView {
     public func endEditing(animated: Bool) {
         guard isEditing else { return }
         isEditing = false
-        for cell in base.subviews.compactMap({ $0 as? UICollectionViewCell }) {
+        for cell in base.visibleCells {
             cell.mn.endEditing(animated: animated)
         }
     }

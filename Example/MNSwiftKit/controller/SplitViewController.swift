@@ -7,13 +7,29 @@
 //
 
 import UIKit
+import MNSwiftKit
 
 class SplitViewController: UIViewController {
-
+    
+    //var splitController = <#value#>
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
         // Do any additional setup after loading the view.
+        
+        // 这里先不布局控制器，界面还不确定
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        guard mn.isFirstAssociated else { return }
+        createSplitController()
+    }
+    
+    private func createSplitController() {
+        
+        
+        
     }
 
 
