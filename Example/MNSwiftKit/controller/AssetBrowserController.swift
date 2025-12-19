@@ -15,7 +15,7 @@ class AssetBrowserController: UIViewController {
     // 图片数组
     private var items: [BrowserListItem] = []
     // 控制是否单张浏览
-    @IBOutlet weak var switchButton: UISwitch!
+    @IBOutlet weak var segment: UISegmentedControl!
     // 显示图片
     @IBOutlet weak var collectionView: UICollectionView!
     // 集合视图约束
@@ -95,16 +95,7 @@ extension AssetBrowserController: UICollectionViewDelegate, UICollectionViewData
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if switchButton.isOn {
-            // 浏览全部
-            let assets = items.compactMap { $0.asItem }
-            let browser = MNAssetBrowser(assets: assets)
-            browser.autoPlay = true
-            browser.dragToDismiss = true
-            browser.leftBarItemEvent = .none
-            browser.backgroundColor = .black
-            browser.present(in: view, from: indexPath.item, animated: true)
-        } else {
+        if segment.selectedSegmentIndex == 0 {
             // 浏览单张
             let item = items[indexPath.item]
             switch item.type {
@@ -114,6 +105,15 @@ extension AssetBrowserController: UICollectionViewDelegate, UICollectionViewData
             case .video:
                 MNAssetBrowser.present([item.asItem], in: view)
             }
+        } else {
+            // 浏览全部
+            let assets = items.compactMap { $0.asItem }
+            let browser = MNAssetBrowser(assets: assets)
+            browser.autoPlay = true
+            browser.dragToDismiss = true
+            browser.leftBarItemEvent = .none
+            browser.backgroundColor = .black
+            browser.present(in: view, from: indexPath.item, animated: true)
         }
     }
 }

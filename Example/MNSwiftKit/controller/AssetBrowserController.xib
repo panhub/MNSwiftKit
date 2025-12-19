@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -15,7 +15,7 @@
                 <outlet property="collectionLayout" destination="agM-dy-oGd" id="2qd-oL-JWu"/>
                 <outlet property="collectionView" destination="F4Y-6D-fqv" id="ice-7Z-IVm"/>
                 <outlet property="navHeight" destination="acW-Mt-NF2" id="PeV-R8-SvS"/>
-                <outlet property="switchButton" destination="2q3-gI-2sb" id="dWg-eg-qvB"/>
+                <outlet property="segment" destination="7FI-XM-rEU" id="Mwq-fo-D5d"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -45,9 +45,17 @@
                             <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="2q3-gI-2sb">
-                            <rect key="frame" x="324" y="57.666666666666657" width="51" height="31"/>
-                        </switch>
+                        <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bordered" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="7FI-XM-rEU">
+                            <rect key="frame" x="273" y="60.666666666666657" width="100" height="26"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="100" id="3S8-LA-TkR"/>
+                                <constraint firstAttribute="height" constant="25" id="lER-Nf-PEn"/>
+                            </constraints>
+                            <segments>
+                                <segment title="单张"/>
+                                <segment title="全部"/>
+                            </segments>
+                        </segmentedControl>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Zlx-04-ZvA">
                             <rect key="frame" x="0.0" y="94.333333333333329" width="393" height="0.6666666666666714"/>
                             <color key="backgroundColor" systemColor="separatorColor"/>
@@ -64,10 +72,10 @@
                         <constraint firstItem="eOx-Q9-Fzp" firstAttribute="centerX" secondItem="N1w-7y-4RD" secondAttribute="centerX" id="Fff-bj-QId"/>
                         <constraint firstItem="Zlx-04-ZvA" firstAttribute="leading" secondItem="N1w-7y-4RD" secondAttribute="leading" id="FkS-V8-26b"/>
                         <constraint firstItem="9Ty-Jg-Hzj" firstAttribute="top" secondItem="N1w-7y-4RD" secondAttribute="top" constant="63" id="Hfr-4R-UX0"/>
-                        <constraint firstAttribute="trailing" secondItem="2q3-gI-2sb" secondAttribute="trailing" constant="20" id="IgI-10-6xI"/>
-                        <constraint firstItem="2q3-gI-2sb" firstAttribute="centerY" secondItem="9Ty-Jg-Hzj" secondAttribute="centerY" id="PE8-ZY-kqS"/>
                         <constraint firstAttribute="bottom" secondItem="Zlx-04-ZvA" secondAttribute="bottom" id="ZjI-m0-ysm"/>
+                        <constraint firstAttribute="trailing" secondItem="7FI-XM-rEU" secondAttribute="trailing" constant="20" id="aXU-ot-ztI"/>
                         <constraint firstAttribute="height" constant="95" id="acW-Mt-NF2"/>
+                        <constraint firstItem="7FI-XM-rEU" firstAttribute="centerY" secondItem="9Ty-Jg-Hzj" secondAttribute="centerY" id="mm6-pi-ZDX"/>
                     </constraints>
                 </view>
                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" contentInsetAdjustmentBehavior="never" bouncesZoom="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="F4Y-6D-fqv">

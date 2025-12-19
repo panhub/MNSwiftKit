@@ -265,6 +265,7 @@ extension EditingViewController: UITableViewEditingDelegate {
     }
     
     func tableView(_ tableView: UITableView, commitEditing action: UIView, forRowAt indexPath: IndexPath, direction: MNSwiftKit.MNEditingView.Direction) -> UIView? {
+        // 如果无需确认视图，在这里处理事件即可，返回nil
         if action.tag == 0 {
             let button = UIButton(type: .custom)
             button.tag = indexPath.row
@@ -360,7 +361,7 @@ extension EditingViewController: UICollectionViewEditingDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, commitEditing action: UIView, forItemAt indexPath: IndexPath, direction: MNSwiftKit.MNEditingView.Direction) -> UIView? {
-        
+        // 如果无需确认视图，在这里处理事件即可，返回nil
         if action.tag == 0 {
             let button = UIButton(type: .custom)
             button.tag = indexPath.row

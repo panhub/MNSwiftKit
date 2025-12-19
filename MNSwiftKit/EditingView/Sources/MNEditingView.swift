@@ -15,7 +15,7 @@ protocol MNEditingViewDelegate: NSObjectProtocol {
     ///   - editingView: 编辑视图
     ///   - action: 按钮
     ///   - index: 按钮索引
-    func editingView(_ editingView: MNEditingView, actionButtonTouchUpInside action: UIView, index: Int) -> Void
+    func editingView(_ editingView: MNEditingView, actionButtonTouchUpInside action: UIView, index: Int)
 }
 
 private class MNEditingControl: UIControl {}
@@ -131,6 +131,8 @@ public class MNEditingView: UIView {
         // 更新宽度
         constant = actions.reduce(0.0, { $0 + $1.frame.width })
         assert(constant > 0.0, "actions width 0.0 not allowed.")
+        // 恢复背景色
+        backgroundColor = options.backgroundColor
         // 添加子视图
         let subviews: [UIView] = subviews
         for (index, action) in actions.enumerated() {
@@ -210,7 +212,7 @@ public class MNEditingView: UIView {
             action.center = CGPoint(x: subview.bounds.midX, y: subview.bounds.midY)
             rect = self.frame
             rect.size.width = subview.frame.width
-            if self.direction == .left , let superview = self.superview {
+            if (self.direction == .left || self.direction.contains(.left)) , let superview = self.superview {
                 let spacing = self.options.contentInset.right
                 rect.origin.x = superview.frame.width - rect.width - spacing
             }
@@ -226,6 +228,10 @@ public class MNEditingView: UIView {
             for subview in self.subviews.filter ({ ($0.isHidden == false && $0.tag != index) }) {
                 subview.isHidden = true
                 subview.subviews.reversed().forEach { $0.removeFromSuperview() }
+            }
+            // 当前一般为单一动作，修改背景色与动作按钮保持一致
+            if let backgroundColor = action.backgroundColor {
+                self.backgroundColor = backgroundColor
             }
         }
     }

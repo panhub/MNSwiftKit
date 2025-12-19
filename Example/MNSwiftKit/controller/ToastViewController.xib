@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -22,7 +22,7 @@
             <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wTr-vB-qsS" userLabel="Nav View">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wTr-vB-qsS" userLabel="Navigation View">
                     <rect key="frame" x="0.0" y="0.0" width="393" height="95"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XaW-x0-rdO">
@@ -43,22 +43,14 @@
                             <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="mU1-Wh-TyN">
-                            <rect key="frame" x="324" y="57.666666666666657" width="51" height="31"/>
-                            <connections>
-                                <action selector="switchValueChanged:" destination="-1" eventType="valueChanged" id="4fT-8N-caw"/>
-                            </connections>
-                        </switch>
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="95" id="0Jm-n8-iiO"/>
-                        <constraint firstItem="mU1-Wh-TyN" firstAttribute="centerY" secondItem="XaW-x0-rdO" secondAttribute="centerY" id="PqD-Vw-QV2"/>
                         <constraint firstItem="b5g-WB-pzn" firstAttribute="centerY" secondItem="XaW-x0-rdO" secondAttribute="centerY" id="Sgi-A7-fw6"/>
                         <constraint firstItem="XaW-x0-rdO" firstAttribute="top" secondItem="wTr-vB-qsS" secondAttribute="top" constant="63" id="Y5N-ne-KQ3"/>
                         <constraint firstItem="XaW-x0-rdO" firstAttribute="leading" secondItem="wTr-vB-qsS" secondAttribute="leading" constant="15" id="lGa-vO-RGZ"/>
                         <constraint firstItem="b5g-WB-pzn" firstAttribute="centerX" secondItem="wTr-vB-qsS" secondAttribute="centerX" id="pDh-fH-q7d"/>
-                        <constraint firstAttribute="trailing" secondItem="mU1-Wh-TyN" secondAttribute="trailing" constant="20" id="uId-Kt-sLt"/>
                     </constraints>
                 </view>
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" spacing="1" translatesAutoresizingMaskIntoConstraints="NO" id="RKw-iE-xKG">
@@ -204,19 +196,38 @@
                     </subviews>
                     <color key="backgroundColor" systemColor="systemGray6Color"/>
                 </stackView>
+                <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="Cb0-uq-OLn">
+                    <rect key="frame" x="138.66666666666666" y="540" width="115.66666666666666" height="31"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="手动关闭: " lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Sro-sh-Yn1">
+                            <rect key="frame" x="0.0" y="7" width="63.666666666666664" height="17"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="mU1-Wh-TyN">
+                            <rect key="frame" x="66.666666666666686" y="0.0" width="51" height="31"/>
+                            <connections>
+                                <action selector="switchValueChanged:" destination="-1" eventType="valueChanged" id="4fT-8N-caw"/>
+                            </connections>
+                        </switch>
+                    </subviews>
+                </stackView>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="RKw-iE-xKG" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="1BR-e1-XH4"/>
                 <constraint firstItem="wTr-vB-qsS" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="1km-YQ-0Zj"/>
                 <constraint firstItem="wTr-vB-qsS" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="Hxw-Si-3ay"/>
+                <constraint firstItem="Cb0-uq-OLn" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="NLO-oq-Q9e"/>
                 <constraint firstAttribute="trailing" secondItem="RKw-iE-xKG" secondAttribute="trailing" id="giv-a0-4jd"/>
                 <constraint firstAttribute="trailing" secondItem="wTr-vB-qsS" secondAttribute="trailing" id="rJ4-K6-uDj"/>
+                <constraint firstItem="Cb0-uq-OLn" firstAttribute="top" secondItem="RKw-iE-xKG" secondAttribute="bottom" constant="50" id="sL1-Qa-Je5"/>
                 <constraint firstItem="RKw-iE-xKG" firstAttribute="top" secondItem="wTr-vB-qsS" secondAttribute="bottom" id="yjg-HV-Kyy"/>
             </constraints>
             <nil key="simulatedTopBarMetrics"/>
             <nil key="simulatedBottomBarMetrics"/>
-            <point key="canvasLocation" x="-273" y="-326"/>
+            <point key="canvasLocation" x="60" y="-70"/>
         </view>
     </objects>
     <resources>

@@ -55,6 +55,19 @@ enum ToastViewType: Int {
             control.bottomAnchor.constraint(equalTo: bottomAnchor),
             control.rightAnchor.constraint(equalTo: rightAnchor)
         ])
+        
+        let label = UILabel()
+        label.text = "点击重新加载"
+        label.font = .systemFont(ofSize: 14.0, weight: .regular)
+        label.textColor = .systemGray.withAlphaComponent(0.5)
+        label.numberOfLines = 1
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(label)
+        NSLayoutConstraint.activate([
+            label.centerXAnchor.constraint(equalTo: centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: centerYAnchor)
+        ])
     }
     
     deinit {
@@ -90,7 +103,13 @@ enum ToastViewType: Int {
         case .circular, .fill:
             destroyTimer()
             progress = 0.0
-            mn.showProgressToast("正在下载", style: type == .circular ? .circular : .fill, value: 0.0, cancellation: cancellation)
+            mn.showProgressToast("正在下载", style: type == .circular ? .circular : .fill, value: 0.0, cancellation: cancellation) { [weak self] cancellation in
+                guard let self = self else { return }
+                if cancellation {
+                    self.destroyTimer()
+                }
+                print("进度Toast消失")
+            }
             fireTimer()
         case .success:
             mn.showSuccessToast("加载成功", cancellation: cancellation, delay: 4.0) { cancellation in
@@ -120,7 +139,11 @@ enum ToastViewType: Int {
     @objc private func timerStrike() {
         progress += 0.05
         progress = min(1.0, progress)
-        mn.showProgressToast(nil, value: progress, delay: progress >= 1.0 ? 0.5 : nil) { cancellation in
+        mn.showProgressToast(nil, value: progress, delay: progress >= 1.0 ? 0.5 : nil) { [weak self] cancellation in
+            guard let self = self else { return }
+            if cancellation {
+                self.destroyTimer()
+            }
             print("进度Toast消失")
         }
         if progress >= 1.0 {
