@@ -20,7 +20,7 @@ class SplitListCell: UICollectionViewCell {
     }
     
     func update(item: SplitListItem) {
-        borderView.backgroundColor = item.index % 2 == 0 ? .lightGray : .white
+        
+        borderView.backgroundColor = item.index % 2 == 0 ? .gray.withAlphaComponent(0.04) : .white
     }
-
 }

@@ -15,6 +15,8 @@ class SplitListController: UIViewController {
         case item, row
     }
     
+    let frame: CGRect
+    
     // 表格样式
     private let style: SplitListController.Style
     
@@ -25,8 +27,9 @@ class SplitListController: UIViewController {
     @IBOutlet weak var collectionLayout: MNCollectionViewFlowLayout!
     
     
-    init(style: SplitListController.Style) {
+    init(frame: CGRect, style: SplitListController.Style) {
         self.style = style
+        self.frame = frame
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -37,6 +40,8 @@ class SplitListController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        
+        view.frame = frame
         
         switch style {
         case .item:
@@ -52,8 +57,8 @@ class SplitListController: UIViewController {
             }
         case .row:
             collectionLayout.numberOfColumns = 1
-            collectionLayout.itemSize = .init(width: MN_SCREEN_WIDTH - 16.0, height: 55.0)
-            items.append(contentsOf: Array(repeating: SplitListItem(height: 55.0), count: 50))
+            collectionLayout.itemSize = .init(width: MN_SCREEN_WIDTH - 16.0, height: 75.0)
+            items.append(contentsOf: Array(repeating: SplitListItem(height: 75.0), count: 50))
             (0..<50).forEach { index in
                 items[index].index = index
             }

@@ -150,6 +150,7 @@ public class MNSplitViewController: UIViewController {
     
     open override func loadView() {
         let view = UIView(frame: frame)
+        view.clipsToBounds = true
         view.backgroundColor = .clear
         view.isMultipleTouchEnabled = false
         self.view = view

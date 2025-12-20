@@ -29,11 +29,11 @@ extension MNNameSpaceWrapper where Base: UIViewController {
     }
     
     /// 从父控制器中移除自身
-    public func removeFromParentController() {
+    public func removeFromParent() {
         guard let _ = base.parent else { return }
         base.willMove(toParent: nil)
         base.view.removeFromSuperview()
-        // add内部已调用did
+        // 内部已调用did
         base.removeFromParent()
     }
     
@@ -41,10 +41,14 @@ extension MNNameSpaceWrapper where Base: UIViewController {
     /// - Parameters:
     ///   - childController: 自控制器
     ///   - superview: 指定视图
-    public func addChild(_ childController: UIViewController, to superview: UIView) {
-        // add内部已调用will
+    public func addChild(_ childController: UIViewController, to superview: UIView? = nil) {
+        // 内部已调用will
         base.addChild(childController)
-        superview.addSubview(childController.view)
+        if let superview = superview {
+            superview.addSubview(childController.view)
+        } else {
+            base.view.addSubview(childController.view)
+        }
         childController.didMove(toParent: base)
     }
     

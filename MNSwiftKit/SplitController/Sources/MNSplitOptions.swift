@@ -80,7 +80,7 @@ public class MNSplitOptions: NSObject {
          width: 分离器宽度 height: 分离器每一项的高度
      }
     */
-    public var spliterSize: CGSize = CGSize(width: 30.0, height: 0.0)
+    public var spliterSize: CGSize = CGSize(width: 36.0, height: 42.0)
     /// 补全方案
     public var contentMode: ContentMode = .normal
     /// 标记视图的补充方案

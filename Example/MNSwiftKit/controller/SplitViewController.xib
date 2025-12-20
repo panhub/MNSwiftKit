@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SplitViewController" customModule="MNSwiftKit_Example" customModuleProvider="target">
             <connections>
+                <outlet property="axisSegment" destination="9uC-0F-bAc" id="Irl-Dv-ypV"/>
+                <outlet property="backHeight" destination="YNU-rd-Q6b" id="O3L-OM-b64"/>
+                <outlet property="backTop" destination="zgy-1t-7m6" id="UxT-MW-OlQ"/>
+                <outlet property="navHeight" destination="pOP-3H-3So" id="3lK-jS-hD6"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -36,6 +40,20 @@
                             <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
                         </label>
+                        <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bordered" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="9uC-0F-bAc">
+                            <rect key="frame" x="273" y="60.666666666666657" width="100" height="26"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="100" id="7Zn-mL-VMR"/>
+                                <constraint firstAttribute="height" constant="25" id="ZKb-bV-onB"/>
+                            </constraints>
+                            <segments>
+                                <segment title="横向"/>
+                                <segment title="纵向"/>
+                            </segments>
+                            <connections>
+                                <action selector="segmentValueChanged:" destination="-1" eventType="valueChanged" id="aHu-AT-Jeh"/>
+                            </connections>
+                        </segmentedControl>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="THH-sY-sfT">
                             <rect key="frame" x="0.0" y="94.333333333333329" width="393" height="0.6666666666666714"/>
                             <color key="backgroundColor" systemColor="separatorColor"/>
@@ -46,7 +64,9 @@
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
+                        <constraint firstAttribute="trailing" secondItem="9uC-0F-bAc" secondAttribute="trailing" constant="20" id="AJL-Kn-gFh"/>
                         <constraint firstAttribute="trailing" secondItem="THH-sY-sfT" secondAttribute="trailing" id="Mpp-5a-XI7"/>
+                        <constraint firstItem="9uC-0F-bAc" firstAttribute="centerY" secondItem="VEj-2w-c8T" secondAttribute="centerY" id="OFE-Eg-Cuk"/>
                         <constraint firstItem="A8q-6z-OEy" firstAttribute="centerY" secondItem="VEj-2w-c8T" secondAttribute="centerY" id="OYr-Cq-lbM"/>
                         <constraint firstItem="THH-sY-sfT" firstAttribute="leading" secondItem="Pag-m0-Wju" secondAttribute="leading" id="X5F-sY-YHd"/>
                         <constraint firstItem="VEj-2w-c8T" firstAttribute="leading" secondItem="Pag-m0-Wju" secondAttribute="leading" constant="15" id="eiJ-BU-Q39"/>
