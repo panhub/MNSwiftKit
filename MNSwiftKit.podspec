@@ -262,6 +262,14 @@ Pod::Spec.new do |s|
     c.source_files = 'MNSwiftKit/CollectionLayout/Sources/**/*.swift'
   end
   
+  # SegmentedViewController <分页控制器>
+  s.subspec 'SegmentedViewController' do |s|
+    s.frameworks = 'UIKit', 'Foundation', 'CoreFoundation'
+    s.source_files = 'MNSwiftKit/SegmentedViewController/Sources/**/*.swift'
+    s.dependency 'MNSwiftKit/Layout'
+    s.dependency 'MNSwiftKit/NameSpace'
+  end
+  
   # Full
   s.subspec 'Full' do |full|
     # 'Full' 子模块本身不包含任何源代码
@@ -292,6 +300,7 @@ Pod::Spec.new do |s|
     full.dependency 'MNSwiftKit/AnimatedImage'
     full.dependency 'MNSwiftKit/CollectionLayout'
     full.dependency 'MNSwiftKit/EmoticonKeyboard'
+    full.dependency 'MNSwiftKit/SegmentedViewController'
   end
   
 end
