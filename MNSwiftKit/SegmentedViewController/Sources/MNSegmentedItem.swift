@@ -10,7 +10,7 @@ import Foundation
 import CoreFoundation
 
 /// 分割视图中Item模型
-public class MNSegmentedItem {
+public class MNSegmentedItem: NSObject {
     
     /// 位置
     public var frame: CGRect = .zero
@@ -40,14 +40,15 @@ public class MNSegmentedItem {
     /// 分割线颜色
     public var dividerColor: UIColor?
     /// 分割线约束
-    public var dividerInset: UIEdgeInsets = .zero
+    public var dividerSize: CGSize = .zero
+    
     /// 边框宽度
     public var borderWidth: CGFloat = 0.0
     /// 边框圆角
     public var borderRadius: CGFloat = 0.0
     
     /// 角标
-    public var badge: Any? = nil
+    public var badge: Any?
     /// 角标偏移
     public var badgeOffset: UIOffset = .zero
     /// 角标字体颜色

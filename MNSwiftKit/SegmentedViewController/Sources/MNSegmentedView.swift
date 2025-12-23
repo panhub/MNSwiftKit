@@ -7,14 +7,52 @@
 
 import UIKit
 
-class MNSegmentedView: UIView {
+@objc public protocol MNSegmentedViewDataSource: AnyObject {
     
-    /// 数据源
-    internal weak var dataSource: MNSplitViewDataSource?
+    /// 子界面标题集合
+    var preferredSubpageTitles: [String] { get }
+    
+    /// 前/左附属视图
+    @objc optional var preferredLeadingAccessoryView: UIView? { get }
+    
+    /// 后/右附属视图
+    @objc optional var preferredTrailingAccessoryView: UIView? { get }
+    
+    /// 指定分割项尺寸 依据布局方向取宽高
+    /// - Parameter index: 索引
+    /// - Returns: 分割项尺寸
+    @objc optional func dimensionForSegmentedAt(_ index: Int) -> CGFloat
+}
+
+@objc protocol MNSegmentedViewDelegate: AnyObject {
+    
+    /// 页面导航询问是否响应点击事件
+    /// - Parameter index: 点击索引
+    func segmentedViewShouldSelectSpliterAt(_ index: Int) -> Bool
+    
+    /// 页面导航选择告知
+    /// - Parameter index: 页面索引
+    func segmentedViewDidSelectItemAt(_ index: Int)
+    
+    /// 导航项即将显示
+    /// - Parameters:
+    ///   - cell: 分割项
+    ///   - item: 分割项模型
+    ///   - index: 索引
+    @objc optional func segmentedCell(_ cell: MNSegmentedCellConvertible, willDisplay item: MNSegmentedItem, forItemAt index: Int)
+}
+
+class MNSegmentedView: UIView {
     
     /// 配置
     private let configuration: MNSegmentedConfiguration
     
+    /// 外界指定是否允许点击
+    internal var isSelectionEnabled: Bool = true
+    /// 事件代理
+    internal weak var delegate: MNSegmentedViewDelegate?
+    /// 数据源
+    internal weak var dataSource: MNSegmentedViewDataSource?
     /// 分各项数组
     private var items: [MNSegmentedItem] = []
     
@@ -47,6 +85,8 @@ class MNSegmentedView: UIView {
         self.configuration = configuration
         super.init(frame: .zero)
         
+        backgroundColor = configuration.view.backgroundColor
+        
         leadingSeparator.backgroundColor = configuration.view.separatorColor
         leadingSeparator.isHidden = configuration.view.separatorStyle.contains(.leading) == false
         leadingSeparator.translatesAutoresizingMaskIntoConstraints = false
@@ -65,12 +105,13 @@ class MNSegmentedView: UIView {
         layout.minimumLineSpacing = configuration.orientation == .horizontal ? configuration.item.spacing : 0.0
         layout.minimumInteritemSpacing = configuration.orientation == .horizontal ? 0.0 : configuration.item.spacing
         
-        //collectionView.delegate = self
-        //collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.dataSource = self
         collectionView.clipsToBounds = false
+        collectionView.backgroundColor = .clear
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
-        //collectionView.register(MNSplitCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        collectionView.register(MNSegmentedCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         if #available(iOS 11.0, *) {
             collectionView.contentInsetAdjustmentBehavior = .never
         }
@@ -126,31 +167,19 @@ class MNSegmentedView: UIView {
         indicatorView.layer.cornerRadius = configuration.indicator.cornerRadius
         indicatorView.contentMode = configuration.indicator.contentMode
         indicatorView.backgroundColor = configuration.indicator.backgroundColor
-        switch configuration.indicator.size {
-        case .matchTitle(let height):
-            indicatorView.frame.size.height = height
-        case .matchItem(let height):
-            indicatorView.frame.size.height = height
-        case .fixed(_, let height):
-            indicatorView.frame.size.height = height
-        }
         switch configuration.indicator.position {
         case .above:
             // 指示器在上层
             collectionView.addSubview(indicatorView)
         case .below:
             // 指示器在底层
-            
             let backgroundView = UIView()
             backgroundView.isUserInteractionEnabled = false
             collectionView.backgroundView = backgroundView
-            
             backgroundContentView = UIView(frame: backgroundView.bounds)
             backgroundContentView.autoresizingMask = [.flexibleHeight]
             backgroundView.addSubview(backgroundContentView)
-            
             backgroundContentView.addSubview(indicatorView)
-            
             collectionView.addObserver(self, forKeyPath: #keyPath(UIScrollView.contentSize), options: [.old, .new], context: nil)
             collectionView.addObserver(self, forKeyPath: #keyPath(UIScrollView.contentOffset), options: [.old, .new], context: nil)
         }
@@ -165,6 +194,14 @@ class MNSegmentedView: UIView {
             collectionView.removeObserver(self, forKeyPath: #keyPath(UIScrollView.contentSize))
             collectionView.removeObserver(self, forKeyPath: #keyPath(UIScrollView.contentOffset))
         }
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        if bounds.isNull || bounds.isEmpty { return }
+        guard mn.isFirstAssociated else { return }
+        reloadItems()
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -215,7 +252,7 @@ extension MNSegmentedView {
             accessoryView.removeFromSuperview()
             leadingAccessoryView = nil
         }
-        if let dataSource = dataSource, let accessoryView = dataSource.preferredHeadAccessoryView, let accessoryView = accessoryView {
+        if let dataSource = dataSource, let accessoryView = dataSource.preferredLeadingAccessoryView, let accessoryView = accessoryView {
             // 前/左附属视图
             accessoryView.translatesAutoresizingMaskIntoConstraints = false
             insertSubview(accessoryView, aboveSubview: collectionView)
@@ -241,7 +278,7 @@ extension MNSegmentedView {
             accessoryView.removeFromSuperview()
             trailingAccessoryView = nil
         }
-        if let dataSource = dataSource, let accessoryView = dataSource.preferredTailAccessoryView, let accessoryView = accessoryView {
+        if let dataSource = dataSource, let accessoryView = dataSource.preferredTrailingAccessoryView, let accessoryView = accessoryView {
             // 后/右附属视图
             accessoryView.translatesAutoresizingMaskIntoConstraints = false
             insertSubview(accessoryView, aboveSubview: collectionView)
@@ -270,7 +307,7 @@ extension MNSegmentedView {
     func reloadItems() {
         var titles: [String] = []
         if let dataSource = dataSource {
-            titles.append(contentsOf: dataSource.preferredPageTitles)
+            titles.append(contentsOf: dataSource.preferredSubpageTitles)
         }
         let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
         switch layout.scrollDirection {
@@ -280,28 +317,295 @@ extension MNSegmentedView {
             reloadVerticalItems(titles)
         }
         selectedIndex = max(0, min(selectedIndex, items.count - 1))
-//        if currentPageIndex < spliters.count {
-//            let spliter = spliters[currentPageIndex]
-//            spliter.isSelected = true
-//            spliter.titleColor = options.highlightedTitleColor
-//            spliter.transformScale = options.highlightedScale
-//            spliter.borderColor = options.spliterHighlightedBorderColor
-//            spliter.backgroundColor = options.spliterHighlightedBackgroundColor
-//            spliter.backgroundImage = options.spliterHighlightedBackgroundImage
-//            shadow.frame = spliter.shadowFrame
-//        } else {
-//            shadow.frame = .zero
-//        }
-//        UIView.performWithoutAnimation {
-//            collectionView.reloadData()
-//        }
+        if selectedIndex < items.count {
+            let item = items[selectedIndex]
+            item.isSelected = true
+            item.titleColor = configuration.item.selected.titleColor
+            item.transformScale = max(1.0, configuration.item.selected.titleScale)
+            item.borderColor = configuration.item.selected.borderColor
+            item.borderWidth = configuration.item.selected.borderWidth
+            item.backgroundColor = configuration.item.selected.backgroundColor
+            item.backgroundImage = configuration.item.selected.backgroundImage
+            indicatorView.frame = item.indicatorFrame
+        } else {
+            indicatorView.frame = .zero
+        }
+        UIView.performWithoutAnimation {
+            self.collectionView.reloadData()
+        }
     }
     
     private func reloadHorizontalItems(_ titles: [String]) {
-        
+        // 约束信息
+        let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
+        var sectionInset: UIEdgeInsets = layout.sectionInset
+        // 内容尺寸
+        let contentSize: CGSize = CGRect(origin: .zero, size: collectionView.frame.size).inset(by: sectionInset).size
+        // 标题项追加宽度
+        let appendWidth: CGFloat = configuration.item.dimension
+        // item间隔
+        let interitemSpacing: CGFloat = configuration.item.spacing
+        // 缩放因数
+        let titleScale: CGFloat = max(configuration.item.selected.titleScale, 1.0)
+        // 标题字体
+        let titleFont: UIFont = configuration.item.normal.titleFont
+        // 起始
+        var x: CGFloat = sectionInset.left
+        // 
+        items.removeAll()
+        for (index, title) in titles.enumerated() {
+            var titleSize: CGSize = title.size(withAttributes: [.font:titleFont])
+            titleSize.width = ceil(titleSize.width)
+            titleSize.height = ceil(titleSize.height)
+            var itemWidth: CGFloat = max(titleSize.width + appendWidth, ceil(titleSize.width*titleScale))
+            // 外界指定
+            if let dataSource = dataSource, let width = dataSource.dimensionForSegmentedAt?(index), width > 0.0 {
+                itemWidth = width
+            }
+            let item = MNSegmentedItem()
+            item.title = title
+            item.titleSize = titleSize
+            item.titleFont = titleFont
+            item.titleColor = configuration.item.normal.titleColor
+            item.borderColor = configuration.item.normal.borderColor
+            item.borderWidth = configuration.item.normal.borderWidth
+            item.borderRadius = configuration.item.normal.cornerRadius
+            item.dividerSize = configuration.item.normal.dividerSize
+            item.dividerColor = configuration.item.normal.dividerColor
+            item.badgeFont = configuration.badge.textFont
+            item.badgeTextColor = configuration.badge.textColor
+            item.badgeInset = configuration.badge.contentInset
+            item.badgeColor = configuration.badge.backgroundColor
+            item.badgeImage = configuration.badge.backgroundImage
+            item.badgeOffset = configuration.badge.offset
+            item.backgroundColor = configuration.item.normal.backgroundColor
+            item.backgroundImage = configuration.item.normal.backgroundImage
+            item.frame = CGRect(x: x, y: sectionInset.top, width: itemWidth, height: contentSize.height)
+            items.append(item)
+            x += (itemWidth + interitemSpacing)
+        }
+        // 布局行为
+        if let first = items.first, let last = items.last {
+            let width = last.frame.maxX - first.frame.minX
+            let deviation = contentSize.width - width
+            if deviation > 0.0 {
+                // 内容不够
+                switch configuration.view.layoutAdjustmentBehavior {
+                case .centered:
+                    // 居中
+                    let append = (deviation + sectionInset.left + sectionInset.right)/2.0 - sectionInset.left
+                    if append > 0.0 {
+                        for item in items {
+                            item.frame.origin.x += append
+                        }
+                        sectionInset.left += append
+                        sectionInset.right += (deviation - append)
+                    } else {
+                        // 全部补充至右侧
+                        sectionInset.right += deviation
+                    }
+                    layout.sectionInset = sectionInset
+                case .expanded:
+                    // 充满
+                    let append: CGFloat = floor(deviation/CGFloat(items.count)*10.0)/10.0
+                    for (index, item) in items.enumerated() {
+                        item.frame.origin.x += (CGFloat(index)*append)
+                        item.frame.size.width += append
+                    }
+                default: break
+                }
+            }
+        }
+        // 指示视图偏移
+        let indicatorOffset: UIOffset = configuration.indicator.offset
+        // 指示视图位置
+        for item in items {
+            let selectedTitleWidth = ceil(item.titleSize.width*titleScale)
+            switch configuration.indicator.size {
+            case .matchTitle(let height):
+                // 与标题同宽
+                let margin: CGFloat = (item.frame.width - selectedTitleWidth)/2.0
+                item.indicatorFrame = .init(x: item.frame.minX + margin + indicatorOffset.horizontal, y: collectionView.frame.height - height + indicatorOffset.vertical, width: selectedTitleWidth, height: height)
+            case .matchItem(let height):
+                // 与item同宽
+                item.indicatorFrame = .init(x: item.frame.minX + indicatorOffset.horizontal, y: collectionView.frame.height - height + indicatorOffset.vertical, width: item.frame.width, height: height)
+            case .fixed(let width, let height):
+                // 使用固定尺寸
+                let y: CGFloat = collectionView.frame.height - height + indicatorOffset.vertical
+                switch configuration.indicator.alignment {
+                case .leading:
+                    // 头部对齐
+                    item.indicatorFrame = .init(x: item.frame.minX + indicatorOffset.horizontal, y: y, width: width, height: height)
+                case .center:
+                    // 中心对齐
+                    let margin: CGFloat = (item.frame.width - width)/2.0
+                    item.indicatorFrame = .init(x: item.frame.minX + margin + indicatorOffset.horizontal, y: y, width: width, height: height)
+                case .trailing:
+                    // 尾部对齐
+                    item.indicatorFrame = .init(x: item.frame.maxX - width + indicatorOffset.horizontal, y: y, width: width, height: height)
+                }
+            }
+        }
     }
     
     private func reloadVerticalItems(_ titles: [String]) {
+        // 约束信息
+        let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
+        var sectionInset: UIEdgeInsets = layout.sectionInset
+        // 内容尺寸
+        let contentSize: CGSize = CGRect(origin: .zero, size: collectionView.frame.size).inset(by: sectionInset).size
+        // 分割项高度
+        let itemHeight: CGFloat = configuration.item.dimension
+        // item间隔
+        let interitemSpacing: CGFloat = configuration.item.spacing
+        // 标题字体
+        let titleFont: UIFont = configuration.item.normal.titleFont
+        // 起始
+        var y: CGFloat = sectionInset.top
+        //
+        items.removeAll()
+        for (index, title) in titles.enumerated() {
+            var titleSize: CGSize = title.size(withAttributes: [.font:titleFont])
+            titleSize.width = ceil(titleSize.width)
+            titleSize.height = ceil(titleSize.height)
+            let item = MNSegmentedItem()
+            item.title = title
+            item.titleSize = titleSize
+            item.titleFont = titleFont
+            item.titleColor = configuration.item.normal.titleColor
+            item.borderColor = configuration.item.normal.borderColor
+            item.borderWidth = configuration.item.normal.borderWidth
+            item.borderRadius = configuration.item.normal.cornerRadius
+            item.dividerSize = configuration.item.normal.dividerSize
+            item.dividerColor = configuration.item.normal.dividerColor
+            item.badgeFont = configuration.badge.textFont
+            item.badgeTextColor = configuration.badge.textColor
+            item.badgeInset = configuration.badge.contentInset
+            item.badgeColor = configuration.badge.backgroundColor
+            item.badgeImage = configuration.badge.backgroundImage
+            item.badgeOffset = configuration.badge.offset
+            item.backgroundColor = configuration.item.normal.backgroundColor
+            item.backgroundImage = configuration.item.normal.backgroundImage
+            item.frame = CGRect(x: sectionInset.left, y: y, width: contentSize.width, height: itemHeight)
+            // 外界指定高度
+            if let dataSource = dataSource, let height = dataSource.dimensionForSegmentedAt?(index), height > 0.0 {
+                item.frame.size.height = height
+            }
+            items.append(item)
+            y += (itemHeight + interitemSpacing)
+        }
+        if let first = items.first, let last = items.last {
+            let height = last.frame.maxY - first.frame.minY
+            let deviation = contentSize.height - height
+            if deviation > 0.0 {
+                // 内容不够
+                switch configuration.view.layoutAdjustmentBehavior {
+                case .centered:
+                    // 居中
+                    let append = (deviation + sectionInset.top + sectionInset.bottom)/2.0 - sectionInset.top
+                    if append > 0.0 {
+                        for item in items {
+                            item.frame.origin.y += append
+                        }
+                        sectionInset.top += append
+                        sectionInset.bottom += (deviation - append)
+                    } else {
+                        // 全部补充至右侧
+                        sectionInset.bottom += deviation
+                    }
+                    layout.sectionInset = sectionInset
+                case .expanded:
+                    // 充满
+                    let append: CGFloat = floor(deviation/CGFloat(items.count)*10.0)/10.0
+                    for (index, item) in items.enumerated() {
+                        item.frame.origin.y += (CGFloat(index)*append)
+                        item.frame.size.height += append
+                    }
+                default: break
+                }
+            }
+        }
+        // 指示视图偏移
+        let indicatorOffset: UIOffset = configuration.indicator.offset
+        // 缩放因数
+        let titleScale: CGFloat = max(configuration.item.selected.titleScale, 1.0)
+        // 指示视图位置
+        for item in items {
+            let selectedTitleHeight = ceil(item.titleSize.height*titleScale)
+            switch configuration.indicator.size {
+            case .matchTitle(let width):
+                // 与标题同高
+                let margin: CGFloat = (item.frame.height - selectedTitleHeight)/2.0
+                item.indicatorFrame = .init(x: collectionView.frame.width - width + indicatorOffset.horizontal, y: item.frame.minY + margin + indicatorOffset.vertical, width: width, height: selectedTitleHeight)
+            case .matchItem(let width):
+                // 与item同宽
+                item.indicatorFrame = .init(x: collectionView.frame.width - width + indicatorOffset.horizontal, y: item.frame.minY + indicatorOffset.vertical, width: width, height: item.frame.height)
+            case .fixed(let width, let height):
+                // 使用固定尺寸
+                let x: CGFloat = collectionView.frame.width - width + indicatorOffset.horizontal
+                switch configuration.indicator.alignment {
+                case .leading:
+                    // 头部对齐
+                    item.indicatorFrame = .init(x: x, y: item.frame.minY + indicatorOffset.vertical, width: width, height: height)
+                case .center:
+                    // 中心对齐
+                    let margin: CGFloat = (item.frame.height - height)/2.0
+                    item.indicatorFrame = .init(x: x, y: item.frame.minY + margin + indicatorOffset.vertical, width: width, height: height)
+                case .trailing:
+                    // 尾部对齐
+                    item.indicatorFrame = .init(x: x, y: item.frame.minY - height + indicatorOffset.vertical, width: width, height: height)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - UICollectionViewDataSource, UICollectionViewDelegate
+extension MNSegmentedView: UICollectionViewDataSource, UICollectionViewDelegate {
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
         
+        1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
+        items.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        
+        guard let cell = cell as? MNSegmentedCellConvertible else { return }
+        let item = items[indexPath.item]
+        cell.update?(item: item, at: indexPath.item, orientation: configuration.orientation)
+        if let delegate = delegate {
+            delegate.segmentedCell?(cell, willDisplay: item, forItemAt: indexPath.item)
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        guard isSelectionEnabled else { return }
+        let pageIndex: Int = indexPath.item
+        guard pageIndex < items.count else { return }
+        if indexPath.item == selectedIndex { return }
+        guard let delegate = delegate else { return }
+        guard delegate.segmentedViewShouldSelectSpliterAt(indexPath.item) else { return }
+        //setCurrentPage(at: indexPath.item, animated: true)
+        delegate.segmentedViewDidSelectItemAt(indexPath.item)
+    }
+}
+
+// MARK: - UICollectionViewDelegateFlowLayout
+extension MNSegmentedView: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        items[indexPath.item].frame.size
     }
 }

@@ -12,8 +12,8 @@ import CoreFoundation
 /// 分段视图配置
 public struct MNSegmentedViewConfiguration {
     
-    /// 约束行为
-    public enum LayoutBehavior {
+    /// 布局调整行为
+    public enum AdjustmentBehavior {
         /// 自然布局，不做其它操作
         case standard
         /// 居中
@@ -51,8 +51,13 @@ public struct MNSegmentedViewConfiguration {
         }
     }
     
-    /// item不足时的约束行为
-    public var layoutBehavior: LayoutBehavior = .standard
+    /// 尺寸
+    /// - 横向：表示高度
+    /// - 纵向：表示宽度
+    public var dimension: CGFloat = 35.0
+    
+    /// item不足时的布局调整行为
+    public var layoutAdjustmentBehavior: AdjustmentBehavior = .standard
     
     /// 分割线样式
     public var separatorStyle: SeparatorStyle = .none
@@ -68,6 +73,9 @@ public struct MNSegmentedViewConfiguration {
     
     /// 内部四周约束 会依据`contentMode`调整
     public var contentInset: UIEdgeInsets = .zero
+    
+    /// 背景颜色
+    public var backgroundColor: UIColor = .clear
 }
 
 /// 分割视图Item配置
@@ -76,11 +84,14 @@ public struct MNSegmentedItemConfiguration {
     /// 外观配置
     public struct Appearance {
         
-        /// 文本字体
-        public var textFont: UIFont = .systemFont(ofSize: 17.0, weight: .medium)
+        /// 标题字体
+        public var titleFont: UIFont = .systemFont(ofSize: 17.0, weight: .medium)
         
-        /// 文本颜色
-        public var textColor: UIColor = .gray
+        /// 标题颜色
+        public var titleColor: UIColor = .gray
+        
+        /// 标题的缩放因数, 不能小于1.0, 选中状态下有效
+        public var titleScale: CGFloat = 1.0
         
         /// 边框宽度
         public var borderWidth: CGFloat = 0.0
@@ -104,11 +115,13 @@ public struct MNSegmentedItemConfiguration {
         public var backgroundColor: UIColor = .white
     }
     
+    /// 尺寸
+    /// - 横向：追加的宽度
+    /// - 纵向：分割项高度
+    public var dimension: CGFloat = 36.0
+    
     /// 相邻两个Item的间隔
     public var spacing: CGFloat = 0.0
-    
-    /// 选中时标题的缩放因数，不能小于1.0
-    public var highlightedScale: CGFloat = 1.0
     
     /// 转场动画时长
     public var transitionDuration: TimeInterval = 0.3
@@ -117,7 +130,7 @@ public struct MNSegmentedItemConfiguration {
     public var normal = Appearance()
     
     /// 选中时外观配置
-    public static let selected = Appearance(textColor: .darkText)
+    public var selected = Appearance(titleColor: .darkText)
 }
 
 /// 角标配置
@@ -148,9 +161,9 @@ public struct MNSegmentedIndicatorConfiguration {
     /// 尺寸模式
     public enum Size {
         /// 与标题同宽
-        case matchTitle(height: CGFloat)
+        case matchTitle(dimension: CGFloat)
         /// 与item同宽
-        case matchItem(height: CGFloat)
+        case matchItem(dimension: CGFloat)
         /// 使用固定值
         case fixed(width: CGFloat, height: CGFloat)
     }
@@ -184,7 +197,7 @@ public struct MNSegmentedIndicatorConfiguration {
     /// 指示器尺寸
     public var size: Size = .fixed(width: 15.0, height: 3.0)
     
-    /// 对于标题的对齐方式
+    /// 指示器尺寸固定时的对齐方式
     public var alignment: Alignment = .center
     
     /// 指示视图在item上层还是下层
