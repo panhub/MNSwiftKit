@@ -6,9 +6,6 @@
 //  页面控制视图
 
 import UIKit
-//#if canImport(MNSwiftKitLayout)
-//import MNSwiftKitLayout
-//#endif
 
 @objc public protocol MNSplitViewDataSource: AnyObject {
     

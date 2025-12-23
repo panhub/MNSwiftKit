@@ -9,29 +9,34 @@ import UIKit
 import Foundation
 import CoreFoundation
 
+/// 分割视图中Item模型
 public class MNSegmentedItem {
-    /// 标题
-    public var title: String = ""
-    /// 角标
-    public var badge: Any? = nil
+    
     /// 位置
     public var frame: CGRect = .zero
+    /// 标记线位置
+    public var indicatorFrame: CGRect = .zero
+    /// transform缩放因数
+    public var transformScale: CGFloat = 1.0
+    /// 是否处于选中状态
+    public var isSelected: Bool = false
+    
+    /// 标题
+    public var title: String = ""
+    /// 标题颜色
+    public var titleColor: UIColor?
     /// 标题尺寸
     public var titleSize: CGSize = .zero
+    /// 字体
+    public var titleFont: UIFont = .systemFont(ofSize: 17.0, weight: .medium)
+    
     /// 边框颜色
     public var borderColor: UIColor?
     /// 背景颜色
     public var backgroundColor: UIColor?
     /// 背景图片
     public var backgroundImage: UIImage?
-    /// 标题颜色
-    public var titleColor: UIColor?
-    /// 标记线位置
-    public var shadowFrame: CGRect = .zero
-    /// transform缩放因数
-    public var transformScale: CGFloat = 1.0
-    /// 字体
-    public var titleFont: UIFont = .systemFont(ofSize: 17.0, weight: .medium)
+    
     /// 分割线颜色
     public var dividerColor: UIColor?
     /// 分割线约束
@@ -40,6 +45,9 @@ public class MNSegmentedItem {
     public var borderWidth: CGFloat = 0.0
     /// 边框圆角
     public var borderRadius: CGFloat = 0.0
+    
+    /// 角标
+    public var badge: Any? = nil
     /// 角标偏移
     public var badgeOffset: UIOffset = .zero
     /// 角标字体颜色
@@ -52,7 +60,5 @@ public class MNSegmentedItem {
     public var badgeFont: UIFont = .systemFont(ofSize: 11.0, weight: .medium)
     /// 角标背景颜色
     public var badgeColor: UIColor?
-    /// 是否处于选中状态
-    public var isSelected: Bool = false
 }
 

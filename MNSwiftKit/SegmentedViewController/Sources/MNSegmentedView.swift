@@ -12,51 +12,58 @@ class MNSegmentedView: UIView {
     /// 数据源
     internal weak var dataSource: MNSplitViewDataSource?
     
-    private let options: MNSegmentedViewController.Options
+    /// 配置
+    private let configuration: MNSegmentedConfiguration
     
-    private var referenceBounds: CGRect = .zero
+    /// 分各项数组
+    private var items: [MNSegmentedItem] = []
     
-    // 方向
-    var orientation = UIPageViewController.NavigationOrientation.horizontal
+    /// 背景内容视图
+    private var backgroundContentView: UIView!
+    
+    /// 表格重用标识符
+    private var reuseIdentifier: String = "com.mn.segmented.cell.identifier"
+    
+    /// 上一次选中索引
+    internal var lastSelectIndex: Int = 0
+    /// 当前选中索引
+    internal var selectedIndex: Int = 0
+    
     // 指示视图
-    var indicatorView = UIView()
+    var indicatorView = UIImageView()
     // 前/左分割线
     private let leadingSeparator = UIView()
     // 后/右分割线
     private let trailingSeparator = UIView()
+    /// 前附属视图
+    private weak var leadingAccessoryView: UIView?
+    /// 后附属视图
+    private weak var trailingAccessoryView: UIView?
     // 集合视图
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
     
     
-    init(options: MNSegmentedViewController.Options) {
-        self.options = options
+    init(configuration: MNSegmentedConfiguration) {
+        self.configuration = configuration
         super.init(frame: .zero)
         
+        leadingSeparator.backgroundColor = configuration.view.separatorColor
+        leadingSeparator.isHidden = configuration.view.separatorStyle.contains(.leading) == false
         leadingSeparator.translatesAutoresizingMaskIntoConstraints = false
         addSubview(leadingSeparator)
-        NSLayoutConstraint.activate([
-            leadingSeparator.topAnchor.constraint(equalTo: topAnchor),
-            leadingSeparator.leftAnchor.constraint(equalTo: leftAnchor),
-            leadingSeparator.rightAnchor.constraint(equalTo: rightAnchor),
-            leadingSeparator.heightAnchor.constraint(equalToConstant: 0.7)
-        ])
         
+        trailingSeparator.backgroundColor = configuration.view.separatorColor
+        trailingSeparator.isHidden = configuration.view.separatorStyle.contains(.trailing) == false
         trailingSeparator.translatesAutoresizingMaskIntoConstraints = false
         addSubview(trailingSeparator)
-        NSLayoutConstraint.activate([
-            trailingSeparator.leftAnchor.constraint(equalTo: leftAnchor),
-            trailingSeparator.bottomAnchor.constraint(equalTo: bottomAnchor),
-            trailingSeparator.rightAnchor.constraint(equalTo: rightAnchor),
-            trailingSeparator.heightAnchor.constraint(equalToConstant: 0.7)
-        ])
         
         let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
-        layout.sectionInset = .zero
-        layout.scrollDirection = .horizontal
+        layout.sectionInset = configuration.view.contentInset
+        layout.scrollDirection = configuration.orientation == .horizontal ? .horizontal : .vertical
         layout.footerReferenceSize = .zero
         layout.headerReferenceSize = .zero
-        layout.minimumLineSpacing = 0.0
-        layout.minimumInteritemSpacing = 0.0
+        layout.minimumLineSpacing = configuration.orientation == .horizontal ? configuration.item.spacing : 0.0
+        layout.minimumInteritemSpacing = configuration.orientation == .horizontal ? 0.0 : configuration.item.spacing
         
         //collectionView.delegate = self
         //collectionView.dataSource = self
@@ -69,51 +76,20 @@ class MNSegmentedView: UIView {
         }
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(collectionView)
-        NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: leadingSeparator.bottomAnchor),
-            collectionView.leftAnchor.constraint(equalTo: leftAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: trailingSeparator.topAnchor),
-            collectionView.rightAnchor.constraint(equalTo: rightAnchor)
-        ])
         
-        //
-        addSubview(indicatorView)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    func update(orientation: UIPageViewController.NavigationOrientation) {
-        if self.orientation == orientation { return }
-        self.orientation = orientation
-        // 先删除原约束
-        NSLayoutConstraint.deactivate(leadingSeparator.constraints)
-        NSLayoutConstraint.deactivate(trailingSeparator.constraints)
-        NSLayoutConstraint.deactivate(constraints.filter({
-            guard let firstItem = $0.firstItem as? UIView else { return false }
-            if firstItem == leadingSeparator { return true }
-            if firstItem == trailingSeparator { return true }
-            if firstItem == collectionView { return true }
-            return true
-        }))
-        // 更新
-        leadingSeparator.isHidden = options.separatorVisibility.contains(.leading) == false
-        trailingSeparator.isHidden = options.separatorVisibility.contains(.trailing) == false
-        // 添加新的
-        switch orientation {
+        switch configuration.orientation {
         case .horizontal:
             //
             NSLayoutConstraint.activate([
                 leadingSeparator.topAnchor.constraint(equalTo: topAnchor),
-                leadingSeparator.leftAnchor.constraint(equalTo: leftAnchor),
-                leadingSeparator.rightAnchor.constraint(equalTo: rightAnchor),
+                leadingSeparator.leftAnchor.constraint(equalTo: leftAnchor, constant: configuration.view.separatorInset.left),
+                leadingSeparator.rightAnchor.constraint(equalTo: rightAnchor, constant: -configuration.view.separatorInset.right),
                 leadingSeparator.heightAnchor.constraint(equalToConstant: 0.7)
             ])
             NSLayoutConstraint.activate([
-                trailingSeparator.leftAnchor.constraint(equalTo: leftAnchor),
+                trailingSeparator.leftAnchor.constraint(equalTo: leftAnchor, constant: configuration.view.separatorInset.left),
                 trailingSeparator.bottomAnchor.constraint(equalTo: bottomAnchor),
-                trailingSeparator.rightAnchor.constraint(equalTo: rightAnchor),
+                trailingSeparator.rightAnchor.constraint(equalTo: rightAnchor, constant: -configuration.view.separatorInset.right),
                 trailingSeparator.heightAnchor.constraint(equalToConstant: 0.7)
             ])
             NSLayoutConstraint.activate([
@@ -125,14 +101,14 @@ class MNSegmentedView: UIView {
         default:
             //
             NSLayoutConstraint.activate([
-                leadingSeparator.topAnchor.constraint(equalTo: topAnchor),
+                leadingSeparator.topAnchor.constraint(equalTo: topAnchor, constant: configuration.view.separatorInset.top),
                 leadingSeparator.leftAnchor.constraint(equalTo: leftAnchor),
-                leadingSeparator.bottomAnchor.constraint(equalTo: bottomAnchor),
+                leadingSeparator.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -configuration.view.separatorInset.bottom),
                 leadingSeparator.widthAnchor.constraint(equalToConstant: 0.7)
             ])
             NSLayoutConstraint.activate([
-                trailingSeparator.topAnchor.constraint(equalTo: topAnchor),
-                trailingSeparator.bottomAnchor.constraint(equalTo: bottomAnchor),
+                trailingSeparator.topAnchor.constraint(equalTo: topAnchor, constant: configuration.view.separatorInset.top),
+                trailingSeparator.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -configuration.view.separatorInset.bottom),
                 trailingSeparator.rightAnchor.constraint(equalTo: rightAnchor),
                 trailingSeparator.widthAnchor.constraint(equalToConstant: 0.7)
             ])
@@ -143,73 +119,189 @@ class MNSegmentedView: UIView {
                 collectionView.rightAnchor.constraint(equalTo: trailingSeparator.isHidden ? rightAnchor : trailingSeparator.leftAnchor)
             ])
         }
+        
+        // 指示器视图
+        indicatorView.clipsToBounds = true
+        indicatorView.image = configuration.indicator.image
+        indicatorView.layer.cornerRadius = configuration.indicator.cornerRadius
+        indicatorView.contentMode = configuration.indicator.contentMode
+        indicatorView.backgroundColor = configuration.indicator.backgroundColor
+        switch configuration.indicator.size {
+        case .matchTitle(let height):
+            indicatorView.frame.size.height = height
+        case .matchItem(let height):
+            indicatorView.frame.size.height = height
+        case .fixed(_, let height):
+            indicatorView.frame.size.height = height
+        }
+        switch configuration.indicator.position {
+        case .above:
+            // 指示器在上层
+            collectionView.addSubview(indicatorView)
+        case .below:
+            // 指示器在底层
+            
+            let backgroundView = UIView()
+            backgroundView.isUserInteractionEnabled = false
+            collectionView.backgroundView = backgroundView
+            
+            backgroundContentView = UIView(frame: backgroundView.bounds)
+            backgroundContentView.autoresizingMask = [.flexibleHeight]
+            backgroundView.addSubview(backgroundContentView)
+            
+            backgroundContentView.addSubview(indicatorView)
+            
+            collectionView.addObserver(self, forKeyPath: #keyPath(UIScrollView.contentSize), options: [.old, .new], context: nil)
+            collectionView.addObserver(self, forKeyPath: #keyPath(UIScrollView.contentOffset), options: [.old, .new], context: nil)
+        }
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        if bounds.isNull || bounds.isEmpty { return }
-        if bounds == referenceBounds { return }
-        referenceBounds = bounds
-        
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    deinit {
+        if let _ = backgroundContentView {
+            collectionView.removeObserver(self, forKeyPath: #keyPath(UIScrollView.contentSize))
+            collectionView.removeObserver(self, forKeyPath: #keyPath(UIScrollView.contentOffset))
+        }
+    }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        guard let keyPath = keyPath, let change = change else { return }
+        switch keyPath {
+        case #keyPath(UIScrollView.contentSize):
+            guard let contentSize = change[.newKey] as? CGSize else { break }
+            backgroundContentView.frame.size.width = contentSize.width
+        case #keyPath(UIScrollView.contentOffset):
+            guard let contentOffset = change[.newKey] as? CGPoint else { break }
+            switch configuration.orientation {
+            case .horizontal:
+                backgroundContentView.frame.origin.x = -contentOffset.x
+            default:
+                backgroundContentView.frame.origin.y = -contentOffset.y
+            }
+        default:
+            // 一般不会走到这里
+            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+        }
     }
 }
 
-// MARK: -
 extension MNSegmentedView {
     
+    /// 注册表格
+    /// - Parameters:
+    ///   - cellClass: 表格类
+    ///   - reuseIdentifier: 表格重用标识符
+    func register<T>(_ cellClass: T.Type, forSegmentedCellWithReuseIdentifier reuseIdentifier: String) where T: MNSplitCellConvertible {
+        self.reuseIdentifier = reuseIdentifier
+        collectionView.register(cellClass, forCellWithReuseIdentifier: reuseIdentifier)
+    }
     
-    /// 重载所有控制项
-    /// - Parameter titles: 使用标题
-    func reloadItems(with titles: [String]? = nil) {
-        var elements: [String] = []
-        if let titles = titles, titles.isEmpty == false {
-            elements.append(contentsOf: titles)
-        } else if let dataSource = dataSource {
-            elements.append(contentsOf: dataSource.preferredPageTitles)
+    func register(_ nib: UINib?, forSegmentedCellWithReuseIdentifier reuseIdentifier: String) {
+        self.reuseIdentifier = reuseIdentifier
+        collectionView.register(nib, forCellWithReuseIdentifier: reuseIdentifier)
+    }
+}
+
+// MARK: - Reload
+extension MNSegmentedView {
+    
+    /// 重载附属视图
+    func reloadAccessoryView() {
+        let contentInset = configuration.view.contentInset
+        if let accessoryView = leadingAccessoryView {
+            accessoryView.removeFromSuperview()
+            leadingAccessoryView = nil
         }
-        let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
-        var sectionInset = options.splitInset
-        switch axis {
-        case .horizontal:
-            layout.scrollDirection = .horizontal
-            sectionInset.left += (headAccessoryView?.frame.width ?? 0.0)
-            sectionInset.right += (tailAccessoryView?.frame.width ?? 0.0)
-            layout.sectionInset = sectionInset
-            layoutHorizontalSplitter(titles: items)
-            // 横向滑动在这里处理相邻项间隔
-            if let first = spliters.first, spliters.allSatisfy({ $0.frame.width == first.frame.width }) {
-                layout.minimumInteritemSpacing = 0.0
-                layout.minimumLineSpacing = options.interSpliterSpacing
-            } else {
-                layout.minimumLineSpacing = 0.0
-                layout.minimumInteritemSpacing = options.interSpliterSpacing
+        if let dataSource = dataSource, let accessoryView = dataSource.preferredHeadAccessoryView, let accessoryView = accessoryView {
+            // 前/左附属视图
+            accessoryView.translatesAutoresizingMaskIntoConstraints = false
+            insertSubview(accessoryView, aboveSubview: collectionView)
+            leadingAccessoryView = accessoryView
+            switch configuration.orientation {
+            case .horizontal:
+                NSLayoutConstraint.activate([
+                    accessoryView.topAnchor.constraint(equalTo: collectionView.topAnchor, constant: contentInset.top),
+                    accessoryView.leftAnchor.constraint(equalTo: leftAnchor),
+                    accessoryView.bottomAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: -contentInset.bottom),
+                    accessoryView.widthAnchor.constraint(equalToConstant: accessoryView.frame.width)
+                ])
+            default:
+                NSLayoutConstraint.activate([
+                    accessoryView.topAnchor.constraint(equalTo: topAnchor),
+                    accessoryView.leftAnchor.constraint(equalTo: collectionView.leftAnchor, constant: contentInset.left),
+                    accessoryView.rightAnchor.constraint(equalTo: collectionView.rightAnchor, constant: -contentInset.right),
+                    accessoryView.heightAnchor.constraint(equalToConstant: accessoryView.frame.height)
+                ])
             }
-        default:
-            layout.scrollDirection = .vertical
-            layout.minimumInteritemSpacing = 0.0
-            layout.minimumLineSpacing = options.interSpliterSpacing
-            sectionInset.top += (headAccessoryView?.frame.height ?? 0.0)
-            sectionInset.bottom += (tailAccessoryView?.frame.height ?? 0.0)
-            layout.sectionInset = sectionInset
-            layoutVerticalSplitter(titles: items)
         }
-        currentPageIndex = max(0, min(currentPageIndex, spliters.count - 1))
-        if currentPageIndex < spliters.count {
-            let spliter = spliters[currentPageIndex]
-            spliter.isSelected = true
-            spliter.titleColor = options.highlightedTitleColor
-            spliter.transformScale = options.highlightedScale
-            spliter.borderColor = options.spliterHighlightedBorderColor
-            spliter.backgroundColor = options.spliterHighlightedBackgroundColor
-            spliter.backgroundImage = options.spliterHighlightedBackgroundImage
-            shadow.frame = spliter.shadowFrame
-        } else {
-            shadow.frame = .zero
+        if let accessoryView = trailingAccessoryView {
+            accessoryView.removeFromSuperview()
+            trailingAccessoryView = nil
         }
-        UIView.performWithoutAnimation {
-            collectionView.reloadData()
+        if let dataSource = dataSource, let accessoryView = dataSource.preferredTailAccessoryView, let accessoryView = accessoryView {
+            // 后/右附属视图
+            accessoryView.translatesAutoresizingMaskIntoConstraints = false
+            insertSubview(accessoryView, aboveSubview: collectionView)
+            trailingAccessoryView = accessoryView
+            switch configuration.orientation {
+            case .horizontal:
+                NSLayoutConstraint.activate([
+                    accessoryView.topAnchor.constraint(equalTo: collectionView.topAnchor, constant: contentInset.top),
+                    accessoryView.bottomAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: -contentInset.bottom),
+                    accessoryView.rightAnchor.constraint(equalTo: rightAnchor),
+                    accessoryView.widthAnchor.constraint(equalToConstant: accessoryView.frame.width)
+                ])
+            default:
+                NSLayoutConstraint.activate([
+                    accessoryView.leftAnchor.constraint(equalTo: collectionView.leftAnchor, constant: contentInset.left),
+                    accessoryView.bottomAnchor.constraint(equalTo: bottomAnchor),
+                    accessoryView.rightAnchor.constraint(equalTo: collectionView.rightAnchor, constant: -contentInset.right),
+                    accessoryView.heightAnchor.constraint(equalToConstant: accessoryView.frame.height)
+                ])
+            }
         }
     }
     
+    /// 重载所有控制项
+    /// - Parameter titles: 使用标题
+    func reloadItems() {
+        var titles: [String] = []
+        if let dataSource = dataSource {
+            titles.append(contentsOf: dataSource.preferredPageTitles)
+        }
+        let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
+        switch layout.scrollDirection {
+        case .horizontal:
+            reloadHorizontalItems(titles)
+        default:
+            reloadVerticalItems(titles)
+        }
+        selectedIndex = max(0, min(selectedIndex, items.count - 1))
+//        if currentPageIndex < spliters.count {
+//            let spliter = spliters[currentPageIndex]
+//            spliter.isSelected = true
+//            spliter.titleColor = options.highlightedTitleColor
+//            spliter.transformScale = options.highlightedScale
+//            spliter.borderColor = options.spliterHighlightedBorderColor
+//            spliter.backgroundColor = options.spliterHighlightedBackgroundColor
+//            spliter.backgroundImage = options.spliterHighlightedBackgroundImage
+//            shadow.frame = spliter.shadowFrame
+//        } else {
+//            shadow.frame = .zero
+//        }
+//        UIView.performWithoutAnimation {
+//            collectionView.reloadData()
+//        }
+    }
+    
+    private func reloadHorizontalItems(_ titles: [String]) {
+        
+    }
+    
+    private func reloadVerticalItems(_ titles: [String]) {
+        
+    }
 }
