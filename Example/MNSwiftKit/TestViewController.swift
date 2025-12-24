@@ -23,7 +23,7 @@ class TestViewController: UIViewController {
         navigationOrientation: .horizontal
     )
 
-    private lazy var coordinator = MNSegmentedPageCoordinator(
+    private lazy var coordinator = MNSegmentedCoordinator(
         pageViewController: pageViewController,
         items: [
             .init(id: "A"),
@@ -61,10 +61,10 @@ class TestViewController: UIViewController {
         }
 
         coordinator.onScrollProgress = { index, progress in
-            //print("Scroll progress:", index, progress)
+            print("Scroll progress:", index, progress)
         }
 
-        coordinator.setInitialIndex(0)
+        coordinator.setInitialIndex(2)
     }
 
 

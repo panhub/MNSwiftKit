@@ -227,6 +227,9 @@ public struct MNSegmentedIndicatorConfiguration {
 
 public struct MNSegmentedConfiguration {
     
+    /// 颜色
+    public var backgroundColor: UIColor?
+    
     /// 分段视图配置
     public var view: MNSegmentedViewConfiguration = .init()
     

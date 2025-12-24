@@ -1,6 +1,6 @@
 import UIKit
 
-final class MNSegmentedPageCoordinator: NSObject {
+final class MNSegmentedCoordinator: NSObject {
 
     // MARK: - Callbacks
 
@@ -36,7 +36,7 @@ final class MNSegmentedPageCoordinator: NSObject {
     }
 }
 
-extension MNSegmentedPageCoordinator {
+extension MNSegmentedCoordinator {
 
     func setInitialIndex(_ index: Int) {
         currentIndex = clamp(index)
@@ -85,7 +85,7 @@ extension MNSegmentedPageCoordinator {
     }
 }
 
-private extension MNSegmentedPageCoordinator {
+private extension MNSegmentedCoordinator {
 
     func clamp(_ index: Int) -> Int {
         max(0, min(index, items.count - 1))
@@ -131,14 +131,13 @@ private extension MNSegmentedPageCoordinator {
     }
 }
 
-extension MNSegmentedPageCoordinator: UIPageViewControllerDataSource {
+extension MNSegmentedCoordinator: UIPageViewControllerDataSource {
 
     func pageViewController(
         _ pageViewController: UIPageViewController,
         viewControllerBefore viewController: UIViewController
     ) -> UIViewController? {
         guard let index = index(of: viewController) else { return nil }
-        print("=========\(index)=========")
         let prev = index - 1
         return prev >= 0 ? self.viewController(at: prev) : nil
     }
@@ -148,13 +147,12 @@ extension MNSegmentedPageCoordinator: UIPageViewControllerDataSource {
         viewControllerAfter viewController: UIViewController
     ) -> UIViewController? {
         guard let index = index(of: viewController) else { return nil }
-        print("-----------\(index)-----------")
         let next = index + 1
         return next < items.count ? self.viewController(at: next) : nil
     }
 }
 
-extension MNSegmentedPageCoordinator: UIPageViewControllerDelegate {
+extension MNSegmentedCoordinator: UIPageViewControllerDelegate {
 
     func pageViewController(
         _ pageViewController: UIPageViewController,
@@ -172,11 +170,13 @@ extension MNSegmentedPageCoordinator: UIPageViewControllerDelegate {
     }
 }
 
-extension MNSegmentedPageCoordinator: UIScrollViewDelegate {
+extension MNSegmentedCoordinator: UIScrollViewDelegate {
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let width = scrollView.bounds.width
         guard width > 0 else { return }
+        
+        //print("---\(scrollView.frame.width)-----\(scrollView.contentOffset.x)")
 
         let progress = (scrollView.contentOffset.x - width) / width
         onScrollProgress?(currentIndex, progress)

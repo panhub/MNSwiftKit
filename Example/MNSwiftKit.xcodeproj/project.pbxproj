@@ -17,7 +17,7 @@
 		E92C80162ECF3AAE0088CA5A /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = E92C80142ECF3AAE0088CA5A /* ViewController.xib */; };
 		E9A4685D2EF9299F004AD992 /* MNPageItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A4685C2EF9299F004AD992 /* MNPageItem.swift */; };
 		E9A4685F2EF929BD004AD992 /* MNPageContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A4685E2EF929BD004AD992 /* MNPageContentViewController.swift */; };
-		E9A468612EF929DD004AD992 /* MNSegmentedPageCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A468602EF929DD004AD992 /* MNSegmentedPageCoordinator.swift */; };
+		E9A468612EF929DD004AD992 /* MNSegmentedCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A468602EF929DD004AD992 /* MNSegmentedCoordinator.swift */; };
 		E9A468662EF92B9F004AD992 /* TestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = E9A468652EF92B9F004AD992 /* TestViewController.xib */; };
 		E9A468672EF92B9F004AD992 /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A468642EF92B9F004AD992 /* TestViewController.swift */; };
 /* End PBXBuildFile section */
@@ -54,7 +54,7 @@
 		E92C80142ECF3AAE0088CA5A /* ViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ViewController.xib; sourceTree = "<group>"; };
 		E9A4685C2EF9299F004AD992 /* MNPageItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNPageItem.swift; sourceTree = "<group>"; };
 		E9A4685E2EF929BD004AD992 /* MNPageContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNPageContentViewController.swift; sourceTree = "<group>"; };
-		E9A468602EF929DD004AD992 /* MNSegmentedPageCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNSegmentedPageCoordinator.swift; sourceTree = "<group>"; };
+		E9A468602EF929DD004AD992 /* MNSegmentedCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNSegmentedCoordinator.swift; sourceTree = "<group>"; };
 		E9A468642EF92B9F004AD992 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
 		E9A468652EF92B9F004AD992 /* TestViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TestViewController.xib; sourceTree = "<group>"; };
 		E9F4F5782EB46DDA00B52798 /* AVFAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFAudio.framework; path = System/Library/Frameworks/AVFAudio.framework; sourceTree = SDKROOT; };
@@ -63,21 +63,29 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3B743C002EF0682900741BFF /* resource */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = resource;
 			sourceTree = "<group>";
 		};
 		3BEB0B0D2EEF120900ADBEB2 /* view */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = view;
 			sourceTree = "<group>";
 		};
 		E9E266682EEFAD6C003F6717 /* model */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = model;
 			sourceTree = "<group>";
 		};
 		E9E2667D2EEFC0F5003F6717 /* controller */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = controller;
 			sourceTree = "<group>";
 		};
@@ -160,7 +168,7 @@
 				607FACD31AFB9204008FA782 /* Supporting Files */,
 				E9A4685C2EF9299F004AD992 /* MNPageItem.swift */,
 				E9A4685E2EF929BD004AD992 /* MNPageContentViewController.swift */,
-				E9A468602EF929DD004AD992 /* MNSegmentedPageCoordinator.swift */,
+				E9A468602EF929DD004AD992 /* MNSegmentedCoordinator.swift */,
 				E9A468642EF92B9F004AD992 /* TestViewController.swift */,
 				E9A468652EF92B9F004AD992 /* TestViewController.xib */,
 			);
@@ -386,7 +394,7 @@
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				E9A4685F2EF929BD004AD992 /* MNPageContentViewController.swift in Sources */,
 				E9A468672EF92B9F004AD992 /* TestViewController.swift in Sources */,
-				E9A468612EF929DD004AD992 /* MNSegmentedPageCoordinator.swift in Sources */,
+				E9A468612EF929DD004AD992 /* MNSegmentedCoordinator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

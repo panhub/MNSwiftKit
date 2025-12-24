@@ -10,13 +10,16 @@ import UIKit
 @objc public protocol MNSegmentedViewDataSource: AnyObject {
     
     /// 子界面标题集合
-    var preferredSubpageTitles: [String] { get }
+    var preferredSegmentedTitles: [String] { get }
+    
+    /// 分割器背景视图
+    @objc optional var preferredSegmentedBackgroundView: UIView? { get }
     
     /// 前/左附属视图
-    @objc optional var preferredLeadingAccessoryView: UIView? { get }
+    @objc optional var preferredSegmentedLeadingAccessoryView: UIView? { get }
     
     /// 后/右附属视图
-    @objc optional var preferredTrailingAccessoryView: UIView? { get }
+    @objc optional var preferredSegmentedTrailingAccessoryView: UIView? { get }
     
     /// 指定分割项尺寸 依据布局方向取宽高
     /// - Parameter index: 索引
@@ -56,8 +59,8 @@ class MNSegmentedView: UIView {
     /// 分各项数组
     private var items: [MNSegmentedItem] = []
     
-    /// 背景内容视图
-    private var backgroundContentView: UIView!
+    /// 集合视图的背景视图(放置指示视图)
+    private var collectionBackgroundView: UIView!
     
     /// 表格重用标识符
     private var reuseIdentifier: String = "com.mn.segmented.cell.identifier"
@@ -67,17 +70,19 @@ class MNSegmentedView: UIView {
     /// 当前选中索引
     internal var selectedIndex: Int = 0
     
-    // 指示视图
+    /// 指示视图
     var indicatorView = UIImageView()
-    // 前/左分割线
+    /// 前/左方分割线
     private let leadingSeparator = UIView()
-    // 后/右分割线
+    /// 后/右方分割线
     private let trailingSeparator = UIView()
-    /// 前附属视图
+    /// 背景视图
+    private weak var backgroundView: UIView?
+    /// 左/上方附属视图
     private weak var leadingAccessoryView: UIView?
-    /// 后附属视图
+    /// 右/下方附属视图
     private weak var trailingAccessoryView: UIView?
-    // 集合视图
+    /// 集合视图
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
     
     
@@ -176,10 +181,10 @@ class MNSegmentedView: UIView {
             let backgroundView = UIView()
             backgroundView.isUserInteractionEnabled = false
             collectionView.backgroundView = backgroundView
-            backgroundContentView = UIView(frame: backgroundView.bounds)
-            backgroundContentView.autoresizingMask = [.flexibleHeight]
-            backgroundView.addSubview(backgroundContentView)
-            backgroundContentView.addSubview(indicatorView)
+            collectionBackgroundView = UIView(frame: backgroundView.bounds)
+            collectionBackgroundView.autoresizingMask = configuration.orientation == .horizontal ? [.flexibleHeight] : [.flexibleWidth]
+            backgroundView.addSubview(collectionBackgroundView)
+            collectionBackgroundView.addSubview(indicatorView)
             collectionView.addObserver(self, forKeyPath: #keyPath(UIScrollView.contentSize), options: [.old, .new], context: nil)
             collectionView.addObserver(self, forKeyPath: #keyPath(UIScrollView.contentOffset), options: [.old, .new], context: nil)
         }
@@ -190,7 +195,7 @@ class MNSegmentedView: UIView {
     }
     
     deinit {
-        if let _ = backgroundContentView {
+        if let _ = collectionBackgroundView {
             collectionView.removeObserver(self, forKeyPath: #keyPath(UIScrollView.contentSize))
             collectionView.removeObserver(self, forKeyPath: #keyPath(UIScrollView.contentOffset))
         }
@@ -201,6 +206,8 @@ class MNSegmentedView: UIView {
         
         if bounds.isNull || bounds.isEmpty { return }
         guard mn.isFirstAssociated else { return }
+        reloadBackgroundView()
+        reloadAccessoryView()
         reloadItems()
     }
     
@@ -209,14 +216,14 @@ class MNSegmentedView: UIView {
         switch keyPath {
         case #keyPath(UIScrollView.contentSize):
             guard let contentSize = change[.newKey] as? CGSize else { break }
-            backgroundContentView.frame.size.width = contentSize.width
+            collectionBackgroundView.frame.size.width = contentSize.width
         case #keyPath(UIScrollView.contentOffset):
             guard let contentOffset = change[.newKey] as? CGPoint else { break }
             switch configuration.orientation {
             case .horizontal:
-                backgroundContentView.frame.origin.x = -contentOffset.x
+                collectionBackgroundView.frame.origin.x = -contentOffset.x
             default:
-                backgroundContentView.frame.origin.y = -contentOffset.y
+                collectionBackgroundView.frame.origin.y = -contentOffset.y
             }
         default:
             // 一般不会走到这里
@@ -225,17 +232,22 @@ class MNSegmentedView: UIView {
     }
 }
 
+// MARK: - Register
 extension MNSegmentedView {
     
     /// 注册表格
     /// - Parameters:
     ///   - cellClass: 表格类
     ///   - reuseIdentifier: 表格重用标识符
-    func register<T>(_ cellClass: T.Type, forSegmentedCellWithReuseIdentifier reuseIdentifier: String) where T: MNSplitCellConvertible {
+    func register<T>(_ cellClass: T.Type, forSegmentedCellWithReuseIdentifier reuseIdentifier: String) where T: MNSegmentedCellConvertible {
         self.reuseIdentifier = reuseIdentifier
         collectionView.register(cellClass, forCellWithReuseIdentifier: reuseIdentifier)
     }
     
+    /// 注册表格
+    /// - Parameters:
+    ///   - nib: xib
+    ///   - reuseIdentifier: 表格重用标识符
     func register(_ nib: UINib?, forSegmentedCellWithReuseIdentifier reuseIdentifier: String) {
         self.reuseIdentifier = reuseIdentifier
         collectionView.register(nib, forCellWithReuseIdentifier: reuseIdentifier)
@@ -245,6 +257,23 @@ extension MNSegmentedView {
 // MARK: - Reload
 extension MNSegmentedView {
     
+    /// 重载背景视图
+    func reloadBackgroundView() {
+        if let backgroundView = backgroundView {
+            backgroundView.removeFromSuperview()
+            self.backgroundView = nil
+        }
+        let backgroundView = UIView()
+        backgroundView.translatesAutoresizingMaskIntoConstraints = false
+        insertSubview(backgroundView, at: 0)
+        NSLayoutConstraint.activate([
+            backgroundView.topAnchor.constraint(equalTo: topAnchor),
+            backgroundView.leftAnchor.constraint(equalTo: leftAnchor),
+            backgroundView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            backgroundView.rightAnchor.constraint(equalTo: rightAnchor)
+        ])
+    }
+    
     /// 重载附属视图
     func reloadAccessoryView() {
         let contentInset = configuration.view.contentInset
@@ -252,8 +281,8 @@ extension MNSegmentedView {
             accessoryView.removeFromSuperview()
             leadingAccessoryView = nil
         }
-        if let dataSource = dataSource, let accessoryView = dataSource.preferredLeadingAccessoryView, let accessoryView = accessoryView {
-            // 前/左附属视图
+        if let dataSource = dataSource, let accessoryView = dataSource.preferredSegmentedLeadingAccessoryView, let accessoryView = accessoryView {
+            // 左/上方附属视图
             accessoryView.translatesAutoresizingMaskIntoConstraints = false
             insertSubview(accessoryView, aboveSubview: collectionView)
             leadingAccessoryView = accessoryView
@@ -278,8 +307,8 @@ extension MNSegmentedView {
             accessoryView.removeFromSuperview()
             trailingAccessoryView = nil
         }
-        if let dataSource = dataSource, let accessoryView = dataSource.preferredTrailingAccessoryView, let accessoryView = accessoryView {
-            // 后/右附属视图
+        if let dataSource = dataSource, let accessoryView = dataSource.preferredSegmentedTrailingAccessoryView, let accessoryView = accessoryView {
+            // 右/下方附属视图
             accessoryView.translatesAutoresizingMaskIntoConstraints = false
             insertSubview(accessoryView, aboveSubview: collectionView)
             trailingAccessoryView = accessoryView
@@ -307,7 +336,7 @@ extension MNSegmentedView {
     func reloadItems() {
         var titles: [String] = []
         if let dataSource = dataSource {
-            titles.append(contentsOf: dataSource.preferredSubpageTitles)
+            titles.append(contentsOf: dataSource.preferredSegmentedTitles)
         }
         let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
         switch layout.scrollDirection {
@@ -608,4 +637,11 @@ extension MNSegmentedView: UICollectionViewDelegateFlowLayout {
         
         items[indexPath.item].frame.size
     }
+}
+
+extension MNSegmentedView {
+    
+    
+    
+    
 }
