@@ -12,6 +12,9 @@ import UIKit
     /// 子界面标题集合
     var preferredSegmentedTitles: [String] { get }
     
+    /// 初始子界面索引
+    @objc optional var preferredPresentationSegmentedIndex: Int { get }
+    
     /// 分割器背景视图
     @objc optional var preferredSegmentedBackgroundView: UIView? { get }
     
@@ -29,20 +32,31 @@ import UIKit
 
 @objc protocol MNSegmentedViewDelegate: AnyObject {
     
-    /// 页面导航询问是否响应点击事件
-    /// - Parameter index: 点击索引
-    func segmentedViewShouldSelectSpliterAt(_ index: Int) -> Bool
+    /// 重载分割项告知
+    /// - Parameter segmentedView: 分割视图
+    func segmentedViewDidReloadItems(_ segmentedView: MNSegmentedView)
     
-    /// 页面导航选择告知
-    /// - Parameter index: 页面索引
-    func segmentedViewDidSelectItemAt(_ index: Int)
-    
-    /// 导航项即将显示
+    /// 询问是否响应点击事件
     /// - Parameters:
+    ///   - segmentedView: 分割视图
+    ///   - index: 点击索引
+    /// - Returns: 是否允许选择
+    func segmentedView(_ segmentedView: MNSegmentedView, shouldSelectItemAt index: Int) -> Bool
+    
+    /// 分割项选择告知
+    /// - Parameters:
+    ///   - segmentedView: 分割视图
+    ///   - index: 点击的索引
+    ///   - direction: 点击的索引是大于还是小于原索引
+    func segmentedView(_ segmentedView: MNSegmentedView, didSelectItemAt index: Int, direction: UIPageViewController.NavigationDirection)
+    
+    /// 即将显示分割项
+    /// - Parameters:
+    ///   - segmentedView: 分割视图
     ///   - cell: 分割项
     ///   - item: 分割项模型
     ///   - index: 索引
-    @objc optional func segmentedCell(_ cell: MNSegmentedCellConvertible, willDisplay item: MNSegmentedItem, forItemAt index: Int)
+    @objc optional func segmentedView(_ segmentedView: MNSegmentedView, willDisplay cell: MNSegmentedCellConvertible, item: MNSegmentedItem, at index: Int)
 }
 
 class MNSegmentedView: UIView {
@@ -51,13 +65,13 @@ class MNSegmentedView: UIView {
     private let configuration: MNSegmentedConfiguration
     
     /// 外界指定是否允许点击
-    internal var isSelectionEnabled: Bool = true
+    var isSelectionEnabled: Bool = true
     /// 事件代理
-    internal weak var delegate: MNSegmentedViewDelegate?
+    weak var delegate: MNSegmentedViewDelegate?
     /// 数据源
-    internal weak var dataSource: MNSegmentedViewDataSource?
+    weak var dataSource: MNSegmentedViewDataSource?
     /// 分各项数组
-    private var items: [MNSegmentedItem] = []
+    private(set) var items: [MNSegmentedItem] = []
     
     /// 集合视图的背景视图(放置指示视图)
     private var collectionBackgroundView: UIView!
@@ -65,10 +79,11 @@ class MNSegmentedView: UIView {
     /// 表格重用标识符
     private var reuseIdentifier: String = "com.mn.segmented.cell.identifier"
     
-    /// 上一次选中索引
-    internal var lastSelectIndex: Int = 0
     /// 当前选中索引
-    internal var selectedIndex: Int = 0
+    private(set) var selectedIndex: Int = 0
+    
+    /// 上一次选中索引
+    private(set) var lastSelectedIndex: Int = 0
     
     /// 指示视图
     var indicatorView = UIImageView()
@@ -206,9 +221,17 @@ class MNSegmentedView: UIView {
         
         if bounds.isNull || bounds.isEmpty { return }
         guard mn.isFirstAssociated else { return }
+        if let dataSource = dataSource, let index = dataSource.preferredPresentationSegmentedIndex {
+            selectedIndex = index
+        } else {
+            selectedIndex = 0
+        }
         reloadBackgroundView()
         reloadAccessoryView()
         reloadItems()
+        if let delegate = delegate {
+            delegate.segmentedViewDidReloadItems(self)
+        }
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -345,23 +368,7 @@ extension MNSegmentedView {
         default:
             reloadVerticalItems(titles)
         }
-        selectedIndex = max(0, min(selectedIndex, items.count - 1))
-        if selectedIndex < items.count {
-            let item = items[selectedIndex]
-            item.isSelected = true
-            item.titleColor = configuration.item.selected.titleColor
-            item.transformScale = max(1.0, configuration.item.selected.titleScale)
-            item.borderColor = configuration.item.selected.borderColor
-            item.borderWidth = configuration.item.selected.borderWidth
-            item.backgroundColor = configuration.item.selected.backgroundColor
-            item.backgroundImage = configuration.item.selected.backgroundImage
-            indicatorView.frame = item.indicatorFrame
-        } else {
-            indicatorView.frame = .zero
-        }
-        UIView.performWithoutAnimation {
-            self.collectionView.reloadData()
-        }
+        reloadData()
     }
     
     private func reloadHorizontalItems(_ titles: [String]) {
@@ -587,6 +594,26 @@ extension MNSegmentedView {
             }
         }
     }
+    
+    func reloadData() {
+        selectedIndex = max(0, min(selectedIndex, items.count - 1))
+        if selectedIndex < items.count {
+            let item = items[selectedIndex]
+            item.isSelected = true
+            item.titleColor = configuration.item.selected.titleColor
+            item.transformScale = max(1.0, configuration.item.selected.titleScale)
+            item.borderColor = configuration.item.selected.borderColor
+            item.borderWidth = configuration.item.selected.borderWidth
+            item.backgroundColor = configuration.item.selected.backgroundColor
+            item.backgroundImage = configuration.item.selected.backgroundImage
+            indicatorView.frame = item.indicatorFrame
+        } else {
+            indicatorView.frame = .init(origin: .init(x: 0.0, y: collectionView.frame.height), size: .zero)
+        }
+        UIView.performWithoutAnimation {
+            self.collectionView.reloadData()
+        }
+    }
 }
 
 // MARK: - UICollectionViewDataSource, UICollectionViewDelegate
@@ -613,20 +640,21 @@ extension MNSegmentedView: UICollectionViewDataSource, UICollectionViewDelegate 
         let item = items[indexPath.item]
         cell.update?(item: item, at: indexPath.item, orientation: configuration.orientation)
         if let delegate = delegate {
-            delegate.segmentedCell?(cell, willDisplay: item, forItemAt: indexPath.item)
+            delegate.segmentedView?(self, willDisplay: cell, item: item, at: indexPath.item)
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         guard isSelectionEnabled else { return }
-        let pageIndex: Int = indexPath.item
+        let pageIndex = indexPath.item
+        let lastSelectedIndex = selectedIndex
         guard pageIndex < items.count else { return }
-        if indexPath.item == selectedIndex { return }
+        if pageIndex == lastSelectedIndex { return }
         guard let delegate = delegate else { return }
-        guard delegate.segmentedViewShouldSelectSpliterAt(indexPath.item) else { return }
+        guard delegate.segmentedView(self, shouldSelectItemAt: indexPath.item) else { return }
         //setCurrentPage(at: indexPath.item, animated: true)
-        delegate.segmentedViewDidSelectItemAt(indexPath.item)
+        delegate.segmentedView(self, didSelectItemAt: pageIndex, direction: pageIndex >= lastSelectedIndex ? .forward : .reverse)
     }
 }
 
@@ -639,9 +667,23 @@ extension MNSegmentedView: UICollectionViewDelegateFlowLayout {
     }
 }
 
-extension MNSegmentedView {
+// MARK: - MNSegmentedPageCoordinatorScrollDelegate
+extension MNSegmentedView: MNSegmentedPageCoordinatorScrollDelegate {
     
+    func pageViewController(_ pageViewController: UIPageViewController, didScroll ratio: CGFloat) {
+        
+    }
     
+    func pageViewController(_ viewController: UIPageViewController, willScrollToPageAt index: Int) {
+        
+    }
     
+    func pageViewController(_ viewController: UIPageViewController, didScrollToPageAt index: Int) {
+        
+    }
     
+    func pageViewControllerWillBeginDragging(_ pageViewController: UIPageViewController) {
+        
+    }
 }
+

@@ -16,7 +16,7 @@ import CoreFoundation
     
     /// 告知已修改ContentInset
     /// - Parameter scrollView: 滑动视图
-    @objc optional func scrollViewDidChangeContentInset(_ scrollView: UIScrollView)
+    @objc optional func scrollViewDidChangeAdjustedContentInset(_ scrollView: UIScrollView)
     
     /// 告知`scrollView`最小内容尺寸
     /// - Parameters:
@@ -27,14 +27,13 @@ import CoreFoundation
 
 @objc public protocol MNSegmentedViewControllerDataSource: MNSegmentedViewDataSource {
     
-    /// 初始子界面索引
-    @objc optional var preferredSubpageIndex: Int { get }
-    
     /// 背景视图
     @objc optional var preferredSubpageBackgroundView: UIView? { get }
     
     /// 页头视图
     @objc optional var preferredSubpageHeaderView: UIView? { get }
+    
+    @objc optional func segmentedViewController(_ viewController: MNSegmentedViewController, dimensionForSegmentedAt index: Int) -> CGFloat
     
     /// 获取子界面
     /// - Parameters:
@@ -44,7 +43,15 @@ import CoreFoundation
     func segmentedViewController(_ viewController: MNSegmentedViewController, subpageAt index: Int) -> MNSegmentedSubpageConvertible
 }
 
+@objc public protocol MNSegmentedViewControllerDelegate: AnyObject {
+    
+    @objc optional func segmentedViewController(_ viewController: MNSegmentedViewController, willDisplay cell: MNSegmentedCellConvertible, item: MNSegmentedItem, at index: Int)
+}
+
 public class MNSegmentedViewController: UIViewController {
+    
+    /// 事件代理
+    public weak var delegate: MNSegmentedViewControllerDelegate?
     
     /// 数据源
     public weak var dataSource: MNSegmentedViewControllerDataSource?
@@ -169,7 +176,9 @@ public class MNSegmentedViewController: UIViewController {
         }
         
         // 激活协调器
-        
+        pageCoordinator.delegate = self
+        pageCoordinator.dataSource = self
+        pageCoordinator.scrollDelegate = segmentedView
     }
     
     open override func viewWillAppear(_ animated: Bool) {
@@ -199,3 +208,100 @@ extension MNSegmentedViewController {
     /// 禁止生命周期转发到子控制器
     open override var shouldAutomaticallyForwardAppearanceMethods: Bool { false }
 }
+
+// MARK: - MNSegmentedViewDataSource
+extension MNSegmentedViewController: MNSegmentedViewDataSource {
+    
+    public var preferredSegmentedTitles: [String] {
+        
+        guard let dataSource = dataSource else { return [] }
+        return dataSource.preferredSegmentedTitles
+    }
+    
+    public var preferredPresentationSegmentedIndex: Int {
+        
+        guard let dataSource = dataSource, let presentationIndex = dataSource.preferredPresentationSegmentedIndex else { return 0 }
+        return presentationIndex
+    }
+    
+    public var preferredSegmentedBackgroundView: UIView? {
+        
+        guard let dataSource = dataSource, let backgroundView = dataSource.preferredSegmentedBackgroundView else { return nil }
+        return backgroundView
+    }
+    
+    public var preferredSegmentedLeadingAccessoryView: UIView? {
+        
+        guard let dataSource = dataSource, let accessoryView = dataSource.preferredSegmentedLeadingAccessoryView else { return nil }
+        return accessoryView
+    }
+    
+    public var preferredSegmentedTrailingAccessoryView: UIView? {
+        
+        guard let dataSource = dataSource, let accessoryView = dataSource.preferredSegmentedTrailingAccessoryView else { return nil }
+        return accessoryView
+    }
+    
+    public func dimensionForSegmentedAt(_ index: Int) -> CGFloat {
+        
+        guard let dataSource = dataSource, let dimension = dataSource.segmentedViewController?(self, dimensionForSegmentedAt: index) else { return 0.0 }
+        return dimension
+    }
+}
+
+// MARK: - MNSegmentedViewDelegate
+extension MNSegmentedViewController: MNSegmentedViewDelegate {
+    
+    func segmentedViewDidReloadItems(_ segmentedView: MNSegmentedView) {
+        
+        pageCoordinator.setPage(at: segmentedView.selectedIndex, direction: .forward, animated: false)
+    }
+    
+    func segmentedView(_ segmentedView: MNSegmentedView, shouldSelectItemAt index: Int) -> Bool {
+        
+        true
+    }
+    
+    func segmentedView(_ segmentedView: MNSegmentedView, didSelectItemAt index: Int, direction: UIPageViewController.NavigationDirection) {
+        
+        pageCoordinator.setPage(at: index, direction: direction, animated: true)
+    }
+    
+    func segmentedView(_ segmentedView: MNSegmentedView, willDisplay cell: any MNSegmentedCellConvertible, item: MNSegmentedItem, at index: Int) {
+        
+        guard let delegate = delegate else { return }
+        delegate.segmentedViewController?(self, willDisplay: cell, item: item, at: index)
+    }
+}
+
+// MARK: - MNSegmentedPageCoordinatorDataSource
+extension MNSegmentedViewController: MNSegmentedPageCoordinatorDataSource {
+    
+    var currentPageIndex: Int {
+        
+        segmentedView.selectedIndex
+    }
+    
+    var numberOfPages: Int {
+        
+        segmentedView.items.count
+    }
+    
+    func subpage(at index: Int) -> (any MNSegmentedSubpageConvertible)? {
+        
+        guard let dataSource = dataSource else { return nil }
+        return dataSource.segmentedViewController(self, subpageAt: index)
+    }
+}
+
+// MARK: - MNSegmentedPageCoordinatorDelegate
+extension MNSegmentedViewController: MNSegmentedPageCoordinatorDelegate {
+    
+    func pageViewController(_ viewController: UIPageViewController, subpage: any MNSegmentedSubpageConvertible, didChangeContentOffset contentOffset: CGPoint) {
+        
+    }
+}
+
+
+
+

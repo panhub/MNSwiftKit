@@ -34,7 +34,7 @@ import CoreFoundation
     /// 更新选中状态
     /// - Parameter selected: 是否选中
     /// - Parameter index: 索引
-    @objc optional func updateItemState(_ selected: Bool, at index: Int)
+    @objc optional func updateCell(selected: Bool, at index: Int)
     
     /// 更新分离器
     /// - Parameters:

@@ -61,7 +61,7 @@ class TestViewController: UIViewController {
         }
 
         coordinator.onScrollProgress = { index, progress in
-            print("Scroll progress:", index, progress)
+            //print("Scroll progress:", index, progress)
         }
 
         coordinator.setInitialIndex(2)

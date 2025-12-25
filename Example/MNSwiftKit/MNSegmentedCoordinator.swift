@@ -176,10 +176,27 @@ extension MNSegmentedCoordinator: UIScrollViewDelegate {
         let width = scrollView.bounds.width
         guard width > 0 else { return }
         
+        print("===============================")
+        
         //print("---\(scrollView.frame.width)-----\(scrollView.contentOffset.x)")
 
         let progress = (scrollView.contentOffset.x - width) / width
         onScrollProgress?(currentIndex, progress)
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        print("--------------------------------")
+        if decelerate {
+            print("1111111111111111111111111111111111111111111111")
+        }
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        print("****************************************")
+    }
+    
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        print("2222222222222222222222222222222222")
     }
 }
 
