@@ -160,6 +160,8 @@ extension MNSegmentedCoordinator: UIPageViewControllerDelegate {
         previousViewControllers: [UIViewController],
         transitionCompleted completed: Bool
     ) {
+        
+        //print("+++++++++++++++++++++++++++++++++")
         guard completed,
               let vc = pageViewController.viewControllers?.first,
               let index = index(of: vc)
@@ -176,7 +178,7 @@ extension MNSegmentedCoordinator: UIScrollViewDelegate {
         let width = scrollView.bounds.width
         guard width > 0 else { return }
         
-        print("===============================")
+        //print("===============================")
         
         //print("---\(scrollView.frame.width)-----\(scrollView.contentOffset.x)")
 
@@ -192,7 +194,7 @@ extension MNSegmentedCoordinator: UIScrollViewDelegate {
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        print("****************************************")
+        //print("****************************************")
     }
     
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {

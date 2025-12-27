@@ -149,7 +149,7 @@ public class MNSegmentedCell: UICollectionViewCell, MNSplitCellConvertible {
         titleLabel.textColor = item.titleColor
         titleLabel.sizeToFit()
         titleLabel.center = CGPoint(x: contentView.bounds.midX, y: contentView.bounds.midY)
-        titleLabel.transform = CGAffineTransform(scaleX: item.transformScale, y: item.transformScale)
+        titleLabel.transform = CGAffineTransform(scaleX: item.titleScale, y: item.titleScale)
         
         CATransaction.begin()
         CATransaction.setDisableActions(true)

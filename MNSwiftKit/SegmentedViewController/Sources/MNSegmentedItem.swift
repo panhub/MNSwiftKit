@@ -16,8 +16,6 @@ public class MNSegmentedItem: NSObject {
     public var frame: CGRect = .zero
     /// 标记线位置
     public var indicatorFrame: CGRect = .zero
-    /// transform缩放因数
-    public var transformScale: CGFloat = 1.0
     /// 是否处于选中状态
     public var isSelected: Bool = false
     
@@ -29,6 +27,8 @@ public class MNSegmentedItem: NSObject {
     public var titleSize: CGSize = .zero
     /// 字体
     public var titleFont: UIFont = .systemFont(ofSize: 17.0, weight: .medium)
+    /// 标题缩放因数
+    public var titleScale: CGFloat = 1.0
     
     /// 边框颜色
     public var borderColor: UIColor?
