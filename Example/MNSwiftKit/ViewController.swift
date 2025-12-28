@@ -31,7 +31,7 @@ class ViewController: UIViewController {
         navHeight.constant = MN_TOP_BAR_HEIGHT
         titleTop.constant = (MN_NAV_BAR_HEIGHT - titleHeight.constant)/2.0 + MN_STATUS_BAR_HEIGHT
         
-        let clss: [String] = ["ToastViewController", "AssetBrowserController", "AssetPickerController", "EmoticonKeyboardController", "EditingViewController", "SplitViewController"]
+        let clss: [String] = ["ToastViewController", "AssetBrowserController", "AssetPickerController", "EmoticonKeyboardController", "EditingViewController", "SegmentedViewController"]
         let modules: [String] = ["Toast", "AssetBrowser", "AssetPicker", "EmoticonKeyboard", "EditingView", "SplitController"]
         let names: [String] = ["Toast 提示弹窗", "资源浏览器", "资源选择器", "表情键盘", "表格编辑", "分页控制器"]
         for (index, name) in names.enumerated() {

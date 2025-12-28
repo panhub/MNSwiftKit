@@ -9,8 +9,7 @@ import UIKit
 import Foundation
 import CoreFoundation
 
-
-/// 布局调整行为
+/// 分段视图布局行为
 public enum MNSegmentedAdjustmentBehavior {
     /// 自然布局，不做其它操作
     case standard
@@ -20,7 +19,7 @@ public enum MNSegmentedAdjustmentBehavior {
     case expanded
 }
 
-/// 滑动位置
+/// 分段视图滑动位置
 public enum MNSegmentedScrollPosition {
     /// 不做操作
     case unspecified
@@ -38,7 +37,7 @@ public struct MNSegmentedViewConfiguration {
     /// 尺寸
     /// - 横向：分段视图高度
     /// - 纵向：分段视图宽度
-    public var dimension: CGFloat = 35.0
+    public var dimension: CGFloat = 38.0
     
     /// item不足时的布局调整行为
     public var adjustmentBehavior: MNSegmentedAdjustmentBehavior = .standard
@@ -50,11 +49,12 @@ public struct MNSegmentedViewConfiguration {
     public var contentInset: UIEdgeInsets = .zero
     
     /// 背景颜色
-    public var backgroundColor: UIColor = .clear
+    public var backgroundColor: UIColor = .white
 }
 
 /// 分割线样式选项
 public struct MNSegmentedSeparatorStyle: OptionSet {
+    
     /// 显示前/左一条
     public static let leading = MNSegmentedSeparatorStyle(rawValue: 1 << 0)
     /// 显示后/右一条
@@ -65,7 +65,9 @@ public struct MNSegmentedSeparatorStyle: OptionSet {
     public static let none: MNSegmentedSeparatorStyle = []
     
     public let rawValue: UInt
+    
     public init(rawValue: UInt) {
+        
         self.rawValue = rawValue
     }
 }
@@ -73,17 +75,16 @@ public struct MNSegmentedSeparatorStyle: OptionSet {
 /// 分割视图分割线配置
 public struct MNSegmentedSeparatorConfiguration {
     
-    /// 分割线约束
-    public var inset: UIEdgeInsets = .zero
-    
-    
     /// 尺寸
     /// - 横向：分割线高度
     /// - 纵向：分割线宽度
     public var dimension: CGFloat = 0.7
     
+    /// 分割线约束
+    public var inset: UIEdgeInsets = .zero
+    
     /// 分割线样式
-    public var style: MNSegmentedSeparatorStyle = .none
+    public var style: MNSegmentedSeparatorStyle = .trailing
     
     /// 分割线颜色
     public var backgroundColor: UIColor = .gray.withAlphaComponent(0.15)
@@ -206,7 +207,7 @@ public enum MNSegmentedIndicatorPosition {
 public struct MNSegmentedIndicatorConfiguration {
     
     /// 指示器尺寸
-    public var size: MNSegmentedIndicatorSize = .fixed(width: 15.0, height: 3.0)
+    public var size: MNSegmentedIndicatorSize = .matchTitle(dimension: 2.5)
     
     /// 指示器尺寸固定时的对齐方式
     public var alignment: MNSegmentedIndicatorAlignment = .center
@@ -238,8 +239,8 @@ public struct MNSegmentedIndicatorConfiguration {
 
 public struct MNSegmentedConfiguration {
     
-    /// 颜色
-    public var backgroundColor: UIColor?
+    /// 背景颜色
+    public var backgroundColor: UIColor = .white
     
     /// 分段视图配置
     public var view: MNSegmentedViewConfiguration = .init()
@@ -259,5 +260,6 @@ public struct MNSegmentedConfiguration {
     /// 滑动方向
     public var orientation = UIPageViewController.NavigationOrientation.horizontal
     
+    /// 构造分段视图控制器配置入口
     public init() {}
 }

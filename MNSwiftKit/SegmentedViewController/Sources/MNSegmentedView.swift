@@ -62,8 +62,6 @@ import UIKit
 class MNSegmentedView: UIView {
     /// 配置
     private let configuration: MNSegmentedConfiguration
-    /// 外界指定是否允许点击
-    var isSelectionEnabled: Bool = true
     /// 是否已加载过item
     private(set) var isItemLoaded: Bool = false
     /// 事件代理
@@ -260,18 +258,7 @@ class MNSegmentedView: UIView {
         super.layoutSubviews()
         guard isItemLoaded == false else { return }
         isItemLoaded = true
-        reloadBackgroundView()
-        reloadAccessoryView()
-        reloadItems()
-        if let dataSource = dataSource, let index = dataSource.preferredPresentationSegmentedIndex {
-            selectedIndex = index
-        } else {
-            selectedIndex = 0
-        }
-        reloadData()
-        if let delegate = delegate {
-            delegate.segmentedViewDidReloadItem(self)
-        }
+        reloadSubview()
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -334,7 +321,13 @@ extension MNSegmentedView {
             scrollPosition = configuration.orientation == .horizontal ? .right : .bottom
         case .center:
             scrollPosition = configuration.orientation == .horizontal ? .centeredHorizontally : .centeredVertically
-        default: return
+        default:
+            // 可见即可
+            if index < items.count {
+                let item = items[index]
+                collectionView.scrollRectToVisible(item.frame, animated: animated)
+            }
+            return
         }
         collectionView.scrollToItem(at: IndexPath(item: index, section: 0), at: scrollPosition, animated: animated)
     }
@@ -343,7 +336,7 @@ extension MNSegmentedView {
     /// - Parameters:
     ///   - index: 索引值
     ///   - animated: 是否动态
-    private func setSelectedItem(at index: Int, animated: Bool) {
+    func setSelectedItem(at index: Int, animated: Bool) {
         let targetItem: MNSegmentedItem? = index < items.count ? items[index] : nil
         let currentItem: MNSegmentedItem? = selectedIndex < items.count ? items[selectedIndex] : nil
         let targetIndexPath: IndexPath = IndexPath(item: index, section: 0)
@@ -397,6 +390,22 @@ extension MNSegmentedView {
 
 // MARK: - Reload
 extension MNSegmentedView {
+    
+    /// 重载子视图
+    func reloadSubview() {
+        reloadBackgroundView()
+        reloadAccessoryView()
+        reloadItems()
+        if let dataSource = dataSource, let index = dataSource.preferredPresentationSegmentedIndex {
+            selectedIndex = index
+        } else {
+            selectedIndex = 0
+        }
+        reloadData()
+        if let delegate = delegate {
+            delegate.segmentedViewDidReloadItem(self)
+        }
+    }
     
     /// 重载背景视图
     func reloadBackgroundView() {
@@ -732,7 +741,7 @@ extension MNSegmentedView {
         } completion: { [weak self] _ in
             guard let self = self else { return }
             if self.selectedIndex < self.items.count {
-                self.scrollToItem(at: self.selectedIndex, to: .leading, animated: false)
+                self.scrollToItem(at: self.selectedIndex, to: self.configuration.view.scrollPosition, animated: false)
             }
         }
     }
@@ -768,7 +777,6 @@ extension MNSegmentedView: UICollectionViewDataSource, UICollectionViewDelegate 
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        guard isSelectionEnabled else { return }
         let lastSelectedIndex = selectedIndex
         guard indexPath.item < items.count else { return }
         if indexPath.item == lastSelectedIndex { return }

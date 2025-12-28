@@ -8,7 +8,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SplitViewController" customModule="MNSwiftKit_Example" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SegmentedViewController" customModule="MNSwiftKit_Example" customModuleProvider="target">
             <connections>
                 <outlet property="axisSegment" destination="9uC-0F-bAc" id="Irl-Dv-ypV"/>
                 <outlet property="backHeight" destination="YNU-rd-Q6b" id="O3L-OM-b64"/>
@@ -33,6 +33,9 @@
                             </constraints>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             <state key="normal" backgroundImage="back"/>
+                            <connections>
+                                <action selector="back" destination="-1" eventType="touchUpInside" id="oS2-Iz-oTx"/>
+                            </connections>
                         </button>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="分页控制器" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A8q-6z-OEy">
                             <rect key="frame" x="151.66666666666666" y="60.333333333333336" width="90" height="25.333333333333336"/>
@@ -85,13 +88,13 @@
             </constraints>
             <nil key="simulatedTopBarMetrics"/>
             <nil key="simulatedBottomBarMetrics"/>
-            <point key="canvasLocation" x="36" y="8"/>
+            <point key="canvasLocation" x="-498" y="13"/>
         </view>
     </objects>
     <resources>
         <image name="back" width="50" height="50"/>
         <systemColor name="separatorColor">
-            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.28999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.28999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

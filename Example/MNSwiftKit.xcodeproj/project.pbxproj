@@ -63,29 +63,21 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3B743C002EF0682900741BFF /* resource */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = resource;
 			sourceTree = "<group>";
 		};
 		3BEB0B0D2EEF120900ADBEB2 /* view */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = view;
 			sourceTree = "<group>";
 		};
 		E9E266682EEFAD6C003F6717 /* model */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = model;
 			sourceTree = "<group>";
 		};
 		E9E2667D2EEFC0F5003F6717 /* controller */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = controller;
 			sourceTree = "<group>";
 		};
@@ -351,9 +343,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-MNSwiftKit_Example/Pods-MNSwiftKit_Example-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-MNSwiftKit_Example/Pods-MNSwiftKit_Example-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

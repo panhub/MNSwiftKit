@@ -1,5 +1,5 @@
 //
-//  SplitViewController.swift
+//  SegmentedViewController.swift
 //  MNSwiftKit_Example
 //
 //  Created by mellow on 2025/12/19.
@@ -9,7 +9,7 @@
 import UIKit
 import MNSwiftKit
 
-class SplitViewController: UIViewController {
+class SegmentedViewController: UIViewController {
     
     var segmentedViewController: MNSegmentedViewController!
     
@@ -30,17 +30,12 @@ class SplitViewController: UIViewController {
         navHeight.constant = MN_TOP_BAR_HEIGHT
         backTop.constant = (MN_NAV_BAR_HEIGHT - backHeight.constant)/2.0 + MN_STATUS_BAR_HEIGHT
         
-        // 这里先不布局控制器，界面还不确定
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        guard mn.isFirstAssociated else { return }
         createSplitController()
     }
     
     private func createSplitController() {
-        segmentedViewController = MNSegmentedViewController(configuration: MNSegmentedConfiguration())
+        segmentedViewController = MNSegmentedViewController()
+        ///segmentedViewController = MNSegmentedViewController(configuration: MNSegmentedConfiguration())
         segmentedViewController.delegate = self
         segmentedViewController.dataSource = self
         mn.addChild(segmentedViewController)
@@ -53,6 +48,11 @@ class SplitViewController: UIViewController {
         ])
     }
     
+    @IBAction func back() {
+        
+        navigationController?.popViewController(animated: true)
+    }
+    
     @IBAction func segmentValueChanged(_ sender: UISegmentedControl) {
         
         
@@ -60,7 +60,7 @@ class SplitViewController: UIViewController {
 }
 
 // MARK: - MNSplitViewControllerDataSource
-extension SplitViewController: MNSegmentedViewControllerDataSource {
+extension SegmentedViewController: MNSegmentedViewControllerDataSource {
     
     var preferredSubpageHeaderView: UIView? {
         
@@ -73,7 +73,7 @@ extension SplitViewController: MNSegmentedViewControllerDataSource {
     
     func segmentedViewController(_ viewController: MNSwiftKit.MNSegmentedViewController, subpageAt index: Int) -> any MNSwiftKit.MNSegmentedSubpageConvertible {
         
-        SplitListController(style: index % 2 == 0 ? .item : .row)
+        SegmentedSubpageController(style: index % 2 == 0 ? .grid : .table)
     }
     
     var preferredSegmentedTitles: [String] {
@@ -83,7 +83,7 @@ extension SplitViewController: MNSegmentedViewControllerDataSource {
 }
 
 // MARK: - MNSplitViewControllerDelegate
-extension SplitViewController: MNSegmentedViewControllerDelegate {
+extension SegmentedViewController: MNSegmentedViewControllerDelegate {
     
     func segmentedViewController(_ viewController: MNSegmentedViewController, subpageDidChangeAt index: Int) {
         

@@ -1,5 +1,5 @@
 //
-//  SplitListController.swift
+//  SegmentedSubpageController.swift
 //  MNSwiftKit_Example
 //
 //  Created by mellow on 2025/12/19.
@@ -9,16 +9,16 @@
 import UIKit
 import MNSwiftKit
 
-class SplitListController: UIViewController {
+class SegmentedSubpageController: UIViewController {
     
     enum Style {
-        case item, row
+        case grid, table
     }
     
     let frame: CGRect
     
     // 表格样式
-    private let style: SplitListController.Style
+    private let style: SegmentedSubpageController.Style
     
     private var items: [SplitListItem] = []
     
@@ -26,13 +26,13 @@ class SplitListController: UIViewController {
     
     @IBOutlet weak var collectionLayout: MNCollectionViewFlowLayout!
     
-    init(style: SplitListController.Style) {
+    init(style: SegmentedSubpageController.Style) {
         self.style = style
         self.frame = .zero
         super.init(nibName: nil, bundle: nil)
     }
     
-    init(frame: CGRect, style: SplitListController.Style) {
+    init(frame: CGRect, style: SegmentedSubpageController.Style) {
         self.style = style
         self.frame = frame
         super.init(nibName: nil, bundle: nil)
@@ -53,7 +53,7 @@ class SplitListController: UIViewController {
         
         
         switch style {
-        case .item:
+        case .grid:
             //
             let width = floor((MN_SCREEN_WIDTH - 32.0)/3.0)
             collectionLayout.numberOfColumns = 3
@@ -64,7 +64,7 @@ class SplitListController: UIViewController {
                 item.index = index
                 items.append(item)
             }
-        case .row:
+        case .table:
             collectionLayout.numberOfColumns = 1
             collectionLayout.itemSize = .init(width: MN_SCREEN_WIDTH - 16.0, height: 75.0)
             items.append(contentsOf: Array(repeating: SplitListItem(height: 75.0), count: 50))
@@ -82,7 +82,7 @@ class SplitListController: UIViewController {
 }
 
 // MARK: - UICollectionViewDelegate, UICollectionViewDataSource
-extension SplitListController: UICollectionViewDelegate, UICollectionViewDataSource {
+extension SegmentedSubpageController: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
@@ -105,7 +105,7 @@ extension SplitListController: UICollectionViewDelegate, UICollectionViewDataSou
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout
-extension SplitListController: UICollectionViewDelegateFlowLayout {
+extension SegmentedSubpageController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let layout = collectionViewLayout as! MNCollectionViewFlowLayout
@@ -114,7 +114,7 @@ extension SplitListController: UICollectionViewDelegateFlowLayout {
 }
 
 // MARK: - MNSplitPageConvertible
-extension SplitListController: MNSegmentedSubpageConvertible {
+extension SegmentedSubpageController: MNSegmentedSubpageConvertible {
     
     var preferredSubpageScrollView: UIScrollView {
         

@@ -44,7 +44,7 @@ import CoreFoundation
     @objc optional func update(item: MNSegmentedItem, at index: Int, orientation: UIPageViewController.NavigationOrientation)
 }
 
-public class MNSegmentedCell: UICollectionViewCell, MNSplitCellConvertible {
+public class MNSegmentedCell: UICollectionViewCell, MNSegmentedCellConvertible {
     /// 分割线
     public var divider = UIView()
     /// 标题
