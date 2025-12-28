@@ -11,7 +11,7 @@ import MNSwiftKit
 
 class SplitViewController: UIViewController {
     
-    var splitController: MNSplitViewController!
+    var segmentedViewController: MNSegmentedViewController!
     
     @IBOutlet weak var axisSegment: UISegmentedControl!
     
@@ -40,60 +40,57 @@ class SplitViewController: UIViewController {
     }
     
     private func createSplitController() {
-        splitController = MNSplitViewController(frame: view.bounds.inset(by: .init(top: navHeight.constant, left: 0.0, bottom: 0.0, right: 0.0)), axis: axisSegment.selectedSegmentIndex == 0 ? .horizontal : .vertical)
-        splitController.delegate = self
-        splitController.dataSource = self
-        mn.addChild(splitController)
+        segmentedViewController = MNSegmentedViewController(configuration: MNSegmentedConfiguration())
+        segmentedViewController.delegate = self
+        segmentedViewController.dataSource = self
+        mn.addChild(segmentedViewController)
+        segmentedViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            segmentedViewController.view.topAnchor.constraint(equalTo: view.topAnchor, constant: navHeight.constant),
+            segmentedViewController.view.leftAnchor.constraint(equalTo: view.leftAnchor),
+            segmentedViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            segmentedViewController.view.rightAnchor.constraint(equalTo: view.rightAnchor)
+        ])
     }
     
     @IBAction func segmentValueChanged(_ sender: UISegmentedControl) {
         
-        splitController.axis = axisSegment.selectedSegmentIndex == 0 ? .horizontal : .vertical
-        splitController.reloadSubpage()
+        
     }
 }
 
 // MARK: - MNSplitViewControllerDataSource
-extension SplitViewController: MNSplitViewControllerDataSource {
+extension SplitViewController: MNSegmentedViewControllerDataSource {
     
-    var preferredPageIndex: Int {
+    var preferredSubpageHeaderView: UIView? {
         
-        0
-    }
-    
-    var pageHeaderView: UIView? {
         let image = UIImage(named: "b_16")!
         let imageView = UIImageView(image: image)
         imageView.mn.size = .init(width: view.frame.width, height: ceil(image.size.height/image.size.width*view.frame.width))
         return imageView
     }
     
-    var preferredPageTitles: [String] {
+    
+    func segmentedViewController(_ viewController: MNSwiftKit.MNSegmentedViewController, subpageAt index: Int) -> any MNSwiftKit.MNSegmentedSubpageConvertible {
         
-        ["选项一", "选项二", "选项三", "选项四", "选项五", "选项六", "选项七", "选项八", "选项九", "选项十", "选项十一", "选项十二", "选项十三"]
+        SplitListController(style: index % 2 == 0 ? .item : .row)
     }
     
-    func splitViewController(_ viewController: MNSwiftKit.MNSplitViewController, contentForPageAt index: Int) -> any MNSwiftKit.MNSplitPageConvertible {
+    var preferredSegmentedTitles: [String] {
         
-        SplitListController(frame: viewController.contentRect, style: index % 2 == 0 ? .item : .row)
+        ["选项一", "选项二", "选项三", "选项四", "选项五", "选项六", "选项七", "选项八", "选项九", "选项十", "选项十一", "选项十二", "选项十三"]
     }
 }
 
 // MARK: - MNSplitViewControllerDelegate
-extension SplitViewController: MNSplitViewControllerDelegate {
+extension SplitViewController: MNSegmentedViewControllerDelegate {
     
-    func splitViewController(_ splitController: MNSplitViewController, didChangePageAt index: Int) {
+    func segmentedViewController(_ viewController: MNSegmentedViewController, subpageDidChangeAt index: Int) {
         
         print("*****选择了索引：\(index)")
     }
     
-    func splitViewController(_ splitController: MNSplitViewController, headerOffsetChanged change: [NSKeyValueChangeKey : CGPoint]) {
+    func segmentedViewController(_ viewController: MNSegmentedViewController, subpageOffsetDidChange contentOffset: CGPoint) {
         
-        print("=====页头偏移变化：\(change[.oldKey]!)----\(change[.newKey]!)")
-    }
-    
-    func splitViewController(_ splitController: MNSplitViewController, scrollView: UIScrollView, contentOffsetChanged contentOffset: CGPoint) {
-        
-        print("-----页面偏移量变化：\(contentOffset)")
     }
 }

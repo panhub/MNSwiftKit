@@ -258,4 +258,6 @@ public struct MNSegmentedConfiguration {
     
     /// 滑动方向
     public var orientation = UIPageViewController.NavigationOrientation.horizontal
+    
+    public init() {}
 }

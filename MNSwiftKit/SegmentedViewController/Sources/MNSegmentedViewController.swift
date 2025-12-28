@@ -50,6 +50,18 @@ import CoreFoundation
 
 @objc public protocol MNSegmentedViewControllerDelegate: AnyObject {
     
+    /// 子页面变化
+    /// - Parameters:
+    ///   - splitController: 分段视图控制器
+    ///   - index: 子页面索引
+    @objc optional func segmentedViewController(_ viewController: MNSegmentedViewController, subpageDidChangeAt index: Int)
+    
+    /// 子页面内容偏移变化
+    /// - Parameters:
+    ///   - viewController: 分段视图控制器
+    ///   - contentOffset: 内容偏移量
+    @objc optional func segmentedViewController(_ viewController: MNSegmentedViewController, subpageOffsetDidChange contentOffset: CGPoint)
+    
     /// 即将显示分段Cell
     /// - Parameters:
     ///   - viewController: 分段视图控制器
@@ -79,9 +91,6 @@ public class MNSegmentedViewController: UIViewController {
     /// 分页控制器
     private let pageViewController = UIPageViewController()
     
-    /// 标记是否主动加载了分段视图
-    private var isSegmentLoaded: Bool = false
-    
     /// 分段视图 + 头视图
     private lazy var segmentedView: MNSegmentedView = {
         var headerView: UIView?
@@ -105,7 +114,7 @@ public class MNSegmentedViewController: UIViewController {
     
     /// 构造分段视图控制器
     /// - Parameter configuration: 配置信息
-    convenience init(configuration: MNSegmentedConfiguration) {
+    public convenience init(configuration: MNSegmentedConfiguration) {
         self.init(nibName: nil, bundle: nil)
         self.configuration = configuration
     }
@@ -143,6 +152,9 @@ public class MNSegmentedViewController: UIViewController {
             pageViewController.view.rightAnchor.constraint(equalTo: view.rightAnchor)
         ])
         
+        segmentedView.delegate = self
+        segmentedView.dataSource = self
+        
         switch configuration.orientation {
         case .horizontal:
             // 横向，有公共头视图
@@ -150,9 +162,13 @@ public class MNSegmentedViewController: UIViewController {
                 pageViewController.view.leftAnchor.constraint(equalTo: view.leftAnchor)
             ])
             // 放置公共视图与分段视图
-            segmentedView.frame.size.width = view.frame.width
-            segmentedView.autoresizingMask = [.flexibleWidth]
+            segmentedView.translatesAutoresizingMaskIntoConstraints = false
+            // segmentedView.autoresizingMask = [.flexibleWidth]
             view.addSubview(segmentedView)
+            NSLayoutConstraint.activate([
+                segmentedView.leftAnchor.constraint(equalTo: view.leftAnchor),
+                segmentedView.rightAnchor.constraint(equalTo: view.rightAnchor)
+            ])
         default:
             // 纵向，无公共头视图
             segmentedView.translatesAutoresizingMaskIntoConstraints = false
@@ -171,14 +187,6 @@ public class MNSegmentedViewController: UIViewController {
         pageCoordinator.delegate = self
         pageCoordinator.dataSource = self
         pageCoordinator.scrollDelegate = segmentedView
-    }
-    
-    public override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
-        guard isSegmentLoaded == false else { return }
-        isSegmentLoaded = true
-        segmentedView.reloadSubviews()
     }
 }
 
@@ -330,10 +338,37 @@ extension MNSegmentedViewController: MNSegmentedPageCoordinatorDelegate {
     
     func pageViewController(_ viewController: UIPageViewController, didScrollTo subpage: any MNSegmentedSubpageConvertible) {
         
+        let scrollView = subpage.preferredSubpageScrollView
+        if let delegate = delegate {
+            delegate.segmentedViewController?(self, subpageDidChangeAt: scrollView.mn.pageIndex)
+            delegate.segmentedViewController?(self, subpageOffsetDidChange: scrollView.contentOffset)
+        }
     }
     
     func pageViewController(_ viewController: UIPageViewController, subpage: any MNSegmentedSubpageConvertible, didChangeContentOffset contentOffset: CGPoint) {
-        
+        let scrollView = subpage.preferredSubpageScrollView
+        let greatestFiniteOffset = subpageHeaderGreatestFiniteOffset
+        if scrollView.mn.isReachedLeastSize, greatestFiniteOffset > 0.0 {
+            var minY = 0.0
+            if let superview = scrollView.superview {
+                minY = superview.convert(scrollView.frame, to: view).minY
+            }
+            if greatestFiniteOffset > minY {
+                let maxOffsetY = greatestFiniteOffset - minY
+                let offsetY: CGFloat = contentOffset.y + scrollView.contentInset.top
+                let newY: CGFloat = min(0.0, max(-maxOffsetY, -offsetY))
+                let oldY: CGFloat = segmentedView.frame.minY
+                if abs(oldY - newY) >= 0.01 {
+                    segmentedView.frame.origin.y = newY
+                    // 告知页头变化
+//                    let change: [NSKeyValueChangeKey:CGPoint] = [.oldKey:CGPoint(x: headerView.frame.minX, y: abs(oldY)),.newKey:CGPoint(x: headerView.frame.minX, y: abs(minY))]
+//                    delegate?.splitViewController?(self, headerOffsetChanged: change)
+                }
+            }
+        }
+        if let delegate = delegate {
+            delegate.segmentedViewController?(self, subpageOffsetDidChange: contentOffset)
+        }
     }
 }
 

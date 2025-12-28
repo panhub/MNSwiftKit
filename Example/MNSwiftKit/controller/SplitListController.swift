@@ -26,6 +26,11 @@ class SplitListController: UIViewController {
     
     @IBOutlet weak var collectionLayout: MNCollectionViewFlowLayout!
     
+    init(style: SplitListController.Style) {
+        self.style = style
+        self.frame = .zero
+        super.init(nibName: nil, bundle: nil)
+    }
     
     init(frame: CGRect, style: SplitListController.Style) {
         self.style = style
@@ -41,7 +46,11 @@ class SplitListController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        view.frame = frame
+        if frame.isNull == false, frame.isEmpty == false {
+            
+            view.frame = frame
+        }
+        
         
         switch style {
         case .item:
@@ -105,9 +114,9 @@ extension SplitListController: UICollectionViewDelegateFlowLayout {
 }
 
 // MARK: - MNSplitPageConvertible
-extension SplitListController: MNSplitPageConvertible {
+extension SplitListController: MNSegmentedSubpageConvertible {
     
-    var preferredPageScrollView: UIScrollView {
+    var preferredSubpageScrollView: UIScrollView {
         
         collectionView
     }

@@ -64,6 +64,8 @@ class MNSegmentedView: UIView {
     private let configuration: MNSegmentedConfiguration
     /// 外界指定是否允许点击
     var isSelectionEnabled: Bool = true
+    /// 是否已加载过item
+    private(set) var isItemLoaded: Bool = false
     /// 事件代理
     weak var delegate: MNSegmentedViewDelegate?
     /// 数据源
@@ -93,7 +95,7 @@ class MNSegmentedView: UIView {
     /// 表格重用标识符
     private var reuseIdentifier: String = "com.mn.segmented.cell.identifier"
     /// 集合视图
-    let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
+    let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
     /// 构造分段导航视图
     /// - Parameters:
@@ -256,7 +258,20 @@ class MNSegmentedView: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        guard mn.isFirstAssociated else { return }
+        guard isItemLoaded == false else { return }
+        isItemLoaded = true
+        reloadBackgroundView()
+        reloadAccessoryView()
+        reloadItems()
+        if let dataSource = dataSource, let index = dataSource.preferredPresentationSegmentedIndex {
+            selectedIndex = index
+        } else {
+            selectedIndex = 0
+        }
+        reloadData()
+        if let delegate = delegate {
+            delegate.segmentedViewDidReloadItem(self)
+        }
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -382,22 +397,6 @@ extension MNSegmentedView {
 
 // MARK: - Reload
 extension MNSegmentedView {
-    
-    /// 重载子视图
-    func reloadSubviews() {
-        reloadBackgroundView()
-        reloadAccessoryView()
-        reloadItems()
-        if let dataSource = dataSource, let index = dataSource.preferredPresentationSegmentedIndex {
-            selectedIndex = index
-        } else {
-            selectedIndex = 0
-        }
-        reloadData()
-        if let delegate = delegate {
-            delegate.segmentedViewDidReloadItem(self)
-        }
-    }
     
     /// 重载背景视图
     func reloadBackgroundView() {
@@ -727,10 +726,15 @@ extension MNSegmentedView {
         } else {
             indicatorView.frame = .init(origin: .init(x: 0.0, y: collectionView.frame.height), size: .zero)
         }
-        UIView.performWithoutAnimation {
+        collectionView.performBatchUpdates { [weak self] in
+            guard let self = self else { return }
             self.collectionView.reloadData()
+        } completion: { [weak self] _ in
+            guard let self = self else { return }
+            if self.selectedIndex < self.items.count {
+                self.scrollToItem(at: self.selectedIndex, to: .leading, animated: false)
+            }
         }
-        scrollToItem(at: selectedIndex, to: .leading, animated: false)
     }
 }
 

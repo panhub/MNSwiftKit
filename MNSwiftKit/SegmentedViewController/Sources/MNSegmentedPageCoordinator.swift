@@ -236,6 +236,8 @@ extension MNSegmentedPageCoordinator {
     ///   - index: 页面索引
     private func set(subpage: MNSegmentedSubpageConvertible, for index: Int) {
         subpages[index] = subpage
+        // 手动触发创建视图
+        subpage.view.backgroundColor = subpage.view.backgroundColor
         let scrollView = subpage.preferredSubpageScrollView
         scrollView.mn.pageIndex = index
         scrollView.mn.transitionState = .unknown
@@ -352,10 +354,10 @@ extension MNSegmentedPageCoordinator: UIScrollViewDelegate {
             if let lastPresentationPage = subpage(for: presentationIndex, allowAccess: false) {
                 lastPresentationPage.preferredSubpageScrollView.mn.transitionState = .didDisappear
             }
-        }
-        // 告知外界
-        if let delegate = delegate, let subpage = subpage(for: currentPageIndex, allowAccess: false) {
-            delegate.pageViewController(pageViewController, didScrollTo: subpage)
+            // 告知外界
+            if let delegate = delegate, let subpage = subpage(for: currentPageIndex, allowAccess: false) {
+                delegate.pageViewController(pageViewController, didScrollTo: subpage)
+            }
         }
     }
 }
