@@ -1,5 +1,5 @@
 //
-//  SplitListCell.swift
+//  SegmentedPageCell.swift
 //  MNSwiftKit_Example
 //
 //  Created by mellow on 2025/12/19.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SplitListCell: UICollectionViewCell {
+class SegmentedPageCell: UICollectionViewCell {
     
     // 
     @IBOutlet weak var borderView: UIView!
@@ -19,7 +19,7 @@ class SplitListCell: UICollectionViewCell {
         // Initialization code
     }
     
-    func update(item: SplitListItem) {
+    func update(item: SegmentedPageItem) {
         
         borderView.backgroundColor = item.index % 2 == 0 ? .gray.withAlphaComponent(0.04) : .white
     }

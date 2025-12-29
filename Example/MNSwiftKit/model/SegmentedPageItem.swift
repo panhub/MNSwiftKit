@@ -1,5 +1,5 @@
 //
-//  SplitListItem.swift
+//  SegmentedPageItem.swift
 //  MNSwiftKit_Example
 //
 //  Created by mellow on 2025/12/19.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-class SplitListItem {
+class SegmentedPageItem {
     
     var index: Int = 0
     

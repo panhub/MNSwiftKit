@@ -20,7 +20,7 @@ class SegmentedSubpageController: UIViewController {
     // 表格样式
     private let style: SegmentedSubpageController.Style
     
-    private var items: [SplitListItem] = []
+    private var items: [SegmentedPageItem] = []
     
     @IBOutlet weak var collectionView: UICollectionView!
     
@@ -59,14 +59,14 @@ class SegmentedSubpageController: UIViewController {
             collectionLayout.itemSize = .init(width: width, height: 0.0)
             for index in 0...100 {
                 let ratio = CGFloat.random(in: 0.45...1.8)
-                let item = SplitListItem(height: floor(width*ratio))
+                let item = SegmentedPageItem(height: floor(width*ratio))
                 item.index = index
                 items.append(item)
             }
         case .table:
             collectionLayout.numberOfColumns = 1
             collectionLayout.itemSize = .init(width: MN_SCREEN_WIDTH - 16.0, height: 75.0)
-            items.append(contentsOf: Array(repeating: SplitListItem(height: 75.0), count: 50))
+            items.append(contentsOf: Array(repeating: SegmentedPageItem(height: 75.0), count: 50))
             (0..<50).forEach { index in
                 items[index].index = index
             }
@@ -76,7 +76,7 @@ class SegmentedSubpageController: UIViewController {
         collectionLayout.minimumInteritemSpacing = 8.0
         collectionLayout.sectionInset = .init(top: 8.0, left: 8.0, bottom: MN_BOTTOM_SAFE_HEIGHT, right: 8.0)
         
-        collectionView.register(UINib(nibName: "SplitListCell", bundle: .main), forCellWithReuseIdentifier: "SplitListCell")
+        collectionView.register(UINib(nibName: "SegmentedPageCell", bundle: .main), forCellWithReuseIdentifier: "SegmentedPageCell")
     }
 }
 
@@ -90,11 +90,11 @@ extension SegmentedSubpageController: UICollectionViewDelegate, UICollectionView
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        collectionView.dequeueReusableCell(withReuseIdentifier: "SplitListCell", for: indexPath)
+        collectionView.dequeueReusableCell(withReuseIdentifier: "SegmentedPageCell", for: indexPath)
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let cell = cell as? SplitListCell else { return }
+        guard let cell = cell as? SegmentedPageCell else { return }
         cell.update(item: items[indexPath.item])
     }
     
