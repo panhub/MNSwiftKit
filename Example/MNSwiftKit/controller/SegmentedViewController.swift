@@ -89,7 +89,7 @@ extension SegmentedViewController: MNSegmentedViewControllerDataSource {
     
     func segmentedViewController(_ viewController: MNSwiftKit.MNSegmentedViewController, subpageAt index: Int) -> any MNSwiftKit.MNSegmentedSubpageConvertible {
         
-        SegmentedSubpageController(style: index % 2 == 0 ? .grid : .table)
+        SegmentedPageController(style: index % 2 == 0 ? .grid : .table)
     }
     
     var preferredSegmentedTitles: [String] {

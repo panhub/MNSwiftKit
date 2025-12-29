@@ -1,5 +1,5 @@
 //
-//  SegmentedSubpageController.swift
+//  SegmentedPageController.swift
 //  MNSwiftKit_Example
 //
 //  Created by mellow on 2025/12/19.
@@ -9,7 +9,7 @@
 import UIKit
 import MNSwiftKit
 
-class SegmentedSubpageController: UIViewController {
+class SegmentedPageController: UIViewController {
     
     enum Style {
         case grid, table
@@ -18,7 +18,7 @@ class SegmentedSubpageController: UIViewController {
     let frame: CGRect
     
     // 表格样式
-    private let style: SegmentedSubpageController.Style
+    private let style: SegmentedPageController.Style
     
     private var items: [SegmentedPageItem] = []
     
@@ -26,13 +26,13 @@ class SegmentedSubpageController: UIViewController {
     
     @IBOutlet weak var collectionLayout: MNCollectionViewFlowLayout!
     
-    init(style: SegmentedSubpageController.Style) {
+    init(style: SegmentedPageController.Style) {
         self.style = style
         self.frame = .zero
         super.init(nibName: nil, bundle: nil)
     }
     
-    init(frame: CGRect, style: SegmentedSubpageController.Style) {
+    init(frame: CGRect, style: SegmentedPageController.Style) {
         self.style = style
         self.frame = frame
         super.init(nibName: nil, bundle: nil)
@@ -81,7 +81,7 @@ class SegmentedSubpageController: UIViewController {
 }
 
 // MARK: - UICollectionViewDelegate, UICollectionViewDataSource
-extension SegmentedSubpageController: UICollectionViewDelegate, UICollectionViewDataSource {
+extension SegmentedPageController: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
@@ -104,7 +104,7 @@ extension SegmentedSubpageController: UICollectionViewDelegate, UICollectionView
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout
-extension SegmentedSubpageController: UICollectionViewDelegateFlowLayout {
+extension SegmentedPageController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let layout = collectionViewLayout as! MNCollectionViewFlowLayout
@@ -113,7 +113,7 @@ extension SegmentedSubpageController: UICollectionViewDelegateFlowLayout {
 }
 
 // MARK: - MNSplitPageConvertible
-extension SegmentedSubpageController: MNSegmentedSubpageConvertible {
+extension SegmentedPageController: MNSegmentedSubpageConvertible {
     
     var preferredSubpageScrollView: UIScrollView {
         
