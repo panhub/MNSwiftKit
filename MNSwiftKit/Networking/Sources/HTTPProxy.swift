@@ -14,19 +14,19 @@ fileprivate let DispatchSerializationQueue = DispatchQueue(label: "com.mn.url.se
 fileprivate extension URLSessionTask {
     
     private struct MNHTTPAssociated {
-        nonisolated(unsafe) static var challengeFailure = "com.mn.http.session.task.challenge.failure"
-        nonisolated(unsafe) static var downloadFailure = "com.mn.http.session.task.download.failure"
-        nonisolated(unsafe) static var fileIsDownloaded = "com.mn.http.session.task.file.downloaded"
+        nonisolated(unsafe) static var challengeFailure: Void?
+        nonisolated(unsafe) static var downloadFailure: Void?
+        nonisolated(unsafe) static var fileIsDownloaded: Void?
     }
     
     var isDownloaded: Bool {
         get { objc_getAssociatedObject(self, &MNHTTPAssociated.fileIsDownloaded) as? Bool ?? false }
-        set { objc_setAssociatedObject(self, &MNHTTPAssociated.fileIsDownloaded, newValue, .OBJC_ASSOCIATION_ASSIGN) }
+        set { objc_setAssociatedObject(self, &MNHTTPAssociated.fileIsDownloaded, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
     }
     
     var isChallengeFailure: Bool {
         get { objc_getAssociatedObject(self, &MNHTTPAssociated.challengeFailure) as? Bool ?? false }
-        set { objc_setAssociatedObject(self, &MNHTTPAssociated.challengeFailure, newValue, .OBJC_ASSOCIATION_ASSIGN) }
+        set { objc_setAssociatedObject(self, &MNHTTPAssociated.challengeFailure, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
     }
     
     var downloadError: HTTPError? {

@@ -641,8 +641,8 @@ extension MNPlayer {
     }
     
     private func addObserver(with playerItem: AVPlayerItem?) {
-        guard let item = playerItem, item.isObserved == false else { return }
-        item.isObserved = true
+        guard let item = playerItem, item.mn_observed == false else { return }
+        item.mn_observed = true
         item.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), options: [.old, .new], context: nil)
         item.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges), options: [.old, .new], context: nil)
         item.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.isPlaybackBufferEmpty), options: [.old, .new], context: nil)
@@ -650,8 +650,8 @@ extension MNPlayer {
     }
     
     private func removeObserver(with playerItem: AVPlayerItem?) {
-        guard let item = playerItem, item.isObserved else { return }
-        item.isObserved = false
+        guard let item = playerItem, item.mn_observed else { return }
+        item.mn_observed = false
         item.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status))
         item.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges))
         item.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.isPlaybackBufferEmpty))
@@ -677,20 +677,20 @@ extension MNPlayer {
 }
 
 // MARK: - 检测AVPlayerItem
-private extension AVPlayerItem {
+extension AVPlayerItem {
     
-    struct MNAssociatedKey {
+    private struct MNAssociatedKey {
         
-        nonisolated(unsafe) static var isObserved = "com.mn.player.item.observed"
+        nonisolated(unsafe) static var isObserved: Void?
     }
     
-    var isObserved: Bool {
+    /// 是否已监听
+    fileprivate var mn_observed: Bool {
         get {
-            guard let result = objc_getAssociatedObject(self, AVPlayerItem.MNAssociatedKey.isObserved) as? Bool else { return false }
-            return result
+            objc_getAssociatedObject(self, &AVPlayerItem.MNAssociatedKey.isObserved) as? Bool ?? false
         }
         set {
-            objc_setAssociatedObject(self, AVPlayerItem.MNAssociatedKey.isObserved, newValue, .OBJC_ASSOCIATION_ASSIGN)
+            objc_setAssociatedObject(self, &AVPlayerItem.MNAssociatedKey.isObserved, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 }

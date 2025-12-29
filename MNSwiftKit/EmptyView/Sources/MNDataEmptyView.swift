@@ -834,10 +834,10 @@ extension UIView {
     
     fileprivate struct MNDataEmptyAssociated {
         
-        nonisolated(unsafe) static var view: String = "com.mn.data.empty.view"
-        nonisolated(unsafe) static var observer: String = "com.mn.data.empty.observer"
-        nonisolated(unsafe) static var display: String = "com.mn.data.empty.auto.display"
-        nonisolated(unsafe) static var components: String = "com.mn.data.empty.components"
+        nonisolated(unsafe) static var view: Void?
+        nonisolated(unsafe) static var display: Void?
+        nonisolated(unsafe) static var observer: Void?
+        nonisolated(unsafe) static var components: Void?
     }
 }
 
@@ -893,7 +893,7 @@ extension MNNameSpaceWrapper where Base: UIView {
             } else {
                 observer.endObserve()
             }
-            objc_setAssociatedObject(base, &UIView.MNDataEmptyAssociated.display, newValue, .OBJC_ASSOCIATION_ASSIGN)
+            objc_setAssociatedObject(base, &UIView.MNDataEmptyAssociated.display, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
         get {
             objc_getAssociatedObject(base, &UIView.MNDataEmptyAssociated.display) as? Bool ?? true

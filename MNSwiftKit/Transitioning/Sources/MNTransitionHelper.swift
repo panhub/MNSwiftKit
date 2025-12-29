@@ -57,8 +57,9 @@ extension UIViewController {
     
     fileprivate struct MNTransitioningAssociated {
         
-        nonisolated(unsafe) static var bottomBar = "com.mn.view.transition.bottom.bar.key"
-        nonisolated(unsafe) static var bottomSnapshot = "com.mn.view.transition.bottom.snapshot.key"
+        nonisolated(unsafe) static var bottomBar: Void?
+        
+        nonisolated(unsafe) static var bottomSnapshot: Void?
     }
 }
 

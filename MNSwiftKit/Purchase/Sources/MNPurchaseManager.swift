@@ -322,7 +322,7 @@ extension MNPurchaseManager {
     private func startRequestProducts() {
         let productsRequest = SKProductsRequest(productIdentifiers: [request.product])
         productsRequest.delegate = self
-        productsRequest.identifier = request.identifier
+        productsRequest.mn_identifier = request.identifier
         productsRequest.start()
     }
 }

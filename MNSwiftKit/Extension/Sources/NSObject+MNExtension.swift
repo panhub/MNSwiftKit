@@ -15,11 +15,10 @@ extension NSObject {
     /// 关联属性
     fileprivate struct MNAssociatedKey {
         
-        /// 关联用户自定义信息
-        nonisolated(unsafe) static var userInfo: String = "com.mn.object.user.info"
-        
         /// 第一次关联
-        nonisolated(unsafe) static var first: String = "com.mn.object.first.associated"
+        nonisolated(unsafe) static var first: Void?
+        /// 关联用户自定义信息
+        nonisolated(unsafe) static var userInfo: Void?
     }
     
     /// 包装器
@@ -58,7 +57,7 @@ extension MNNameSpaceWrapper where Base: NSObject {
     /// 是否第一次关联
     public var isFirstAssociated: Bool {
         if let _ = objc_getAssociatedObject(base, &NSObject.MNAssociatedKey.first) { return false }
-        objc_setAssociatedObject(base, &NSObject.MNAssociatedKey.first, true, .OBJC_ASSOCIATION_ASSIGN)
+        objc_setAssociatedObject(base, &NSObject.MNAssociatedKey.first, true, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         return true
     }
 }

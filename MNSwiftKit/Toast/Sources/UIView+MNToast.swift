@@ -13,7 +13,7 @@ extension UIView {
     internal struct MNToastAssociated {
         
         /// 关联弹窗的Key
-        nonisolated(unsafe) static var toast = "com.mn.view.toast"
+        nonisolated(unsafe) static var toast: Void?
     }
 }
 

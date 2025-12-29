@@ -17,8 +17,9 @@ public let MNLivePhotoImageUrlKey: MNLivePhotoResourceKey  = "com.mn.live.photo.
 extension PHLivePhoto {
     
     fileprivate struct MNResourceAssociated {
-        nonisolated(unsafe) static var video = "com.mn.live.photo.video.url"
-        nonisolated(unsafe) static var image = "com.mn.live.photo.image.url"
+        
+        nonisolated(unsafe) static var video: Void?
+        nonisolated(unsafe) static var image: Void?
     }
 }
 

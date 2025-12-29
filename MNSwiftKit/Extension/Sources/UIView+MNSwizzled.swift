@@ -13,9 +13,9 @@ extension UIView {
     
     fileprivate struct MNTouchAssociated {
         
-        nonisolated(unsafe) static var key = "com.mn.view.touch.inset.key"
+        nonisolated(unsafe) static var key: Void?
         
-        nonisolated(unsafe) static var exchanged = "com.mn.view.touch.inset.exchanged"
+        nonisolated(unsafe) static var exchanged: Void?
     }
     
     @objc fileprivate func mn_point(inside point: CGPoint, with event: UIEvent?) -> Bool {
@@ -46,7 +46,7 @@ extension MNNameSpaceWrapper where Base: UIView {
             } else {
                 method_exchangeImplementations(originalMethod, replaceMethod)
             }
-            objc_setAssociatedObject(base, &UIView.MNTouchAssociated.exchanged, true, .OBJC_ASSOCIATION_ASSIGN)
+            objc_setAssociatedObject(base, &UIView.MNTouchAssociated.exchanged, true, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 }

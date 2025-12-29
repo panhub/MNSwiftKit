@@ -12,8 +12,9 @@ extension UIScrollView {
     
     fileprivate struct MNRefreshAssociated {
         
-        nonisolated(unsafe) static var footer = "com.mn.scroll.view.load.footer"
-        nonisolated(unsafe) static var header = "com.mn.scroll.view.refresh.header"
+        nonisolated(unsafe) static var footer: Void?
+        
+        nonisolated(unsafe) static var header: Void?
     }
 }
 

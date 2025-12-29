@@ -43,11 +43,11 @@ extension UITableView {
     
     fileprivate struct MNEditingAssociated {
         // 是否处于编辑状态
-        static var editing = "com.mn.table.view.editing"
+        nonisolated(unsafe) static var editing: Void?
         // 编辑配置选项
-        static var options = "com.mn.table.view.editing.options"
+        nonisolated(unsafe) static var options: Void?
         // 事件监听者
-        static var observer = "com.mn.table.view.editing.observer"
+        nonisolated(unsafe) static var observer: Void?
     }
 }
 
@@ -57,7 +57,7 @@ extension MNNameSpaceWrapper where Base: UITableView {
     /// 是否处于编辑状态
     fileprivate var isEditing: Bool {
         get { objc_getAssociatedObject(base, &UITableView.MNEditingAssociated.editing) as? Bool ?? false }
-        set { objc_setAssociatedObject(base, &UITableView.MNEditingAssociated.editing, newValue, .OBJC_ASSOCIATION_ASSIGN) }
+        set { objc_setAssociatedObject(base, &UITableView.MNEditingAssociated.editing, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
     }
     
     /// 编辑视图的配置
@@ -101,13 +101,13 @@ extension UITableViewCell {
     
     fileprivate struct MNEditingAssociated {
         // 内容视图位置
-        static var contentX = "com.mn.table.cell.content.x"
+        nonisolated(unsafe) static var contentX: Void?
         // 编辑视图
-        static var editingView = "com.mn.table.cell.editing.view"
+        nonisolated(unsafe) static var editingView: Void?
         // 是否允许编辑
-        static var allowsEditing = "com.mn.table.cell.allows.editing"
+        nonisolated(unsafe) static var allowsEditing: Void?
         // 拖拽手势交互前记录是否处于编辑状态, 交互后根据此状态决定是否更改 TableView 的编辑状态
-        static var referenceEditing = "com.mn.table.cell.is.editing"
+        nonisolated(unsafe) static var referenceEditing: Void?
     }
 }
 
@@ -117,7 +117,7 @@ extension MNNameSpaceWrapper where Base: UITableViewCell {
     /// 记录编辑开始时的x
     fileprivate var contentViewX: CGFloat {
         get { objc_getAssociatedObject(base, &UITableViewCell.MNEditingAssociated.contentX) as? CGFloat ?? 0.0 }
-        set { objc_setAssociatedObject(base, &UITableViewCell.MNEditingAssociated.contentX, newValue, .OBJC_ASSOCIATION_ASSIGN) }
+        set { objc_setAssociatedObject(base, &UITableViewCell.MNEditingAssociated.contentX, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
     }
     
     /// 编辑视图
@@ -129,7 +129,7 @@ extension MNNameSpaceWrapper where Base: UITableViewCell {
     /// 记录编辑状态
     fileprivate var referenceEditing: Bool {
         get { objc_getAssociatedObject(base, &UITableViewCell.MNEditingAssociated.referenceEditing) as? Bool ?? false }
-        set { objc_setAssociatedObject(base, &UITableViewCell.MNEditingAssociated.referenceEditing, newValue, .OBJC_ASSOCIATION_ASSIGN) }
+        set { objc_setAssociatedObject(base, &UITableViewCell.MNEditingAssociated.referenceEditing, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
     }
     
     /// 是否处于编辑状态
@@ -143,7 +143,7 @@ extension MNNameSpaceWrapper where Base: UITableViewCell {
         get { (objc_getAssociatedObject(base, &UITableViewCell.MNEditingAssociated.allowsEditing) as? Bool) ?? false }
         set {
             if allowsEditing == newValue { return }
-            objc_setAssociatedObject(base, &UITableViewCell.MNEditingAssociated.allowsEditing, newValue, .OBJC_ASSOCIATION_ASSIGN)
+            objc_setAssociatedObject(base, &UITableViewCell.MNEditingAssociated.allowsEditing, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             if newValue {
                 let pan = MNEditingRecognizer(target: base, action: #selector(base.mn_handle_editing(_:)))
                 base.contentView.addGestureRecognizer(pan)

@@ -9,7 +9,8 @@ import UIKit
 import Foundation
 import CoreFoundation
 
-protocol MNSegmentedPageCoordinatorDataSource: NSObject {
+/// 页面协调器数据源代理
+public protocol MNSegmentedPageCoordinatorDataSource: NSObject {
     
     /// 当前选择的索引
     var currentPageIndex: Int { get }
@@ -34,6 +35,7 @@ protocol MNSegmentedPageCoordinatorDataSource: NSObject {
     func subpage(at index: Int) -> MNSegmentedSubpageConvertible?
 }
 
+/// 页面协调器事件代理
 protocol MNSegmentedPageCoordinatorDelegate: NSObject {
     
     /// 分页控制器已切换当前子页面
@@ -50,7 +52,7 @@ protocol MNSegmentedPageCoordinatorDelegate: NSObject {
     func pageViewController(_ viewController: UIPageViewController, subpage: MNSegmentedSubpageConvertible, didChangeContentOffset contentOffset: CGPoint)
 }
 
-
+/// 页面协调器滑动代理
 protocol MNSegmentedPageCoordinatorScrollDelegate: NSObject {
     
     /// 分页控制器即将滑动
@@ -256,7 +258,7 @@ extension MNSegmentedPageCoordinator {
     func subpage(for index: Int, allowAccess: Bool = false) -> MNSegmentedSubpageConvertible? {
         if let subpage = subpages[index] { return subpage }
         guard allowAccess, let dataSource = dataSource, let subpage = dataSource.subpage(at: index) else { return nil }
-        set(subpage: subpage, for: index)
+        setSubpage(subpage, for: index)
         return subpage
     }
     
@@ -264,7 +266,10 @@ extension MNSegmentedPageCoordinator {
     /// - Parameters:
     ///   - subpage: 子页面
     ///   - index: 页面索引
-    private func set(subpage: MNSegmentedSubpageConvertible, for index: Int) {
+    func setSubpage(_ subpage: MNSegmentedSubpageConvertible, for index: Int) {
+        // 先删除旧页面
+        removeSubpage(at: index)
+        // 缓存新页面
         subpages[index] = subpage
         // 手动触发创建视图
         subpage.view.backgroundColor = subpage.view.backgroundColor
@@ -289,18 +294,18 @@ extension MNSegmentedPageCoordinator {
     /// - Parameter index: 子页面索引
     func removeSubpage(at index: Int?) {
         if let index = index {
-            guard let element = subpages.first(where: { $0.key == index }) else { return }
-            removeSubpage(element.value)
-            subpages[element.key] = nil
+            guard let subpage = subpages[index] else { return }
+            invalidSubpage(subpage)
+            subpages[index] = nil
         } else {
-            subpages.values.forEach { removeSubpage($0) }
+            subpages.values.forEach { invalidSubpage($0) }
             subpages.removeAll()
         }
     }
     
-    /// 删除子页面监听
+    /// 解除子页面监听
     /// - Parameter subpage: 子页面
-    private func removeSubpage(_ subpage: MNSegmentedSubpageConvertible) {
+    private func invalidSubpage(_ subpage: MNSegmentedSubpageConvertible) {
         let scrollView = subpage.preferredSubpageScrollView
         if scrollView.mn.isObserved {
             scrollView.mn.isObserved = false

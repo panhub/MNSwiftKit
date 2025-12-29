@@ -207,7 +207,7 @@ public class MNSegmentedViewController: UIViewController {
     }
 }
 
-// MARK: - Custom Cell
+// MARK: - Segmented Cell
 extension MNSegmentedViewController {
     
     /// 注册表格
@@ -227,7 +227,7 @@ extension MNSegmentedViewController {
     }
 }
 
-// MARK: - Page
+// MARK: - Subpage
 extension MNSegmentedViewController {
     
     /// 重载子界面
@@ -260,6 +260,27 @@ extension MNSegmentedViewController {
         subpage(for: index, access: access) as? T
     }
     
+    /// 替换子页面
+    /// - Parameters:
+    ///   - subpage: 子页面meisha
+    ///   - index: 页面索引
+    public func replace(_ subpage: MNSegmentedSubpageConvertible, at index: Int) {
+        if isViewLoaded, segmentedView.isItemLoaded {
+            guard index < numberOfPages else { return }
+            // 删除旧页面缓存
+            pageCoordinator.removeSubpage(at: index)
+            // 缓存新页面
+            pageCoordinator.setSubpage(subpage, for: index)
+            if index == currentPageIndex {
+                // 替换当前页面
+                pageCoordinator.setPage(at: index, direction: .forward, animated: false)
+            }
+        } else {
+            // 未有子页面
+            pageCoordinator.setSubpage(subpage, for: index)
+        }
+    }
+    
     /// 设置当前页面索引
     /// - Parameters:
     ///   - index: 子页面索引
@@ -273,6 +294,54 @@ extension MNSegmentedViewController {
         let direction: UIPageViewController.NavigationDirection = index >= currentPageIndex ? .forward : .reverse
         segmentedView.setSelectedItem(at: index, animated: animated)
         pageCoordinator.setPage(at: index, direction: direction, animated: animated)
+    }
+}
+
+// MARK: - Title
+extension MNSegmentedViewController {
+    
+    /// 替换标题
+    /// - Parameters:
+    ///   - title: 新的标题
+    ///   - index: 子页面索引
+    public func replace(_ title: String, at index: Int) {
+        guard isViewLoaded else { return }
+        segmentedView.replace(title, at: index)
+    }
+    
+    /// 获取分割项标题
+    /// - Parameter index: 子页面索引
+    /// - Returns: 获取到的标题
+    public func title(for index: Int) -> String? {
+        guard isViewLoaded else { return nil }
+        return segmentedView.title(for: index)
+    }
+}
+
+// MARK: - Badge
+extension MNSegmentedViewController {
+    
+    /// 获取角标
+    /// - Parameter index: 页码
+    /// - Returns: 角标
+    public func badge(for index: Int) -> Any? {
+        guard isViewLoaded else { return nil }
+        return segmentedView.badge(for: index)
+    }
+    
+    /// 设置角标
+    /// - Parameters:
+    ///   - badge: 角标
+    ///   - index: 页码
+    public func setBadge(_ badge: Any?, for index: Int) {
+        guard isViewLoaded else { return }
+        segmentedView.setBadge(badge, for: index)
+    }
+    
+    /// 删除所有角标
+    public func removeAllBadges() {
+        guard isViewLoaded else { return }
+        segmentedView.removeAllBadges()
     }
 }
 
@@ -344,34 +413,34 @@ extension MNSegmentedViewController: MNSegmentedViewDelegate {
 // MARK: - MNSegmentedPageCoordinatorDataSource
 extension MNSegmentedViewController: MNSegmentedPageCoordinatorDataSource {
     
-    var currentPageIndex: Int {
+    public var currentPageIndex: Int {
         
         segmentedView.selectedIndex
     }
     
-    var numberOfPages: Int {
+    public var numberOfPages: Int {
         
         segmentedView.items.count
     }
     
-    var subpageHeaderHeight: CGFloat {
+    public var subpageHeaderHeight: CGFloat {
         
         segmentedView.frame.height
     }
     
-    var subpageHeaderGreatestFiniteOffset: CGFloat {
+    public var subpageHeaderGreatestFiniteOffset: CGFloat {
         
         let minY = segmentedView.collectionView.frame.minY
         return max(0.0, minY - headerVisibleHeight)
     }
     
-    func subpage(at index: Int) -> (any MNSegmentedSubpageConvertible)? {
+    public func subpage(at index: Int) -> (any MNSegmentedSubpageConvertible)? {
         
         guard let dataSource = dataSource else { return nil }
         return dataSource.segmentedViewController(self, subpageAt: index)
     }
     
-    func contentOffset(for subpage: any MNSegmentedSubpageConvertible) -> CGPoint {
+    public func contentOffset(for subpage: any MNSegmentedSubpageConvertible) -> CGPoint {
         let scrollView = subpage.preferredSubpageScrollView
         var contentOffset = scrollView.contentOffset
         switch configuration.orientation {

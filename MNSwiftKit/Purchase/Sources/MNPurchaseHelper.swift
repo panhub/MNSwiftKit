@@ -13,11 +13,11 @@ extension SKRequest {
     
     private struct MNPurchaseAssociated {
         
-        nonisolated(unsafe) static var identifier = "com.mn.purchase.request.identifier"
+        nonisolated(unsafe) static var identifier: Void?
     }
     
     /// 自定义标识
-    var identifier: String {
+    var mn_identifier: String {
         get { objc_getAssociatedObject(self, &SKRequest.MNPurchaseAssociated.identifier) as? String ?? "" }
         set { objc_setAssociatedObject(self, &SKRequest.MNPurchaseAssociated.identifier, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC) }
     }

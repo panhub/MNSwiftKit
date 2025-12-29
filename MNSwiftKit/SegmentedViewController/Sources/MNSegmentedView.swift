@@ -481,15 +481,13 @@ extension MNSegmentedView {
         }
     }
     
-    /// 重载所有控制项
-    /// - Parameter titles: 使用标题
+    /// 重载分割item
     func reloadItems() {
         var titles: [String] = []
         if let dataSource = dataSource {
             titles.append(contentsOf: dataSource.preferredSegmentedTitles)
         }
-        let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
-        switch layout.scrollDirection {
+        switch configuration.orientation {
         case .horizontal:
             reloadHorizontalItems(titles)
         default:
@@ -497,6 +495,8 @@ extension MNSegmentedView {
         }
     }
     
+    /// 重载横向布局分割item
+    /// - Parameter titles: 标题集合
     private func reloadHorizontalItems(_ titles: [String]) {
         // 约束信息
         let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
@@ -610,6 +610,8 @@ extension MNSegmentedView {
         }
     }
     
+    /// 重载纵向分割item
+    /// - Parameter titles: 标题集合
     private func reloadVerticalItems(_ titles: [String]) {
         // 约束信息
         let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
@@ -721,6 +723,7 @@ extension MNSegmentedView {
         }
     }
     
+    /// 重载数据
     func reloadData() {
         selectedIndex = max(0, min(selectedIndex, items.count - 1))
         if selectedIndex < items.count {
@@ -743,6 +746,73 @@ extension MNSegmentedView {
             if self.selectedIndex < self.items.count {
                 self.scrollToItem(at: self.selectedIndex, to: self.configuration.view.scrollPosition, animated: false)
             }
+        }
+    }
+}
+
+// MARK: - Title
+extension MNSegmentedView {
+    
+    /// 替换标题
+    /// - Parameters:
+    ///   - title: 新的标题
+    ///   - index: 子页面索引
+    func replace(_ title: String, at index: Int) {
+        guard isItemLoaded else { return }
+        guard index < items.count else { return }
+        let titles = items.compactMap { $0.title }
+        switch configuration.orientation {
+        case .horizontal:
+            reloadHorizontalItems(titles)
+        default:
+            reloadVerticalItems(titles)
+        }
+        reloadData()
+    }
+    
+    /// 获取分割项标题
+    /// - Parameter index: 子页面索引
+    /// - Returns: 获取到的标题
+    func title(for index: Int) -> String? {
+        guard isItemLoaded else { return nil }
+        guard index < items.count else { return nil }
+        return items[index].title
+    }
+}
+
+// MARK: - Badge
+extension MNSegmentedView {
+    
+    /// 获取角标
+    /// - Parameter index: 页码
+    /// - Returns: 角标
+    func badge(for index: Int) -> Any? {
+        guard isItemLoaded else { return nil }
+        guard index < items.count else { return nil }
+        return items[index].badge
+    }
+    
+    /// 设置角标
+    /// - Parameters:
+    ///   - badge: 角标
+    ///   - index: 页码
+    func setBadge(_ badge: Any?, for index: Int) {
+        guard isItemLoaded else { return }
+        guard index < items.count else { return }
+        items[index].badge = badge
+        if let indexPath = collectionView.indexPathsForVisibleItems.first(where: { $0.item == index }) {
+            UIView.performWithoutAnimation {
+                self.collectionView.reloadItems(at: [indexPath])
+            }
+        }
+    }
+    
+    /// 删除所有角标
+    func removeAllBadges() {
+        guard isItemLoaded else { return }
+        items.forEach { $0.badge = nil }
+        UIView.performWithoutAnimation {
+            self.collectionView.reloadItems(at: self.collectionView.indexPathsForVisibleItems)
         }
     }
 }

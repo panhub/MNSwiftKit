@@ -25,14 +25,13 @@ extension UIScrollView {
     }
     
     fileprivate struct MNSubpageAssociated {
-        
-        nonisolated(unsafe) static var observed: String = "com.mn.page.scroll.observed"
-        nonisolated(unsafe) static var pageIndex: String = "com.mn.page.scroll.page.index"
-        nonisolated(unsafe) static var headerInset: String = "com.mn.page.scroll.header.inset"
-        nonisolated(unsafe) static var adjustmentInset: String = "com.mn.page.scroll.adjustment.inset"
-        nonisolated(unsafe) static var transitionState: String = "com.mn.page.scroll.transition.state"
-        nonisolated(unsafe) static var leastContentSize: String = "com.mn.page.scroll.least.content.size"
-        nonisolated(unsafe) static var reachedContentSize: String = "com.mn.page.scroll.content.size.reached"
+        nonisolated(unsafe) static var observed: Void?
+        nonisolated(unsafe) static var pageIndex: Void?
+        nonisolated(unsafe) static var headerInset: Void?
+        nonisolated(unsafe) static var transitionState: Void?
+        nonisolated(unsafe) static var adjustmentInset: Void?
+        nonisolated(unsafe) static var leastContentSize: Void?
+        nonisolated(unsafe) static var reachedContentSize: Void?
     }
 }
 
@@ -44,24 +43,34 @@ extension MNNameSpaceWrapper where Base: UIScrollView {
     
     /// 页面转场状态
     public var transitionState: UIScrollView.MNTransitionState {
-        get { return UIScrollView.MNTransitionState(rawValue: objc_getAssociatedObject(base, &UIScrollView.MNSubpageAssociated.transitionState) as? Int ?? 0) ?? .unknown }
+        get {
+            if let rawValue = objc_getAssociatedObject(base, &UIScrollView.MNSubpageAssociated.transitionState) as? Int {
+                return .init(rawValue: rawValue) ?? .unknown
+            }
+            return .unknown
+        }
         set {
-            objc_setAssociatedObject(base, &UIScrollView.MNSubpageAssociated.transitionState, newValue.rawValue, .OBJC_ASSOCIATION_ASSIGN)
+            objc_setAssociatedObject(base, &UIScrollView.MNSubpageAssociated.transitionState, newValue.rawValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
        
     /// 页面索引
     public var pageIndex: Int {
-        get { return objc_getAssociatedObject(base, &UIScrollView.MNSubpageAssociated.pageIndex) as? Int ?? 0 }
+        get {
+            objc_getAssociatedObject(base, &UIScrollView.MNSubpageAssociated.pageIndex) as? Int ?? 0
+        }
         set {
-            objc_setAssociatedObject(base, &UIScrollView.MNSubpageAssociated.pageIndex, newValue, .OBJC_ASSOCIATION_ASSIGN)
+            objc_setAssociatedObject(base, &UIScrollView.MNSubpageAssociated.pageIndex, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
     
     /// 最小内容尺寸
     var leastContentSize: CGSize {
         get {
-            return (objc_getAssociatedObject(base, &UIScrollView.MNSubpageAssociated.leastContentSize) as? NSValue)?.cgSizeValue ?? .zero
+            if let sizeValue = objc_getAssociatedObject(base, &UIScrollView.MNSubpageAssociated.leastContentSize) as? NSValue {
+                return sizeValue.cgSizeValue
+            }
+            return .zero
         }
         set {
             objc_setAssociatedObject(base, &UIScrollView.MNSubpageAssociated.leastContentSize, NSValue(cgSize: newValue), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
@@ -70,25 +79,31 @@ extension MNNameSpaceWrapper where Base: UIScrollView {
     
     /// 已满足最小内容尺寸
     var isReachedLeastSize: Bool {
-        get { return objc_getAssociatedObject(base, &UIScrollView.MNSubpageAssociated.reachedContentSize) as? Bool ?? false }
+        get {
+            objc_getAssociatedObject(base, &UIScrollView.MNSubpageAssociated.reachedContentSize) as? Bool ?? false
+        }
         set {
-            objc_setAssociatedObject(base, &UIScrollView.MNSubpageAssociated.reachedContentSize, newValue, .OBJC_ASSOCIATION_ASSIGN)
+            objc_setAssociatedObject(base, &UIScrollView.MNSubpageAssociated.reachedContentSize, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
     
     /// 是否已监听偏移变化
     var isObserved: Bool {
-        get { return objc_getAssociatedObject(base, &UIScrollView.MNSubpageAssociated.observed) as? Bool ?? false }
+        get {
+            objc_getAssociatedObject(base, &UIScrollView.MNSubpageAssociated.observed) as? Bool ?? false
+        }
         set {
-            objc_setAssociatedObject(base, &UIScrollView.MNSubpageAssociated.observed, newValue, .OBJC_ASSOCIATION_ASSIGN)
+            objc_setAssociatedObject(base, &UIScrollView.MNSubpageAssociated.observed, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
     
     /// 页头的插入量
     var headerInset: CGFloat {
-        get { return objc_getAssociatedObject(base, &UIScrollView.MNSubpageAssociated.headerInset) as? CGFloat ?? 0.0 }
+        get {
+            objc_getAssociatedObject(base, &UIScrollView.MNSubpageAssociated.headerInset) as? CGFloat ?? 0.0
+        }
         set {
-            objc_setAssociatedObject(base, &UIScrollView.MNSubpageAssociated.headerInset, newValue, .OBJC_ASSOCIATION_ASSIGN)
+            objc_setAssociatedObject(base, &UIScrollView.MNSubpageAssociated.headerInset, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
     
@@ -101,7 +116,7 @@ extension MNNameSpaceWrapper where Base: UIScrollView {
             return nil
         }
         set {
-            objc_setAssociatedObject(base, &UIScrollView.MNSubpageAssociated.adjustmentInset, newValue, .OBJC_ASSOCIATION_ASSIGN)
+            objc_setAssociatedObject(base, &UIScrollView.MNSubpageAssociated.adjustmentInset, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 }

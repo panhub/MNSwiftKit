@@ -55,16 +55,16 @@ public class HTTPManager {
         let code = result.code
         if request is HTTPDataRequest {
             let dataRequest = request as! HTTPDataRequest
-            if let error = result.error, error.isCancelled == false, error.isSerializationError == false, error.isParseError == false, dataRequest.retryEventCount < dataRequest.retyCount {
+            if let error = result.error, error.isCancelled == false, error.isSerializationError == false, error.isParseError == false, dataRequest.mn_retryEventCount < dataRequest.retyCount {
                 // 重试
                 DispatchQueue.main.asyncAfter(deadline: .now() + max(dataRequest.retryInterval, 0.1)) { [weak self] in
                     guard let self = self else { return }
-                    dataRequest.retryEventCount += 1
+                    dataRequest.mn_retryEventCount += 1
                     self.load(dataRequest)
                 }
                 return
             }
-            dataRequest.retryEventCount = 0
+            dataRequest.mn_retryEventCount = 0
             dataRequest.source = .network
         }
         // 判断是否需要回调
@@ -81,7 +81,7 @@ extension HTTPManager {
     /// - Parameter request: 数据请求
     public func load(_ request: HTTPDataRequest) {
         // 判断是否需要读取缓存
-        if request.method == .get, request.cachePolicy == .returnCacheDontLoad, request.retryEventCount <= 0, let cache = HTTPDatabase.default.cache(forKey: request.cacheForKey, timeInterval: request.cacheValidInterval) {
+        if request.method == .get, request.cachePolicy == .returnCacheDontLoad, request.mn_retryEventCount <= 0, let cache = HTTPDatabase.default.cache(forKey: request.cacheForKey, timeInterval: request.cacheValidInterval) {
             request.source = .cache
             request.isFirstRunning = false
             request.loadFinish(result: .success(cache))
@@ -94,7 +94,7 @@ extension HTTPManager {
         request.task = dataTask(request)
         guard let dataTask = request.task else { return }
         // 回调开始
-        if request.retryEventCount <= 0 {
+        if request.mn_retryEventCount <= 0 {
             DispatchQueue.main.async { [weak request] in
                 guard let request = request else { return }
                 request.startHandler?()
@@ -312,12 +312,16 @@ extension HTTPDataRequest {
     
     fileprivate struct RetryAssociated {
         
-        nonisolated(unsafe) static var retryCount = "com.mn.data.request.retry.count"
+        nonisolated(unsafe) static var retryCount: Void?
     }
     
     /// 当前重试次数
-    fileprivate var retryEventCount: Int {
-        get { return objc_getAssociatedObject(self, &RetryAssociated.retryCount) as? Int ?? 0 }
-        set { objc_setAssociatedObject(self, &RetryAssociated.retryCount, newValue, .OBJC_ASSOCIATION_ASSIGN) }
+    fileprivate var mn_retryEventCount: Int {
+        get {
+            objc_getAssociatedObject(self, &HTTPDataRequest.RetryAssociated.retryCount) as? Int ?? 0
+        }
+        set {
+            objc_setAssociatedObject(self, &HTTPDataRequest.RetryAssociated.retryCount, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
     }
 }
