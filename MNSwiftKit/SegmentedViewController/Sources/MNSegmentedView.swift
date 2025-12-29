@@ -507,10 +507,10 @@ extension MNSegmentedView {
         let appendWidth: CGFloat = configuration.item.dimension
         // item间隔
         let interitemSpacing: CGFloat = configuration.item.spacing
+        // 标题字体
+        let titleFont: UIFont = configuration.item.titleFont
         // 缩放因数
         let titleScale: CGFloat = max(configuration.item.selected.titleScale, 1.0)
-        // 标题字体
-        let titleFont: UIFont = configuration.item.normal.titleFont
         // 起始
         var x: CGFloat = sectionInset.left
         // 
@@ -530,10 +530,10 @@ extension MNSegmentedView {
             item.titleFont = titleFont
             item.titleColor = configuration.item.normal.titleColor
             item.borderColor = configuration.item.normal.borderColor
-            item.borderWidth = configuration.item.normal.borderWidth
-            item.borderRadius = configuration.item.normal.cornerRadius
-            item.dividerSize = configuration.item.normal.dividerSize
-            item.dividerColor = configuration.item.normal.dividerColor
+            item.borderWidth = configuration.item.borderWidth
+            item.borderRadius = configuration.item.cornerRadius
+            item.dividerColor = configuration.item.dividerColor
+            item.dividerConstraint = configuration.item.dividerConstraint
             item.badgeFont = configuration.badge.textFont
             item.badgeTextColor = configuration.badge.textColor
             item.badgeInset = configuration.badge.contentInset
@@ -623,7 +623,7 @@ extension MNSegmentedView {
         // item间隔
         let interitemSpacing: CGFloat = configuration.item.spacing
         // 标题字体
-        let titleFont: UIFont = configuration.item.normal.titleFont
+        let titleFont: UIFont = configuration.item.titleFont
         // 起始
         var y: CGFloat = sectionInset.top
         //
@@ -638,10 +638,10 @@ extension MNSegmentedView {
             item.titleFont = titleFont
             item.titleColor = configuration.item.normal.titleColor
             item.borderColor = configuration.item.normal.borderColor
-            item.borderWidth = configuration.item.normal.borderWidth
-            item.borderRadius = configuration.item.normal.cornerRadius
-            item.dividerSize = configuration.item.normal.dividerSize
-            item.dividerColor = configuration.item.normal.dividerColor
+            item.borderWidth = configuration.item.borderWidth
+            item.borderRadius = configuration.item.cornerRadius
+            item.dividerColor = configuration.item.dividerColor
+            item.dividerConstraint = configuration.item.dividerConstraint
             item.badgeFont = configuration.badge.textFont
             item.badgeTextColor = configuration.badge.textColor
             item.badgeInset = configuration.badge.contentInset
@@ -813,6 +813,25 @@ extension MNSegmentedView {
         items.forEach { $0.badge = nil }
         UIView.performWithoutAnimation {
             self.collectionView.reloadItems(at: self.collectionView.indexPathsForVisibleItems)
+        }
+    }
+}
+
+// MARK: - Divider
+extension MNSegmentedView {
+    
+    /// 替换分割线约束
+    /// - Parameters:
+    ///   - constraint: 分割线约束
+    ///   - index: 子页面索引
+    public func replace(_ constraint: MNSegmentedDividerConstraint, at index: Int) {
+        guard isItemLoaded else { return }
+        guard index < items.count else { return }
+        items[index].dividerConstraint = constraint
+        if let indexPath = collectionView.indexPathsForVisibleItems.first(where: { $0.item == index }) {
+            UIView.performWithoutAnimation {
+                self.collectionView.reloadItems(at: [indexPath])
+            }
         }
     }
 }

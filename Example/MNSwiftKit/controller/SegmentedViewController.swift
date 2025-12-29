@@ -14,8 +14,6 @@ class SegmentedViewController: UIViewController {
     var segmentedViewController: MNSegmentedViewController!
     
     @IBOutlet weak var axisSegment: UISegmentedControl!
-    
-    
     // 返回按钮顶部约束
     @IBOutlet weak var backTop: NSLayoutConstraint!
     // 导航高度约束
@@ -30,12 +28,30 @@ class SegmentedViewController: UIViewController {
         navHeight.constant = MN_TOP_BAR_HEIGHT
         backTop.constant = (MN_NAV_BAR_HEIGHT - backHeight.constant)/2.0 + MN_STATUS_BAR_HEIGHT
         
-        createSplitController()
+        createSegmentedController()
     }
     
-    private func createSplitController() {
-        segmentedViewController = MNSegmentedViewController()
-        ///segmentedViewController = MNSegmentedViewController(configuration: MNSegmentedConfiguration())
+    private func createSegmentedController() {
+        
+        if let segmentedViewController = segmentedViewController {
+            segmentedViewController.mn.removeFromParent()
+            self.segmentedViewController = nil
+        }
+        
+        var configuration = MNSegmentedConfiguration()
+        configuration.separator.style = .trailing
+        configuration.separator.backgroundColor = .gray.withAlphaComponent(0.15)
+        if axisSegment.selectedSegmentIndex == 1 {
+            // 纵向
+            configuration.orientation = .vertical
+            configuration.view.dimension = 90.0
+            configuration.item.dimension = 45.0
+            configuration.indicator.size = .matchTitle(dimension: 2.5)
+            configuration.item.dividerConstraint = .init(inset: 5.0, dimension: 0.7)
+            configuration.item.dividerColor = .gray.withAlphaComponent(0.15)
+            configuration.view.adjustmentBehavior = .centered
+        }
+        segmentedViewController = MNSegmentedViewController(configuration: configuration)
         segmentedViewController.delegate = self
         segmentedViewController.dataSource = self
         mn.addChild(segmentedViewController)
@@ -55,7 +71,7 @@ class SegmentedViewController: UIViewController {
     
     @IBAction func segmentValueChanged(_ sender: UISegmentedControl) {
         
-        
+        createSegmentedController()
     }
 }
 

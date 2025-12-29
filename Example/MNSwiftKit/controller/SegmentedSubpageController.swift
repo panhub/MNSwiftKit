@@ -51,7 +51,6 @@ class SegmentedSubpageController: UIViewController {
             view.frame = frame
         }
         
-        
         switch style {
         case .grid:
             //

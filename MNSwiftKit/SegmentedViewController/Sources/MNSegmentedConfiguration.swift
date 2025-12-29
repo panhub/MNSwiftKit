@@ -37,7 +37,7 @@ public struct MNSegmentedViewConfiguration {
     /// 尺寸
     /// - 横向：分段视图高度
     /// - 纵向：分段视图宽度
-    public var dimension: CGFloat = 38.0
+    public var dimension: CGFloat = 40.0
     
     /// item不足时的布局调整行为
     public var adjustmentBehavior: MNSegmentedAdjustmentBehavior = .standard
@@ -90,14 +90,54 @@ public struct MNSegmentedSeparatorConfiguration {
     public var backgroundColor: UIColor = .gray.withAlphaComponent(0.15)
 }
 
+/// 分割线尺寸约束
+public struct MNSegmentedDividerConstraint: Equatable {
+    
+    /// 上/左间隔
+    public let leading: CGFloat
+    /// 下/右间隔
+    public let trailing: CGFloat
+    /// 尺寸
+    /// - 横向：分割线宽度
+    /// - 纵向：分割线高度
+    public let dimension: CGFloat
+    
+    /// 不显示分割线
+    public static var zero = MNSegmentedDividerConstraint(leading: 0.0, trailing: 0.0, dimension: 0.0)
+    
+    
+    /// 构造分割线尺寸
+    /// - Parameters:
+    ///   - leading: 上/左间隔
+    ///   - trailing: 下/右间隔
+    ///   - dimension: 分割线宽度/高度
+    public init(leading: CGFloat, trailing: CGFloat, dimension: CGFloat) {
+        self.leading = leading
+        self.trailing = trailing
+        self.dimension = dimension
+    }
+    
+    /// 构造分割线尺寸
+    /// - Parameters:
+    ///   - inset: 两侧间隔
+    ///   - dimension: 分割线宽度/高度
+    public init(inset: CGFloat, dimension: CGFloat) {
+        self.leading = inset
+        self.trailing = inset
+        self.dimension = dimension
+    }
+    
+    public static func == (lhs: MNSegmentedDividerConstraint, rhs: MNSegmentedDividerConstraint) -> Bool {
+        
+        return lhs.leading == rhs.leading && lhs.trailing == rhs.trailing && lhs.dimension == rhs.dimension
+    }
+}
+
 /// 分割视图Item配置
 public struct MNSegmentedItemConfiguration {
 
     /// 外观配置
     public struct Appearance {
-        
-        /// 标题字体
-        public var titleFont: UIFont = .systemFont(ofSize: 17.0, weight: .medium)
         
         /// 标题颜色
         public var titleColor: UIColor = .gray
@@ -105,20 +145,8 @@ public struct MNSegmentedItemConfiguration {
         /// 标题的缩放因数, 不能小于1.0, 选中状态下有效
         public var titleScale: CGFloat = 1.0
         
-        /// 边框宽度
-        public var borderWidth: CGFloat = 0.0
-        
         /// 边框颜色
         public var borderColor: UIColor?
-        
-        /// 圆角大小
-        public var cornerRadius: CGFloat = 0.0
-        
-        /// 分割线颜色
-        public var dividerColor: UIColor?
-        
-        /// 分割线尺寸
-        public var dividerSize: CGSize = .zero
         
         /// 背景图片
         public var backgroundImage: UIImage?
@@ -130,10 +158,25 @@ public struct MNSegmentedItemConfiguration {
     /// 尺寸
     /// - 横向：分段视图item在标题宽度追加的宽度
     /// - 纵向：分段视图item高度
-    public var dimension: CGFloat = 36.0
+    public var dimension: CGFloat = 40.0
     
     /// 相邻两个Item的间隔
     public var spacing: CGFloat = 0.0
+    
+    /// 标题字体
+    public var titleFont: UIFont = .systemFont(ofSize: 17.0, weight: .medium)
+    
+    /// 分割线颜色
+    public var dividerColor: UIColor?
+    
+    /// 分割线约束
+    public var dividerConstraint: MNSegmentedDividerConstraint = .zero
+    
+    /// 边框宽度
+    public var borderWidth: CGFloat = 0.0
+    
+    /// 圆角大小
+    public var cornerRadius: CGFloat = 0.0
     
     /// 转场动画时长
     public var transitionDuration: TimeInterval = 0.3

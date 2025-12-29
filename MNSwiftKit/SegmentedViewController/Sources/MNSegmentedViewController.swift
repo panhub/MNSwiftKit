@@ -345,6 +345,19 @@ extension MNSegmentedViewController {
     }
 }
 
+// MARK: - Divider
+extension MNSegmentedViewController {
+    
+    /// 替换分割线约束
+    /// - Parameters:
+    ///   - constraint: 分割线约束
+    ///   - index: 子页面索引
+    public func replace(_ constraint: MNSegmentedDividerConstraint, at index: Int) {
+        guard isViewLoaded else { return }
+        segmentedView.replace(constraint, at: index)
+    }
+}
+
 // MARK: - MNSegmentedViewDataSource
 extension MNSegmentedViewController: MNSegmentedViewDataSource {
     

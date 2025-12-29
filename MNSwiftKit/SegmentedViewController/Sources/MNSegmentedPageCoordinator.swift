@@ -267,8 +267,6 @@ extension MNSegmentedPageCoordinator {
     ///   - subpage: 子页面
     ///   - index: 页面索引
     func setSubpage(_ subpage: MNSegmentedSubpageConvertible, for index: Int) {
-        // 先删除旧页面
-        removeSubpage(at: index)
         // 缓存新页面
         subpages[index] = subpage
         // 手动触发创建视图

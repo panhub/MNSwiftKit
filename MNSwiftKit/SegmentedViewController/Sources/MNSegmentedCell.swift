@@ -98,9 +98,9 @@ public class MNSegmentedCell: UICollectionViewCell, MNSegmentedCellConvertible {
         
         switch orientation {
         case .horizontal:
-            divider.frame = .init(origin: .init(x: (contentView.frame.width - item.dividerSize.width)/2.0, y: contentView.frame.height - item.dividerSize.height), size: item.dividerSize)
+            divider.frame = .init(x: contentView.frame.width - item.dividerConstraint.dimension, y: item.dividerConstraint.leading, width: item.dividerConstraint.dimension, height: contentView.frame.height - item.dividerConstraint.leading - item.dividerConstraint.trailing)
         default:
-            divider.frame = .init(origin: .init(x: contentView.frame.width - item.dividerSize.width, y: (contentView.frame.height - item.dividerSize.height)/2.0), size: item.dividerSize)
+            divider.frame = .init(x: item.dividerConstraint.leading, y: contentView.frame.height - item.dividerConstraint.dimension, width: contentView.frame.width - item.dividerConstraint.leading - item.dividerConstraint.trailing, height: item.dividerConstraint.dimension)
         }
         divider.backgroundColor = item.dividerColor
         

@@ -39,8 +39,8 @@ public class MNSegmentedItem: NSObject {
     
     /// 分割线颜色
     public var dividerColor: UIColor?
-    /// 分割线约束
-    public var dividerSize: CGSize = .zero
+    /// 分割线尺寸约束
+    public var dividerConstraint: MNSegmentedDividerConstraint = .zero
     
     /// 边框宽度
     public var borderWidth: CGFloat = 0.0
