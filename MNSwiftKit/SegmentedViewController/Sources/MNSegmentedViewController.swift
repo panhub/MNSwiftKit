@@ -500,7 +500,9 @@ extension MNSegmentedViewController: MNSegmentedPageCoordinatorDelegate {
                 minY = superview.convert(scrollView.frame, to: subpage.view).minY
             }
             if greatestFiniteOffset > minY {
+                // SegmentView最大可向上滑动的高度
                 let maxOffsetY = greatestFiniteOffset - minY
+                // ScrollView向上滑出的高度
                 let offsetY: CGFloat = contentOffset.y + scrollView.contentInset.top
                 let newY: CGFloat = min(0.0, max(-maxOffsetY, -offsetY))
                 let oldY: CGFloat = segmentedView.frame.minY
