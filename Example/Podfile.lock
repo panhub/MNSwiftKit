@@ -77,7 +77,6 @@ PODS:
     - MNSwiftKit/Request
     - MNSwiftKit/SegmentedViewController
     - MNSwiftKit/Slider
-    - MNSwiftKit/SplitController
     - MNSwiftKit/Toast
     - MNSwiftKit/Transitioning
     - MNSwiftKit/Utility
@@ -98,9 +97,6 @@ PODS:
     - MNSwiftKit/Layout
     - MNSwiftKit/NameSpace
   - MNSwiftKit/Slider (0.1.3)
-  - MNSwiftKit/SplitController (0.1.3):
-    - MNSwiftKit/Layout
-    - MNSwiftKit/NameSpace
   - MNSwiftKit/Toast (0.1.3):
     - MNSwiftKit/NameSpace
   - MNSwiftKit/Transitioning (0.1.3):
@@ -115,7 +111,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: ffd5ae1fbd67bbcab5b2840470496a7947e3dd3c
+  MNSwiftKit: 4f7122e7373f063f7713e9a8c7807abff2c3e869
 
 PODFILE CHECKSUM: 6945f8f3025c0c190cd98bd04f84e75ce33964db
 

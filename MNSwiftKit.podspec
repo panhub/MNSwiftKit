@@ -296,7 +296,7 @@ Pod::Spec.new do |s|
     full.dependency 'MNSwiftKit/MediaExport'
     full.dependency 'MNSwiftKit/Transitioning'
     full.dependency 'MNSwiftKit/AssetBrowser'
-    full.dependency 'MNSwiftKit/SplitController'
+    #full.dependency 'MNSwiftKit/SplitController'
     full.dependency 'MNSwiftKit/AnimatedImage'
     full.dependency 'MNSwiftKit/CollectionLayout'
     full.dependency 'MNSwiftKit/EmoticonKeyboard'

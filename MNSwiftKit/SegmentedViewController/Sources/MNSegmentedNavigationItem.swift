@@ -1,5 +1,5 @@
 //
-//  MNSegmentedItem.swift
+//  MNSegmentedNavigationItem.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2022/5/28.
@@ -9,8 +9,8 @@ import UIKit
 import Foundation
 import CoreFoundation
 
-/// 分割视图中Item模型
-public class MNSegmentedItem: NSObject {
+/// 分段导航视图中Item模型
+public class MNSegmentedNavigationItem: NSObject {
     
     /// 位置
     public var frame: CGRect = .zero
@@ -40,7 +40,7 @@ public class MNSegmentedItem: NSObject {
     /// 分割线颜色
     public var dividerColor: UIColor?
     /// 分割线尺寸约束
-    public var dividerConstraint: MNSegmentedDividerConstraint = .zero
+    public var dividerConstraint: MNSegmentedConfiguration.Constraint = .zero
     
     /// 边框宽度
     public var borderWidth: CGFloat = 0.0

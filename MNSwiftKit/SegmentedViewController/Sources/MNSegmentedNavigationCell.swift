@@ -1,5 +1,5 @@
 //
-//  MNSegmentedCell.swift
+//  MNSegmentedNavigationCell.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2022/5/28.
@@ -9,7 +9,7 @@ import UIKit
 import Foundation
 import CoreFoundation
 
-@objc public protocol MNSegmentedCellConvertible where Self: UICollectionViewCell {
+@objc public protocol MNSegmentedNavigationCellConvertible where Self: UICollectionViewCell {
     
     /// 更新标题缩放
     /// - Parameter scale: 缩放因数
@@ -41,10 +41,10 @@ import CoreFoundation
     ///   - item: 模型
     ///   - index: 当前索引
     ///   - orientation: 滑动方向
-    @objc optional func update(item: MNSegmentedItem, at index: Int, orientation: UIPageViewController.NavigationOrientation)
+    @objc optional func update(item: MNSegmentedNavigationItem, at index: Int, orientation: UIPageViewController.NavigationOrientation)
 }
 
-public class MNSegmentedCell: UICollectionViewCell, MNSegmentedCellConvertible {
+public class MNSegmentedNavigationCell: UICollectionViewCell, MNSegmentedNavigationCellConvertible {
     /// 分割线
     public var divider = UIView()
     /// 标题
@@ -94,7 +94,7 @@ public class MNSegmentedCell: UICollectionViewCell, MNSegmentedCellConvertible {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public func update(item: MNSegmentedItem, at index: Int, orientation: UIPageViewController.NavigationOrientation) {
+    public func update(item: MNSegmentedNavigationItem, at index: Int, orientation: UIPageViewController.NavigationOrientation) {
         
         switch orientation {
         case .horizontal:

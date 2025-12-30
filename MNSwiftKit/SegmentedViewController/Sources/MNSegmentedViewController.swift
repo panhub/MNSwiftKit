@@ -12,7 +12,7 @@ import CoreFoundation
 @objc public protocol MNSegmentedSubpageConvertible where Self: UIViewController {
     
     /// 滑动视图
-    var preferredSubpageScrollView: UIScrollView { get }
+    var preferredSubpageScrollView: UIScrollView? { get }
     
     /// 告知已修改ContentInset
     /// - Parameter scrollView: 滑动视图
@@ -25,20 +25,17 @@ import CoreFoundation
     @objc optional func scrollView(_ scrollView: UIScrollView, determinedMinimumContentSize contentSize: CGSize)
 }
 
-@objc public protocol MNSegmentedViewControllerDataSource: MNSegmentedViewDataSource {
+@objc public protocol MNSegmentedViewControllerDataSource: MNSegmentedNavigationDataSource {
     
     /// 公共背景视图
     @objc optional var preferredSubpageBackgroundView: UIView? { get }
-    
-    /// 公共页头视图
-    @objc optional var preferredSubpageHeaderView: UIView? { get }
     
     /// 获取分段item尺寸
     /// - Parameters:
     ///   - viewController: 分段视图控制器
     ///   - index: 索引
     /// - Returns: item尺寸
-    @objc optional func segmentedViewController(_ viewController: MNSegmentedViewController, dimensionForSegmentedItemAt index: Int) -> CGFloat
+    @objc optional func segmentedViewController(_ viewController: MNSegmentedViewController, dimensionForSegmentedNavigationItemAt index: Int) -> CGFloat
     
     /// 获取子界面
     /// - Parameters:
@@ -68,10 +65,13 @@ import CoreFoundation
     ///   - cell: 分段Cell
     ///   - item: 数据模型
     ///   - index: 索引
-    @objc optional func segmentedViewController(_ viewController: MNSegmentedViewController, willDisplay cell: MNSegmentedCellConvertible, item: MNSegmentedItem, at index: Int)
+    @objc optional func segmentedViewController(_ viewController: MNSegmentedViewController, willDisplay cell: MNSegmentedNavigationCellConvertible, item: MNSegmentedNavigationItem, at index: Int)
 }
 
 public class MNSegmentedViewController: UIViewController {
+    
+    /// 公共头视图需要在屏幕上显示的高度
+    public var headerVisibleHeight: CGFloat = 0.0
     
     /// 位置
     private lazy var frame: CGRect = .zero
@@ -79,29 +79,20 @@ public class MNSegmentedViewController: UIViewController {
     /// 配置信息
     private lazy var configuration = MNSegmentedConfiguration()
     
-    /// 公共头视图需要在屏幕上显示的高度
-    public var headerVisibleHeight: CGFloat = 0.0
-    
     /// 事件代理
     public weak var delegate: MNSegmentedViewControllerDelegate?
     
     /// 数据源
     public weak var dataSource: MNSegmentedViewControllerDataSource?
     
+    /// 导航视图
+    private lazy var navigationView = MNSegmentedNavigationView(configuration: configuration)
+    
     /// 页面协调器
-    private lazy var pageCoordinator = MNSegmentedPageCoordinator(configuration: configuration, pageViewController: pageViewController)
+    private lazy var pageCoordinator = MNSegmentedSubpageCoordinator(pageViewController: pageViewController, configuration: configuration)
     
     /// 分页控制器
     private lazy var pageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: configuration.orientation, options: [.interPageSpacing:0.0])
-    
-    /// 分段视图 + 头视图
-    private lazy var segmentedView: MNSegmentedView = {
-        var headerView: UIView?
-        if configuration.orientation == .horizontal, let dataSource = dataSource, let subview = dataSource.preferredSubpageHeaderView, let subview = subview {
-            headerView = subview
-        }
-        return MNSegmentedView(configuration: configuration, headerView: headerView)
-    }()
     
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -164,46 +155,53 @@ public class MNSegmentedViewController: UIViewController {
         pageViewController.didMove(toParent: self)
         pageViewController.view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            pageViewController.view.topAnchor.constraint(equalTo: view.topAnchor),
             pageViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             pageViewController.view.rightAnchor.constraint(equalTo: view.rightAnchor)
         ])
         
-        segmentedView.delegate = self
-        segmentedView.dataSource = self
+        navigationView.delegate = self
+        navigationView.dataSource = self
         
         switch configuration.orientation {
         case .horizontal:
-            // 横向，有公共头视图
+            // 横向
+            var navigationHeight: CGFloat = configuration.navigation.dimension
+            if configuration.separator.style.contains(.leading) {
+                navigationHeight += configuration.separator.constraint.dimension
+            }
+            if configuration.separator.style.contains(.trailing) {
+                navigationHeight += configuration.separator.constraint.dimension
+            }
             NSLayoutConstraint.activate([
+                pageViewController.view.topAnchor.constraint(equalTo: view.topAnchor, constant: navigationHeight),
                 pageViewController.view.leftAnchor.constraint(equalTo: view.leftAnchor)
             ])
             // 放置公共视图与分段视图
-            segmentedView.translatesAutoresizingMaskIntoConstraints = false
-            // segmentedView.autoresizingMask = [.flexibleWidth]
-            view.addSubview(segmentedView)
+            navigationView.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(navigationView)
             NSLayoutConstraint.activate([
-                segmentedView.leftAnchor.constraint(equalTo: view.leftAnchor),
-                segmentedView.rightAnchor.constraint(equalTo: view.rightAnchor)
+                navigationView.leftAnchor.constraint(equalTo: view.leftAnchor),
+                navigationView.rightAnchor.constraint(equalTo: view.rightAnchor)
             ])
         default:
-            // 纵向，无公共头视图
-            segmentedView.translatesAutoresizingMaskIntoConstraints = false
-            view.insertSubview(segmentedView, belowSubview: pageViewController.view)
+            // 纵向
+            navigationView.translatesAutoresizingMaskIntoConstraints = false
+            view.insertSubview(navigationView, belowSubview: pageViewController.view)
             NSLayoutConstraint.activate([
-                segmentedView.topAnchor.constraint(equalTo: view.topAnchor),
-                segmentedView.leftAnchor.constraint(equalTo: view.leftAnchor),
-                segmentedView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+                navigationView.topAnchor.constraint(equalTo: view.topAnchor),
+                navigationView.leftAnchor.constraint(equalTo: view.leftAnchor),
+                navigationView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
             ])
             NSLayoutConstraint.activate([
-                pageViewController.view.leftAnchor.constraint(equalTo: segmentedView.rightAnchor)
+                pageViewController.view.topAnchor.constraint(equalTo: view.topAnchor),
+                pageViewController.view.leftAnchor.constraint(equalTo: navigationView.rightAnchor)
             ])
         }
         
-        // 激活协调器
+        // 页面协调器
         pageCoordinator.delegate = self
         pageCoordinator.dataSource = self
-        pageCoordinator.scrollDelegate = segmentedView
+        pageCoordinator.scrolling = navigationView
     }
 }
 
@@ -214,8 +212,8 @@ extension MNSegmentedViewController {
     /// - Parameters:
     ///   - cellClass: 表格类
     ///   - reuseIdentifier: 表格重用标识符
-    public func register<T>(_ cellClass: T.Type, forSegmentedCellWithReuseIdentifier reuseIdentifier: String) where T: MNSegmentedCellConvertible {
-        segmentedView.register(cellClass, forSegmentedCellWithReuseIdentifier: reuseIdentifier)
+    public func register<T>(_ cellClass: T.Type, forSegmentedCellWithReuseIdentifier reuseIdentifier: String) where T: MNSegmentedNavigationCellConvertible {
+        navigationView.register(cellClass, forSegmentedCellWithReuseIdentifier: reuseIdentifier)
     }
     
     /// 注册表格
@@ -223,7 +221,7 @@ extension MNSegmentedViewController {
     ///   - nib: xib
     ///   - reuseIdentifier: 表格重用标识符
     public func register(_ nib: UINib?, forSegmentedCellWithReuseIdentifier reuseIdentifier: String) {
-        segmentedView.register(nib, forSegmentedCellWithReuseIdentifier: reuseIdentifier)
+        navigationView.register(nib, forSegmentedCellWithReuseIdentifier: reuseIdentifier)
     }
 }
 
@@ -233,10 +231,10 @@ extension MNSegmentedViewController {
     /// 重载子界面
     public func reloadSubpage() {
         guard isViewLoaded else { return }
-        guard segmentedView.isItemLoaded else { return }
+        guard navigationView.isItemLoaded else { return }
         pageCoordinator.removeSubpage(at: nil)
-        segmentedView.frame.origin.y = 0.0
-        segmentedView.reloadSubview()
+        navigationView.frame.origin.y = 0.0
+        navigationView.reloadSubview()
     }
     
     /// 获取子页面
@@ -246,7 +244,7 @@ extension MNSegmentedViewController {
     /// - Returns: 子页面控制器
     public func subpage(for index: Int, access: Bool = false) -> MNSegmentedSubpageConvertible? {
         guard isViewLoaded else { return nil }
-        guard segmentedView.isItemLoaded else { return nil }
+        guard navigationView.isItemLoaded else { return nil }
         return pageCoordinator.subpage(for: index, allowAccess: access)
     }
     
@@ -265,7 +263,7 @@ extension MNSegmentedViewController {
     ///   - subpage: 子页面meisha
     ///   - index: 页面索引
     public func replace(_ subpage: MNSegmentedSubpageConvertible, at index: Int) {
-        if isViewLoaded, segmentedView.isItemLoaded {
+        if isViewLoaded, navigationView.isItemLoaded {
             guard index < numberOfPages else { return }
             // 删除旧页面缓存
             pageCoordinator.removeSubpage(at: index)
@@ -273,7 +271,7 @@ extension MNSegmentedViewController {
             pageCoordinator.setSubpage(subpage, for: index)
             if index == currentPageIndex {
                 // 替换当前页面
-                pageCoordinator.setPage(at: index, direction: .forward, animated: false)
+                pageCoordinator.setSubpage(at: index, direction: .forward, animated: false)
             }
         } else {
             // 未有子页面
@@ -285,15 +283,15 @@ extension MNSegmentedViewController {
     /// - Parameters:
     ///   - index: 子页面索引
     ///   - animated: 是否动态
-    public func setCurrentPage(at index: Int, animated: Bool = false) {
+    public func setSubpage(at index: Int, animated: Bool = false) {
         guard isViewLoaded else { return }
-        guard segmentedView.isItemLoaded else { return }
+        guard navigationView.isItemLoaded else { return }
         guard index < numberOfPages else { return }
         let currentPageIndex = currentPageIndex
         if index == currentPageIndex { return }
         let direction: UIPageViewController.NavigationDirection = index >= currentPageIndex ? .forward : .reverse
-        segmentedView.setSelectedItem(at: index, animated: animated)
-        pageCoordinator.setPage(at: index, direction: direction, animated: animated)
+        navigationView.setSelectedItem(at: index, animated: animated)
+        pageCoordinator.setSubpage(at: index, direction: direction, animated: animated)
     }
 }
 
@@ -306,7 +304,7 @@ extension MNSegmentedViewController {
     ///   - index: 子页面索引
     public func replace(_ title: String, at index: Int) {
         guard isViewLoaded else { return }
-        segmentedView.replace(title, at: index)
+        navigationView.replace(title, at: index)
     }
     
     /// 获取分割项标题
@@ -314,7 +312,7 @@ extension MNSegmentedViewController {
     /// - Returns: 获取到的标题
     public func title(for index: Int) -> String? {
         guard isViewLoaded else { return nil }
-        return segmentedView.title(for: index)
+        return navigationView.title(for: index)
     }
 }
 
@@ -326,7 +324,7 @@ extension MNSegmentedViewController {
     /// - Returns: 角标
     public func badge(for index: Int) -> Any? {
         guard isViewLoaded else { return nil }
-        return segmentedView.badge(for: index)
+        return navigationView.badge(for: index)
     }
     
     /// 设置角标
@@ -335,13 +333,13 @@ extension MNSegmentedViewController {
     ///   - index: 页码
     public func setBadge(_ badge: Any?, for index: Int) {
         guard isViewLoaded else { return }
-        segmentedView.setBadge(badge, for: index)
+        navigationView.setBadge(badge, for: index)
     }
     
     /// 删除所有角标
     public func removeAllBadges() {
         guard isViewLoaded else { return }
-        segmentedView.removeAllBadges()
+        navigationView.removeAllBadges()
     }
 }
 
@@ -352,99 +350,105 @@ extension MNSegmentedViewController {
     /// - Parameters:
     ///   - constraint: 分割线约束
     ///   - index: 子页面索引
-    public func replace(_ constraint: MNSegmentedDividerConstraint, at index: Int) {
+    public func replace(_ constraint: MNSegmentedConfiguration.Constraint, at index: Int) {
         guard isViewLoaded else { return }
-        segmentedView.replace(constraint, at: index)
+        navigationView.replace(constraint, at: index)
     }
 }
 
-// MARK: - MNSegmentedViewDataSource
-extension MNSegmentedViewController: MNSegmentedViewDataSource {
+// MARK: - MNSegmentedNavigationDataSource
+extension MNSegmentedViewController: MNSegmentedNavigationDataSource {
     
-    public var preferredSegmentedTitles: [String] {
+    public var preferredSegmentedNavigationTitles: [String] {
         
         guard let dataSource = dataSource else { return [] }
-        return dataSource.preferredSegmentedTitles
+        return dataSource.preferredSegmentedNavigationTitles
     }
     
-    public var preferredPresentationSegmentedIndex: Int {
+    public var preferredSegmentedNavigationHeaderView: UIView? {
         
-        guard let dataSource = dataSource, let presentationIndex = dataSource.preferredPresentationSegmentedIndex else { return 0 }
+        guard let dataSource = dataSource, let headerView = dataSource.preferredSegmentedNavigationHeaderView else { return nil }
+        return headerView
+    }
+    
+    public var preferredSegmentedNavigationPresentationIndex: Int {
+        
+        guard let dataSource = dataSource, let presentationIndex = dataSource.preferredSegmentedNavigationPresentationIndex else { return 0 }
         return presentationIndex
     }
     
-    public var preferredSegmentedBackgroundView: UIView? {
+    public var preferredSegmentedNavigationBackgroundView: UIView? {
         
-        guard let dataSource = dataSource, let backgroundView = dataSource.preferredSegmentedBackgroundView else { return nil }
+        guard let dataSource = dataSource, let backgroundView = dataSource.preferredSegmentedNavigationBackgroundView else { return nil }
         return backgroundView
     }
     
-    public var preferredSegmentedLeadingAccessoryView: UIView? {
+    public var preferredSegmentedNavigationLeadingAccessoryView: UIView? {
         
-        guard let dataSource = dataSource, let accessoryView = dataSource.preferredSegmentedLeadingAccessoryView else { return nil }
+        guard let dataSource = dataSource, let accessoryView = dataSource.preferredSegmentedNavigationLeadingAccessoryView else { return nil }
         return accessoryView
     }
     
-    public var preferredSegmentedTrailingAccessoryView: UIView? {
+    public var preferredSegmentedNavigationTrailingAccessoryView: UIView? {
         
-        guard let dataSource = dataSource, let accessoryView = dataSource.preferredSegmentedTrailingAccessoryView else { return nil }
+        guard let dataSource = dataSource, let accessoryView = dataSource.preferredSegmentedNavigationTrailingAccessoryView else { return nil }
         return accessoryView
     }
     
-    public func dimensionForSegmentedItemAt(_ index: Int) -> CGFloat {
+    public func dimensionForSegmentedNavigationItemAt(_ index: Int) -> CGFloat {
         
-        guard let dataSource = dataSource, let dimension = dataSource.segmentedViewController?(self, dimensionForSegmentedItemAt: index) else { return 0.0 }
+        guard let dataSource = dataSource, let dimension = dataSource.segmentedViewController?(self, dimensionForSegmentedNavigationItemAt: index) else { return 0.0 }
         return dimension
     }
 }
 
-// MARK: - MNSegmentedViewDelegate
-extension MNSegmentedViewController: MNSegmentedViewDelegate {
+// MARK: - MNSegmentedNavigationDelegate
+extension MNSegmentedViewController: MNSegmentedNavigationDelegate {
     
-    func segmentedViewDidReloadItem(_ segmentedView: MNSegmentedView) {
+    func navigationViewDidReloadItem(_ navigationView: MNSegmentedNavigationView) {
         
-        pageCoordinator.setPage(at: segmentedView.selectedIndex, direction: .forward, animated: false)
+        pageCoordinator.setSubpage(at: navigationView.selectedIndex, direction: .forward, animated: false)
     }
     
-    func segmentedView(_ segmentedView: MNSegmentedView, shouldSelectItemAt index: Int) -> Bool {
+    func navigationView(_ navigationView: MNSegmentedNavigationView, shouldSelectItemAt index: Int) -> Bool {
         
         pageCoordinator.isScrolling == false
     }
     
-    func segmentedView(_ segmentedView: MNSegmentedView, didSelectItemAt index: Int, direction: UIPageViewController.NavigationDirection) {
+    func navigationView(_ navigationView: MNSegmentedNavigationView, didSelectItemAt index: Int, direction: UIPageViewController.NavigationDirection) {
         
-        pageCoordinator.setPage(at: index, direction: direction, animated: true)
+        pageCoordinator.setSubpage(at: index, direction: direction, animated: true)
     }
     
-    func segmentedView(_ segmentedView: MNSegmentedView, willDisplay cell: any MNSegmentedCellConvertible, item: MNSegmentedItem, at index: Int) {
+    func navigationView(_ navigationView: MNSegmentedNavigationView, willDisplay cell: any MNSegmentedNavigationCellConvertible, item: MNSegmentedNavigationItem, at index: Int) {
         
         guard let delegate = delegate else { return }
         delegate.segmentedViewController?(self, willDisplay: cell, item: item, at: index)
     }
 }
 
-// MARK: - MNSegmentedPageCoordinatorDataSource
-extension MNSegmentedViewController: MNSegmentedPageCoordinatorDataSource {
+// MARK: - MNSegmentedSubpageDataSource
+extension MNSegmentedViewController: MNSegmentedSubpageDataSource {
     
     public var currentPageIndex: Int {
         
-        segmentedView.selectedIndex
+        navigationView.selectedIndex
     }
     
     public var numberOfPages: Int {
         
-        segmentedView.items.count
+        navigationView.items.count
     }
     
     public var subpageHeaderHeight: CGFloat {
         
-        segmentedView.frame.height
+        // 顶部已预留导航栏高度
+        navigationView.leadingSeparator.frame.minY
     }
     
     public var subpageHeaderGreatestFiniteOffset: CGFloat {
         
-        let minY = segmentedView.collectionView.frame.minY
-        return max(0.0, minY - headerVisibleHeight)
+        max(0.0, subpageHeaderHeight - headerVisibleHeight)
     }
     
     public func subpage(at index: Int) -> (any MNSegmentedSubpageConvertible)? {
@@ -454,11 +458,11 @@ extension MNSegmentedViewController: MNSegmentedPageCoordinatorDataSource {
     }
     
     public func contentOffset(for subpage: any MNSegmentedSubpageConvertible) -> CGPoint {
-        let scrollView = subpage.preferredSubpageScrollView
+        guard let scrollView = subpage.preferredSubpageScrollView else { return .zero }
         var contentOffset = scrollView.contentOffset
         switch configuration.orientation {
         case .horizontal:
-            guard scrollView.mn.isReachedLeastSize else { break }
+            guard scrollView.mn.isReachedMinimumSize else { break }
             let greatestFiniteOffset = subpageHeaderGreatestFiniteOffset
             var minY = 0.0
             if let superview = scrollView.superview {
@@ -466,8 +470,8 @@ extension MNSegmentedViewController: MNSegmentedPageCoordinatorDataSource {
             }
             guard greatestFiniteOffset > minY else { break }
             let maxOffsetY = greatestFiniteOffset - minY
-            let offsetY: CGFloat = -scrollView.contentInset.top - segmentedView.frame.minY
-            if abs(abs(segmentedView.frame.minY) - maxOffsetY) <= 0.01 {
+            let offsetY: CGFloat = -scrollView.contentInset.top - navigationView.frame.minY
+            if abs(abs(navigationView.frame.minY) - maxOffsetY) <= 0.01 {
                 // 表头已达到最大限度
                 contentOffset.y = max(contentOffset.y, offsetY)
             } else {
@@ -480,21 +484,20 @@ extension MNSegmentedViewController: MNSegmentedPageCoordinatorDataSource {
     }
 }
 
-// MARK: - MNSegmentedPageCoordinatorDelegate
-extension MNSegmentedViewController: MNSegmentedPageCoordinatorDelegate {
+// MARK: - MNSegmentedSubpageDelegate
+extension MNSegmentedViewController: MNSegmentedSubpageDelegate {
     
     func pageViewController(_ viewController: UIPageViewController, didScrollTo subpage: any MNSegmentedSubpageConvertible) {
-        let scrollView = subpage.preferredSubpageScrollView
-        if let delegate = delegate {
-            delegate.segmentedViewController?(self, subpageDidChangeAt: scrollView.mn.pageIndex)
-            delegate.segmentedViewController?(self, subpageDidChangeContentOffset: scrollView.contentOffset)
-        }
+        guard let delegate = delegate else { return }
+        delegate.segmentedViewController?(self, subpageDidChangeAt: subpage.subpageIndex)
+        guard let scrollView = subpage.preferredSubpageScrollView else { return }
+        delegate.segmentedViewController?(self, subpageDidChangeContentOffset: scrollView.contentOffset)
     }
     
     func pageViewController(_ viewController: UIPageViewController, subpage: any MNSegmentedSubpageConvertible, didChangeContentOffset contentOffset: CGPoint) {
-        let scrollView = subpage.preferredSubpageScrollView
+        guard let scrollView = subpage.preferredSubpageScrollView else { return }
         let greatestFiniteOffset = subpageHeaderGreatestFiniteOffset
-        if scrollView.mn.isReachedLeastSize, greatestFiniteOffset > 0.0 {
+        if scrollView.mn.isReachedMinimumSize, greatestFiniteOffset > 0.0 {
             var minY = 0.0
             if let superview = scrollView.superview {
                 minY = superview.convert(scrollView.frame, to: subpage.view).minY
@@ -505,7 +508,7 @@ extension MNSegmentedViewController: MNSegmentedPageCoordinatorDelegate {
                 // ScrollView向上滑出的高度
                 let offsetY: CGFloat = contentOffset.y + scrollView.contentInset.top
                 let newY: CGFloat = min(0.0, max(-maxOffsetY, -offsetY))
-                let oldY: CGFloat = segmentedView.frame.minY
+                let oldY: CGFloat = navigationView.frame.minY
                 if abs(oldY - newY) >= 0.01 {
                     print("minY: \(minY)")
                     print("greatestFiniteOffset: \(greatestFiniteOffset)")
@@ -513,7 +516,7 @@ extension MNSegmentedViewController: MNSegmentedPageCoordinatorDelegate {
                     print("offsetY: \(offsetY)")
                     print("newY: \(newY)")
                     print("oldY: \(oldY)")
-                    segmentedView.frame.origin.y = newY
+                    navigationView.frame.origin.y = newY
                     /**
                      minY: -98.0
                      greatestFiniteOffset: 227.0

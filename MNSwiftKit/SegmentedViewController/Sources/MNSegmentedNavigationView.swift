@@ -1,5 +1,5 @@
 //
-//  MNSegmentedView.swift
+//  MNSegmentedNavigationView.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2022/5/28.
@@ -7,69 +7,75 @@
 
 import UIKit
 
-@objc public protocol MNSegmentedViewDataSource: AnyObject {
+/// 分段导航视图数据源
+@objc public protocol MNSegmentedNavigationDataSource: AnyObject {
     
     /// 子界面标题集合
-    var preferredSegmentedTitles: [String] { get }
+    var preferredSegmentedNavigationTitles: [String] { get }
+    
+    /// 公共页头视图
+    @objc optional var preferredSegmentedNavigationHeaderView: UIView? { get }
     
     /// 初始子界面索引
-    @objc optional var preferredPresentationSegmentedIndex: Int { get }
+    @objc optional var preferredSegmentedNavigationPresentationIndex: Int { get }
     
     /// 分割器背景视图
-    @objc optional var preferredSegmentedBackgroundView: UIView? { get }
+    @objc optional var preferredSegmentedNavigationBackgroundView: UIView? { get }
     
     /// 前/左附属视图
-    @objc optional var preferredSegmentedLeadingAccessoryView: UIView? { get }
+    @objc optional var preferredSegmentedNavigationLeadingAccessoryView: UIView? { get }
     
     /// 后/右附属视图
-    @objc optional var preferredSegmentedTrailingAccessoryView: UIView? { get }
+    @objc optional var preferredSegmentedNavigationTrailingAccessoryView: UIView? { get }
     
-    /// 指定分割项尺寸 依据布局方向取宽高
+    /// 指定分割导航项item尺寸 依据布局方向取宽高
     /// - Parameter index: 索引
-    /// - Returns: 分割项尺寸
-    @objc optional func dimensionForSegmentedItemAt(_ index: Int) -> CGFloat
+    /// - Returns: 导航项item尺寸
+    @objc optional func dimensionForSegmentedNavigationItemAt(_ index: Int) -> CGFloat
 }
 
-@objc protocol MNSegmentedViewDelegate: AnyObject {
+/// 分段导航事件代理
+@objc protocol MNSegmentedNavigationDelegate: AnyObject {
     
     /// 重载分割项告知
-    /// - Parameter segmentedView: 分割视图
-    func segmentedViewDidReloadItem(_ segmentedView: MNSegmentedView)
+    /// - Parameter navigationView: 分割视图
+    func navigationViewDidReloadItem(_ navigationView: MNSegmentedNavigationView)
     
     /// 询问是否响应点击事件
     /// - Parameters:
-    ///   - segmentedView: 分割视图
+    ///   - navigationView: 分割视图
     ///   - index: 点击索引
     /// - Returns: 是否允许选择
-    func segmentedView(_ segmentedView: MNSegmentedView, shouldSelectItemAt index: Int) -> Bool
+    func navigationView(_ navigationView: MNSegmentedNavigationView, shouldSelectItemAt index: Int) -> Bool
     
     /// 分割项选择告知
     /// - Parameters:
-    ///   - segmentedView: 分割视图
+    ///   - navigationView: 分割视图
     ///   - index: 点击的索引
     ///   - direction: 点击的索引是大于还是小于原索引
-    func segmentedView(_ segmentedView: MNSegmentedView, didSelectItemAt index: Int, direction: UIPageViewController.NavigationDirection)
+    func navigationView(_ navigationView: MNSegmentedNavigationView, didSelectItemAt index: Int, direction: UIPageViewController.NavigationDirection)
     
     /// 即将显示分割项
     /// - Parameters:
-    ///   - segmentedView: 分割视图
+    ///   - navigationView: 分割视图
     ///   - cell: 分割项
     ///   - item: 分割项模型
     ///   - index: 索引
-    @objc optional func segmentedView(_ segmentedView: MNSegmentedView, willDisplay cell: MNSegmentedCellConvertible, item: MNSegmentedItem, at index: Int)
+    @objc optional func navigationView(_ navigationView: MNSegmentedNavigationView, willDisplay cell: MNSegmentedNavigationCellConvertible, item: MNSegmentedNavigationItem, at index: Int)
 }
 
-class MNSegmentedView: UIView {
+/// 分段导航视图
+class MNSegmentedNavigationView: UIView {
     /// 配置
     private let configuration: MNSegmentedConfiguration
     /// 是否已加载过item
     private(set) var isItemLoaded: Bool = false
     /// 事件代理
-    weak var delegate: MNSegmentedViewDelegate?
+    weak var delegate: MNSegmentedNavigationDelegate?
     /// 数据源
-    weak var dataSource: MNSegmentedViewDataSource?
+    weak var dataSource: MNSegmentedNavigationDataSource?
     /// 分各项数组
-    private(set) var items: [MNSegmentedItem] = []
+    private(set) var items: [MNSegmentedNavigationItem] = []
     /// 集合视图的背景视图(放置指示视图)
     private var collectionBackgroundView: UIView!
     /// 当前选中索引
@@ -81,7 +87,7 @@ class MNSegmentedView: UIView {
     /// 指示视图
     private var indicatorView = UIImageView()
     /// 前/左方分割线
-    private let leadingSeparator = UIView()
+    let leadingSeparator = UIView()
     /// 后/右方分割线
     private let trailingSeparator = UIView()
     /// 背景视图
@@ -93,17 +99,16 @@ class MNSegmentedView: UIView {
     /// 表格重用标识符
     private var reuseIdentifier: String = "com.mn.segmented.cell.identifier"
     /// 集合视图
-    let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
-    /// 构造分段导航视图
-    /// - Parameters:
-    ///   - configuration: 配置信息
-    ///   - headerView: 公共头视图
-    init(configuration: MNSegmentedConfiguration, headerView: UIView?) {
+    
+    /// 构造分段控制器的导航视图
+    /// - Parameter configuration: 配置信息
+    init(configuration: MNSegmentedConfiguration) {
         self.configuration = configuration
         super.init(frame: .zero)
         
-        backgroundColor = configuration.view.backgroundColor
+        backgroundColor = configuration.navigation.backgroundColor
         
         leadingSeparator.backgroundColor = configuration.separator.backgroundColor
         leadingSeparator.isHidden = configuration.separator.style.contains(.leading) == false
@@ -111,7 +116,7 @@ class MNSegmentedView: UIView {
         addSubview(leadingSeparator)
         
         let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
-        layout.sectionInset = configuration.view.contentInset
+        layout.sectionInset = configuration.navigation.contentInset
         layout.scrollDirection = configuration.orientation == .horizontal ? .horizontal : .vertical
         layout.footerReferenceSize = .zero
         layout.headerReferenceSize = .zero
@@ -124,7 +129,7 @@ class MNSegmentedView: UIView {
         collectionView.backgroundColor = .clear
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
-        collectionView.register(MNSegmentedCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        collectionView.register(MNSegmentedNavigationCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         if #available(iOS 11.0, *) {
             collectionView.contentInsetAdjustmentBehavior = .never
         }
@@ -139,7 +144,7 @@ class MNSegmentedView: UIView {
         switch configuration.orientation {
         case .horizontal:
             // 横向，有公共头视图
-            if let headerView = headerView {
+            if let dataSource = dataSource, let headerView = dataSource.preferredSegmentedNavigationHeaderView, let headerView = headerView {
                 headerView.translatesAutoresizingMaskIntoConstraints = false
                 insertSubview(headerView, at: 0)
                 NSLayoutConstraint.activate([
@@ -157,16 +162,16 @@ class MNSegmentedView: UIView {
                 ])
             }
             NSLayoutConstraint.activate([
-                leadingSeparator.leftAnchor.constraint(equalTo: leftAnchor, constant: configuration.separator.inset.left),
-                leadingSeparator.rightAnchor.constraint(equalTo: rightAnchor, constant: -configuration.separator.inset.right),
-                leadingSeparator.heightAnchor.constraint(equalToConstant: configuration.separator.dimension)
+                leadingSeparator.leftAnchor.constraint(equalTo: leftAnchor, constant: configuration.separator.constraint.leading),
+                leadingSeparator.rightAnchor.constraint(equalTo: rightAnchor, constant: -configuration.separator.constraint.trailing),
+                leadingSeparator.heightAnchor.constraint(equalToConstant: configuration.separator.constraint.dimension)
             ])
             
             NSLayoutConstraint.activate([
                 collectionView.topAnchor.constraint(equalTo: configuration.separator.style.contains(.leading) ? leadingSeparator.bottomAnchor : leadingSeparator.topAnchor),
                 collectionView.leftAnchor.constraint(equalTo: leftAnchor),
                 collectionView.rightAnchor.constraint(equalTo: rightAnchor),
-                collectionView.heightAnchor.constraint(equalToConstant: configuration.view.dimension)
+                collectionView.heightAnchor.constraint(equalToConstant: configuration.navigation.dimension)
             ])
             
             if configuration.separator.style.contains(.trailing) {
@@ -188,17 +193,17 @@ class MNSegmentedView: UIView {
         default:
             // 纵向，无公共头视图
             NSLayoutConstraint.activate([
-                leadingSeparator.topAnchor.constraint(equalTo: topAnchor, constant: configuration.separator.inset.top),
+                leadingSeparator.topAnchor.constraint(equalTo: topAnchor, constant: configuration.separator.constraint.leading),
                 leadingSeparator.leftAnchor.constraint(equalTo: leftAnchor),
-                leadingSeparator.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -configuration.separator.inset.bottom),
-                leadingSeparator.widthAnchor.constraint(equalToConstant: configuration.separator.dimension)
+                leadingSeparator.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -configuration.separator.constraint.trailing),
+                leadingSeparator.widthAnchor.constraint(equalToConstant: configuration.separator.constraint.dimension)
             ])
             
             NSLayoutConstraint.activate([
                 collectionView.topAnchor.constraint(equalTo: topAnchor),
                 collectionView.leftAnchor.constraint(equalTo: configuration.separator.style.contains(.leading) ? leadingSeparator.rightAnchor : leadingSeparator.leftAnchor),
                 collectionView.bottomAnchor.constraint(equalTo: bottomAnchor),
-                collectionView.widthAnchor.constraint(equalToConstant: configuration.view.dimension)
+                collectionView.widthAnchor.constraint(equalToConstant: configuration.navigation.dimension)
             ])
             
             if configuration.separator.style.contains(.trailing) {
@@ -283,13 +288,13 @@ class MNSegmentedView: UIView {
 }
 
 // MARK: - Register
-extension MNSegmentedView {
+extension MNSegmentedNavigationView {
     
     /// 注册表格
     /// - Parameters:
     ///   - cellClass: 表格类
     ///   - reuseIdentifier: 表格重用标识符
-    func register<T>(_ cellClass: T.Type, forSegmentedCellWithReuseIdentifier reuseIdentifier: String) where T: MNSegmentedCellConvertible {
+    func register<T>(_ cellClass: T.Type, forSegmentedCellWithReuseIdentifier reuseIdentifier: String) where T: MNSegmentedNavigationCellConvertible {
         self.reuseIdentifier = reuseIdentifier
         collectionView.register(cellClass, forCellWithReuseIdentifier: reuseIdentifier)
     }
@@ -305,14 +310,14 @@ extension MNSegmentedView {
 }
 
 // MARK: - Reload
-extension MNSegmentedView {
+extension MNSegmentedNavigationView {
     
     /// 移动当前选中项到指定位置
     /// - Parameters:
     ///   - index: 选中的item索引
     ///   - position: 目标位置
     ///   - animated: 是否动态
-    private func scrollToItem(at index: Int, to position: MNSegmentedScrollPosition, animated: Bool) {
+    private func scrollToItem(at index: Int, to position: MNSegmentedConfiguration.Navigation.ScrollPosition, animated: Bool) {
         var scrollPosition: UICollectionView.ScrollPosition = .centeredHorizontally
         switch position {
         case .leading:
@@ -337,8 +342,8 @@ extension MNSegmentedView {
     ///   - index: 索引值
     ///   - animated: 是否动态
     func setSelectedItem(at index: Int, animated: Bool) {
-        let targetItem: MNSegmentedItem? = index < items.count ? items[index] : nil
-        let currentItem: MNSegmentedItem? = selectedIndex < items.count ? items[selectedIndex] : nil
+        let targetItem: MNSegmentedNavigationItem? = index < items.count ? items[index] : nil
+        let currentItem: MNSegmentedNavigationItem? = selectedIndex < items.count ? items[selectedIndex] : nil
         let targetIndexPath: IndexPath = IndexPath(item: index, section: 0)
         let currentIndexPath: IndexPath = IndexPath(item: selectedIndex, section: 0)
         selectedIndex = index
@@ -354,12 +359,12 @@ extension MNSegmentedView {
         targetItem?.borderColor = configuration.item.selected.borderColor
         targetItem?.backgroundColor = configuration.item.selected.backgroundColor
         targetItem?.backgroundImage = configuration.item.selected.backgroundImage
-        let currentItemCell = collectionView.cellForItem(at: currentIndexPath) as? MNSegmentedCellConvertible
+        let currentItemCell = collectionView.cellForItem(at: currentIndexPath) as? MNSegmentedNavigationCellConvertible
         currentItemCell?.updateTitleColor?(configuration.item.normal.titleColor)
         currentItemCell?.updateBorderColor?(configuration.item.normal.borderColor)
         currentItemCell?.updateBackgroundImage?(configuration.item.normal.backgroundImage)
         currentItemCell?.updateCell?(selected: false, at: currentIndexPath.item)
-        let targetItemCell = collectionView.cellForItem(at: targetIndexPath) as? MNSegmentedCellConvertible
+        let targetItemCell = collectionView.cellForItem(at: targetIndexPath) as? MNSegmentedNavigationCellConvertible
         targetItemCell?.updateTitleColor?(configuration.item.selected.titleColor)
         targetItemCell?.updateBorderColor?(configuration.item.selected.borderColor)
         targetItemCell?.updateBackgroundImage?(configuration.item.selected.backgroundImage)
@@ -382,28 +387,28 @@ extension MNSegmentedView {
             guard let self = self else { return }
             self.collectionView.isUserInteractionEnabled = true
             if let _ = targetItem {
-                self.scrollToItem(at: index, to: configuration.view.scrollPosition, animated: animated)
+                self.scrollToItem(at: index, to: configuration.navigation.scrollPosition, animated: animated)
             }
         }
     }
 }
 
 // MARK: - Reload
-extension MNSegmentedView {
+extension MNSegmentedNavigationView {
     
     /// 重载子视图
     func reloadSubview() {
         reloadBackgroundView()
         reloadAccessoryView()
         reloadItems()
-        if let dataSource = dataSource, let index = dataSource.preferredPresentationSegmentedIndex {
+        if let dataSource = dataSource, let index = dataSource.preferredSegmentedNavigationPresentationIndex {
             selectedIndex = index
         } else {
             selectedIndex = 0
         }
         reloadData()
         if let delegate = delegate {
-            delegate.segmentedViewDidReloadItem(self)
+            delegate.navigationViewDidReloadItem(self)
         }
     }
     
@@ -426,12 +431,12 @@ extension MNSegmentedView {
     
     /// 重载附属视图
     func reloadAccessoryView() {
-        let contentInset = configuration.view.contentInset
+        let contentInset = configuration.navigation.contentInset
         if let accessoryView = leadingAccessoryView {
             accessoryView.removeFromSuperview()
             leadingAccessoryView = nil
         }
-        if let dataSource = dataSource, let accessoryView = dataSource.preferredSegmentedLeadingAccessoryView, let accessoryView = accessoryView {
+        if let dataSource = dataSource, let accessoryView = dataSource.preferredSegmentedNavigationLeadingAccessoryView, let accessoryView = accessoryView {
             // 左/上方附属视图
             accessoryView.translatesAutoresizingMaskIntoConstraints = false
             insertSubview(accessoryView, aboveSubview: collectionView)
@@ -457,7 +462,7 @@ extension MNSegmentedView {
             accessoryView.removeFromSuperview()
             trailingAccessoryView = nil
         }
-        if let dataSource = dataSource, let accessoryView = dataSource.preferredSegmentedTrailingAccessoryView, let accessoryView = accessoryView {
+        if let dataSource = dataSource, let accessoryView = dataSource.preferredSegmentedNavigationTrailingAccessoryView, let accessoryView = accessoryView {
             // 右/下方附属视图
             accessoryView.translatesAutoresizingMaskIntoConstraints = false
             insertSubview(accessoryView, aboveSubview: collectionView)
@@ -485,7 +490,7 @@ extension MNSegmentedView {
     func reloadItems() {
         var titles: [String] = []
         if let dataSource = dataSource {
-            titles.append(contentsOf: dataSource.preferredSegmentedTitles)
+            titles.append(contentsOf: dataSource.preferredSegmentedNavigationTitles)
         }
         switch configuration.orientation {
         case .horizontal:
@@ -521,10 +526,10 @@ extension MNSegmentedView {
             titleSize.height = ceil(titleSize.height)
             var itemWidth: CGFloat = max(titleSize.width + appendWidth, ceil(titleSize.width*titleScale))
             // 外界指定
-            if let dataSource = dataSource, let width = dataSource.dimensionForSegmentedItemAt?(index), width > 0.0 {
+            if let dataSource = dataSource, let width = dataSource.dimensionForSegmentedNavigationItemAt?(index), width > 0.0 {
                 itemWidth = width
             }
-            let item = MNSegmentedItem()
+            let item = MNSegmentedNavigationItem()
             item.title = title
             item.titleSize = titleSize
             item.titleFont = titleFont
@@ -552,7 +557,7 @@ extension MNSegmentedView {
             let deviation = contentSize.width - width
             if deviation > 0.0 {
                 // 内容不够
-                switch configuration.view.adjustmentBehavior {
+                switch configuration.navigation.adjustmentBehavior {
                 case .centered:
                     // 居中
                     let append = (deviation + sectionInset.left + sectionInset.right)/2.0 - sectionInset.left
@@ -583,7 +588,7 @@ extension MNSegmentedView {
         // 指示视图位置
         for item in items {
             let selectedTitleWidth = ceil(item.titleSize.width*titleScale)
-            switch configuration.indicator.size {
+            switch configuration.indicator.constraint {
             case .matchTitle(let height):
                 // 与标题同宽
                 let margin: CGFloat = (item.frame.width - selectedTitleWidth)/2.0
@@ -632,7 +637,7 @@ extension MNSegmentedView {
             var titleSize: CGSize = title.size(withAttributes: [.font:titleFont])
             titleSize.width = ceil(titleSize.width)
             titleSize.height = ceil(titleSize.height)
-            let item = MNSegmentedItem()
+            let item = MNSegmentedNavigationItem()
             item.title = title
             item.titleSize = titleSize
             item.titleFont = titleFont
@@ -652,7 +657,7 @@ extension MNSegmentedView {
             item.backgroundImage = configuration.item.normal.backgroundImage
             item.frame = CGRect(x: sectionInset.left, y: y, width: contentSize.width, height: itemHeight)
             // 外界指定高度
-            if let dataSource = dataSource, let height = dataSource.dimensionForSegmentedItemAt?(index), height > 0.0 {
+            if let dataSource = dataSource, let height = dataSource.dimensionForSegmentedNavigationItemAt?(index), height > 0.0 {
                 item.frame.size.height = height
             }
             items.append(item)
@@ -663,7 +668,7 @@ extension MNSegmentedView {
             let deviation = contentSize.height - height
             if deviation > 0.0 {
                 // 内容不够
-                switch configuration.view.adjustmentBehavior {
+                switch configuration.navigation.adjustmentBehavior {
                 case .centered:
                     // 居中
                     let append = (deviation + sectionInset.top + sectionInset.bottom)/2.0 - sectionInset.top
@@ -696,7 +701,7 @@ extension MNSegmentedView {
         // 指示视图位置
         for item in items {
             let selectedTitleHeight = ceil(item.titleSize.height*titleScale)
-            switch configuration.indicator.size {
+            switch configuration.indicator.constraint {
             case .matchTitle(let width):
                 // 与标题同高
                 let margin: CGFloat = (item.frame.height - selectedTitleHeight)/2.0
@@ -744,14 +749,14 @@ extension MNSegmentedView {
         } completion: { [weak self] _ in
             guard let self = self else { return }
             if self.selectedIndex < self.items.count {
-                self.scrollToItem(at: self.selectedIndex, to: self.configuration.view.scrollPosition, animated: false)
+                self.scrollToItem(at: self.selectedIndex, to: self.configuration.navigation.scrollPosition, animated: false)
             }
         }
     }
 }
 
 // MARK: - Title
-extension MNSegmentedView {
+extension MNSegmentedNavigationView {
     
     /// 替换标题
     /// - Parameters:
@@ -781,7 +786,7 @@ extension MNSegmentedView {
 }
 
 // MARK: - Badge
-extension MNSegmentedView {
+extension MNSegmentedNavigationView {
     
     /// 获取角标
     /// - Parameter index: 页码
@@ -818,13 +823,13 @@ extension MNSegmentedView {
 }
 
 // MARK: - Divider
-extension MNSegmentedView {
+extension MNSegmentedNavigationView {
     
     /// 替换分割线约束
     /// - Parameters:
     ///   - constraint: 分割线约束
     ///   - index: 子页面索引
-    public func replace(_ constraint: MNSegmentedDividerConstraint, at index: Int) {
+    public func replace(_ constraint: MNSegmentedConfiguration.Constraint, at index: Int) {
         guard isItemLoaded else { return }
         guard index < items.count else { return }
         items[index].dividerConstraint = constraint
@@ -837,7 +842,7 @@ extension MNSegmentedView {
 }
 
 // MARK: - UICollectionViewDataSource, UICollectionViewDelegate
-extension MNSegmentedView: UICollectionViewDataSource, UICollectionViewDelegate {
+extension MNSegmentedNavigationView: UICollectionViewDataSource, UICollectionViewDelegate {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         
@@ -856,11 +861,11 @@ extension MNSegmentedView: UICollectionViewDataSource, UICollectionViewDelegate 
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         
-        guard let cell = cell as? MNSegmentedCellConvertible else { return }
+        guard let cell = cell as? MNSegmentedNavigationCellConvertible else { return }
         let item = items[indexPath.item]
         cell.update?(item: item, at: indexPath.item, orientation: configuration.orientation)
         if let delegate = delegate {
-            delegate.segmentedView?(self, willDisplay: cell, item: item, at: indexPath.item)
+            delegate.navigationView?(self, willDisplay: cell, item: item, at: indexPath.item)
         }
     }
     
@@ -870,14 +875,14 @@ extension MNSegmentedView: UICollectionViewDataSource, UICollectionViewDelegate 
         guard indexPath.item < items.count else { return }
         if indexPath.item == lastSelectedIndex { return }
         guard let delegate = delegate else { return }
-        guard delegate.segmentedView(self, shouldSelectItemAt: indexPath.item) else { return }
+        guard delegate.navigationView(self, shouldSelectItemAt: indexPath.item) else { return }
         setSelectedItem(at: indexPath.item, animated: true)
-        delegate.segmentedView(self, didSelectItemAt: indexPath.item, direction: indexPath.item >= lastSelectedIndex ? .forward : .reverse)
+        delegate.navigationView(self, didSelectItemAt: indexPath.item, direction: indexPath.item >= lastSelectedIndex ? .forward : .reverse)
     }
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout
-extension MNSegmentedView: UICollectionViewDelegateFlowLayout {
+extension MNSegmentedNavigationView: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
@@ -885,8 +890,8 @@ extension MNSegmentedView: UICollectionViewDelegateFlowLayout {
     }
 }
 
-// MARK: - MNSegmentedPageCoordinatorScrollDelegate
-extension MNSegmentedView: MNSegmentedPageCoordinatorScrollDelegate {
+// MARK: - MNSegmentedSubpageScrolling
+extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
     
     func pageViewControllerWillBeginDragging(_ pageViewController: UIPageViewController) {
         willSelectIndex = selectedIndex
@@ -909,7 +914,7 @@ extension MNSegmentedView: MNSegmentedPageCoordinatorScrollDelegate {
         let guessItem = items[willSelectIndex]
         let currentItem = items[selectedIndex]
         var indicatorFrame: CGRect = currentItem.indicatorFrame
-        switch configuration.indicator.transitionType {
+        switch configuration.indicator.animation {
         case .move:
             // 移动
             if configuration.orientation == .horizontal {
@@ -936,10 +941,10 @@ extension MNSegmentedView: MNSegmentedPageCoordinatorScrollDelegate {
                     }
                     // 修改标题缩放
                     if configuration.item.selected.titleScale > 1.0 {
-                        if let cell = collectionView.cellForItem(at: currentIndexPath) as? MNSegmentedCellConvertible {
+                        if let cell = collectionView.cellForItem(at: currentIndexPath) as? MNSegmentedNavigationCellConvertible {
                             cell.updateTitleScale?(configuration.item.selected.titleScale)
                         }
-                        if let cell = collectionView.cellForItem(at: guessIndexPath) as? MNSegmentedCellConvertible {
+                        if let cell = collectionView.cellForItem(at: guessIndexPath) as? MNSegmentedNavigationCellConvertible {
                             cell.updateTitleScale?(1.0)
                         }
                     }
@@ -954,11 +959,11 @@ extension MNSegmentedView: MNSegmentedPageCoordinatorScrollDelegate {
                     }
                     // 修改标题缩放
                     if configuration.item.selected.titleScale > 1.0 {
-                        if let cell = collectionView.cellForItem(at: currentIndexPath) as? MNSegmentedCellConvertible {
+                        if let cell = collectionView.cellForItem(at: currentIndexPath) as? MNSegmentedNavigationCellConvertible {
                             let transformScale = (1.0 - progress)/0.5*(configuration.item.selected.titleScale - 1.0) + 1.0
                             cell.updateTitleScale?(transformScale)
                         }
-                        if let cell = collectionView.cellForItem(at: guessIndexPath) as? MNSegmentedCellConvertible {
+                        if let cell = collectionView.cellForItem(at: guessIndexPath) as? MNSegmentedNavigationCellConvertible {
                             let transformScale = (progress - 0.5)/0.5*(configuration.item.selected.titleScale - 1.0) + 1.0
                             cell.updateTitleScale?(transformScale)
                         }
@@ -977,10 +982,10 @@ extension MNSegmentedView: MNSegmentedPageCoordinatorScrollDelegate {
                     }
                     // 修改标题缩放
                     if configuration.item.selected.titleScale > 1.0 {
-                        if let cell = collectionView.cellForItem(at: currentIndexPath) as? MNSegmentedCellConvertible {
+                        if let cell = collectionView.cellForItem(at: currentIndexPath) as? MNSegmentedNavigationCellConvertible {
                             cell.updateTitleScale?(configuration.item.selected.titleScale)
                         }
-                        if let cell = collectionView.cellForItem(at: guessIndexPath) as? MNSegmentedCellConvertible {
+                        if let cell = collectionView.cellForItem(at: guessIndexPath) as? MNSegmentedNavigationCellConvertible {
                             cell.updateTitleScale?(1.0)
                         }
                     }
@@ -995,11 +1000,11 @@ extension MNSegmentedView: MNSegmentedPageCoordinatorScrollDelegate {
                     }
                     // 修改标题缩放
                     if configuration.item.selected.titleScale > 1.0 {
-                        if let cell = collectionView.cellForItem(at: currentIndexPath) as? MNSegmentedCellConvertible {
+                        if let cell = collectionView.cellForItem(at: currentIndexPath) as? MNSegmentedNavigationCellConvertible {
                             let transformScale = (1.0 - progress)/0.5*(configuration.item.selected.titleScale - 1.0) + 1.0
                             cell.updateTitleScale?(transformScale)
                         }
-                        if let cell = collectionView.cellForItem(at: guessIndexPath) as? MNSegmentedCellConvertible {
+                        if let cell = collectionView.cellForItem(at: guessIndexPath) as? MNSegmentedNavigationCellConvertible {
                             let transformScale = (progress - 0.5)/0.5*(configuration.item.selected.titleScale - 1.0) + 1.0
                             cell.updateTitleScale?(transformScale)
                         }
@@ -1014,14 +1019,14 @@ extension MNSegmentedView: MNSegmentedPageCoordinatorScrollDelegate {
             let lastIndexPath = IndexPath(item: lastSelectedIndex, section: 0)
             let roundIndexPath = IndexPath(item: roundSelectedIndex, section: 0)
             lastSelectedIndex = roundSelectedIndex
-            if let lastSelectedCell = collectionView.cellForItem(at: lastIndexPath) as? MNSegmentedCellConvertible {
+            if let lastSelectedCell = collectionView.cellForItem(at: lastIndexPath) as? MNSegmentedNavigationCellConvertible {
                 lastSelectedCell.updateTitleColor?(configuration.item.normal.titleColor)
                 lastSelectedCell.updateBorderColor?(configuration.item.normal.borderColor)
                 lastSelectedCell.updateBackgroundColor?(configuration.item.normal.backgroundColor)
                 lastSelectedCell.updateBackgroundImage?(configuration.item.normal.backgroundImage)
                 lastSelectedCell.updateCell?(selected: false, at: lastIndexPath.item)
             }
-            if let roundSelectedCell = collectionView.cellForItem(at: roundIndexPath) as? MNSegmentedCellConvertible {
+            if let roundSelectedCell = collectionView.cellForItem(at: roundIndexPath) as? MNSegmentedNavigationCellConvertible {
                 roundSelectedCell.updateTitleColor?(configuration.item.selected.titleColor)
                 roundSelectedCell.updateBorderColor?(configuration.item.selected.borderColor)
                 roundSelectedCell.updateBackgroundColor?(configuration.item.selected.backgroundColor)
@@ -1050,13 +1055,13 @@ extension MNSegmentedView: MNSegmentedPageCoordinatorScrollDelegate {
         targetItem.borderColor = configuration.item.selected.borderColor
         targetItem.backgroundColor = configuration.item.selected.backgroundColor
         targetItem.backgroundImage = configuration.item.selected.backgroundImage
-        let currentItemCell = collectionView.cellForItem(at: currentIndexPath) as? MNSegmentedCellConvertible
+        let currentItemCell = collectionView.cellForItem(at: currentIndexPath) as? MNSegmentedNavigationCellConvertible
         currentItemCell?.updateTitleColor?(configuration.item.normal.titleColor)
         currentItemCell?.updateBorderColor?(configuration.item.normal.borderColor)
         currentItemCell?.updateBackgroundColor?(configuration.item.normal.backgroundColor)
         currentItemCell?.updateBackgroundImage?(configuration.item.normal.backgroundImage)
         currentItemCell?.updateCell?(selected: false, at: currentIndexPath.item)
-        let targetItemCell = collectionView.cellForItem(at: targetIndexPath) as? MNSegmentedCellConvertible
+        let targetItemCell = collectionView.cellForItem(at: targetIndexPath) as? MNSegmentedNavigationCellConvertible
         targetItemCell?.updateTitleColor?(configuration.item.selected.titleColor)
         targetItemCell?.updateBorderColor?(configuration.item.selected.borderColor)
         targetItemCell?.updateBackgroundColor?(configuration.item.selected.backgroundColor)
@@ -1077,14 +1082,14 @@ extension MNSegmentedView: MNSegmentedPageCoordinatorScrollDelegate {
         } completion: { [weak self] _ in
             guard let self = self else { return }
             self.collectionView.isUserInteractionEnabled = true
-            self.scrollToItem(at: index, to: configuration.view.scrollPosition, animated: true)
+            self.scrollToItem(at: index, to: configuration.navigation.scrollPosition, animated: true)
         }
         if lastSelectedIndex != index {
             // 标记线动画
-            let duration = configuration.indicator.transitionType == .stretch ? configuration.indicator.animationDuration/2.0 : configuration.indicator.animationDuration
+            let duration = configuration.indicator.animation == .stretch ? configuration.indicator.animationDuration/2.0 : configuration.indicator.animationDuration
             let animations: ()->Void = { [weak self] in
                 guard let self = self else { return }
-                guard self.configuration.indicator.transitionType == .stretch else { return }
+                guard self.configuration.indicator.animation == .stretch else { return }
                 var indicatorFrame = self.indicatorView.frame
                 if index > currentIndex {
                     if self.configuration.orientation == .horizontal {
@@ -1103,7 +1108,7 @@ extension MNSegmentedView: MNSegmentedPageCoordinatorScrollDelegate {
                 }
                 self.indicatorView.frame = indicatorFrame
             }
-            UIView.animate(withDuration: configuration.indicator.transitionType == .stretch ? duration : 0.0, animations: animations) { [weak self] _ in
+            UIView.animate(withDuration: configuration.indicator.animation == .stretch ? duration : 0.0, animations: animations) { [weak self] _ in
                 UIView.animate(withDuration: duration, delay: 0.0, options: .curveEaseInOut) {
                     guard let self = self else { return }
                     self.indicatorView.frame = targetItem.indicatorFrame
@@ -1112,4 +1117,3 @@ extension MNSegmentedView: MNSegmentedPageCoordinatorScrollDelegate {
         }
     }
 }
-

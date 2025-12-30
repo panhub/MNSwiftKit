@@ -1,5 +1,5 @@
 //
-//  SegmentedPageController.swift
+//  SegmentedSubpageController.swift
 //  MNSwiftKit_Example
 //
 //  Created by mellow on 2025/12/19.
@@ -9,7 +9,7 @@
 import UIKit
 import MNSwiftKit
 
-class SegmentedPageController: UIViewController {
+class SegmentedSubpageController: UIViewController {
     
     enum Style {
         case grid, table
@@ -18,7 +18,7 @@ class SegmentedPageController: UIViewController {
     let frame: CGRect
     
     // 表格样式
-    private let style: SegmentedPageController.Style
+    private let style: SegmentedSubpageController.Style
     
     private var items: [SegmentedPageItem] = []
     
@@ -26,13 +26,13 @@ class SegmentedPageController: UIViewController {
     
     @IBOutlet weak var collectionLayout: MNCollectionViewFlowLayout!
     
-    init(style: SegmentedPageController.Style) {
+    init(style: SegmentedSubpageController.Style) {
         self.style = style
         self.frame = .zero
         super.init(nibName: nil, bundle: nil)
     }
     
-    init(frame: CGRect, style: SegmentedPageController.Style) {
+    init(frame: CGRect, style: SegmentedSubpageController.Style) {
         self.style = style
         self.frame = frame
         super.init(nibName: nil, bundle: nil)
@@ -76,12 +76,12 @@ class SegmentedPageController: UIViewController {
         collectionLayout.minimumInteritemSpacing = 8.0
         collectionLayout.sectionInset = .init(top: 8.0, left: 8.0, bottom: MN_BOTTOM_SAFE_HEIGHT, right: 8.0)
         
-        collectionView.register(UINib(nibName: "SegmentedPageCell", bundle: .main), forCellWithReuseIdentifier: "SegmentedPageCell")
+        collectionView.register(UINib(nibName: "SegmentedSubpageCell", bundle: .main), forCellWithReuseIdentifier: "SegmentedSubpageCell")
     }
 }
 
 // MARK: - UICollectionViewDelegate, UICollectionViewDataSource
-extension SegmentedPageController: UICollectionViewDelegate, UICollectionViewDataSource {
+extension SegmentedSubpageController: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
@@ -90,11 +90,11 @@ extension SegmentedPageController: UICollectionViewDelegate, UICollectionViewDat
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        collectionView.dequeueReusableCell(withReuseIdentifier: "SegmentedPageCell", for: indexPath)
+        collectionView.dequeueReusableCell(withReuseIdentifier: "SegmentedSubpageCell", for: indexPath)
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let cell = cell as? SegmentedPageCell else { return }
+        guard let cell = cell as? SegmentedSubpageCell else { return }
         cell.update(item: items[indexPath.item])
     }
     
@@ -104,7 +104,7 @@ extension SegmentedPageController: UICollectionViewDelegate, UICollectionViewDat
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout
-extension SegmentedPageController: UICollectionViewDelegateFlowLayout {
+extension SegmentedSubpageController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let layout = collectionViewLayout as! MNCollectionViewFlowLayout
@@ -113,9 +113,9 @@ extension SegmentedPageController: UICollectionViewDelegateFlowLayout {
 }
 
 // MARK: - MNSplitPageConvertible
-extension SegmentedPageController: MNSegmentedSubpageConvertible {
+extension SegmentedSubpageController: MNSegmentedSubpageConvertible {
     
-    var preferredSubpageScrollView: UIScrollView {
+    var preferredSubpageScrollView: UIScrollView? {
         
         collectionView
     }

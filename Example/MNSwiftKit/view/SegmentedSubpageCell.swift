@@ -1,5 +1,5 @@
 //
-//  SegmentedPageCell.swift
+//  SegmentedSubpageCell.swift
 //  MNSwiftKit_Example
 //
 //  Created by mellow on 2025/12/19.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SegmentedPageCell: UICollectionViewCell {
+class SegmentedSubpageCell: UICollectionViewCell {
     
     // 
     @IBOutlet weak var borderView: UIView!

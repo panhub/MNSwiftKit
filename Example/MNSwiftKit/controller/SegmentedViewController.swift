@@ -44,12 +44,12 @@ class SegmentedViewController: UIViewController {
         if axisSegment.selectedSegmentIndex == 1 {
             // 纵向
             configuration.orientation = .vertical
-            configuration.view.dimension = 90.0
+            configuration.navigation.dimension = 90.0
+            configuration.navigation.adjustmentBehavior = .centered
             configuration.item.dimension = 45.0
-            configuration.indicator.size = .matchTitle(dimension: 2.5)
             configuration.item.dividerConstraint = .init(inset: 5.0, dimension: 0.7)
             configuration.item.dividerColor = .gray.withAlphaComponent(0.15)
-            configuration.view.adjustmentBehavior = .centered
+            configuration.indicator.constraint = .matchTitle(dimension: 2.5)
         }
         segmentedViewController = MNSegmentedViewController(configuration: configuration)
         segmentedViewController.delegate = self
@@ -78,7 +78,7 @@ class SegmentedViewController: UIViewController {
 // MARK: - MNSplitViewControllerDataSource
 extension SegmentedViewController: MNSegmentedViewControllerDataSource {
     
-    var preferredSubpageHeaderView: UIView? {
+    var preferredSegmentedNavigationHeaderView: UIView? {
         
         let image = UIImage(named: "b_16")!
         let imageView = UIImageView(image: image)
@@ -89,10 +89,10 @@ extension SegmentedViewController: MNSegmentedViewControllerDataSource {
     
     func segmentedViewController(_ viewController: MNSwiftKit.MNSegmentedViewController, subpageAt index: Int) -> any MNSwiftKit.MNSegmentedSubpageConvertible {
         
-        SegmentedPageController(style: index % 2 == 0 ? .grid : .table)
+        SegmentedSubpageController(style: index % 2 == 0 ? .grid : .table)
     }
     
-    var preferredSegmentedTitles: [String] {
+    var preferredSegmentedNavigationTitles: [String] {
         
         ["选项一", "选项二", "选项三", "选项四", "选项五", "选项六", "选项七", "选项八", "选项九", "选项十", "选项十一", "选项十二", "选项十三"]
     }
