@@ -118,7 +118,6 @@ class MNSegmentedSubpageCoordinator: NSObject {
         }
     }
     
-    
     /// 构造页面协调器
     /// - Parameters:
     ///   - pageViewController: 分页控制器
@@ -372,6 +371,9 @@ extension MNSegmentedSubpageCoordinator: UIScrollViewDelegate {
             guard guessToIndex >= 0 else { return }
             progress = CGFloat(presentationIndex) - (startOffset - currentOffset)/pageDimension
             targetIndex = guessToIndex
+        } else {
+            // 两侧无效滑动
+            progress = CGFloat(targetIndex)
         }
         if targetIndex != lastTargetIndex {
             // 页面切换, 这里要创建新界面, 修改页面状态

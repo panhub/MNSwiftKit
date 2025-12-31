@@ -81,7 +81,7 @@ class MNSegmentedNavigationView: UIView {
     private var targetIndex: Int = 0
     /// 当前选中索引
     private(set) var selectedIndex: Int = 0
-    /// 上一次选中索引
+    /// 滑动中索引变化
     private var lastSelectedIndex: Int = 0
     /// 指示视图
     private var indicatorView = UIImageView()
@@ -901,33 +901,32 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, didScroll ratio: CGFloat) {
-        let floorIndex: Int = Int(floor(ratio))
+        let floorIndex = Int(floor(ratio))
         if floorIndex < selectedIndex {
             targetIndex = floorIndex
         } else {
             targetIndex = Int(ceil(ratio))
         }
-        
         let targetIndexPath = IndexPath(item: targetIndex, section: 0)
         let currentIndexPath = IndexPath(item: selectedIndex, section: 0)
         var progress: CGFloat = ratio.truncatingRemainder(dividingBy: 1.0)
         if targetIndex < selectedIndex {
             progress = 1.0 - progress
         }
-        let guessItem = items[targetIndex]
+        let targetItem = items[targetIndex]
         let currentItem = items[selectedIndex]
         var indicatorFrame: CGRect = currentItem.indicatorFrame
         switch configuration.indicator.animationStyle {
         case .move:
             // 移动
             if configuration.orientation == .horizontal {
-                let x = (guessItem.indicatorFrame.minX - indicatorFrame.minX)*progress + indicatorFrame.minX
-                let width = (guessItem.indicatorFrame.width - indicatorFrame.width)*progress + indicatorFrame.width
+                let x = (targetItem.indicatorFrame.minX - indicatorFrame.minX)*progress + indicatorFrame.minX
+                let width = (targetItem.indicatorFrame.width - indicatorFrame.width)*progress + indicatorFrame.width
                 indicatorFrame.origin.x = x
                 indicatorFrame.size.width = width
             } else {
-                let y = (guessItem.indicatorFrame.minY - indicatorFrame.minY)*progress + indicatorFrame.minY
-                let height = (guessItem.indicatorFrame.height - indicatorFrame.height)*progress + indicatorFrame.height
+                let y = (targetItem.indicatorFrame.minY - indicatorFrame.minY)*progress + indicatorFrame.minY
+                let height = (targetItem.indicatorFrame.height - indicatorFrame.height)*progress + indicatorFrame.height
                 indicatorFrame.origin.y = y
                 indicatorFrame.size.height = height
             }
@@ -938,9 +937,9 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
                 if progress <= 0.5 {
                     // 未超过一半进度
                     if configuration.orientation == .horizontal {
-                        indicatorFrame.size.width = progress/0.5*(guessItem.indicatorFrame.maxX - currentItem.indicatorFrame.maxX) + currentItem.indicatorFrame.width
+                        indicatorFrame.size.width = progress/0.5*(targetItem.indicatorFrame.maxX - currentItem.indicatorFrame.maxX) + currentItem.indicatorFrame.width
                     } else {
-                        indicatorFrame.size.height = progress/0.5*(guessItem.indicatorFrame.maxY - currentItem.indicatorFrame.maxY) + currentItem.indicatorFrame.height
+                        indicatorFrame.size.height = progress/0.5*(targetItem.indicatorFrame.maxY - currentItem.indicatorFrame.maxY) + currentItem.indicatorFrame.height
                     }
                     // 修改标题缩放
                     if configuration.item.selected.titleScale > 1.0 {
@@ -954,11 +953,11 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
                 } else {
                     // 超过一半
                     if configuration.orientation == .horizontal {
-                        indicatorFrame.size.width = (1.0 - progress)/0.5*(guessItem.indicatorFrame.minX - currentItem.indicatorFrame.minX) + guessItem.indicatorFrame.width
-                        indicatorFrame.origin.x = guessItem.indicatorFrame.maxX - indicatorFrame.width
+                        indicatorFrame.size.width = (1.0 - progress)/0.5*(targetItem.indicatorFrame.minX - currentItem.indicatorFrame.minX) + targetItem.indicatorFrame.width
+                        indicatorFrame.origin.x = targetItem.indicatorFrame.maxX - indicatorFrame.width
                     } else {
-                        indicatorFrame.size.height = (1.0 - progress)/0.5*(guessItem.indicatorFrame.minY - currentItem.indicatorFrame.minY) + guessItem.indicatorFrame.height
-                        indicatorFrame.origin.y = guessItem.indicatorFrame.maxY - indicatorFrame.height
+                        indicatorFrame.size.height = (1.0 - progress)/0.5*(targetItem.indicatorFrame.minY - currentItem.indicatorFrame.minY) + targetItem.indicatorFrame.height
+                        indicatorFrame.origin.y = targetItem.indicatorFrame.maxY - indicatorFrame.height
                     }
                     // 修改标题缩放
                     if configuration.item.selected.titleScale > 1.0 {
@@ -977,10 +976,10 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
                 if progress <= 0.5 {
                     // 修改标记线位置
                     if configuration.orientation == .horizontal {
-                        indicatorFrame.size.width = progress/0.5*(currentItem.indicatorFrame.minX - guessItem.indicatorFrame.minX) + currentItem.indicatorFrame.width
+                        indicatorFrame.size.width = progress/0.5*(currentItem.indicatorFrame.minX - targetItem.indicatorFrame.minX) + currentItem.indicatorFrame.width
                         indicatorFrame.origin.x = currentItem.indicatorFrame.maxX - indicatorFrame.width
                     } else {
-                        indicatorFrame.size.height = progress/0.5*(currentItem.indicatorFrame.minY - guessItem.indicatorFrame.minY) + currentItem.indicatorFrame.height
+                        indicatorFrame.size.height = progress/0.5*(currentItem.indicatorFrame.minY - targetItem.indicatorFrame.minY) + currentItem.indicatorFrame.height
                         indicatorFrame.origin.y = currentItem.indicatorFrame.maxY - indicatorFrame.height
                     }
                     // 修改标题缩放
@@ -995,11 +994,11 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
                 } else {
                     // 修改标记线位置
                     if configuration.orientation == .horizontal {
-                        indicatorFrame.size.width = (1.0 - progress)/0.5*(currentItem.indicatorFrame.maxX - guessItem.indicatorFrame.maxX) + guessItem.indicatorFrame.width
-                        indicatorFrame.origin.x = guessItem.indicatorFrame.minX
+                        indicatorFrame.size.width = (1.0 - progress)/0.5*(currentItem.indicatorFrame.maxX - targetItem.indicatorFrame.maxX) + targetItem.indicatorFrame.width
+                        indicatorFrame.origin.x = targetItem.indicatorFrame.minX
                     } else {
-                        indicatorFrame.size.height = (1.0 - progress)/0.5*(currentItem.indicatorFrame.maxY - guessItem.indicatorFrame.maxY) + guessItem.indicatorFrame.height
-                        indicatorFrame.origin.y = guessItem.indicatorFrame.minY
+                        indicatorFrame.size.height = (1.0 - progress)/0.5*(currentItem.indicatorFrame.maxY - targetItem.indicatorFrame.maxY) + targetItem.indicatorFrame.height
+                        indicatorFrame.origin.y = targetItem.indicatorFrame.minY
                     }
                     // 修改标题缩放
                     if configuration.item.selected.titleScale > 1.0 {
@@ -1080,6 +1079,7 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
                 cell.updateTitleScale?(targetItem.titleScale)
             }
             if self.lastSelectedIndex == index {
+                // 滑动中已导致索引即将变化
                 self.indicatorView.frame = targetItem.indicatorFrame
             }
         } completion: { [weak self] _ in

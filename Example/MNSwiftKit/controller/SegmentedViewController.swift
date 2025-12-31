@@ -104,16 +104,16 @@ extension SegmentedViewController: MNSegmentedViewControllerDelegate {
     
     func segmentedViewController(_ viewController: MNSegmentedViewController, subpageDidChangeAt index: Int) {
         
-        //print("选择了索引：\(index)")
+        print("选择了索引: \(index)")
     }
     
     func segmentedViewController(_ viewController: MNSegmentedViewController, subpageDidChangeContentOffset contentOffset: CGPoint) {
         
-        //print("========：\(contentOffset)")
+        print("contentOffset：\(contentOffset)")
     }
     
     func segmentedViewController(_ viewController: MNSegmentedViewController, headerViewDidChangeOffset offset: CGPoint, from: CGPoint) {
         
-        //print("--------：\(offset)")
+        print("headerOffset：\(offset)")
     }
 }
