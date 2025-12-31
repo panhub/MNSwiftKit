@@ -94,7 +94,6 @@ PODS:
   - MNSwiftKit/Request (0.1.3):
     - MNSwiftKit/Networking
   - MNSwiftKit/SegmentedViewController (0.1.3):
-    - MNSwiftKit/Layout
     - MNSwiftKit/NameSpace
   - MNSwiftKit/Slider (0.1.3)
   - MNSwiftKit/Toast (0.1.3):
@@ -111,7 +110,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: 4f7122e7373f063f7713e9a8c7807abff2c3e869
+  MNSwiftKit: 33b8d6806603c251eee27626caaceeae8ef8149b
 
 PODFILE CHECKSUM: 6945f8f3025c0c190cd98bd04f84e75ce33964db
 

@@ -6,7 +6,11 @@
 //  表格编辑视图
 
 import UIKit
+import Foundation
 import CoreFoundation
+#if SWIFT_PACKAGE
+@_exported import MNNameSpace
+#endif
 
 protocol MNEditingViewDelegate: NSObjectProtocol {
     

@@ -12,11 +12,14 @@ import CoreFoundation
 /// 分段视图控制器配置信息
 public struct MNSegmentedConfiguration {
     
+    /// 滑动方向
+    public var orientation: UIPageViewController.NavigationOrientation = .horizontal
+    
+    /// 若存在公共头视图，头视图至少在屏幕上显示的高度
+    public var headerMinimumVisibleHeight: CGFloat = 0.0
+    
     /// 背景颜色
     public var backgroundColor: UIColor = .white
-    
-    /// 滑动方向
-    public var orientation = UIPageViewController.NavigationOrientation.horizontal
     
     /// 导航item配置
     public var item: MNSegmentedConfiguration.Item = .init()
@@ -110,7 +113,7 @@ extension MNSegmentedConfiguration {
         }
 
         /// 指示视图动画类型
-        public enum Animation {
+        public enum AnimationStyle {
             /// 平滑移动
             case move
             /// 拉伸
@@ -147,7 +150,7 @@ extension MNSegmentedConfiguration {
         public var position: MNSegmentedConfiguration.Indicator.Position = .above
         
         /// 转场类型
-        public var animation: MNSegmentedConfiguration.Indicator.Animation = .move
+        public var animationStyle: MNSegmentedConfiguration.Indicator.AnimationStyle = .move
         
         /// 指示器尺寸固定时的对齐方式
         public var alignment: MNSegmentedConfiguration.Indicator.Alignment = .center

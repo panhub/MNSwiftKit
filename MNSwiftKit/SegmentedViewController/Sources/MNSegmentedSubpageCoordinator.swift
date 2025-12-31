@@ -13,10 +13,10 @@ import CoreFoundation
 public protocol MNSegmentedSubpageDataSource: NSObject {
     
     /// 当前选择的索引
-    var currentPageIndex: Int { get }
+    var subpageIndex: Int { get }
     
     /// 子页面数量
-    var numberOfPages: Int { get }
+    var numberOfSubpages: Int { get }
     
     /// 页头高度
     var subpageHeaderHeight: CGFloat { get }
@@ -24,10 +24,12 @@ public protocol MNSegmentedSubpageDataSource: NSObject {
     /// 页头最大偏移量
     var subpageHeaderGreatestFiniteOffset: CGFloat { get }
     
-    /// 询问页面偏移合适
-    /// - Parameter subpage: 子界面
+    /// 询问页面偏移量
+    /// - Parameters:
+    ///   - subpage: 子界面
+    ///   - direction: 滑动方向(纵向有效)
     /// - Returns: 子页面偏移量
-    func contentOffset(for subpage: MNSegmentedSubpageConvertible) -> CGPoint
+    func contentOffset(for subpage: MNSegmentedSubpageConvertible, direction: UIPageViewController.NavigationDirection) -> CGPoint
     
     /// 获取子界面
     /// - Parameter index: 界面索引
@@ -76,12 +78,12 @@ protocol MNSegmentedSubpageScrolling: NSObject {
 class MNSegmentedSubpageCoordinator: NSObject {
     /// 分页控制器内部滑动视图
     private var scrollView: UIScrollView!
+    /// 猜想将要滑动到的界面索引
+    private var targetIndex: Int = 0
     /// 当前展示的子页面索引
     private var presentationIndex: Int = 0
     /// 子页面数量
     private var presentationCount: Int = 0
-    /// 猜想将要滑动到的界面索引
-    private var guessToPageIndex: Int = 0
     /// 开始滑动时分页控制器内部滑动视图的偏移量
     private var startOffset: CGFloat = 0.0
     /// 响应滚动事件
@@ -101,8 +103,21 @@ class MNSegmentedSubpageCoordinator: NSObject {
     /// 是否在滑动
     var isScrolling: Bool {
         guard let scrollView = scrollView else { return false }
+        if #available(iOS 17.4, *), scrollView.isScrollAnimating { return true }
         return scrollView.isDragging || scrollView.isDecelerating
     }
+    /// 是否允许滑动
+    var isScrollEnabled: Bool {
+        get {
+            guard let scrollView = scrollView else { return false }
+            return scrollView.isScrollEnabled
+        }
+        set {
+            guard let scrollView = scrollView else { return }
+            scrollView.isScrollEnabled = newValue
+        }
+    }
+    
     
     /// 构造页面协调器
     /// - Parameters:
@@ -132,7 +147,7 @@ class MNSegmentedSubpageCoordinator: NSObject {
     
     deinit {
         // 删除监听
-        removeSubpage(at: nil)
+        invalidateSubpage()
     }
     
     /// 手动设置当前展示的页面
@@ -157,12 +172,16 @@ class MNSegmentedSubpageCoordinator: NSObject {
     }
     
     /// 更新子页面偏移量
-    /// - Parameter subpage: 子页面
-    private func updateSubpageOffset(_ subpage: MNSegmentedSubpageConvertible) {
+    /// - Parameters:
+    ///   - subpage: 子页面
+    ///   - direction: 滑动方向(纵向有效)
+    private func updateSubpageOffset(_ subpage: MNSegmentedSubpageConvertible, direction: UIPageViewController.NavigationDirection) {
         guard let dataSource = dataSource else { return }
         guard let scrollView = subpage.preferredSubpageScrollView else { return }
-        let contentOffset = dataSource.contentOffset(for: subpage)
-        scrollView.setContentOffset(contentOffset, animated: false)
+        let contentOffset = scrollView.contentOffset
+        let targetOffset = dataSource.contentOffset(for: subpage, direction: direction)
+        if targetOffset == contentOffset { return }
+        scrollView.setContentOffset(targetOffset, animated: false)
     }
     
     // MARK: - Observe
@@ -227,8 +246,8 @@ class MNSegmentedSubpageCoordinator: NSObject {
                 guard let subpage = subpage(for: pageIndex, allowAccess: false) else { break }
                 switch subpage.subpageState {
                 case .willAppear, .didAppear, .willDisappear:
-                    // 页面仍在显示
-                    updateSubpageOffset(subpage)
+                    // 页面未完全消失
+                    updateSubpageOffset(subpage, direction: .forward)
                 default: break
                 }
             } else if contentSize.height < minimumContentSize.height {
@@ -290,20 +309,20 @@ extension MNSegmentedSubpageCoordinator {
     
     /// 删除子页面
     /// - Parameter index: 子页面索引
-    func removeSubpage(at index: Int?) {
+    func invalidateSubpage(at index: Int? = nil) {
         if let index = index {
             guard let subpage = subpages[index] else { return }
-            invalidSubpage(subpage)
+            invalidateSubpage(subpage)
             subpages[index] = nil
         } else {
-            subpages.values.forEach { invalidSubpage($0) }
+            subpages.values.forEach { invalidateSubpage($0) }
             subpages.removeAll()
         }
     }
     
-    /// 解除子页面监听
+    /// 使子界面无效(解除子页面监听)，一般需要配合设置界面使用
     /// - Parameter subpage: 子页面
-    private func invalidSubpage(_ subpage: MNSegmentedSubpageConvertible) {
+    private func invalidateSubpage(_ subpage: MNSegmentedSubpageConvertible) {
         guard let scrollView = subpage.preferredSubpageScrollView else { return }
         if scrollView.mn.isObserved {
             scrollView.mn.isObserved = false
@@ -330,40 +349,38 @@ extension MNSegmentedSubpageCoordinator: UIScrollViewDelegate {
             startOffset = configuration.orientation == .horizontal ? scrollView.contentOffset.x : scrollView.contentOffset.y
         }
         if let dataSource = dataSource {
-            presentationCount = dataSource.numberOfPages
-            presentationIndex = dataSource.currentPageIndex
+            presentationIndex = dataSource.subpageIndex
+            presentationCount = dataSource.numberOfSubpages
         }
-        guessToPageIndex = presentationIndex
+        targetIndex = presentationIndex
         shouldRespondToScroll = true
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard presentationCount > 1, shouldRespondToScroll else { return }
         var progress = 0.0
-        let lastGuessToPageIndex = guessToPageIndex
+        let lastTargetIndex = targetIndex
         let currentOffset = configuration.orientation == .horizontal ? scrollView.contentOffset.x : scrollView.contentOffset.y
         let pageDimension = configuration.orientation == .horizontal ? scrollView.frame.width : scrollView.frame.height
         if currentOffset > startOffset {
             let guessToIndex = presentationIndex + 1
             guard guessToIndex < presentationCount else { return }
             progress = (currentOffset - startOffset)/pageDimension + CGFloat(presentationIndex)
-            guessToPageIndex = guessToIndex
+            targetIndex = guessToIndex
         } else if currentOffset < startOffset {
             let guessToIndex = presentationIndex - 1
             guard guessToIndex >= 0 else { return }
             progress = CGFloat(presentationIndex) - (startOffset - currentOffset)/pageDimension
-            guessToPageIndex = guessToIndex
+            targetIndex = guessToIndex
         }
-        if guessToPageIndex != lastGuessToPageIndex {
-            // 页面切换
-            if let guessToPage = subpage(for: guessToPageIndex, allowAccess: true) {
-                guessToPage.subpageState = .willAppear
-                if let scrollView = guessToPage.preferredSubpageScrollView, scrollView.mn.isReachedMinimumSize {
-                    updateSubpageOffset(guessToPage)
-                }
+        if targetIndex != lastTargetIndex {
+            // 页面切换, 这里要创建新界面, 修改页面状态
+            if let targetSubpage = subpage(for: targetIndex, allowAccess: true) {
+                targetSubpage.subpageState = .willAppear
+                updateSubpageOffset(targetSubpage, direction: targetIndex > lastTargetIndex ? .forward : .reverse)
             }
-            if let lastGuessToPage = subpage(for: lastGuessToPageIndex, allowAccess: false) {
-                lastGuessToPage.subpageState = .willDisappear
+            if let lastTargetSubpage = subpage(for: lastTargetIndex, allowAccess: false) {
+                lastTargetSubpage.subpageState = .willDisappear
             }
         }
         if let scrolling = scrolling {
@@ -399,9 +416,9 @@ extension MNSegmentedSubpageCoordinator: UIPageViewControllerDataSource {
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         guard let dataSource = dataSource else { return nil }
-        let numberOfPages = dataSource.numberOfPages
+        let numberOfSubpages = dataSource.numberOfSubpages
         let pageIndex = viewController.mn.subpageIndex
-        guard pageIndex < numberOfPages - 1 else { return nil }
+        guard pageIndex < numberOfSubpages - 1 else { return nil }
         return subpage(for: pageIndex + 1, allowAccess: true)
     }
 }
@@ -412,24 +429,23 @@ extension MNSegmentedSubpageCoordinator: UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         guard let viewControllers = pageViewController.viewControllers else { return }
         guard let viewController = viewControllers.first else { return }
-        let currentPageIndex = viewController.mn.subpageIndex
-        // 确定当前页面状态
-        if guessToPageIndex != presentationIndex {
-            // 这里排除无效滑动
+        let currentSubpageIndex = viewController.mn.subpageIndex
+        // 排除两侧无效滑动后为当前页面修改状态
+        if targetIndex != presentationIndex {
             viewController.mn.subpageState = .didAppear
         }
-        if currentPageIndex == presentationIndex {
+        if currentSubpageIndex == presentationIndex {
             // 又滑动回来了
-            if guessToPageIndex != presentationIndex, let guessToPage = subpage(for: guessToPageIndex, allowAccess: false) {
-                guessToPage.subpageState = .didDisappear
+            if targetIndex != presentationIndex, let targetToSubpage = subpage(for: targetIndex, allowAccess: false) {
+                targetToSubpage.subpageState = .didDisappear
             }
         } else {
             // 页面已切换
-            if let lastPresentationPage = subpage(for: presentationIndex, allowAccess: false) {
-                lastPresentationPage.subpageState = .didDisappear
+            if let lastPresentationSubpage = subpage(for: presentationIndex, allowAccess: false) {
+                lastPresentationSubpage.subpageState = .didDisappear
             }
-            if currentPageIndex != guessToPageIndex, let guessToPage = subpage(for: guessToPageIndex, allowAccess: false) {
-                guessToPage.subpageState = .didDisappear
+            if currentSubpageIndex != targetIndex, let targetToSubpage = subpage(for: targetIndex, allowAccess: false) {
+                targetToSubpage.subpageState = .didDisappear
 #if DEBUG
                 print("⚠️⚠️⚠️⚠️⚠️PageViewController界面切换有问题⚠️⚠️⚠️⚠️⚠️")
 #endif
@@ -439,15 +455,5 @@ extension MNSegmentedSubpageCoordinator: UIPageViewControllerDelegate {
                 delegate.pageViewController(pageViewController, didScrollTo: currentPage)
             }
         }
-    }
-    
-    func pageViewControllerSupportedInterfaceOrientations(_ pageViewController: UIPageViewController) -> UIInterfaceOrientationMask {
-        
-        [.portrait]
-    }
-    
-    func pageViewControllerPreferredInterfaceOrientationForPresentation(_ pageViewController: UIPageViewController) -> UIInterfaceOrientation {
-        
-        .portrait
     }
 }

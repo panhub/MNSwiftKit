@@ -15,11 +15,6 @@
 		CD670549A4B91C374612AE13 /* Pods_MNSwiftKit_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E874295FCAA74BC1B328F42B /* Pods_MNSwiftKit_Example.framework */; };
 		E92C80152ECF3AAE0088CA5A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92C80132ECF3AAE0088CA5A /* ViewController.swift */; };
 		E92C80162ECF3AAE0088CA5A /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = E92C80142ECF3AAE0088CA5A /* ViewController.xib */; };
-		E9A4685D2EF9299F004AD992 /* MNPageItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A4685C2EF9299F004AD992 /* MNPageItem.swift */; };
-		E9A4685F2EF929BD004AD992 /* MNPageContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A4685E2EF929BD004AD992 /* MNPageContentViewController.swift */; };
-		E9A468612EF929DD004AD992 /* MNSegmentedCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A468602EF929DD004AD992 /* MNSegmentedCoordinator.swift */; };
-		E9A468662EF92B9F004AD992 /* TestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = E9A468652EF92B9F004AD992 /* TestViewController.xib */; };
-		E9A468672EF92B9F004AD992 /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A468642EF92B9F004AD992 /* TestViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,11 +47,6 @@
 		E874295FCAA74BC1B328F42B /* Pods_MNSwiftKit_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MNSwiftKit_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E92C80132ECF3AAE0088CA5A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		E92C80142ECF3AAE0088CA5A /* ViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ViewController.xib; sourceTree = "<group>"; };
-		E9A4685C2EF9299F004AD992 /* MNPageItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNPageItem.swift; sourceTree = "<group>"; };
-		E9A4685E2EF929BD004AD992 /* MNPageContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNPageContentViewController.swift; sourceTree = "<group>"; };
-		E9A468602EF929DD004AD992 /* MNSegmentedCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNSegmentedCoordinator.swift; sourceTree = "<group>"; };
-		E9A468642EF92B9F004AD992 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
-		E9A468652EF92B9F004AD992 /* TestViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TestViewController.xib; sourceTree = "<group>"; };
 		E9F4F5782EB46DDA00B52798 /* AVFAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFAudio.framework; path = System/Library/Frameworks/AVFAudio.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -158,11 +148,6 @@
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
-				E9A4685C2EF9299F004AD992 /* MNPageItem.swift */,
-				E9A4685E2EF929BD004AD992 /* MNPageContentViewController.swift */,
-				E9A468602EF929DD004AD992 /* MNSegmentedCoordinator.swift */,
-				E9A468642EF92B9F004AD992 /* TestViewController.swift */,
-				E9A468652EF92B9F004AD992 /* TestViewController.xib */,
 			);
 			name = "Example for MNSwiftKit";
 			path = MNSwiftKit;
@@ -298,7 +283,6 @@
 			files = (
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
 				E92C80162ECF3AAE0088CA5A /* ViewController.xib in Resources */,
-				E9A468662EF92B9F004AD992 /* TestViewController.xib in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -343,13 +327,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-MNSwiftKit_Example/Pods-MNSwiftKit_Example-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-MNSwiftKit_Example/Pods-MNSwiftKit_Example-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -386,11 +366,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E92C80152ECF3AAE0088CA5A /* ViewController.swift in Sources */,
-				E9A4685D2EF9299F004AD992 /* MNPageItem.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
-				E9A4685F2EF929BD004AD992 /* MNPageContentViewController.swift in Sources */,
-				E9A468672EF92B9F004AD992 /* TestViewController.swift in Sources */,
-				E9A468612EF929DD004AD992 /* MNSegmentedCoordinator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

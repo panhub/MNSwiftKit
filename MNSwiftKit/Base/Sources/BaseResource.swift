@@ -8,6 +8,17 @@
 
 import UIKit
 import Foundation
+#if SWIFT_PACKAGE
+@_exported import MNToast
+@_exported import MNLayout
+@_exported import MNRefresh
+@_exported import MNRequest
+@_exported import MNDefinition
+@_exported import MNExtension
+@_exported import MNEmptyView
+@_exported import MNTransitioning
+@_exported import MNCollectionLayout
+#endif
 
 /// 资源加载器
 public class BaseResource {

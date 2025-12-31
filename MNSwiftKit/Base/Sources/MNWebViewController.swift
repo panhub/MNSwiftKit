@@ -6,13 +6,7 @@
 //  网页解决方案
 
 import UIKit
-import WebKit
-//#if canImport(MNSwiftKitLayout)
-//import MNSwiftKitLayout
-//#endif
-//#if canImport(MNSwiftKitNetworking)
-//import MNSwiftKitNetworking
-//#endif
+@preconcurrency import WebKit
 
 /// 网页加载代理
 @objc public protocol MNWebControllerDelegate: NSObjectProtocol {

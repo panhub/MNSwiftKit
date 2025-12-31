@@ -32,16 +32,16 @@ let package = Package(
         .library(name: "MNMediaExport", targets: ["MNMediaExport"]),
         .library(name: "MNTransitioning", targets: ["MNTransitioning"]),
         .library(name: "MNAssetBrowser", targets: ["MNAssetBrowser"]),
-        .library(name: "MNSplitController", targets: ["MNSplitController"]),
         .library(name: "MNAnimatedImage", targets: ["MNAnimatedImage"]),
         .library(name: "MNCollectionLayout", targets: ["MNCollectionLayout"]),
-        .library(name: "MNEmoticonKeyboard", targets: ["MNEmoticonKeyboard"])
+        .library(name: "MNEmoticonKeyboard", targets: ["MNEmoticonKeyboard"]),
+        .library(name: "MNSplitController", targets: ["MNSegmentedViewController"]),
     ],
     targets: [
         .target(
             name: "MNSwiftKit",
             dependencies: [
-                "MNBase", "MNUtility", "MNSlider", "MNToast", "MNPlayer", "MNLayout", "MNRefresh", "MNRequest", "MNPurchase", "MNDatabase", "MNDefinition", "MNExtension", "MNEmptyView", "MNNetworking", "MNEditingView", "MNAssetPicker", "MNNameSpace", "MNPageControl", "MNComponents", "MNMediaExport", "MNTransitioning", "MNAssetBrowser", "MNSplitController", "MNAnimatedImage", "MNCollectionLayout", "MNEmoticonKeyboard"
+                "MNBase", "MNUtility", "MNSlider", "MNToast", "MNPlayer", "MNLayout", "MNRefresh", "MNRequest", "MNPurchase", "MNDatabase", "MNDefinition", "MNExtension", "MNEmptyView", "MNNetworking", "MNEditingView", "MNAssetPicker", "MNNameSpace", "MNPageControl", "MNComponents", "MNMediaExport", "MNTransitioning", "MNAssetBrowser", "MNAnimatedImage", "MNCollectionLayout", "MNEmoticonKeyboard", "MNSegmentedViewController"
             ],
             path: "MNSwiftKit/MNSwiftKit"
         ),
@@ -346,18 +346,6 @@ let package = Package(
             ]
         ),
         .target(
-            name: "MNSplitController",
-            dependencies: [
-                "MNLayout", "MNNameSpace"
-            ],
-            path: "MNSwiftKit/SplitController",
-            linkerSettings: [
-                .linkedFramework("UIKit"),
-                .linkedFramework("Foundation"),
-                .linkedFramework("CoreFoundation")
-            ]
-        ),
-        .target(
             name: "MNAnimatedImage",
             dependencies: [
                 "MNNameSpace"
@@ -390,6 +378,18 @@ let package = Package(
             resources: [
                 .process("Resources")
             ],
+            linkerSettings: [
+                .linkedFramework("UIKit"),
+                .linkedFramework("Foundation"),
+                .linkedFramework("CoreFoundation")
+            ]
+        ),
+        .target(
+            name: "MNSegmentedViewController",
+            dependencies: [
+                "MNNameSpace"
+            ],
+            path: "MNSwiftKit/SegmentedViewController",
             linkerSettings: [
                 .linkedFramework("UIKit"),
                 .linkedFramework("Foundation"),

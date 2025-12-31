@@ -8,6 +8,14 @@
 import UIKit
 import CoreAudio
 import CoreMedia
+#if SWIFT_PACKAGE
+@_exported import MNSlider
+@_exported import MNPlayer
+@_exported import MNLayout
+@_exported import MNDefinition
+@_exported import MNExtension
+@_exported import MNAnimatedImage
+#endif
 
 
 /// 资源浏览代理

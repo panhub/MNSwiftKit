@@ -40,6 +40,7 @@ class SegmentedViewController: UIViewController {
         
         var configuration = MNSegmentedConfiguration()
         configuration.separator.style = .trailing
+        configuration.indicator.animationStyle = .stretch
         configuration.separator.backgroundColor = .gray.withAlphaComponent(0.15)
         if axisSegment.selectedSegmentIndex == 1 {
             // 纵向
@@ -103,10 +104,16 @@ extension SegmentedViewController: MNSegmentedViewControllerDelegate {
     
     func segmentedViewController(_ viewController: MNSegmentedViewController, subpageDidChangeAt index: Int) {
         
-        print("*****选择了索引：\(index)")
+        //print("选择了索引：\(index)")
     }
     
-    func segmentedViewController(_ viewController: MNSegmentedViewController, subpageOffsetDidChange contentOffset: CGPoint) {
+    func segmentedViewController(_ viewController: MNSegmentedViewController, subpageDidChangeContentOffset contentOffset: CGPoint) {
         
+        //print("========：\(contentOffset)")
+    }
+    
+    func segmentedViewController(_ viewController: MNSegmentedViewController, headerViewDidChangeOffset offset: CGPoint, from: CGPoint) {
+        
+        //print("--------：\(offset)")
     }
 }

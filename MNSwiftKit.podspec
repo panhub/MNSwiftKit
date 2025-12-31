@@ -203,14 +203,6 @@ Pod::Spec.new do |s|
     n.source_files = 'MNSwiftKit/NameSpace/Sources/**/*.swift'
   end
   
-  # SplitController <分页控制器>
-  s.subspec 'SplitController' do |s|
-    s.frameworks = 'UIKit', 'Foundation', 'CoreFoundation'
-    s.source_files = 'MNSwiftKit/SplitController/Sources/**/*.swift'
-    s.dependency 'MNSwiftKit/Layout'
-    s.dependency 'MNSwiftKit/NameSpace'
-  end
-  
   # PageControl <简单的页码指示器>
   s.subspec 'PageControl' do |p|
     p.frameworks = 'UIKit', 'Foundation', 'CoreFoundation'
@@ -266,7 +258,6 @@ Pod::Spec.new do |s|
   s.subspec 'SegmentedViewController' do |s|
     s.frameworks = 'UIKit', 'Foundation', 'CoreFoundation'
     s.source_files = 'MNSwiftKit/SegmentedViewController/Sources/**/*.swift'
-    s.dependency 'MNSwiftKit/Layout'
     s.dependency 'MNSwiftKit/NameSpace'
   end
   
@@ -296,7 +287,6 @@ Pod::Spec.new do |s|
     full.dependency 'MNSwiftKit/MediaExport'
     full.dependency 'MNSwiftKit/Transitioning'
     full.dependency 'MNSwiftKit/AssetBrowser'
-    #full.dependency 'MNSwiftKit/SplitController'
     full.dependency 'MNSwiftKit/AnimatedImage'
     full.dependency 'MNSwiftKit/CollectionLayout'
     full.dependency 'MNSwiftKit/EmoticonKeyboard'

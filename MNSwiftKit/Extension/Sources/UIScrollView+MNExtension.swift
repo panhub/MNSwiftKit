@@ -21,7 +21,7 @@ extension MNNameSpaceWrapper where Base: UIScrollView {
     /// 滑动到底部
     public func scrollToBottom(animated: Bool = true) {
         var offset = base.contentOffset
-        offset.y = base.contentSize.height - base.frame.height + base.contentInset.bottom
+        offset.y = Swift.max(base.contentSize.height - base.frame.height + base.contentInset.bottom, -base.contentInset.top)
         base.setContentOffset(offset, animated: animated)
     }
     
@@ -35,7 +35,7 @@ extension MNNameSpaceWrapper where Base: UIScrollView {
     /// 滑动到右侧
     public func scrollToRight(animated: Bool = true) {
         var offset = base.contentOffset
-        offset.x = base.contentSize.width - base.frame.width + base.contentInset.right
+        offset.x = Swift.max(base.contentSize.width - base.frame.width + base.contentInset.right, -base.contentInset.left)
         base.setContentOffset(offset, animated: animated)
     }
 }

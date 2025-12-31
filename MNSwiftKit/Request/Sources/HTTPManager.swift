@@ -8,6 +8,9 @@
 import UIKit
 import Foundation
 import ObjectiveC.runtime
+#if SWIFT_PACKAGE
+@_exported import MNNetworking
+#endif
 
 /// 请求管理者 以单例模式存在
 public class HTTPManager {

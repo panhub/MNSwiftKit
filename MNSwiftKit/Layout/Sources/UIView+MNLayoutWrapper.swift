@@ -7,6 +7,9 @@
 
 import UIKit
 import CoreFoundation
+#if SWIFT_PACKAGE
+@_exported import MNNameSpace
+#endif
 
 extension MNNameSpaceWrapper where Base: UIView {
     

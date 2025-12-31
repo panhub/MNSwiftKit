@@ -9,6 +9,10 @@
 import CoreMedia
 import Foundation
 import AVFoundation
+#if SWIFT_PACKAGE
+@_exported import MNNameSpace
+#endif
+
 
 /// 媒体资源输出会话
 public class MNMediaExportSession: NSObject {

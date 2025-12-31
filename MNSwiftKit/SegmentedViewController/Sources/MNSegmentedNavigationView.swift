@@ -19,9 +19,6 @@ import UIKit
     /// 初始子界面索引
     @objc optional var preferredSegmentedNavigationPresentationIndex: Int { get }
     
-    /// 分割器背景视图
-    @objc optional var preferredSegmentedNavigationBackgroundView: UIView? { get }
-    
     /// 前/左附属视图
     @objc optional var preferredSegmentedNavigationLeadingAccessoryView: UIView? { get }
     
@@ -68,6 +65,8 @@ import UIKit
 class MNSegmentedNavigationView: UIView {
     /// 配置
     private let configuration: MNSegmentedConfiguration
+    /// 是否可以点击
+    var isSeletionEnabled: Bool = true
     /// 是否已加载过item
     private(set) var isItemLoaded: Bool = false
     /// 事件代理
@@ -78,12 +77,12 @@ class MNSegmentedNavigationView: UIView {
     private(set) var items: [MNSegmentedNavigationItem] = []
     /// 集合视图的背景视图(放置指示视图)
     private var collectionBackgroundView: UIView!
+    /// 滑动中猜测目标索引
+    private var targetIndex: Int = 0
     /// 当前选中索引
     private(set) var selectedIndex: Int = 0
     /// 上一次选中索引
-    private(set) var lastSelectedIndex: Int = 0
-    /// 猜测将要选择的索引
-    private var willSelectIndex: Int = 0
+    private var lastSelectedIndex: Int = 0
     /// 指示视图
     private var indicatorView = UIImageView()
     /// 前/左方分割线
@@ -101,10 +100,11 @@ class MNSegmentedNavigationView: UIView {
     /// 集合视图
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
-    
     /// 构造分段控制器的导航视图
-    /// - Parameter configuration: 配置信息
-    init(configuration: MNSegmentedConfiguration) {
+    /// - Parameters:
+    ///   - configuration: 配置信息
+    ///   - headerView: 公共头视图
+    init(configuration: MNSegmentedConfiguration, headerView: UIView?) {
         self.configuration = configuration
         super.init(frame: .zero)
         
@@ -129,6 +129,8 @@ class MNSegmentedNavigationView: UIView {
         collectionView.backgroundColor = .clear
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
+        collectionView.alwaysBounceVertical = configuration.orientation == .vertical
+        collectionView.alwaysBounceHorizontal = configuration.orientation == .horizontal
         collectionView.register(MNSegmentedNavigationCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         if #available(iOS 11.0, *) {
             collectionView.contentInsetAdjustmentBehavior = .never
@@ -144,7 +146,7 @@ class MNSegmentedNavigationView: UIView {
         switch configuration.orientation {
         case .horizontal:
             // 横向，有公共头视图
-            if let dataSource = dataSource, let headerView = dataSource.preferredSegmentedNavigationHeaderView, let headerView = headerView {
+            if let headerView = headerView {
                 headerView.translatesAutoresizingMaskIntoConstraints = false
                 insertSubview(headerView, at: 0)
                 NSLayoutConstraint.activate([
@@ -762,7 +764,7 @@ extension MNSegmentedNavigationView {
     /// - Parameters:
     ///   - title: 新的标题
     ///   - index: 子页面索引
-    func replace(_ title: String, at index: Int) {
+    func replaceTitle(_ title: String, at index: Int) {
         guard isItemLoaded else { return }
         guard index < items.count else { return }
         let titles = items.compactMap { $0.title }
@@ -813,7 +815,7 @@ extension MNSegmentedNavigationView {
     }
     
     /// 删除所有角标
-    func removeAllBadges() {
+    func removeAllBadge() {
         guard isItemLoaded else { return }
         items.forEach { $0.badge = nil }
         UIView.performWithoutAnimation {
@@ -829,7 +831,7 @@ extension MNSegmentedNavigationView {
     /// - Parameters:
     ///   - constraint: 分割线约束
     ///   - index: 子页面索引
-    public func replace(_ constraint: MNSegmentedConfiguration.Constraint, at index: Int) {
+    public func replaceDividerConstraint(_ constraint: MNSegmentedConfiguration.Constraint, at index: Int) {
         guard isItemLoaded else { return }
         guard index < items.count else { return }
         items[index].dividerConstraint = constraint
@@ -870,14 +872,14 @@ extension MNSegmentedNavigationView: UICollectionViewDataSource, UICollectionVie
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        let lastSelectedIndex = selectedIndex
+        guard isSeletionEnabled else { return }
         guard indexPath.item < items.count else { return }
-        if indexPath.item == lastSelectedIndex { return }
+        let currentSelectedIndex = selectedIndex
+        if indexPath.item == currentSelectedIndex { return }
         guard let delegate = delegate else { return }
         guard delegate.navigationView(self, shouldSelectItemAt: indexPath.item) else { return }
         setSelectedItem(at: indexPath.item, animated: true)
-        delegate.navigationView(self, didSelectItemAt: indexPath.item, direction: indexPath.item >= lastSelectedIndex ? .forward : .reverse)
+        delegate.navigationView(self, didSelectItemAt: indexPath.item, direction: indexPath.item >= currentSelectedIndex ? .forward : .reverse)
     }
 }
 
@@ -894,27 +896,28 @@ extension MNSegmentedNavigationView: UICollectionViewDelegateFlowLayout {
 extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
     
     func pageViewControllerWillBeginDragging(_ pageViewController: UIPageViewController) {
-        willSelectIndex = selectedIndex
+        targetIndex = selectedIndex
         lastSelectedIndex = selectedIndex
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, didScroll ratio: CGFloat) {
         let floorIndex: Int = Int(floor(ratio))
         if floorIndex < selectedIndex {
-            willSelectIndex = floorIndex
+            targetIndex = floorIndex
         } else {
-            willSelectIndex = Int(ceil(ratio))
+            targetIndex = Int(ceil(ratio))
         }
-        let guessIndexPath = IndexPath(item: willSelectIndex, section: 0)
+        
+        let targetIndexPath = IndexPath(item: targetIndex, section: 0)
         let currentIndexPath = IndexPath(item: selectedIndex, section: 0)
         var progress: CGFloat = ratio.truncatingRemainder(dividingBy: 1.0)
-        if willSelectIndex < selectedIndex {
+        if targetIndex < selectedIndex {
             progress = 1.0 - progress
         }
-        let guessItem = items[willSelectIndex]
+        let guessItem = items[targetIndex]
         let currentItem = items[selectedIndex]
         var indicatorFrame: CGRect = currentItem.indicatorFrame
-        switch configuration.indicator.animation {
+        switch configuration.indicator.animationStyle {
         case .move:
             // 移动
             if configuration.orientation == .horizontal {
@@ -930,7 +933,7 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
             }
         case .stretch:
             // 拉伸
-            if willSelectIndex >= selectedIndex {
+            if targetIndex >= selectedIndex {
                 // 左/上滑动
                 if progress <= 0.5 {
                     // 未超过一半进度
@@ -944,7 +947,7 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
                         if let cell = collectionView.cellForItem(at: currentIndexPath) as? MNSegmentedNavigationCellConvertible {
                             cell.updateTitleScale?(configuration.item.selected.titleScale)
                         }
-                        if let cell = collectionView.cellForItem(at: guessIndexPath) as? MNSegmentedNavigationCellConvertible {
+                        if let cell = collectionView.cellForItem(at: targetIndexPath) as? MNSegmentedNavigationCellConvertible {
                             cell.updateTitleScale?(1.0)
                         }
                     }
@@ -963,7 +966,7 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
                             let transformScale = (1.0 - progress)/0.5*(configuration.item.selected.titleScale - 1.0) + 1.0
                             cell.updateTitleScale?(transformScale)
                         }
-                        if let cell = collectionView.cellForItem(at: guessIndexPath) as? MNSegmentedNavigationCellConvertible {
+                        if let cell = collectionView.cellForItem(at: targetIndexPath) as? MNSegmentedNavigationCellConvertible {
                             let transformScale = (progress - 0.5)/0.5*(configuration.item.selected.titleScale - 1.0) + 1.0
                             cell.updateTitleScale?(transformScale)
                         }
@@ -985,7 +988,7 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
                         if let cell = collectionView.cellForItem(at: currentIndexPath) as? MNSegmentedNavigationCellConvertible {
                             cell.updateTitleScale?(configuration.item.selected.titleScale)
                         }
-                        if let cell = collectionView.cellForItem(at: guessIndexPath) as? MNSegmentedNavigationCellConvertible {
+                        if let cell = collectionView.cellForItem(at: targetIndexPath) as? MNSegmentedNavigationCellConvertible {
                             cell.updateTitleScale?(1.0)
                         }
                     }
@@ -1004,7 +1007,7 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
                             let transformScale = (1.0 - progress)/0.5*(configuration.item.selected.titleScale - 1.0) + 1.0
                             cell.updateTitleScale?(transformScale)
                         }
-                        if let cell = collectionView.cellForItem(at: guessIndexPath) as? MNSegmentedNavigationCellConvertible {
+                        if let cell = collectionView.cellForItem(at: targetIndexPath) as? MNSegmentedNavigationCellConvertible {
                             let transformScale = (progress - 0.5)/0.5*(configuration.item.selected.titleScale - 1.0) + 1.0
                             cell.updateTitleScale?(transformScale)
                         }
@@ -1086,10 +1089,10 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
         }
         if lastSelectedIndex != index {
             // 标记线动画
-            let duration = configuration.indicator.animation == .stretch ? configuration.indicator.animationDuration/2.0 : configuration.indicator.animationDuration
+            let duration = configuration.indicator.animationStyle == .stretch ? configuration.indicator.animationDuration/2.0 : configuration.indicator.animationDuration
             let animations: ()->Void = { [weak self] in
                 guard let self = self else { return }
-                guard self.configuration.indicator.animation == .stretch else { return }
+                guard self.configuration.indicator.animationStyle == .stretch else { return }
                 var indicatorFrame = self.indicatorView.frame
                 if index > currentIndex {
                     if self.configuration.orientation == .horizontal {
@@ -1108,7 +1111,7 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
                 }
                 self.indicatorView.frame = indicatorFrame
             }
-            UIView.animate(withDuration: configuration.indicator.animation == .stretch ? duration : 0.0, animations: animations) { [weak self] _ in
+            UIView.animate(withDuration: configuration.indicator.animationStyle == .stretch ? duration : 0.0, animations: animations) { [weak self] _ in
                 UIView.animate(withDuration: duration, delay: 0.0, options: .curveEaseInOut) {
                     guard let self = self else { return }
                     self.indicatorView.frame = targetItem.indicatorFrame

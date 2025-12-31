@@ -7,6 +7,14 @@
 
 import UIKit
 import Foundation
+import CoreFoundation
+#if SWIFT_PACKAGE
+@_exported import MNDefinition
+@_exported import MNExtension
+@_exported import MNNameSpace
+@_exported import MNPageControl
+@_exported import MNAnimatedImage
+#endif
 
 /// 通知-表情包名称键
 public let MNEmoticonPacketNameUserInfoKey: String = "emoticon.packet.name"

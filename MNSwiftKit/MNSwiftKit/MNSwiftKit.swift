@@ -27,8 +27,8 @@
 @_exported import MNMediaExport
 @_exported import MNTransitioning
 @_exported import MNAssetBrowser
-@_exported import MNSplitController
 @_exported import MNAnimatedImage
 @_exported import MNCollectionLayout
 @_exported import MNEmoticonKeyboard
+@_exported import MNSegmentedViewController
 #endif

@@ -7,6 +7,9 @@
 
 import UIKit
 import ObjectiveC.runtime
+#if SWIFT_PACKAGE
+@_exported import MNNameSpace
+#endif
 
 extension UIScrollView {
     

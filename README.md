@@ -77,10 +77,10 @@ pod 'MNSwiftKit/Components'
 pod 'MNSwiftKit/MediaExport'
 pod 'MNSwiftKit/Transitioning'
 pod 'MNSwiftKit/AssetBrowser'
-pod 'MNSwiftKit/SplitController'
 pod 'MNSwiftKit/AnimatedImage'
 pod 'MNSwiftKit/CollectionLayout'
 pod 'MNSwiftKit/EmoticonKeyboard'
+pod 'MNSwiftKit/SegmentedViewController'
 ```
 ### Swift软件包管理器 (iOS 12+, Swift 5+)
 

@@ -76,12 +76,11 @@ public class MNPurchaseManager: NSObject {
     
     private func start(_ request: MNPurchaseRequest, status statusHandler: MNPurchaseStatusHandler?, completion completionHandler: @escaping MNPurchaseCompletionHandler) {
         // 模拟器不支持应用内购买
-#if arch(i386) || arch(x86_64) || targetEnvironment(simulator)
+#if targetEnvironment(simulator) || arch(i386) || arch(x86_64)
         DispatchQueue.main.async {
             completionHandler(MNPurchaseResult(code: .notAllowed, action: request.action, receipt: request.receipt))
         }
-        return
-#endif
+#else
         // 检查是否支持内购
         guard SKPaymentQueue.canMakePayments() else {
             DispatchQueue.main.async {
@@ -148,6 +147,7 @@ public class MNPurchaseManager: NSObject {
         } else {
             startRequestProducts()
         }
+#endif
     }
     
     /// 结束内购(只有请求存在才会到这里处理)

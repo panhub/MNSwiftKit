@@ -8,6 +8,9 @@
 import UIKit
 import Foundation
 import CoreFoundation
+#if SWIFT_PACKAGE
+@_exported import MNNameSpace
+#endif
 
 /// 屏幕尺寸最小值
 public let MN_SCREEN_MIN: CGFloat = UIScreen.mn.min
