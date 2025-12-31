@@ -39,7 +39,7 @@ class ViewController: UIViewController {
             rows.append(row)
         }
         
-        tableView.rowHeight = 52.0
+        tableView.rowHeight = 55.0
         tableView.register(UINib(nibName: "HomeTableCell", bundle: .main), forCellReuseIdentifier: "HomeTableCell")
         tableView.tableFooterView = UIView(frame: .init(origin: .zero, size: .init(width: MN_SCREEN_WIDTH, height: MN_BOTTOM_SAFE_HEIGHT)))
     }
