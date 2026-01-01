@@ -371,7 +371,78 @@ extension MNSegmentedNavigationView {
         targetItemCell?.updateBorderColor?(configuration.item.selected.borderColor)
         targetItemCell?.updateBackgroundImage?(configuration.item.selected.backgroundImage)
         targetItemCell?.updateCell?(selected: true, at: targetIndexPath.item)
+        // 动画结束
+        let completionHandler: (Bool)->Void = { [weak self] _ in
+            guard let self = self else { return }
+            self.collectionView.isUserInteractionEnabled = true
+            if let _ = targetItem {
+                self.scrollToItem(at: index, to: self.configuration.navigation.scrollPosition, animated: animated)
+            }
+        }
+        // 开始指示图动画
         collectionView.isUserInteractionEnabled = false
+        switch configuration.indicator.animationStyle {
+        case .move:
+            // 滑动
+            UIView.animate(withDuration: animated ? configuration.indicator.animationDuration : 0.0, delay: 0.0, options: .curveEaseInOut, animations: { [weak self] in
+                guard let self = self else { return }
+                if let item = currentItem, let cell = currentItemCell {
+                    cell.updateTitleScale?(item.titleScale)
+                    cell.updateBackgroundColor?(item.backgroundColor)
+                }
+                if let item = targetItem {
+                    if let cell = targetItemCell {
+                        cell.updateTitleScale?(item.titleScale)
+                        cell.updateBackgroundColor?(item.backgroundColor)
+                    }
+                    self.indicatorView.frame = item.indicatorFrame
+                }
+            }, completion: completionHandler)
+        case .stretch:
+            // 拉伸
+            let animationDuration = animated ? configuration.indicator.animationDuration/2.0 : 0.0
+            UIView.animate(withDuration: animationDuration) { [weak self] in
+                guard let self = self else { return }
+                guard let currentItem = currentItem else { return }
+                if let cell = currentItemCell {
+                    cell.updateTitleScale?(currentItem.titleScale)
+                    cell.updateBackgroundColor?(currentItem.backgroundColor)
+                }
+                guard let targetItem = targetItem else { return }
+                if targetIndexPath.item > currentIndexPath.item {
+                    //
+                    if self.configuration.orientation == .horizontal {
+                        // 横向布局
+                        self.indicatorView.frame.size.width = targetItem.indicatorFrame.maxX - currentItem.indicatorFrame.minX
+                    } else {
+                        // 纵向布局
+                        self.indicatorView.frame.size.height = targetItem.indicatorFrame.maxY - currentItem.indicatorFrame.minY
+                    }
+                } else {
+                    //
+                    if self.configuration.orientation == .horizontal {
+                        // 横向布局
+                        self.indicatorView.frame.origin.x = targetItem.indicatorFrame.minX
+                        self.indicatorView.frame.size.width = currentItem.indicatorFrame.maxX - targetItem.indicatorFrame.minX
+                    } else {
+                        // 纵向布局
+                        self.indicatorView.frame.origin.y = targetItem.indicatorFrame.minY
+                        self.indicatorView.frame.size.height = currentItem.indicatorFrame.maxY - targetItem.indicatorFrame.minY
+                    }
+                }
+            } completion: { [weak self] _ in
+                UIView.animate(withDuration: animationDuration, animations: {
+                    guard let self = self else { return }
+                    guard let targetItem = targetItem else { return }
+                    if let targetItemCell = targetItemCell {
+                        targetItemCell.updateTitleScale?(targetItem.titleScale)
+                        targetItemCell.updateBackgroundColor?(targetItem.backgroundColor)
+                    }
+                    self.indicatorView.frame = targetItem.indicatorFrame
+                }, completion: completionHandler)
+            }
+        }
+        /*
         UIView.animate(withDuration: animated ? configuration.indicator.animationDuration : 0.0, delay: 0.0, options: .curveEaseInOut) { [weak self] in
             guard let self = self else { return }
             if let item = currentItem, let cell = currentItemCell {
@@ -389,9 +460,10 @@ extension MNSegmentedNavigationView {
             guard let self = self else { return }
             self.collectionView.isUserInteractionEnabled = true
             if let _ = targetItem {
-                self.scrollToItem(at: index, to: configuration.navigation.scrollPosition, animated: animated)
+                self.scrollToItem(at: index, to: self.configuration.navigation.scrollPosition, animated: animated)
             }
         }
+        */
     }
 }
 
@@ -1085,7 +1157,7 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
         } completion: { [weak self] _ in
             guard let self = self else { return }
             self.collectionView.isUserInteractionEnabled = true
-            self.scrollToItem(at: index, to: configuration.navigation.scrollPosition, animated: true)
+            self.scrollToItem(at: index, to: self.configuration.navigation.scrollPosition, animated: true)
         }
         if lastSelectedIndex != index {
             // 标记线动画

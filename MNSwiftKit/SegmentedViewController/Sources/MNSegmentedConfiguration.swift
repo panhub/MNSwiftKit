@@ -273,7 +273,7 @@ extension MNSegmentedConfiguration {
         public var style: MNSegmentedConfiguration.Separator.Style = .trailing
         
         /// 分割线约束
-        public var constraint: MNSegmentedConfiguration.Constraint = .zero
+        public var constraint: MNSegmentedConfiguration.Constraint = .init(inset: 0.0, dimension: 1.0)
     }
 }
 

@@ -40,6 +40,7 @@ class SegmentedViewController: UIViewController {
         
         var configuration = MNSegmentedConfiguration()
         configuration.separator.style = .trailing
+        configuration.separator.constraint = .init(inset: 0.0, dimension: 1.0)
         configuration.indicator.animationStyle = .stretch
         configuration.separator.backgroundColor = .gray.withAlphaComponent(0.15)
         if axisSegment.selectedSegmentIndex == 1 {
@@ -79,6 +80,11 @@ class SegmentedViewController: UIViewController {
 // MARK: - MNSplitViewControllerDataSource
 extension SegmentedViewController: MNSegmentedViewControllerDataSource {
     
+    var preferredSegmentedNavigationPresentationIndex: Int {
+        
+        2
+    }
+    
     var preferredSegmentedNavigationHeaderView: UIView? {
         
         let image = UIImage(named: "b_16")!
@@ -86,7 +92,6 @@ extension SegmentedViewController: MNSegmentedViewControllerDataSource {
         imageView.mn.size = .init(width: view.frame.width, height: ceil(image.size.height/image.size.width*view.frame.width))
         return imageView
     }
-    
     
     func segmentedViewController(_ viewController: MNSwiftKit.MNSegmentedViewController, subpageAt index: Int) -> any MNSwiftKit.MNSegmentedSubpageConvertible {
         

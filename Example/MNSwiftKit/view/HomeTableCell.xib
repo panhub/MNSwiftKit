@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -17,8 +17,8 @@
                 <rect key="frame" x="0.0" y="0.0" width="444" height="186"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="top" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="yD7-XB-oKJ">
-                        <rect key="frame" x="13" y="57" width="263.66666666666669" height="72"/>
+                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="top" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="yD7-XB-oKJ">
+                        <rect key="frame" x="10" y="56.666666666666657" width="263.66666666666669" height="73"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KNB-YH-3Wf">
                                 <rect key="frame" x="0.0" y="0.0" width="32" height="20"/>
@@ -27,10 +27,10 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="2As-c0-qyy">
-                                <rect key="frame" x="0.0" y="22" width="263.66666666666669" height="50"/>
+                                <rect key="frame" x="0.0" y="23.000000000000007" width="263.66666666666669" height="49.999999999999993"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6B5-PE-FPg">
-                                        <rect key="frame" x="0.0" y="19.666666666666671" width="27.666666666666668" height="11"/>
+                                        <rect key="frame" x="0.0" y="19.333333333333329" width="27.666666666666668" height="11"/>
                                         <fontDescription key="fontDescription" name="Avenir-Light" family="Avenir" pointSize="8"/>
                                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
@@ -142,19 +142,19 @@
                         </subviews>
                     </stackView>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="enter" translatesAutoresizingMaskIntoConstraints="NO" id="rZg-Y9-mhv">
-                        <rect key="frame" x="413" y="85" width="16" height="16"/>
+                        <rect key="frame" x="421" y="86.666666666666671" width="13" height="13"/>
                         <color key="tintColor" systemColor="systemGray3Color"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="16" id="la8-FH-Tps"/>
+                            <constraint firstAttribute="height" constant="13" id="la8-FH-Tps"/>
                             <constraint firstAttribute="width" secondItem="rZg-Y9-mhv" secondAttribute="height" multiplier="1:1" id="trh-Rt-ZK2"/>
                         </constraints>
                     </imageView>
                 </subviews>
                 <constraints>
                     <constraint firstItem="rZg-Y9-mhv" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="5PU-b3-fxg"/>
-                    <constraint firstAttribute="trailing" secondItem="rZg-Y9-mhv" secondAttribute="trailing" constant="15" id="6E5-fu-QHo"/>
+                    <constraint firstAttribute="trailing" secondItem="rZg-Y9-mhv" secondAttribute="trailing" constant="10" id="6E5-fu-QHo"/>
                     <constraint firstItem="yD7-XB-oKJ" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="Rjc-yF-3ps"/>
-                    <constraint firstItem="yD7-XB-oKJ" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="13" id="Xis-50-I1R"/>
+                    <constraint firstItem="yD7-XB-oKJ" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="Xis-50-I1R"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
