@@ -6,9 +6,6 @@
 //  标签控制器按钮
 
 import UIKit
-//#if canImport(MNSwiftKitLayout)
-//import MNSwiftKitLayout
-//#endif
 
 /// 标签栏按钮
 public class MNTabBarItem: UIControl {

@@ -7,9 +7,6 @@
 
 import UIKit
 import Foundation
-#if canImport(MNSwiftKitLayout)
-import MNSwiftKitLayout
-#endif
 
 /// 弹窗按钮
 public struct MNAlertAction {
@@ -87,7 +84,7 @@ public struct MNAlertField {
 }
 
 /// 关闭弹窗通知
-public let MNAlertCloseNotification: Notification.Name = Notification.Name(rawValue: "com.mnkit.alert.view.close")
+public let MNAlertCloseNotification: Notification.Name = Notification.Name(rawValue: "com.mn.alert.view.close")
 
 /// 提示弹窗
 public class MNAlertView: UIView {
@@ -107,19 +104,19 @@ public class MNAlertView: UIView {
     /// 提示信息
     private let message: String?
     /// 标题
-    private let titleLabel: UILabel = UILabel()
+    private let titleLabel = UILabel()
     /// 提示信息
-    private let textLabel: UILabel = UILabel()
+    private let textLabel = UILabel()
     /// 内容视图
-    private let contentView: UIView = UIView()
-    /// 输入框集合
-    private var alertFields: [MNAlertField] = [MNAlertField]()
+    private let contentView = UIView()
     /// 事件集合
-    private var actions: [MNAlertAction] = [MNAlertAction]()
-    /// 暂存弹窗
-    nonisolated(unsafe) fileprivate static var alerts: [MNAlertView] = [MNAlertView]()
+    private var actions: [MNAlertAction] = []
+    /// 输入框集合
+    private var alertFields: [MNAlertField] = []
     /// 分割线高度
     private let separatorHeight: CGFloat = 1.0
+    /// 暂存弹窗
+    fileprivate nonisolated(unsafe) static var alerts: [MNAlertView] = []
     /// 按钮高度
     private var actionHeight: CGFloat { style == .alert ? 47.0 : 54.0 }
     /// 分割线颜色
@@ -140,8 +137,6 @@ public class MNAlertView: UIView {
         tap.delegate = self
         tap.numberOfTapsRequired = 1
         addGestureRecognizer(tap)
-        // 注册关闭弹窗通知
-        NotificationCenter.default.addObserver(self, selector: #selector(close), name: MNAlertCloseNotification, object: nil)
     }
     
     /// 构造提醒弹窗
@@ -152,8 +147,8 @@ public class MNAlertView: UIView {
     ///   - cancelButtonTitle: 取消样式按钮标题
     ///   - destructiveButtonTitle: 不可恢复样式按钮标题
     ///   - otherButtonTitles: 其它按钮标题
-    ///   - handler: 按钮点击事件回调
-    public convenience init(title: String?, message: String?, style: MNAlertView.Style, cancelButtonTitle: String?, destructiveButtonTitle: String? = nil, otherButtonTitles: String?..., clicked handler: ((_ tag: Int, _ action: MNAlertAction) -> Void)? = nil) {
+    ///   - events: 按钮点击事件回调
+    public convenience init(title: String?, message: String?, style: MNAlertView.Style, cancelButtonTitle: String?, destructiveButtonTitle: String? = nil, otherButtonTitles: String?..., events: ((_ tag: Int, _ action: MNAlertAction) -> Void)? = nil) {
         self.init(title: title, message: message, preferredStyle: style)
         var elements: [(MNAlertAction.Style, String)] = []
         for buttonTitle in otherButtonTitles {
@@ -168,7 +163,7 @@ public class MNAlertView: UIView {
         }
         for (index, element) in elements.enumerated() {
             addAction(title: element.1, style: element.0) { action in
-                handler?(index, action)
+                events?(index, action)
             }
         }
     }
@@ -176,21 +171,17 @@ public class MNAlertView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
 }
 
 // MARK: - Build
-private extension MNAlertView {
+extension MNAlertView {
     
     /// 创建子视图
-    func createSubview() {
+    private func buildAlertView() {
         
-        guard contentView.frame == .zero else { return }
+        guard contentView.subviews.isEmpty else { return }
         
-        contentView.mn.width = 270.0
+        contentView.frame.size.width = 270.0
         contentView.clipsToBounds = true
         contentView.backgroundColor = .white
         contentView.layer.cornerRadius = 15.0
@@ -201,25 +192,25 @@ private extension MNAlertView {
         // 标题
         titleLabel.numberOfLines = 0
         titleLabel.textAlignment = .center
-        titleLabel.mn.width = contentView.frame.width - x*2.0
-        titleLabel.mn.midX = contentView.bounds.midX
+        titleLabel.frame.size.width = contentView.frame.width - x*2.0
+        titleLabel.frame.origin.x = contentView.bounds.midX - titleLabel.frame.width/2.0
         if let title = title, title.isEmpty == false {
             let string = NSAttributedString(string: title, attributes: [.font:UIFont.systemFont(ofSize: 18.0, weight: .medium), .foregroundColor:UIColor.black])
             titleLabel.attributedText = string
-            titleLabel.mn.height = ceil(string.boundingRect(with: CGSize(width: titleLabel.frame.width, height: CGFloat.greatestFiniteMagnitude), options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil).size.height)
+            titleLabel.frame.size.height = ceil(string.boundingRect(with: CGSize(width: titleLabel.frame.width, height: CGFloat.greatestFiniteMagnitude), options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil).size.height)
             contentView.addSubview(titleLabel)
         }
         
         // 提示信息
         textLabel.numberOfLines = 0
         textLabel.textAlignment = .center
-        textLabel.mn.width = contentView.frame.width - x*2.0
-        textLabel.mn.midX = contentView.bounds.midX
-        let font: UIFont = titleLabel.frame.height > 0.0 ? .systemFont(ofSize: 15.0, weight: .regular) : .systemFont(ofSize: 16.0, weight: .medium)
+        textLabel.frame.size.width = contentView.frame.width - x*2.0
+        textLabel.frame.origin.x = contentView.bounds.midX - textLabel.frame.width/2.0
+        let textFont: UIFont = titleLabel.frame.height > 0.0 ? .systemFont(ofSize: 13.0, weight: .regular) : .systemFont(ofSize: 16.0, weight: .medium)
         if let message = message, message.isEmpty == false {
-            let string = NSAttributedString(string: message, attributes: [.font: font, .foregroundColor:UIColor.darkText.withAlphaComponent(0.88)])
+            let string = NSAttributedString(string: message, attributes: [.font: textFont, .foregroundColor:UIColor.darkText.withAlphaComponent(0.88)])
             textLabel.attributedText = string
-            textLabel.mn.height = ceil(string.boundingRect(with: CGSize(width: textLabel.frame.width, height: CGFloat.greatestFiniteMagnitude), options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil).size.height)
+            textLabel.frame.size.height = ceil(string.boundingRect(with: CGSize(width: textLabel.frame.width, height: CGFloat.greatestFiniteMagnitude), options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil).size.height)
             contentView.addSubview(textLabel)
         }
         
@@ -227,21 +218,22 @@ private extension MNAlertView {
         // 标题与提示信息间隔
         let textSpacing: CGFloat = (titleLabel.frame.height > 0.0 && textLabel.frame.height > 0.0) ? 4.0 : 0.0
         // 输入框与提示信息间隔
-        let textFieldSpacing: CGFloat = ((titleLabel.frame.height + textLabel.frame.height) > 0.0 && alertFields.count > 0) ? 15.0 : 0.0
+        let textFieldSpacing: CGFloat = ((titleLabel.frame.height + textLabel.frame.height) > 0.0 && alertFields.count > 0) ? 12.0 : 0.0
         // 输入框高度
-        let textFieldHeight: CGFloat = 39.0
+        let textFieldHeight: CGFloat = 35.0
         // 输入框之间间隔
-        let textFieldInterval: CGFloat = 8.0
+        let textFieldInterval: CGFloat = 6.0
         // 输入框总体高度
         let textFieldTotalHeight: CGFloat = CGFloat(alertFields.count)*textFieldHeight + CGFloat(max(alertFields.count - 1, 0))*textFieldInterval
         // 内容高度
         let contentTotalHeight: CGFloat = titleLabel.frame.height + textSpacing + textLabel.frame.height + textFieldSpacing + textFieldTotalHeight
         // 内容高度 + 上下间隔
-        let totalHeight: CGFloat = max(contentTotalHeight + 40.0, 75.0)
+        let totalHeight: CGFloat = max(contentTotalHeight + 36.0, 75.0)
         
-        titleLabel.mn.minY = (totalHeight - contentTotalHeight)/2.0
-        textLabel.mn.minY = titleLabel.mn.maxY + textSpacing
-        var y: CGFloat = textLabel.mn.maxY + textFieldSpacing
+        titleLabel.frame.origin.y = (totalHeight - contentTotalHeight)/2.0
+        textLabel.frame.origin.y = titleLabel.frame.maxY + textSpacing
+        
+        var y: CGFloat = textLabel.frame.maxY + textFieldSpacing
         
         // 输入框
         for (idx, alertField) in alertFields.enumerated() {
@@ -252,7 +244,7 @@ private extension MNAlertView {
             textField.frame = rect
             textField.keyboardType = .default
             textField.returnKeyType = .done
-            textField.font = .systemFont(ofSize: 16.0)
+            textField.font = .systemFont(ofSize: 15.0, weight: .regular)
             alertField.execute()
             
             textField.frame = rect
@@ -261,16 +253,37 @@ private extension MNAlertView {
             textField.layer.cornerRadius = 6.0
             textField.layer.borderWidth = separatorHeight
             textField.layer.borderColor = separatorColor.cgColor
+            if textField.leftView == nil {
+                // 左视图
+                let leftView = UIView(frame: .init(origin: .zero, size: .init(width: 8.0, height: textField.frame.height)))
+                if let rightView = textField.rightView {
+                    leftView.frame.size.width = rightView.frame.width
+                }
+                textField.leftView = leftView
+                textField.leftViewMode = .always
+            }
+            if textField.rightView == nil {
+                let rightView = UIView(frame: .init(origin: .zero, size: .init(width: textField.leftView!.frame.width, height: textField.frame.height)))
+                textField.rightView = rightView
+                textField.rightViewMode = .always
+            }
             contentView.addSubview(textField)
             
-            y = textField.mn.maxY + (idx < (alertFields.count - 1) ? textFieldInterval : 0.0)
+            y = textField.frame.maxY + (idx < (alertFields.count - 1) ? textFieldInterval : 0.0)
+        }
+        
+        if alertFields.isEmpty {
+            // 没有输入框
+            y = textLabel.frame.maxY + titleLabel.frame.minY
+        } else {
+            // 有输入框， 输入框与按钮间隔
+            y += 10.0
         }
         
         // 分割线
         let separator = UIView()
-        separator.mn.minY = totalHeight
-        separator.mn.height = separatorHeight
-        separator.mn.width = contentView.frame.width
+        separator.frame.origin.y = y
+        separator.frame.size = .init(width: contentView.frame.width, height: separatorHeight)
         separator.backgroundColor = separatorColor
         contentView.addSubview(separator)
         
@@ -280,9 +293,8 @@ private extension MNAlertView {
         if actions.count == 1 {
             
             let button: UIButton = UIButton(type: .custom)
-            button.mn.minY = y
-            button.mn.width = contentView.frame.width
-            button.mn.height = actionHeight
+            button.frame.origin.y = y
+            button.frame.size = .init(width: contentView.frame.width, height: actionHeight)
             button.setAttributedTitle(actions.first?.attributedTitle, for: .normal)
             button.addTarget(self, action: #selector(actionButtonTouchUpInside(_:)), for: .touchUpInside)
             contentView.addSubview(button)
@@ -292,9 +304,8 @@ private extension MNAlertView {
         } else if actions.count == 2 {
             
             let left: UIButton = UIButton(type: .custom)
-            left.mn.minY = y
-            left.mn.width = contentView.frame.width/2.0
-            left.mn.height = actionHeight
+            left.frame.origin.y = y
+            left.frame.size = .init(width: contentView.frame.width/2.0, height: actionHeight)
             left.setAttributedTitle(actions.first?.attributedTitle, for: .normal)
             left.addTarget(self, action: #selector(actionButtonTouchUpInside(_:)), for: .touchUpInside)
             contentView.addSubview(left)
@@ -302,16 +313,15 @@ private extension MNAlertView {
             let right: UIButton = UIButton(type: .custom)
             right.tag = 1
             right.frame = left.frame
-            right.mn.minX = left.frame.maxX
+            right.frame.origin.x = left.frame.maxX
             right.setAttributedTitle(actions.last?.attributedTitle, for: .normal)
             right.addTarget(self, action: #selector(actionButtonTouchUpInside(_:)), for: .touchUpInside)
             contentView.addSubview(right)
             
             let separator = UIView()
-            separator.mn.minY = left.frame.minY
-            separator.mn.height = actionHeight
-            separator.mn.width = separatorHeight
-            separator.mn.midX = contentView.bounds.midX
+            separator.frame.origin.y = left.frame.minY
+            separator.frame.size = .init(width: separatorHeight, height: actionHeight)
+            separator.frame.origin.x = contentView.bounds.midX - separator.frame.width/2.0
             separator.backgroundColor = separatorColor
             contentView.addSubview(separator)
             
@@ -323,9 +333,8 @@ private extension MNAlertView {
                 
                 let button: UIButton = UIButton(type: .custom)
                 button.tag = idx
-                button.mn.minY = y
-                button.mn.width = contentView.frame.width
-                button.mn.height = actionHeight
+                button.frame.origin.y = y
+                button.frame.size = .init(width: contentView.frame.width, height: actionHeight)
                 button.setAttributedTitle(action.attributedTitle, for: .normal)
                 button.addTarget(self, action: #selector(actionButtonTouchUpInside(_:)), for: .touchUpInside)
                 contentView.addSubview(button)
@@ -333,9 +342,8 @@ private extension MNAlertView {
                 if idx < (actions.count - 1) {
                     
                     let separator = UIView()
-                    separator.mn.minY = button.frame.maxY
-                    separator.mn.height = separatorHeight
-                    separator.mn.width = contentView.frame.width
+                    separator.frame.origin.y = button.frame.maxY
+                    separator.frame.size = .init(width: contentView.frame.width, height: separatorHeight)
                     separator.backgroundColor = separatorColor
                     contentView.addSubview(separator)
                     
@@ -347,24 +355,19 @@ private extension MNAlertView {
             }
         }
         
-        contentView.mn.height = y
-        
-        if alertFields.count > 0 {
-            // 注册键盘通知
-            NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame(_:)), name: UIApplication.keyboardWillChangeFrameNotification, object: nil)
-        }
+        contentView.frame.size.height = y
     }
     
-    func buildActionSheet() {
+    private func buildSheetView() {
         
-        guard contentView.frame == .zero else { return }
+        guard contentView.subviews.isEmpty else { return }
         
         if UIDevice.current.userInterfaceIdiom == .phone {
             // iPhone
-            contentView.mn.width = mn.height > mn.width ? mn.width : ceil(mn.width/3.0*2.0)
+            contentView.frame.size.width = frame.height > frame.width ? frame.width : ceil(frame.width/3.0*2.0)
         } else {
             // iPad
-            contentView.mn.width = 390.0
+            contentView.frame.size.width = 390.0
         }
         contentView.backgroundColor = .white
         addSubview(contentView)
@@ -373,14 +376,14 @@ private extension MNAlertView {
         
         titleLabel.numberOfLines = 0
         titleLabel.textAlignment = .center
-        titleLabel.mn.width = contentView.frame.width - 35.0
-        titleLabel.mn.midX = contentView.bounds.midX
+        titleLabel.frame.size.width = contentView.frame.width - 35.0
+        titleLabel.frame.origin.x = contentView.bounds.midX - titleLabel.frame.width/2.0
         if let title = title, title.isEmpty == false {
             // 标题
-            let string = NSAttributedString(string: title, attributes: [.font:UIFont.systemFont(ofSize: 17.0, weight: .medium), .foregroundColor:UIColor.black])
-            titleLabel.mn.minY = 18.0
+            let string = NSAttributedString(string: title, attributes: [.font:UIFont.systemFont(ofSize: 18.0, weight: .medium), .foregroundColor:UIColor.black])
+            titleLabel.frame.origin.y = 18.0
             titleLabel.attributedText = string
-            titleLabel.mn.height = ceil(string.boundingRect(with: CGSize(width: titleLabel.frame.width, height: CGFloat.greatestFiniteMagnitude), options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil).size.height)
+            titleLabel.frame.size.height = ceil(string.boundingRect(with: CGSize(width: titleLabel.frame.width, height: CGFloat.greatestFiniteMagnitude), options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil).size.height)
             contentView.addSubview(titleLabel)
             
             y = titleLabel.frame.maxY + titleLabel.frame.minY
@@ -388,15 +391,15 @@ private extension MNAlertView {
         
         textLabel.numberOfLines = 0
         textLabel.textAlignment = .center
-        textLabel.mn.width = contentView.frame.width - 35.0
-        textLabel.mn.midX = contentView.bounds.midX
-        let font: UIFont = titleLabel.mn.height > 0.0 ? .systemFont(ofSize: 15.0, weight: .regular) : .systemFont(ofSize: 16.0, weight: .medium)
+        textLabel.frame.size.width = contentView.frame.width - 35.0
+        textLabel.frame.origin.x = contentView.bounds.midX - textLabel.frame.width/2.0
+        let textFont: UIFont = titleLabel.frame.height > 0.0 ? .systemFont(ofSize: 13.0, weight: .regular) : .systemFont(ofSize: 16.0, weight: .medium)
         if let message = message, message.isEmpty == false {
             // 提示
-            let string = NSAttributedString(string: message, attributes: [.font: font, .foregroundColor:UIColor.darkText.withAlphaComponent(0.88)])
-            textLabel.mn.minY = titleLabel.frame.height > 0.0 ? (titleLabel.frame.maxY + 4.0) : 18.0
+            let string = NSAttributedString(string: message, attributes: [.font: textFont, .foregroundColor:UIColor.darkText.withAlphaComponent(0.88)])
+            textLabel.frame.origin.y = titleLabel.frame.height > 0.0 ? (titleLabel.frame.maxY + 4.0) : 18.0
             textLabel.attributedText = string
-            textLabel.mn.height = ceil(string.boundingRect(with: CGSize(width: textLabel.frame.width, height: CGFloat.greatestFiniteMagnitude), options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil).size.height)
+            textLabel.frame.size.height = ceil(string.boundingRect(with: CGSize(width: textLabel.frame.width, height: CGFloat.greatestFiniteMagnitude), options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil).size.height)
             contentView.addSubview(textLabel)
             
             y = textLabel.frame.maxY + (titleLabel.frame.height > 0.0 ? titleLabel.frame.minY : textLabel.frame.minY)
@@ -408,9 +411,8 @@ private extension MNAlertView {
             cornerRadius = 15.0
             
             let separator = UIView()
-            separator.mn.minY = y
-            separator.mn.height = separatorHeight
-            separator.mn.width = contentView.frame.width
+            separator.frame.origin.y = y
+            separator.frame.size = .init(width: contentView.frame.width, height: separatorHeight)
             separator.backgroundColor = separatorColor
             contentView.addSubview(separator)
             
@@ -418,8 +420,8 @@ private extension MNAlertView {
         }
         
         var others: [MNAlertAction] = actions.filter { $0.style == .default }
-        others.append(contentsOf: actions.filter { $0.style == .cancel })
-        let destructives: [MNAlertAction] = actions.filter { $0.style == .destructive }
+        others.append(contentsOf: actions.filter { $0.style == .destructive })
+        let destructives: [MNAlertAction] = actions.filter { $0.style == .cancel }
         updateActions(others + destructives)
         let groups: [[MNAlertAction]] = [others, destructives]
         
@@ -430,9 +432,8 @@ private extension MNAlertView {
                 
                 let button: UIButton = UIButton(type: .custom)
                 button.tag = tag
-                button.mn.minY = y
-                button.mn.height = actionHeight
-                button.mn.width = contentView.frame.width
+                button.frame.origin.y = y
+                button.frame.size = .init(width: contentView.frame.width, height: actionHeight)
                 button.setAttributedTitle(action.attributedTitle, for: .normal)
                 button.addTarget(self, action: #selector(actionButtonTouchUpInside(_:)), for: .touchUpInside)
                 contentView.addSubview(button)
@@ -442,9 +443,8 @@ private extension MNAlertView {
                 if idx < (group.count - 1) {
                     
                     let separator = UIView()
-                    separator.mn.minY = button.frame.maxY
-                    separator.mn.height = separatorHeight
-                    separator.mn.width = contentView.frame.width
+                    separator.frame.origin.y = button.frame.maxY
+                    separator.frame.size = .init(width: contentView.frame.width, height: separatorHeight)
                     separator.backgroundColor = separatorColor
                     contentView.addSubview(separator)
                     
@@ -457,12 +457,11 @@ private extension MNAlertView {
             }
             
             // 分割线
-            if group.count > 0, index < (groups.count - 1) {
+            if group.isEmpty == false, index < (groups.count - 1) {
                 
                 let separator = UIView()
-                separator.mn.minY = y
-                separator.mn.height = 10.0
-                separator.mn.width = contentView.frame.width
+                separator.frame.origin.y = y
+                separator.frame.size = .init(width: contentView.frame.width, height: 10.0)
                 separator.backgroundColor = separatorColor
                 contentView.addSubview(separator)
                 
@@ -477,16 +476,15 @@ private extension MNAlertView {
         }
         if bottomInset > 0.0 {
             let separator = UIView()
-            separator.mn.minY = y
-            separator.mn.height = bottomInset
-            separator.mn.width = contentView.frame.width
+            separator.frame.origin.y = y
+            separator.frame.size = .init(width: contentView.frame.width, height: bottomInset)
             separator.backgroundColor = separatorColor
             contentView.addSubview(separator)
             
             y = separator.frame.maxY
         }
         
-        contentView.mn.height = y
+        contentView.frame.size.height = y
         
         // 圆角
         if cornerRadius > 0.0 {
@@ -539,6 +537,7 @@ extension MNAlertView {
     /// - Parameter index: 指定索引
     /// - Returns: 输入框
     public func textField(at index: Int) -> UITextField? {
+        let alertFields = alertFields
         guard index < alertFields.count else { return nil }
         return alertFields[index].textField
     }
@@ -562,26 +561,31 @@ extension MNAlertView {
     
     /// 展示
     public func show() {
-        guard superview == nil, actions.count > 0 else { return }
-        guard let superview = UIWindow.mn.current else { return }
+        guard superview == nil, actions.isEmpty == false else { return }
+        guard let window = UIWindow.mn.current else { return }
         // 注销键盘
-        superview.endEditing(true)
+        window.endEditing(true)
         // 取消当前
         if let alert = Self.alerts.last, let _ = alert.superview {
             alert.endEditing(true)
             alert.removeFromSuperview()
+            if alert.alertFields.isEmpty == false {
+                NotificationCenter.default.removeObserver(alert, name: UIApplication.keyboardWillChangeFrameNotification, object: nil)
+            }
         }
         // 显示当前
         autoresizingMask = []
-        frame = superview.bounds
+        frame = window.bounds
         backgroundColor = .clear
-        superview.addSubview(self)
+        window.addSubview(self)
         Self.alerts.append(self)
+        // 注册关闭弹窗通知
+        NotificationCenter.default.addObserver(self, selector: #selector(self.close), name: MNAlertCloseNotification, object: nil)
         switch style {
         case .alert:
-            createSubview()
-            contentView.autoresizingMask = []
+            buildAlertView()
             contentView.alpha = 0.0
+            contentView.autoresizingMask = []
             contentView.transform = .identity
             contentView.center = CGPoint(x: bounds.midX, y: bounds.midY)
             contentView.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
@@ -589,24 +593,28 @@ extension MNAlertView {
                 guard let self = self else { return }
                 self.contentView.alpha = 1.0
                 self.contentView.transform = .identity
-                self.backgroundColor = .black.withAlphaComponent(0.4)
+                self.backgroundColor = .black.withAlphaComponent(0.45)
             } completion: { [weak self] _ in
                 guard let self = self else { return }
                 self.autoresizingMask = [.flexibleWidth, .flexibleHeight]
                 self.contentView.autoresizingMask = [.flexibleTopMargin, .flexibleBottomMargin, .flexibleLeftMargin, .flexibleRightMargin]
-                self.alertFields.first?.textField.becomeFirstResponder()
+                if let alertFields = self.alertFields.first {
+                    // 注册键盘通知
+                    NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillChangeFrame(_:)), name: UIApplication.keyboardWillChangeFrameNotification, object: nil)
+                    alertFields.textField.becomeFirstResponder()
+                }
             }
         case .actionSheet:
-            buildActionSheet()
+            buildSheetView()
             contentView.autoresizingMask = []
             contentView.transform = .identity
-            contentView.mn.midX = bounds.midX
-            contentView.mn.maxY = bounds.height
+            contentView.frame.origin.x = bounds.midX - contentView.frame.width/2.0
+            contentView.frame.origin.y = bounds.height - contentView.frame.height
             contentView.transform = CGAffineTransform(translationX: 0.0, y: contentView.frame.height)
             UIView.animate(withDuration: 0.25, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.transform = .identity
-                self.backgroundColor = .black.withAlphaComponent(0.4)
+                self.backgroundColor = .black.withAlphaComponent(0.45)
             } completion: { [weak self] _ in
                 guard let self = self else { return }
                 self.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -624,8 +632,9 @@ extension MNAlertView {
             if let action = action {
                 action.execute()
             }
-            guard let alert = Self.alerts.last else { return }
-            Self.alerts.removeLast()
+            guard Self.alerts.isEmpty == false else { return }
+            let alert = Self.alerts.removeLast()
+            NotificationCenter.default.removeObserver(alert, name: MNAlertCloseNotification, object: nil)
             alert.show()
         }
     }
@@ -639,7 +648,7 @@ extension MNAlertView {
             switch self.style {
             case .alert:
                 self.contentView.alpha = 0.0
-                self.contentView.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
+                self.contentView.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
             case .actionSheet:
                 self.contentView.transform = CGAffineTransform(translationX: 0.0, y: self.contentView.frame.height)
             }
@@ -672,33 +681,36 @@ private extension MNAlertView {
 }
 
 // MARK: - Notification
-private extension MNAlertView {
+extension MNAlertView {
     
     /// 接收到关闭通知
-    @objc func close() {
+    @objc private func close() {
         if let _ = superview {
             endEditing(true)
             removeFromSuperview()
+            // 删除通知
+            if alertFields.isEmpty == false {
+                NotificationCenter.default.removeObserver(self, name: UIApplication.keyboardWillChangeFrameNotification, object: nil)
+            }
         }
         if let index = Self.alerts.firstIndex(of: self) {
             Self.alerts.remove(at: index)
+            NotificationCenter.default.removeObserver(self, name: MNAlertCloseNotification, object: nil)
         }
     }
     
     /// 键盘位置变化
     /// - Parameter notify: 通知
-    @objc func keyboardWillChangeFrame(_ notify: Notification) {
-        guard let superview = superview, alertFields.count > 0 else { return }
+    @objc private func keyboardWillChangeFrame(_ notify: Notification) {
+        guard let superview = superview, alertFields.isEmpty == false else { return }
         guard let userInfo = notify.userInfo else { return }
         guard let rect = userInfo[UIWindow.keyboardFrameEndUserInfoKey] as? CGRect else { return }
-        // superview即UIWindow, 避免后期自身位置与UIWindow大小不同, 这里做一次转换
-        let frame: CGRect = superview.convert(rect, to: self)
-        let midY: CGFloat = min(frame.minY - 10.0 - contentView.frame.height/2.0, bounds.midY)
+        let midY: CGFloat = min(CGRect(x: 0.0, y: 0.0, width: superview.frame.width, height: rect.minY).midY, bounds.midY)
         if midY == contentView.frame.midY { return }
         let autoresizingMask: UIView.AutoresizingMask = contentView.autoresizingMask
         //let duration: TimeInterval = userInfo[UIWindow.keyboardAnimationDurationUserInfoKey] as? TimeInterval ?? 0.25
         contentView.autoresizingMask = []
-        contentView.mn.midY = midY
+        contentView.frame.origin.y = midY - contentView.frame.height/2.0
         contentView.autoresizingMask = autoresizingMask
     }
 }

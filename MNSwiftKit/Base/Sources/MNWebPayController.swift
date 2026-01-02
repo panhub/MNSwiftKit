@@ -8,9 +8,6 @@
 import UIKit
 import WebKit
 import Foundation
-//#if canImport(MNSwiftKitDefinition)
-//import MNSwiftKitDefinition
-//#endif
 
 public struct MNWebPayment {
     // 自己的识符 补充支付宝支付链接
