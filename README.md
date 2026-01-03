@@ -6697,7 +6697,7 @@ datePicker.spacing = 10.0
 
 ```swift
 // 使用标题数组创建
-let menu = MNMenuView(titles: "分享", "收藏", "删除", options: MNMenuOptions())
+let menu = MNPopoverView(titles: "分享", "收藏", "删除", options: MNPopoverConfiguration())
 menu.show(in: view, target: button) { sender in
     print("点击了第 \(sender.tag) 个按钮")
 }
@@ -6707,10 +6707,10 @@ let button1 = UIButton(type: .custom)
 button1.setTitle("选项1", for: .normal)
 let button2 = UIButton(type: .custom)
 button2.setTitle("选项2", for: .normal)
-let menu = MNMenuView(arrangedViews: [button1, button2], options: MNMenuOptions())
+let menu = MNPopoverView(arrangedViews: [button1, button2], options: MNPopoverConfiguration())
 
 // 自定义配置
-let options = MNMenuOptions()
+let options = MNPopoverConfiguration()
 options.arrowDirection = .top  // 箭头方向
 options.animationType = .zoom  // 动画类型
 options.visibleColor = .darkGray
@@ -6726,7 +6726,7 @@ options.axis = .horizontal  // 布局方向
 options.widthLayout = .longest(apped: 20)  // 宽度约束
 options.heightLayout = .equal(40)  // 高度约束
 
-let menu = MNMenuView(titles: "选项1", "选项2", "选项3", options: options)
+let menu = MNPopoverView(titles: "选项1", "选项2", "选项3", options: options)
 menu.show(in: view, target: button) { sender in
     print("点击了选项")
 }

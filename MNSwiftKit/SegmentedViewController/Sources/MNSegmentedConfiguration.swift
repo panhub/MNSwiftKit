@@ -113,7 +113,7 @@ extension MNSegmentedConfiguration {
         }
 
         /// 指示视图动画类型
-        public enum AnimationStyle {
+        public enum AnimationType {
             /// 平滑移动
             case move
             /// 拉伸
@@ -150,7 +150,7 @@ extension MNSegmentedConfiguration {
         public var position: MNSegmentedConfiguration.Indicator.Position = .above
         
         /// 转场类型
-        public var animationStyle: MNSegmentedConfiguration.Indicator.AnimationStyle = .move
+        public var animationType: MNSegmentedConfiguration.Indicator.AnimationType = .move
         
         /// 指示器尺寸固定时的对齐方式
         public var alignment: MNSegmentedConfiguration.Indicator.Alignment = .center

@@ -1,5 +1,5 @@
 //
-//  MNMenuView.swift
+//  MNPopoverView.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2022/9/30.
@@ -7,34 +7,36 @@
 
 import UIKit
 
+/// 箭头指向
+public enum MNPopoverArrowDirection {
+    case up
+    case down
+    case left
+    case right
+}
+
+/// 动画类型
+public enum MNPopoverAnimationType {
+    /// 渐现
+    case fade
+    /// 缩放
+    case zoom
+    /// 移动
+    case move
+}
+
+/// 尺寸约束
+public enum MNPopoverConstraint {
+    /// 以内容约束并追加长度
+    case fit(apped: CGFloat = 0.0)
+    /// 以最长内容约束并追加长度
+    case longest(apped: CGFloat = 0.0)
+    /// 指定长度
+    case fixed(_ value: CGFloat)
+}
+
 /// 菜单视图配置
-public class MNMenuOptions: NSObject {
-    
-    /// 箭头指向
-    public enum ArrowDirection {
-        case top, bottom, left, right
-    }
-    
-    /// 动画类型
-    public enum AnimationType {
-        /// 渐现
-        case fade
-        /// 缩放
-        case zoom
-        /// 移动
-        case move
-    }
-    
-    /// 尺寸约束
-    public enum Layout {
-        /// 以内容约束并追加长度
-        case fit(apped: CGFloat = 0.0)
-        /// 以最长内容约束并追加长度
-        case longest(apped: CGFloat = 0.0)
-        /// 指定长度
-        case equal(_ value: CGFloat)
-    }
-    
+public class MNPopoverConfiguration: NSObject {
     /// 标题字体
     public var titleColor: UIColor? = UIColor(red: 250.0/255.0, green: 250.0/255.0, blue: 250.0/255.0, alpha: 1.0)
     /// 标题字体
@@ -58,27 +60,29 @@ public class MNMenuOptions: NSObject {
     /// 边框宽度
     public var borderWidth: CGFloat = 2.0
     /// 宽度描述
-    public var widthLayout: MNMenuOptions.Layout = .longest(apped: 15.0)
+    public var width: MNPopoverConstraint = .longest(apped: 15.0)
     /// 高度描述
-    public var heightLayout: MNMenuOptions.Layout = .equal(35.0)
+    public var height: MNPopoverConstraint = .fixed(35.0)
     /// 填充颜色
     public var visibleColor: UIColor? = UIColor(red: 76.0/255.0, green: 76.0/255.0, blue: 76.0/255.0, alpha: 1.0)
     /// 边框颜色
     public var borderColor: UIColor? = UIColor(red: 50.0/255.0, green: 50.0/255.0, blue: 50.0/255.0, alpha: 1.0)
     /// 箭头方向
-    public var arrowDirection: MNMenuOptions.ArrowDirection = .top
+    public var arrowDirection: MNPopoverArrowDirection = .up
     /// 动画类型
-    public var animationType: MNMenuOptions.AnimationType = .zoom
+    public var animationType: MNPopoverAnimationType = .zoom
 }
 
-/// 菜单视图
-public class MNMenuView: UIView {
+/// 弹出视图
+public class MNPopoverView: UIView {
     /// 自身标记
-    public static let Tag: Int = 131303
+    public static let Tag: Int = 133303
     /// 点击背景取消
     public var dismissWhenTapped: Bool = true
+    /// 是否允许
+    public var allowUserInteraction: Bool = false
     /// 配置
-    private let options: MNMenuOptions
+    private let configuration: MNPopoverConfiguration
     /// 轮廓视图
     private let shapeView: UIView = UIView()
     /// 内容视图
@@ -86,27 +90,27 @@ public class MNMenuView: UIView {
     /// 子菜单按钮集合
     private let stackView: UIView = UIView()
     /// 事件回调
-    private var touchHandler: ((UIControl) -> Void)?
+    private var eventHandler: ((UIControl) -> Void)?
     
     /// 构造菜单视图
     /// - Parameters:
     ///   - views: 子视图集合
-    ///   - options: 配置信息
-    public init(arrangedViews views: [UIView], options: MNMenuOptions = MNMenuOptions()) {
-        self.options = options
+    ///   - configuration: 配置信息
+    public init(arrangedViews views: [UIView], configuration: MNPopoverConfiguration = .init()) {
+        self.configuration = configuration
         super.init(frame: .zero)
-        self.tag = MNMenuView.Tag
+        self.tag = MNPopoverView.Tag
         let totalWidth: CGFloat = views.reduce(0.0) { $0 + $1.frame.width }
         let totalHeight: CGFloat = views.reduce(0.0) { $0 + $1.frame.height }
         let maxWidth: CGFloat = views.reduce(0.0) { max($0, $1.frame.width) }
         let maxHeight: CGFloat = views.reduce(0.0) { max($0, $1.frame.height) }
-        stackView.frame = CGRect(x: 0.0, y: 0.0, width: options.axis == .horizontal ? totalWidth : maxWidth, height: options.axis == .horizontal ? maxHeight : totalHeight)
+        stackView.frame = CGRect(x: 0.0, y: 0.0, width: configuration.axis == .horizontal ? totalWidth : maxWidth, height: configuration.axis == .horizontal ? maxHeight : totalHeight)
         stackView.clipsToBounds = true
         var x: CGFloat = 0.0
         var y: CGFloat = 0.0
         for view in views {
             var rect = view.frame
-            switch options.axis {
+            switch configuration.axis {
             case .horizontal:
                 rect.origin.x = x
                 rect.origin.y = (stackView.frame.height - rect.height)/2.0
@@ -132,17 +136,17 @@ public class MNMenuView: UIView {
     /// - Parameters:
     ///   - titles: 标题集合
     ///   - options: 配置信息
-    public convenience init(titles: String..., options: MNMenuOptions = MNMenuOptions()) {
+    public convenience init(titles: String..., configuration: MNPopoverConfiguration = .init()) {
         let elements: [String] = titles.reduce(into: [String]()) { $0.append($1) }
-        self.init(titles: elements, options: options)
+        self.init(titles: elements, configuration: configuration)
     }
     
     /// 构造菜单视图
     /// - Parameters:
     ///   - titles: 标题集合
     ///   - options: 配置信息
-    public convenience init(titles: [String], options: MNMenuOptions = MNMenuOptions()) {
-        let font: UIFont = options.titleFont
+    public convenience init(titles: [String], configuration: MNPopoverConfiguration = .init()) {
+        let font: UIFont = configuration.titleFont
         let itemSizes: [CGSize] = titles.reduce(into: [CGSize]()) { $0.append(($1 as NSString).size(withAttributes: [.font:font])) }
         let maxWidth: CGFloat = itemSizes.reduce(0.0) { max($0, $1.width) }
         let maxHeight: CGFloat = itemSizes.reduce(0.0) { max($0, $1.height) }
@@ -150,21 +154,21 @@ public class MNMenuView: UIView {
         for (index, title) in titles.enumerated() {
             var itemSize = itemSizes[index]
             // 宽
-            switch options.widthLayout {
+            switch configuration.width {
             case .fit(apped: let value):
                 itemSize.width += value
             case .longest(apped: let value):
                 itemSize.width = ceil(maxWidth + value)
-            case .equal(let value):
+            case .fixed(let value):
                 itemSize.width = value
             }
             // 高
-            switch options.heightLayout {
+            switch configuration.height {
             case .fit(apped: let value):
                 itemSize.height += value
             case .longest(apped: let value):
                 itemSize.height = ceil(maxHeight + value)
-            case .equal(let value):
+            case .fixed(let value):
                 itemSize.height = value
             }
             let button = UIButton(type: .custom)
@@ -172,18 +176,18 @@ public class MNMenuView: UIView {
             button.frame = CGRect(origin: .zero, size: itemSize)
             button.titleLabel?.font = font
             button.setTitle(title, for: .normal)
-            button.setTitleColor(options.titleColor, for: .normal)
+            button.setTitleColor(configuration.titleColor, for: .normal)
             button.contentVerticalAlignment = .center
             button.contentHorizontalAlignment = .center
             arrangedViews.append(button)
             if index < (titles.count - 1) {
-                let separator = UIView(frame: CGRect(origin: .zero, size: options.separatorSize))
+                let separator = UIView(frame: CGRect(origin: .zero, size: configuration.separatorSize))
                 separator.isUserInteractionEnabled = false
-                separator.backgroundColor = options.separatorColor
+                separator.backgroundColor = configuration.separatorColor
                 arrangedViews.append(separator)
             }
         }
-        self.init(arrangedViews: arrangedViews, options: options)
+        self.init(arrangedViews: arrangedViews, configuration: configuration)
     }
     
     required init?(coder: NSCoder) {
@@ -191,15 +195,15 @@ public class MNMenuView: UIView {
     }
 }
 
-extension MNMenuView {
+extension MNPopoverView {
     
     /// 显示菜单视图
     /// - Parameters:
     ///   - superview: 展示的父视图
     ///   - targetView: 目标视图
     ///   - animated: 是否使用动画
-    ///   - touchHandler: 按钮点击回调
-    public func show(in superview: UIView? = nil, target targetView: UIView, animated: Bool = true, touched touchHandler: ((_ sender: UIControl) -> Void)? = nil) {
+    ///   - eventHandler: 按钮点击回调
+    public func show(in superview: UIView? = nil, target targetView: UIView, animated: Bool = true, events eventHandler: ((_ sender: UIControl) -> Void)? = nil) {
         guard self.superview == nil else { return }
         guard stackView.frame.size.width > 0.0, stackView.frame.size.height > 0.0 else { return }
         guard let superview = superview ?? UIWindow.mn.current else { return }
@@ -207,20 +211,20 @@ extension MNMenuView {
         
         frame = superview.bounds
         superview.addSubview(self)
-        self.touchHandler = touchHandler
+        self.eventHandler = eventHandler
         
-        let arrowSize = options.arrowSize
-        let arrowOffset = options.arrowOffset
-        let borderWidth = options.borderWidth
-        let contentInset = options.contentInset
-        let cornerRadius = options.cornerRadius
+        let arrowSize = configuration.arrowSize
+        let arrowOffset = configuration.arrowOffset
+        let borderWidth = configuration.borderWidth
+        let contentInset = configuration.contentInset
+        let cornerRadius = configuration.cornerRadius
         
         var anchorPoint: CGPoint = CGPoint(x: 0.5, y: 0.5)
         
         let bezierPath: UIBezierPath = UIBezierPath()
         
-        switch options.arrowDirection {
-        case .top:
+        switch configuration.arrowDirection {
+        case .up:
             contentView.frame = CGRect(x: 0.0, y: 0.0, width: stackView.frame.width + contentInset.left + contentInset.right, height: stackView.frame.height + contentInset.top + contentInset.bottom + arrowSize.height)
             stackView.frame = CGRect(x: contentInset.left, y: arrowSize.height + contentInset.top, width: stackView.frame.width, height: stackView.frame.height)
             var contentRect = contentView.frame
@@ -262,7 +266,7 @@ extension MNMenuView {
             bezierPath.close()
             anchorPoint.x = 0.0
             anchorPoint.y = (contentView.frame.height/2.0 + arrowOffset.vertical)/contentView.frame.height
-        case .bottom:
+        case .down:
             contentView.frame = CGRect(x: 0.0, y: 0.0, width: stackView.frame.width + contentInset.left + contentInset.right, height: stackView.frame.height + contentInset.top + contentInset.bottom + arrowSize.height)
             stackView.frame = CGRect(x: contentInset.left, y: contentInset.top, width: stackView.frame.width, height: stackView.frame.height)
             var contentRect = contentView.frame
@@ -308,8 +312,8 @@ extension MNMenuView {
         
         let maskLayer = CAShapeLayer()
         maskLayer.path = bezierPath.cgPath
-        maskLayer.fillColor = (options.visibleColor ?? .clear).cgColor
-        maskLayer.strokeColor = (options.borderColor ?? .clear).cgColor
+        maskLayer.fillColor = (configuration.visibleColor ?? .clear).cgColor
+        maskLayer.strokeColor = (configuration.borderColor ?? .clear).cgColor
         maskLayer.lineJoin = .round
         maskLayer.lineCap = .round
         maskLayer.lineWidth = borderWidth
@@ -321,7 +325,7 @@ extension MNMenuView {
         contentView.addSubview(stackView)
         addSubview(contentView)
         
-        switch options.animationType {
+        switch configuration.animationType {
         case .zoom:
             let frame = contentView.frame
             let point = contentView.layer.anchorPoint
@@ -333,13 +337,13 @@ extension MNMenuView {
             contentView.layer.anchorPoint = anchorPoint
             contentView.layer.position = position
             contentView.transform = CGAffineTransform(scaleX: 0.001, y: 0.001)
-            UIView.animate(withDuration: animated ? options.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+            UIView.animate(withDuration: animated ? configuration.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.transform = .identity
             }
         case .fade:
             contentView.alpha = 0.0
-            UIView.animate(withDuration: animated ? options.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+            UIView.animate(withDuration: animated ? configuration.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.alpha = 1.0
             }
@@ -347,14 +351,14 @@ extension MNMenuView {
             let target = contentView.frame
             var frame = contentView.frame
             var autoresizingMask: UIView.AutoresizingMask = []
-            switch options.arrowDirection {
-            case .top:
+            switch configuration.arrowDirection {
+            case .up:
                 frame.size.height = 0.0
                 autoresizingMask = [.flexibleTopMargin]
             case .left:
                 frame.size.width = 0.0
                 autoresizingMask = [.flexibleLeftMargin]
-            case .bottom:
+            case .down:
                 frame.origin.y = frame.maxY
                 frame.size.height = 0.0
                 autoresizingMask = [.flexibleBottomMargin]
@@ -366,7 +370,7 @@ extension MNMenuView {
             stackView.autoresizingMask = autoresizingMask
             shapeView.autoresizingMask = autoresizingMask
             contentView.frame = frame
-            UIView.animate(withDuration: animated ? options.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+            UIView.animate(withDuration: animated ? configuration.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.frame = target
             } completion: { [weak self] _ in
@@ -382,9 +386,9 @@ extension MNMenuView {
     ///   - animated: 是否显示动画过程
     ///   - completionHandler: 结束回调
     public func dismiss(animated: Bool = true, completion completionHandler: (()->Void)? = nil) {
-        switch options.animationType {
+        switch configuration.animationType {
         case .zoom:
-            UIView.animate(withDuration: animated ? options.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+            UIView.animate(withDuration: animated ? configuration.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.transform = CGAffineTransform(scaleX: 0.001, y: 0.001)
             } completion: { [weak self] _ in
@@ -393,7 +397,7 @@ extension MNMenuView {
                 completionHandler?()
             }
         case .fade:
-            UIView.animate(withDuration: animated ? options.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+            UIView.animate(withDuration: animated ? configuration.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.alpha = 0.0
             } completion: { [weak self] _ in
@@ -404,14 +408,14 @@ extension MNMenuView {
         case .move:
             var target = contentView.frame
             var autoresizingMask: UIView.AutoresizingMask = []
-            switch options.arrowDirection {
-            case .top:
+            switch configuration.arrowDirection {
+            case .up:
                 target.size.height = 0.0
                 autoresizingMask = [.flexibleTopMargin]
             case .left:
                 target.size.width = 0.0
                 autoresizingMask = [.flexibleLeftMargin]
-            case .bottom:
+            case .down:
                 target.origin.y = target.maxY
                 target.size.height = 0.0
                 autoresizingMask = [.flexibleBottomMargin]
@@ -422,7 +426,7 @@ extension MNMenuView {
             }
             shapeView.autoresizingMask = autoresizingMask
             stackView.autoresizingMask = autoresizingMask
-            UIView.animate(withDuration: animated ? options.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+            UIView.animate(withDuration: animated ? configuration.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.frame = target
             } completion: { [weak self] _ in
@@ -442,38 +446,39 @@ extension UIView {
     ///   - animated: 是否动态展示
     ///   - completionHandler: 结束回调
     public func dismissMenu(animated: Bool = true, completion completionHandler: (()->Void)? = nil) {
-        guard let menuView = viewWithTag(MNMenuView.Tag) as? MNMenuView else { return }
+        guard let menuView = viewWithTag(MNPopoverView.Tag) as? MNPopoverView else { return }
         menuView.dismiss(animated: animated, completion: completionHandler)
     }
     
     /// 删除菜单视图
     public func removeMenu() {
-        guard let menuView = viewWithTag(MNMenuView.Tag) as? MNMenuView else { return }
+        guard let menuView = viewWithTag(MNPopoverView.Tag) as? MNPopoverView else { return }
         menuView.removeFromSuperview()
     }
 }
 
 // MARK: - Event
-private extension MNMenuView {
+extension MNPopoverView {
     
     /// 按钮点击事件
     /// - Parameter sender: 按钮
-    @objc func menuTouchUpInside(_ sender: UIControl) {
+    @objc private func menuTouchUpInside(_ sender: UIControl) {
         dismiss(animated: true) { [weak self] in
             guard let self = self else { return }
-            self.touchHandler?(sender)
+            guard let eventHandler = self.eventHandler else { return }
+            eventHandler(sender)
         }
     }
     
     /// 背景点击事件
-    @objc func backgroundTouchUpInside() {
+    @objc private func backgroundTouchUpInside() {
         guard dismissWhenTapped else { return }
         dismiss()
     }
 }
 
 // MARK: - UIGestureRecognizerDelegate
-extension MNMenuView: UIGestureRecognizerDelegate {
+extension MNPopoverView: UIGestureRecognizerDelegate {
     
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         let location = touch.location(in: self)

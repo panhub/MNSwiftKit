@@ -381,7 +381,7 @@ extension MNSegmentedNavigationView {
         }
         // 开始指示图动画
         collectionView.isUserInteractionEnabled = false
-        switch configuration.indicator.animationStyle {
+        switch configuration.indicator.animationType {
         case .move:
             // 滑动
             UIView.animate(withDuration: animated ? configuration.indicator.animationDuration : 0.0, delay: 0.0, options: .curveEaseInOut, animations: { [weak self] in
@@ -988,7 +988,7 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
         let targetItem = items[targetIndex]
         let currentItem = items[selectedIndex]
         var indicatorFrame: CGRect = currentItem.indicatorFrame
-        switch configuration.indicator.animationStyle {
+        switch configuration.indicator.animationType {
         case .move:
             // 移动
             if configuration.orientation == .horizontal {
@@ -1161,10 +1161,10 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
         }
         if lastSelectedIndex != index {
             // 标记线动画
-            let duration = configuration.indicator.animationStyle == .stretch ? configuration.indicator.animationDuration/2.0 : configuration.indicator.animationDuration
+            let duration = configuration.indicator.animationType == .stretch ? configuration.indicator.animationDuration/2.0 : configuration.indicator.animationDuration
             let animations: ()->Void = { [weak self] in
                 guard let self = self else { return }
-                guard self.configuration.indicator.animationStyle == .stretch else { return }
+                guard self.configuration.indicator.animationType == .stretch else { return }
                 var indicatorFrame = self.indicatorView.frame
                 if index > currentIndex {
                     if self.configuration.orientation == .horizontal {
@@ -1183,7 +1183,7 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
                 }
                 self.indicatorView.frame = indicatorFrame
             }
-            UIView.animate(withDuration: configuration.indicator.animationStyle == .stretch ? duration : 0.0, animations: animations) { [weak self] _ in
+            UIView.animate(withDuration: configuration.indicator.animationType == .stretch ? duration : 0.0, animations: animations) { [weak self] _ in
                 UIView.animate(withDuration: duration, delay: 0.0, options: .curveEaseInOut) {
                     guard let self = self else { return }
                     self.indicatorView.frame = targetItem.indicatorFrame

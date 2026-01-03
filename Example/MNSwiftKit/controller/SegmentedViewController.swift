@@ -41,7 +41,7 @@ class SegmentedViewController: UIViewController {
         var configuration = MNSegmentedConfiguration()
         configuration.separator.style = .trailing
         configuration.separator.constraint = .init(inset: 0.0, dimension: 1.0)
-        configuration.indicator.animationStyle = .stretch
+        configuration.indicator.animationType = .stretch
         configuration.separator.backgroundColor = .gray.withAlphaComponent(0.15)
         if axisSegment.selectedSegmentIndex == 1 {
             // 纵向
