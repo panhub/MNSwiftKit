@@ -36,7 +36,7 @@ public enum MNPopoverConstraint {
 }
 
 /// 菜单视图配置
-public class MNPopoverConfiguration: NSObject {
+public struct MNPopoverConfiguration {
     /// 标题字体
     public var titleColor: UIColor? = UIColor(red: 250.0/255.0, green: 250.0/255.0, blue: 250.0/255.0, alpha: 1.0)
     /// 标题字体
@@ -63,20 +63,21 @@ public class MNPopoverConfiguration: NSObject {
     public var width: MNPopoverConstraint = .longest(apped: 15.0)
     /// 高度描述
     public var height: MNPopoverConstraint = .fixed(35.0)
-    /// 填充颜色
-    public var visibleColor: UIColor? = UIColor(red: 76.0/255.0, green: 76.0/255.0, blue: 76.0/255.0, alpha: 1.0)
+    /// 可视部分的填充颜色
+    public var fillColor: UIColor? = UIColor(red: 76.0/255.0, green: 76.0/255.0, blue: 76.0/255.0, alpha: 1.0)
     /// 边框颜色
     public var borderColor: UIColor? = UIColor(red: 50.0/255.0, green: 50.0/255.0, blue: 50.0/255.0, alpha: 1.0)
     /// 箭头方向
     public var arrowDirection: MNPopoverArrowDirection = .up
     /// 动画类型
     public var animationType: MNPopoverAnimationType = .zoom
+    
+    /// 构造弹出视图配置入口
+    public init() {}
 }
 
 /// 弹出视图
 public class MNPopoverView: UIView {
-    /// 自身标记
-    public static let Tag: Int = 133303
     /// 点击背景取消
     public var dismissWhenTapped: Bool = true
     /// 是否允许
@@ -99,7 +100,6 @@ public class MNPopoverView: UIView {
     public init(arrangedViews views: [UIView], configuration: MNPopoverConfiguration = .init()) {
         self.configuration = configuration
         super.init(frame: .zero)
-        self.tag = MNPopoverView.Tag
         let totalWidth: CGFloat = views.reduce(0.0) { $0 + $1.frame.width }
         let totalHeight: CGFloat = views.reduce(0.0) { $0 + $1.frame.height }
         let maxWidth: CGFloat = views.reduce(0.0) { max($0, $1.frame.width) }
@@ -122,7 +122,7 @@ public class MNPopoverView: UIView {
             }
             view.frame = rect
             if let control = view as? UIControl, control.allTargets.isEmpty {
-                control.addTarget(self, action: #selector(menuTouchUpInside(_:)), for: .touchUpInside)
+                control.addTarget(self, action: #selector(itemTouchUpInside(_:)), for: .touchUpInside)
             }
             stackView.addSubview(view)
         }
@@ -150,7 +150,7 @@ public class MNPopoverView: UIView {
         let itemSizes: [CGSize] = titles.reduce(into: [CGSize]()) { $0.append(($1 as NSString).size(withAttributes: [.font:font])) }
         let maxWidth: CGFloat = itemSizes.reduce(0.0) { max($0, $1.width) }
         let maxHeight: CGFloat = itemSizes.reduce(0.0) { max($0, $1.height) }
-        var arrangedViews: [UIView] = [UIView]()
+        var arrangedViews: [UIView] = []
         for (index, title) in titles.enumerated() {
             var itemSize = itemSizes[index]
             // 宽
@@ -203,9 +203,9 @@ extension MNPopoverView {
     ///   - targetView: 目标视图
     ///   - animated: 是否使用动画
     ///   - eventHandler: 按钮点击回调
-    public func show(in superview: UIView? = nil, target targetView: UIView, animated: Bool = true, events eventHandler: ((_ sender: UIControl) -> Void)? = nil) {
+    public func popup(in superview: UIView? = nil, target targetView: UIView, animated: Bool = true, events eventHandler: ((_ sender: UIControl) -> Void)? = nil) {
         guard self.superview == nil else { return }
-        guard stackView.frame.size.width > 0.0, stackView.frame.size.height > 0.0 else { return }
+        guard stackView.bounds.isNull == false, stackView.bounds.isEmpty == false else { return }
         guard let superview = superview ?? UIWindow.mn.current else { return }
         guard let rect = targetView.superview?.convert(targetView.frame, to: superview) else { return }
         
@@ -312,7 +312,7 @@ extension MNPopoverView {
         
         let maskLayer = CAShapeLayer()
         maskLayer.path = bezierPath.cgPath
-        maskLayer.fillColor = (configuration.visibleColor ?? .clear).cgColor
+        maskLayer.fillColor = (configuration.fillColor ?? .clear).cgColor
         maskLayer.strokeColor = (configuration.borderColor ?? .clear).cgColor
         maskLayer.lineJoin = .round
         maskLayer.lineCap = .round
@@ -381,11 +381,11 @@ extension MNPopoverView {
         }
     }
     
-    /// 取消菜单视图
+    /// 关闭弹出视图
     /// - Parameters:
     ///   - animated: 是否显示动画过程
     ///   - completionHandler: 结束回调
-    public func dismiss(animated: Bool = true, completion completionHandler: (()->Void)? = nil) {
+    public func close(animated: Bool = true, completion completionHandler: (()->Void)? = nil) {
         switch configuration.animationType {
         case .zoom:
             UIView.animate(withDuration: animated ? configuration.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
@@ -438,32 +438,13 @@ extension MNPopoverView {
     }
 }
 
-// MARK: - Dismiss & Remove
-extension UIView {
-    
-    /// 取消自身的菜单视图
-    /// - Parameters:
-    ///   - animated: 是否动态展示
-    ///   - completionHandler: 结束回调
-    public func dismissMenu(animated: Bool = true, completion completionHandler: (()->Void)? = nil) {
-        guard let menuView = viewWithTag(MNPopoverView.Tag) as? MNPopoverView else { return }
-        menuView.dismiss(animated: animated, completion: completionHandler)
-    }
-    
-    /// 删除菜单视图
-    public func removeMenu() {
-        guard let menuView = viewWithTag(MNPopoverView.Tag) as? MNPopoverView else { return }
-        menuView.removeFromSuperview()
-    }
-}
-
 // MARK: - Event
 extension MNPopoverView {
     
-    /// 按钮点击事件
+    /// 弹出视图中按钮点击事件
     /// - Parameter sender: 按钮
-    @objc private func menuTouchUpInside(_ sender: UIControl) {
-        dismiss(animated: true) { [weak self] in
+    @objc private func itemTouchUpInside(_ sender: UIControl) {
+        close(animated: true) { [weak self] in
             guard let self = self else { return }
             guard let eventHandler = self.eventHandler else { return }
             eventHandler(sender)
@@ -473,7 +454,7 @@ extension MNPopoverView {
     /// 背景点击事件
     @objc private func backgroundTouchUpInside() {
         guard dismissWhenTapped else { return }
-        dismiss()
+        close()
     }
 }
 
@@ -483,5 +464,32 @@ extension MNPopoverView: UIGestureRecognizerDelegate {
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         let location = touch.location(in: self)
         return contentView.frame.contains(location) == false
+    }
+}
+
+// MARK: - Dismiss & Remove
+extension MNNameSpaceWrapper where Base: UIView {
+    
+    /// 取消自身的弹出视图
+    /// - Parameters:
+    ///   - animated: 是否动态展示过程
+    ///   - completionHandler: 结束回调
+    public func closePopoverView(animated: Bool = true, completion completionHandler: (()->Void)? = nil) {
+        if base is MNPopoverView {
+            (base as! MNPopoverView).close(animated: animated, completion: completionHandler)
+            return
+        }
+        guard let popoverView = base.subviews.first(where: { $0 is MNPopoverView }) as? MNPopoverView else { return }
+        popoverView.close(animated: animated, completion: completionHandler)
+    }
+    
+    /// 删除自身的弹出视图
+    public func removePopoverView() {
+        if base is MNPopoverView {
+            (base as! MNPopoverView).removeFromSuperview()
+            return
+        }
+        guard let popoverView = base.subviews.first(where: { $0 is MNPopoverView }) as? MNPopoverView else { return }
+        popoverView.removeFromSuperview()
     }
 }

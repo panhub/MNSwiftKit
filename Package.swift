@@ -284,7 +284,7 @@ let package = Package(
         .target(
             name: "MNComponents",
             dependencies: [
-                "MNLayout", "MNExtension"
+                "MNLayout", "MNExtension", "MNNameSpace"
             ],
             path: "MNSwiftKit/Components",
             resources: [

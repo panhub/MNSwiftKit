@@ -218,6 +218,7 @@ Pod::Spec.new do |s|
     }
     c.dependency 'MNSwiftKit/Layout'
     c.dependency 'MNSwiftKit/Extension'
+    c.dependency 'MNSwiftKit/NameSpace'
   end
   
   # Transitioning <控制器转场支持>
