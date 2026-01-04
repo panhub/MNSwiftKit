@@ -51,7 +51,7 @@ class PopoverViewController: UIViewController {
     private func popup(_ sender: UIView, direction: MNPopoverArrowDirection) {
         
         var configuration = MNPopoverConfiguration()
-        configuration.titleFont = .systemFont(ofSize: 14.0, weight: .medium)
+        configuration.titleFont = .systemFont(ofSize: 13.0, weight: .medium)
         configuration.titleColor = .white
         configuration.arrowDirection = direction
         configuration.width = .fixed(60.0)

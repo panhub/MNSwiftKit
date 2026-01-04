@@ -11,16 +11,6 @@ import ObjectiveC.runtime
 @_exported import MNNameSpace
 #endif
 
-
-extension UIView {
-    
-    internal struct MNToastAssociated {
-        
-        /// 关联弹窗的Key
-        nonisolated(unsafe) static var toast: Void?
-    }
-}
-
 extension MNNameSpaceWrapper where Base: UIView {
     
     /// 是否存在toast弹窗
@@ -30,8 +20,8 @@ extension MNNameSpaceWrapper where Base: UIView {
     
     /// tost弹窗
     public var toast: MNToast? {
-        get { objc_getAssociatedObject(base, &UIView.MNToastAssociated.toast) as? MNToast }
-        set { objc_setAssociatedObject(base, &UIView.MNToastAssociated.toast, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
+        guard let subview = base.subviews.reversed().first(where: { $0 is MNToast }) else { return nil }
+        return subview as? MNToast
     }
 }
 

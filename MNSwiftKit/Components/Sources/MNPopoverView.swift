@@ -70,7 +70,7 @@ public struct MNPopoverConfiguration {
     /// 箭头方向
     public var arrowDirection: MNPopoverArrowDirection = .up
     /// 动画类型
-    public var animationType: MNPopoverAnimationType = .zoom
+    public var animationType: MNPopoverAnimationType = .fade
     
     /// 构造弹出视图配置入口
     public init() {}
@@ -479,7 +479,7 @@ extension MNNameSpaceWrapper where Base: UIView {
             (base as! MNPopoverView).close(animated: animated, completion: completionHandler)
             return
         }
-        guard let popoverView = base.subviews.first(where: { $0 is MNPopoverView }) as? MNPopoverView else { return }
+        guard let popoverView = base.subviews.reversed().first(where: { $0 is MNPopoverView }) as? MNPopoverView else { return }
         popoverView.close(animated: animated, completion: completionHandler)
     }
     
@@ -489,7 +489,7 @@ extension MNNameSpaceWrapper where Base: UIView {
             (base as! MNPopoverView).removeFromSuperview()
             return
         }
-        guard let popoverView = base.subviews.first(where: { $0 is MNPopoverView }) as? MNPopoverView else { return }
+        guard let popoverView = base.subviews.reversed().first(where: { $0 is MNPopoverView }) as? MNPopoverView else { return }
         popoverView.removeFromSuperview()
     }
 }

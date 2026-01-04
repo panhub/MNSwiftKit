@@ -349,15 +349,6 @@ public class MNToast: UIView {
         NotificationCenter.default.removeObserver(self)
     }
     
-    open override func willMove(toSuperview newSuperview: UIView?) {
-        if let superview = newSuperview {
-            superview.mn.toast = self
-        } else if let superview = superview, let toast = superview.mn.toast, toast == self {
-            superview.mn.toast = nil
-        }
-        super.willMove(toSuperview: newSuperview)
-    }
-    
     /// 更新进度
     /// - Parameter value: 进度值
     func update(progress value: any BinaryFloatingPoint) {
