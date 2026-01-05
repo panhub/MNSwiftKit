@@ -231,6 +231,20 @@ extension MNPopoverView {
             contentRect.origin.x = rect.midX - arrowOffset.horizontal - contentRect.width/2.0
             contentRect.origin.y = rect.maxY + arrowOffset.vertical
             contentView.frame = contentRect
+            
+            let halfBorderWidth = borderWidth/2.0
+            
+            let roundedRect = CGRect(origin: .zero, size: contentView.frame.size).inset(by: .init(top: arrowSize.height + halfBorderWidth, left: halfBorderWidth, bottom: halfBorderWidth, right: halfBorderWidth))
+            let adjustedCornerRadius = max(cornerRadius - halfBorderWidth, halfBorderWidth)
+            // 三角形顶点位置（在矩形顶部上方，考虑偏移）
+            let triangleTopX = roundedRect.midX + arrowOffset.horizontal
+            let triangleTopY = roundedRect.minY - arrowSize.height
+            // 三角形底边中心点（矩形顶部中心，考虑偏移）
+            let triangleBaseCenterX = triangleTopX
+            let triangleBaseCenterY = roundedRect.minY
+            
+            
+            
             bezierPath.move(to: CGPoint(x: borderWidth/2.0, y: arrowSize.height + borderWidth + cornerRadius))
             bezierPath.addArc(withCenter: CGPoint(x: borderWidth + cornerRadius, y: arrowSize.height + borderWidth + cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: .pi, endAngle: .pi/2.0 + .pi, clockwise: true)
             bezierPath.addLine(to: CGPoint(x: contentView.frame.width/2.0 - arrowSize.width/2.0 + borderWidth/2.0 + arrowOffset.horizontal, y: arrowSize.height + borderWidth/2.0))
