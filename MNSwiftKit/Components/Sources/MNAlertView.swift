@@ -568,12 +568,13 @@ extension MNAlertView {
         // 取消当前
         if let alert = Self.alerts.last, let _ = alert.superview {
             alert.endEditing(true)
+            alert.layer.removeAllAnimations()
             alert.removeFromSuperview()
             if alert.alertFields.isEmpty == false {
                 NotificationCenter.default.removeObserver(alert, name: UIApplication.keyboardWillChangeFrameNotification, object: nil)
             }
         }
-        // 显示当前
+        // 显示
         autoresizingMask = []
         frame = window.bounds
         backgroundColor = .clear
@@ -594,8 +595,9 @@ extension MNAlertView {
                 self.contentView.alpha = 1.0
                 self.contentView.transform = .identity
                 self.backgroundColor = .black.withAlphaComponent(0.45)
-            } completion: { [weak self] _ in
+            } completion: { [weak self] isSuccess in
                 guard let self = self else { return }
+                guard isSuccess else { return }
                 self.autoresizingMask = [.flexibleWidth, .flexibleHeight]
                 self.contentView.autoresizingMask = [.flexibleTopMargin, .flexibleBottomMargin, .flexibleLeftMargin, .flexibleRightMargin]
                 if let alertFields = self.alertFields.first {
@@ -615,8 +617,9 @@ extension MNAlertView {
                 guard let self = self else { return }
                 self.contentView.transform = .identity
                 self.backgroundColor = .black.withAlphaComponent(0.45)
-            } completion: { [weak self] _ in
+            } completion: { [weak self] isSuccess in
                 guard let self = self else { return }
+                guard isSuccess else { return }
                 self.autoresizingMask = [.flexibleWidth, .flexibleHeight]
                 self.contentView.autoresizingMask = [.flexibleTopMargin, .flexibleLeftMargin, .flexibleRightMargin]
             }

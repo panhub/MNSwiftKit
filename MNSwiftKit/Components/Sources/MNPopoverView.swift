@@ -482,16 +482,22 @@ extension MNPopoverView {
             contentView.layer.anchorPoint = anchorPoint
             contentView.layer.position = position
             contentView.transform = CGAffineTransform(scaleX: 0.001, y: 0.001)
-            UIView.animate(withDuration: animated ? configuration.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+            UIView.animate(withDuration: animated ? configuration.animationDuration : 0.0, delay: 0.0, usingSpringWithDamping: 0.75, initialSpringVelocity: 0.8, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.transform = .identity
             } completion: { _ in
                 completionHandler?()
             }
+//            UIView.animate(withDuration: animated ? configuration.animationDuration : 0.0, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+//                guard let self = self else { return }
+//                self.contentView.transform = .identity
+//            } completion: { _ in
+//                completionHandler?()
+//            }
         case .fade:
             contentView.alpha = 0.0
             contentView.transform = .init(scaleX: 0.98, y: 0.98)
-            UIView.animate(withDuration: animated ? configuration.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+            UIView.animate(withDuration: animated ? configuration.animationDuration : 0.0, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.alpha = 1.0
                 self.contentView.transform = .identity
@@ -521,7 +527,16 @@ extension MNPopoverView {
             stackView.autoresizingMask = autoresizingMask
             shapeView.autoresizingMask = autoresizingMask
             contentView.frame = frame
-            UIView.animate(withDuration: animated ? configuration.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+//            UIView.animate(withDuration: animated ? configuration.animationDuration : 0.0, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+//                guard let self = self else { return }
+//                self.contentView.frame = target
+//            } completion: { [weak self] _ in
+//                guard let self = self else { return }
+//                self.stackView.autoresizingMask = []
+//                self.shapeView.autoresizingMask = []
+//                completionHandler?()
+//            }
+            UIView.animate(withDuration: animated ? configuration.animationDuration : 0.0, delay: 0.0, usingSpringWithDamping: 0.75, initialSpringVelocity: 0.8, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.frame = target
             } completion: { [weak self] _ in
@@ -540,7 +555,7 @@ extension MNPopoverView {
     public func close(animated: Bool = true, completion completionHandler: (()->Void)? = nil) {
         switch configuration.animationType {
         case .zoom:
-            UIView.animate(withDuration: animated ? configuration.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+            UIView.animate(withDuration: animated ? configuration.animationDuration : 0.0, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.transform = CGAffineTransform(scaleX: 0.001, y: 0.001)
             } completion: { [weak self] _ in
@@ -548,8 +563,16 @@ extension MNPopoverView {
                 self.removeFromSuperview()
                 completionHandler?()
             }
+//            UIView.animate(withDuration: animated ? configuration.animationDuration : 0.0, delay: 0.0, usingSpringWithDamping: 0.75, initialSpringVelocity: 0.75, options: [.beginFromCurrentState, .curveLinear]) { [weak self] in
+//                guard let self = self else { return }
+//                self.contentView.transform = CGAffineTransform(scaleX: 0.001, y: 0.001)
+//            } completion: { [weak self] _ in
+//                guard let self = self else { return }
+//                self.removeFromSuperview()
+//                completionHandler?()
+//            }
         case .fade:
-            UIView.animate(withDuration: animated ? configuration.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+            UIView.animate(withDuration: animated ? configuration.animationDuration : 0.0, delay: 0.0, options: [.beginFromCurrentState, .curveEaseOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.alpha = 0.0
                 self.contentView.transform = .init(scaleX: 0.98, y: 0.98)
@@ -579,7 +602,15 @@ extension MNPopoverView {
             }
             shapeView.autoresizingMask = autoresizingMask
             stackView.autoresizingMask = autoresizingMask
-            UIView.animate(withDuration: animated ? configuration.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+//            UIView.animate(withDuration: animated ? configuration.animationDuration : 0.0, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+//                guard let self = self else { return }
+//                self.contentView.frame = target
+//            } completion: { [weak self] _ in
+//                guard let self = self else { return }
+//                self.removeFromSuperview()
+//                completionHandler?()
+//            }
+            UIView.animate(withDuration: animated ? configuration.animationDuration : 0.0, delay: 0.0, usingSpringWithDamping: 0.75, initialSpringVelocity: 0.8, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.frame = target
             } completion: { [weak self] _ in
