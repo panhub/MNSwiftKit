@@ -26,7 +26,7 @@ public enum MNPopoverAnimationType {
 }
 
 /// 尺寸约束
-public enum MNPopoverConstraint {
+public enum MNPopoverItemConstraint {
     /// 以内容约束并追加长度
     case fit(apped: CGFloat = 0.0)
     /// 以最长内容约束并追加长度
@@ -35,18 +35,61 @@ public enum MNPopoverConstraint {
     case fixed(_ value: CGFloat)
 }
 
+/// 分割线约束
+public struct MNPopoverDividerConstraint: Equatable {
+    
+    /// 上/左间隔
+    public let leading: CGFloat
+    /// 下/右间隔
+    public let trailing: CGFloat
+    /// 尺寸
+    /// - 横向：分割线宽度
+    /// - 纵向：分割线高度
+    public let dimension: CGFloat
+    
+    /// 不显示分割线
+    public static var zero = MNPopoverDividerConstraint(leading: 0.0, trailing: 0.0, dimension: 0.0)
+    
+    
+    /// 构造分割线尺寸
+    /// - Parameters:
+    ///   - leading: 上/左间隔
+    ///   - trailing: 下/右间隔
+    ///   - dimension: 分割线宽度/高度
+    public init(leading: CGFloat, trailing: CGFloat, dimension: CGFloat) {
+        self.leading = leading
+        self.trailing = trailing
+        self.dimension = dimension
+    }
+    
+    /// 构造分割线尺寸
+    /// - Parameters:
+    ///   - inset: 两侧间隔
+    ///   - dimension: 分割线宽度/高度
+    public init(inset: CGFloat, dimension: CGFloat) {
+        self.leading = inset
+        self.trailing = inset
+        self.dimension = dimension
+    }
+    
+    public static func == (lhs: MNPopoverDividerConstraint, rhs: MNPopoverDividerConstraint) -> Bool {
+        
+        return lhs.leading == rhs.leading && lhs.trailing == rhs.trailing && lhs.dimension == rhs.dimension
+    }
+}
+
 /// 菜单视图配置
 public struct MNPopoverConfiguration {
     /// 标题字体
-    public var titleColor: UIColor? = UIColor(red: 250.0/255.0, green: 250.0/255.0, blue: 250.0/255.0, alpha: 1.0)
+    public var titleColor: UIColor? = .init(red: 250.0/255.0, green: 250.0/255.0, blue: 250.0/255.0, alpha: 1.0)
     /// 标题字体
     public var titleFont: UIFont = .systemFont(ofSize: 16.0, weight: .medium)
     /// 箭头大小
-    public  var arrowSize: CGSize = CGSize(width: 12.0, height: 10.0)
-    /// 分割线尺寸 依据布局方向取值
-    public var separatorSize: CGSize = CGSize(width: 1.0, height: 20.0)
+    public  var arrowSize: CGSize = .init(width: 12.0, height: 10.0)
+    /// 分割线尺寸
+    public var dividerSize: CGSize = .init(width: 30.0, height: 1.0)
     /// 分割线颜色
-    public var separatorColor: UIColor? = UIColor(red: 50.0/255.0, green: 50.0/255.0, blue: 50.0/255.0, alpha: 1.0)
+    public var dividerColor: UIColor? = UIColor(red: 50.0/255.0, green: 50.0/255.0, blue: 50.0/255.0, alpha: 1.0)
     /// 箭头偏移
     public var arrowOffset: UIOffset = .zero
     /// 边角大小
@@ -60,9 +103,9 @@ public struct MNPopoverConfiguration {
     /// 边框宽度
     public var borderWidth: CGFloat = 2.0
     /// 宽度描述
-    public var width: MNPopoverConstraint = .longest(apped: 15.0)
+    public var itemWidth: MNPopoverItemConstraint = .longest(apped: 18.0)
     /// 高度描述
-    public var height: MNPopoverConstraint = .fixed(35.0)
+    public var itemHeight: MNPopoverItemConstraint = .fixed(35.0)
     /// 可视部分的填充颜色
     public var fillColor: UIColor? = UIColor(red: 76.0/255.0, green: 76.0/255.0, blue: 76.0/255.0, alpha: 1.0)
     /// 边框颜色
@@ -154,7 +197,7 @@ public class MNPopoverView: UIView {
         for (index, title) in titles.enumerated() {
             var itemSize = itemSizes[index]
             // 宽
-            switch configuration.width {
+            switch configuration.itemWidth {
             case .fit(apped: let value):
                 itemSize.width += value
             case .longest(apped: let value):
@@ -163,7 +206,7 @@ public class MNPopoverView: UIView {
                 itemSize.width = value
             }
             // 高
-            switch configuration.height {
+            switch configuration.itemHeight {
             case .fit(apped: let value):
                 itemSize.height += value
             case .longest(apped: let value):
@@ -181,10 +224,9 @@ public class MNPopoverView: UIView {
             button.contentHorizontalAlignment = .center
             arrangedViews.append(button)
             if index < (titles.count - 1) {
-                let separator = UIView(frame: CGRect(origin: .zero, size: configuration.separatorSize))
-                separator.isUserInteractionEnabled = false
-                separator.backgroundColor = configuration.separatorColor
-                arrangedViews.append(separator)
+                let divider = UIView(frame: CGRect(origin: .zero, size: configuration.dividerSize))
+                divider.backgroundColor = configuration.dividerColor
+                arrangedViews.append(divider)
             }
         }
         self.init(arrangedViews: arrangedViews, configuration: configuration)
@@ -219,12 +261,16 @@ extension MNPopoverView {
         let contentInset = configuration.contentInset
         let cornerRadius = configuration.cornerRadius
         
-        var anchorPoint: CGPoint = CGPoint(x: 0.5, y: 0.5)
+        let halfBorderWidth = borderWidth/2.0
+        let adjustedCornerRadius = max(cornerRadius - halfBorderWidth, halfBorderWidth)
+        let adjustedTriangleWidth = max(arrowSize.width - borderWidth, 0.0)
         
         let bezierPath: UIBezierPath = UIBezierPath()
+        var anchorPoint: CGPoint = CGPoint(x: 0.5, y: 0.5)
         
         switch configuration.arrowDirection {
         case .up:
+            // 确定位置
             contentView.frame = CGRect(x: 0.0, y: 0.0, width: stackView.frame.width + contentInset.left + contentInset.right, height: stackView.frame.height + contentInset.top + contentInset.bottom + arrowSize.height)
             stackView.frame = CGRect(x: contentInset.left, y: arrowSize.height + contentInset.top, width: stackView.frame.width, height: stackView.frame.height)
             var contentRect = contentView.frame
@@ -232,19 +278,36 @@ extension MNPopoverView {
             contentRect.origin.y = rect.maxY + arrowOffset.vertical
             contentView.frame = contentRect
             
-            let halfBorderWidth = borderWidth/2.0
-            
             let roundedRect = CGRect(origin: .zero, size: contentView.frame.size).inset(by: .init(top: arrowSize.height + halfBorderWidth, left: halfBorderWidth, bottom: halfBorderWidth, right: halfBorderWidth))
-            let adjustedCornerRadius = max(cornerRadius - halfBorderWidth, halfBorderWidth)
+            
             // 三角形顶点位置（在矩形顶部上方，考虑偏移）
             let triangleTopX = roundedRect.midX + arrowOffset.horizontal
             let triangleTopY = roundedRect.minY - arrowSize.height
-            // 三角形底边中心点（矩形顶部中心，考虑偏移）
-            let triangleBaseCenterX = triangleTopX
-            let triangleBaseCenterY = roundedRect.minY
+            // 三角形底边左侧的点
+            let triangleBaseLeftX = triangleTopX - adjustedTriangleWidth/2.0
+            let triangleBaseLeftY = roundedRect.minY
+            // 三角形底边右侧的点
+            let triangleBaseRightX = triangleTopX + adjustedTriangleWidth/2.0
+            let triangleBaseRightY = roundedRect.minY
             
-            
-            
+            // 移动到左上角 即将开始绘制圆角
+            bezierPath.move(to: .init(x: roundedRect.minX, y: roundedRect.minY + adjustedCornerRadius))
+            bezierPath.addArc(withCenter: .init(x: roundedRect.minX + adjustedCornerRadius, y: roundedRect.minY + adjustedCornerRadius), radius: adjustedCornerRadius, startAngle: .pi, endAngle: .pi + .pi/2.0, clockwise: true)
+            // 绘制三角
+            bezierPath.addLine(to: .init(x: triangleBaseLeftX, y: triangleBaseLeftY))
+            bezierPath.addLine(to: .init(x: triangleTopX, y: triangleTopY))
+            bezierPath.addLine(to: .init(x: triangleBaseRightX, y: triangleBaseRightY))
+            // 右上角
+            bezierPath.addLine(to: .init(x: roundedRect.maxX - adjustedCornerRadius, y: roundedRect.minY))
+            bezierPath.addArc(withCenter: .init(x: roundedRect.maxX - adjustedCornerRadius, y: roundedRect.minY + adjustedCornerRadius), radius: adjustedCornerRadius, startAngle: -.pi/2.0, endAngle: 0.0, clockwise: true)
+            // 右下角
+            bezierPath.addLine(to: .init(x: roundedRect.maxX, y: roundedRect.maxY - adjustedCornerRadius))
+            bezierPath.addArc(withCenter: .init(x: roundedRect.maxX - adjustedCornerRadius, y: roundedRect.maxY - adjustedCornerRadius), radius: adjustedCornerRadius, startAngle: 0.0, endAngle: .pi/2.0, clockwise: true)
+            // 左下角
+            bezierPath.addLine(to: .init(x: roundedRect.minX + adjustedCornerRadius, y: roundedRect.maxY))
+            bezierPath.addArc(withCenter: .init(x: roundedRect.minX + adjustedCornerRadius, y: roundedRect.maxY - adjustedCornerRadius), radius: adjustedCornerRadius, startAngle: .pi/2.0, endAngle: .pi, clockwise: true)
+            bezierPath.close()
+            /*
             bezierPath.move(to: CGPoint(x: borderWidth/2.0, y: arrowSize.height + borderWidth + cornerRadius))
             bezierPath.addArc(withCenter: CGPoint(x: borderWidth + cornerRadius, y: arrowSize.height + borderWidth + cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: .pi, endAngle: .pi/2.0 + .pi, clockwise: true)
             bezierPath.addLine(to: CGPoint(x: contentView.frame.width/2.0 - arrowSize.width/2.0 + borderWidth/2.0 + arrowOffset.horizontal, y: arrowSize.height + borderWidth/2.0))
@@ -257,15 +320,30 @@ extension MNPopoverView {
             bezierPath.addLine(to: CGPoint(x: borderWidth + cornerRadius, y: contentView.frame.height - borderWidth/2.0))
             bezierPath.addArc(withCenter: CGPoint(x: borderWidth + cornerRadius, y: contentView.frame.height - borderWidth - cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: .pi/2.0, endAngle: .pi, clockwise: true)
             bezierPath.close()
+            */
             anchorPoint.y = 0.0
-            anchorPoint.x = (contentView.frame.width/2.0 + arrowOffset.horizontal)/contentView.frame.width
+            anchorPoint.x = triangleTopX/contentView.frame.width
         case .left:
+            // 确定位置
             contentView.frame = CGRect(x: 0.0, y: 0.0, width: stackView.frame.width + contentInset.left + contentInset.right + arrowSize.height, height: stackView.frame.height + contentInset.top + contentInset.bottom)
             stackView.frame = CGRect(x: contentInset.left + arrowSize.height, y: contentInset.top, width: stackView.frame.width, height: stackView.frame.height)
             var contentRect = contentView.frame
             contentRect.origin.x = rect.maxX + arrowOffset.horizontal
             contentRect.origin.y = rect.midY - arrowOffset.vertical - contentRect.height/2.0
             contentView.frame = contentRect
+            
+            let roundedRect = CGRect(origin: .zero, size: contentView.frame.size).inset(by: .init(top: halfBorderWidth, left: arrowSize.height + halfBorderWidth, bottom: halfBorderWidth, right: halfBorderWidth))
+            
+            // 三角形顶点位置（在矩形顶部上方，考虑偏移）
+            let triangleTopX = roundedRect.minX - arrowSize.height
+            let triangleTopY = roundedRect.midY + arrowOffset.vertical
+            // 三角形底边右(上)侧的点
+            let triangleBaseTopX = roundedRect.minX
+            let triangleBaseTopY = triangleTopY - adjustedTriangleWidth/2.0
+            // 三角形底边左(下)侧的点
+            let triangleBaseBottomX = roundedRect.minX
+            let triangleBaseBottomY = triangleTopY + adjustedTriangleWidth/2.0
+            
             bezierPath.move(to: CGPoint(x: arrowSize.height + borderWidth/2.0, y: cornerRadius + borderWidth))
             bezierPath.addArc(withCenter: CGPoint(x: arrowSize.height + borderWidth + cornerRadius, y: borderWidth + cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: .pi, endAngle: .pi/2.0 + .pi, clockwise: true)
             bezierPath.addLine(to: CGPoint(x: contentView.frame.width - borderWidth - cornerRadius, y: borderWidth/2.0))
@@ -357,9 +435,11 @@ extension MNPopoverView {
             }
         case .fade:
             contentView.alpha = 0.0
+            contentView.transform = .init(scaleX: 1.05, y: 1.05)
             UIView.animate(withDuration: animated ? configuration.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.alpha = 1.0
+                self.contentView.transform = .identity
             }
         case .move:
             let target = contentView.frame
@@ -414,6 +494,7 @@ extension MNPopoverView {
             UIView.animate(withDuration: animated ? configuration.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.alpha = 0.0
+                self.contentView.transform = .init(scaleX: 0.95, y: 0.95)
             } completion: { [weak self] _ in
                 guard let self = self else { return }
                 self.removeFromSuperview()

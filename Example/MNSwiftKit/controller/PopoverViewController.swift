@@ -54,9 +54,21 @@ class PopoverViewController: UIViewController {
         configuration.titleFont = .systemFont(ofSize: 13.0, weight: .medium)
         configuration.titleColor = .white
         configuration.arrowDirection = direction
-        configuration.width = .fixed(60.0)
-        configuration.height = .fixed(25.0)
+        configuration.itemWidth = .fixed(60.0)
+        configuration.itemHeight = .fixed(30.0)
         configuration.cornerRadius = 5.0
+        
+        switch direction {
+        case .up:
+            configuration.axis = .vertical
+        case .down:
+            configuration.axis = .vertical
+        case .left:
+            configuration.axis = .horizontal
+        case .right:
+            configuration.axis = .horizontal
+        }
+        
         
         let popoverView = MNPopoverView(titles: "选项一", "选项二", "选项三", configuration: configuration)
         popoverView.popup(in: view, target: sender, animated: true) { sender in

@@ -87,11 +87,7 @@ extension MNMetadataExportSupported {
     ///   - size: 期望最大尺寸(视频资源有效)
     /// - Returns: 获取到的截图(音频则返回插图)
     static public func generateImage(for asset: AVAsset, at seconds: any BinaryFloatingPoint = 0.0, maximum size: CGSize = .init(width: 300.0, height: 300.0)) -> UIImage? {
-        if let _ = asset.mn.track(with: .video) {
-            // 视频
-            return asset.mn.generateImage(at: seconds, maximum: size)
-        }
-        return asset.mn.artwork
+        asset.mn.generateImage(at: seconds, maximum: size)
     }
     
     /// 依据文件后缀获取文件类型

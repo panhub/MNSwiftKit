@@ -512,17 +512,9 @@ extension MNAssetHelper {
                         }
                         return
                     }
+                    // 这里要进行一次拷贝，直接使用内部路径，在获取媒体文件信息时，会出现没有权限的问题
                     let videoUrl = videoAsset.url
-                    guard let videoExportURL = options.videoExportURL else {
-                        let targetPath = videoUrl.mn.path
-                        let fileSize = FileManager.default.mn.itemSize(atPath: targetPath)
-                        DispatchQueue.main.async {
-                            completionHandler?(targetPath, fileSize, nil)
-                        }
-                        return
-                    }
-                    // 拷贝视频到指定位置
-                    let targetUrl = MNAssetHelper.exportURL(videoExportURL, ext: videoUrl.pathExtension.lowercased())
+                    let targetUrl = MNAssetHelper.exportURL(options.videoExportURL, ext: videoUrl.pathExtension.lowercased())
                     let targetDirectory = targetUrl.deletingLastPathComponent()
                     if FileManager.default.fileExists(atPath: targetDirectory.mn.path) == false {
                         do {
@@ -709,7 +701,7 @@ extension MNAssetHelper {
     /// 默认的资源导出目录
     private class var exportDirectory: String {
         
-        NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first! + "/AssetPicker"
+        NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first! + "/MNAssetPicker"
     }
     
     /// 获取资源导出路径

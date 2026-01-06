@@ -37,6 +37,7 @@ PODS:
   - MNSwiftKit/Components (0.1.3):
     - MNSwiftKit/Extension
     - MNSwiftKit/Layout
+    - MNSwiftKit/NameSpace
   - MNSwiftKit/Database (0.1.3)
   - MNSwiftKit/Definition (0.1.3):
     - MNSwiftKit/NameSpace
@@ -110,7 +111,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: 33b8d6806603c251eee27626caaceeae8ef8149b
+  MNSwiftKit: 88ecd06e45ad634273d87d37b98316cd58379e70
 
 PODFILE CHECKSUM: 6945f8f3025c0c190cd98bd04f84e75ce33964db
 
