@@ -121,18 +121,20 @@ public struct MNPopoverConfiguration {
 
 /// 弹出视图
 public class MNPopoverView: UIView {
-    /// 点击背景取消
-    public var dismissWhenTapped: Bool = true
-    /// 是否允许
-    public var allowUserInteraction: Bool = false
     /// 配置
     private let configuration: MNPopoverConfiguration
-    /// 轮廓视图
-    private let shapeView: UIView = UIView()
-    /// 内容视图
-    private let contentView: UIView = UIView()
+    /// 是否允许底部事件交互
+    public var allowUserInteraction = false
+    /// 点击背景后关闭
+    public var closeWhenBackgroundTap = true
     /// 子菜单按钮集合
-    private let stackView: UIView = UIView()
+    private let stackView = UIView()
+    /// 轮廓视图
+    private let shapeView = UIView()
+    /// 内容视图
+    private let contentView = UIView()
+    /// 轮廓曲线
+    private let bezierPath = UIBezierPath()
     /// 事件回调
     private var eventHandler: ((UIControl) -> Void)?
     
@@ -235,6 +237,16 @@ public class MNPopoverView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    public override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        guard allowUserInteraction else {
+            return super.point(inside: point, with: event)
+        }
+        // 判断位置
+        if isHidden || alpha <= 0.01 { return false }
+        let location = convert(point, to: contentView)
+        return bezierPath.contains(location)
+    }
 }
 
 extension MNPopoverView {
@@ -245,7 +257,8 @@ extension MNPopoverView {
     ///   - targetView: 目标视图
     ///   - animated: 是否使用动画
     ///   - eventHandler: 按钮点击回调
-    public func popup(in superview: UIView? = nil, target targetView: UIView, animated: Bool = true, events eventHandler: ((_ sender: UIControl) -> Void)? = nil) {
+    ///   - completionHandler: 展示后回调
+    public func popup(in superview: UIView? = nil, target targetView: UIView, animated: Bool = true, events eventHandler: ((_ sender: UIControl) -> Void)? = nil, completion completionHandler: (()->Void)? = nil) {
         guard self.superview == nil else { return }
         guard stackView.bounds.isNull == false, stackView.bounds.isEmpty == false else { return }
         guard let superview = superview ?? UIWindow.mn.current else { return }
@@ -265,24 +278,24 @@ extension MNPopoverView {
         let adjustedCornerRadius = max(cornerRadius - halfBorderWidth, halfBorderWidth)
         let adjustedTriangleWidth = max(arrowSize.width - borderWidth, 0.0)
         
-        let bezierPath: UIBezierPath = UIBezierPath()
         var anchorPoint: CGPoint = CGPoint(x: 0.5, y: 0.5)
         
         switch configuration.arrowDirection {
         case .up:
-            // 确定位置
-            contentView.frame = CGRect(x: 0.0, y: 0.0, width: stackView.frame.width + contentInset.left + contentInset.right, height: stackView.frame.height + contentInset.top + contentInset.bottom + arrowSize.height)
-            stackView.frame = CGRect(x: contentInset.left, y: arrowSize.height + contentInset.top, width: stackView.frame.width, height: stackView.frame.height)
-            var contentRect = contentView.frame
-            contentRect.origin.x = rect.midX - arrowOffset.horizontal - contentRect.width/2.0
-            contentRect.origin.y = rect.maxY + arrowOffset.vertical
-            contentView.frame = contentRect
+            // 指向上
+            contentView.frame.size.width = borderWidth + contentInset.left + stackView.frame.width + contentInset.right + borderWidth
+            contentView.frame.size.height = arrowSize.height + borderWidth + contentInset.top + stackView.frame.height + contentInset.bottom + borderWidth
+            contentView.frame.origin.x = rect.midX - contentView.frame.width/2.0 - arrowOffset.horizontal
+            contentView.frame.origin.y = rect.maxY + arrowOffset.vertical
             
-            let roundedRect = CGRect(origin: .zero, size: contentView.frame.size).inset(by: .init(top: arrowSize.height + halfBorderWidth, left: halfBorderWidth, bottom: halfBorderWidth, right: halfBorderWidth))
+            stackView.frame.origin.x = borderWidth + contentInset.left
+            stackView.frame.origin.y = arrowSize.height + borderWidth + contentInset.top
+            
+            let roundedRect = contentView.bounds.inset(by: .init(top: arrowSize.height + halfBorderWidth, left: halfBorderWidth, bottom: halfBorderWidth, right: halfBorderWidth))
             
             // 三角形顶点位置（在矩形顶部上方，考虑偏移）
             let triangleTopX = roundedRect.midX + arrowOffset.horizontal
-            let triangleTopY = roundedRect.minY - arrowSize.height
+            let triangleTopY = halfBorderWidth
             // 三角形底边左侧的点
             let triangleBaseLeftX = triangleTopX - adjustedTriangleWidth/2.0
             let triangleBaseLeftY = roundedRect.minY
@@ -290,7 +303,7 @@ extension MNPopoverView {
             let triangleBaseRightX = triangleTopX + adjustedTriangleWidth/2.0
             let triangleBaseRightY = roundedRect.minY
             
-            // 移动到左上角 即将开始绘制圆角
+            // 移动到左上角 开始绘制圆角
             bezierPath.move(to: .init(x: roundedRect.minX, y: roundedRect.minY + adjustedCornerRadius))
             bezierPath.addArc(withCenter: .init(x: roundedRect.minX + adjustedCornerRadius, y: roundedRect.minY + adjustedCornerRadius), radius: adjustedCornerRadius, startAngle: .pi, endAngle: .pi + .pi/2.0, clockwise: true)
             // 绘制三角
@@ -306,109 +319,149 @@ extension MNPopoverView {
             // 左下角
             bezierPath.addLine(to: .init(x: roundedRect.minX + adjustedCornerRadius, y: roundedRect.maxY))
             bezierPath.addArc(withCenter: .init(x: roundedRect.minX + adjustedCornerRadius, y: roundedRect.maxY - adjustedCornerRadius), radius: adjustedCornerRadius, startAngle: .pi/2.0, endAngle: .pi, clockwise: true)
+            
             bezierPath.close()
-            /*
-            bezierPath.move(to: CGPoint(x: borderWidth/2.0, y: arrowSize.height + borderWidth + cornerRadius))
-            bezierPath.addArc(withCenter: CGPoint(x: borderWidth + cornerRadius, y: arrowSize.height + borderWidth + cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: .pi, endAngle: .pi/2.0 + .pi, clockwise: true)
-            bezierPath.addLine(to: CGPoint(x: contentView.frame.width/2.0 - arrowSize.width/2.0 + borderWidth/2.0 + arrowOffset.horizontal, y: arrowSize.height + borderWidth/2.0))
-            bezierPath.addLine(to: CGPoint(x: contentView.frame.width/2.0 + arrowOffset.horizontal, y: borderWidth/2.0))
-            bezierPath.addLine(to: CGPoint(x: contentView.frame.width/2.0 + arrowSize.width/2.0 - borderWidth/2.0 + arrowOffset.horizontal, y: arrowSize.height + borderWidth/2.0))
-            bezierPath.addLine(to: CGPoint(x: contentView.frame.width - borderWidth - cornerRadius, y: arrowSize.height + borderWidth/2.0))
-            bezierPath.addArc(withCenter: CGPoint(x: contentView.frame.width - borderWidth - cornerRadius, y: arrowSize.height + borderWidth + cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: -.pi/2.0, endAngle: 0.0, clockwise: true)
-            bezierPath.addLine(to: CGPoint(x: contentView.frame.width - borderWidth/2.0, y: contentView.frame.height - borderWidth - cornerRadius))
-            bezierPath.addArc(withCenter: CGPoint(x: contentView.frame.width - borderWidth - cornerRadius, y: contentView.frame.height - borderWidth - cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: 0.0, endAngle: .pi/2.0, clockwise: true)
-            bezierPath.addLine(to: CGPoint(x: borderWidth + cornerRadius, y: contentView.frame.height - borderWidth/2.0))
-            bezierPath.addArc(withCenter: CGPoint(x: borderWidth + cornerRadius, y: contentView.frame.height - borderWidth - cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: .pi/2.0, endAngle: .pi, clockwise: true)
-            bezierPath.close()
-            */
+            
             anchorPoint.y = 0.0
             anchorPoint.x = triangleTopX/contentView.frame.width
         case .left:
-            // 确定位置
-            contentView.frame = CGRect(x: 0.0, y: 0.0, width: stackView.frame.width + contentInset.left + contentInset.right + arrowSize.height, height: stackView.frame.height + contentInset.top + contentInset.bottom)
-            stackView.frame = CGRect(x: contentInset.left + arrowSize.height, y: contentInset.top, width: stackView.frame.width, height: stackView.frame.height)
-            var contentRect = contentView.frame
-            contentRect.origin.x = rect.maxX + arrowOffset.horizontal
-            contentRect.origin.y = rect.midY - arrowOffset.vertical - contentRect.height/2.0
-            contentView.frame = contentRect
+            // 指向左
+            contentView.frame.size.width = arrowSize.height + borderWidth + contentInset.left + stackView.frame.width + contentInset.right + borderWidth
+            contentView.frame.size.height = borderWidth + contentInset.top + stackView.frame.height + contentInset.bottom + borderWidth
+            contentView.frame.origin.x = rect.maxX + arrowOffset.horizontal
+            contentView.frame.origin.y = rect.midY - contentView.frame.height/2.0 - arrowOffset.vertical
             
-            let roundedRect = CGRect(origin: .zero, size: contentView.frame.size).inset(by: .init(top: halfBorderWidth, left: arrowSize.height + halfBorderWidth, bottom: halfBorderWidth, right: halfBorderWidth))
+            stackView.frame.origin.x = arrowSize.height + borderWidth + contentInset.left
+            stackView.frame.origin.y = borderWidth + contentInset.top
+            
+            let roundedRect = contentView.bounds.inset(by: .init(top: halfBorderWidth, left: arrowSize.height + halfBorderWidth, bottom: halfBorderWidth, right: halfBorderWidth))
             
             // 三角形顶点位置（在矩形顶部上方，考虑偏移）
-            let triangleTopX = roundedRect.minX - arrowSize.height
+            let triangleTopX = halfBorderWidth
             let triangleTopY = roundedRect.midY + arrowOffset.vertical
-            // 三角形底边右(上)侧的点
-            let triangleBaseTopX = roundedRect.minX
-            let triangleBaseTopY = triangleTopY - adjustedTriangleWidth/2.0
             // 三角形底边左(下)侧的点
-            let triangleBaseBottomX = roundedRect.minX
-            let triangleBaseBottomY = triangleTopY + adjustedTriangleWidth/2.0
+            let triangleBaseLeftX = roundedRect.minX
+            let triangleBaseLeftY = triangleTopY + adjustedTriangleWidth/2.0
+            // 三角形底边右(上)侧的点
+            let triangleBaseRightX = roundedRect.minX
+            let triangleBaseRightY = triangleTopY - adjustedTriangleWidth/2.0
             
-            bezierPath.move(to: CGPoint(x: arrowSize.height + borderWidth/2.0, y: cornerRadius + borderWidth))
-            bezierPath.addArc(withCenter: CGPoint(x: arrowSize.height + borderWidth + cornerRadius, y: borderWidth + cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: .pi, endAngle: .pi/2.0 + .pi, clockwise: true)
-            bezierPath.addLine(to: CGPoint(x: contentView.frame.width - borderWidth - cornerRadius, y: borderWidth/2.0))
-            bezierPath.addArc(withCenter: CGPoint(x: contentView.frame.width - borderWidth - cornerRadius, y: borderWidth + cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: -.pi/2.0, endAngle: 0.0, clockwise: true)
-            bezierPath.addLine(to: CGPoint(x: contentView.frame.width - borderWidth/2.0, y: contentView.frame.height - cornerRadius - borderWidth))
-            bezierPath.addArc(withCenter: CGPoint(x: contentView.frame.width - cornerRadius - borderWidth, y: contentView.frame.height - cornerRadius - borderWidth), radius: cornerRadius + borderWidth/2.0, startAngle: 0.0, endAngle: .pi/2.0, clockwise: true)
-            bezierPath.addLine(to: CGPoint(x: arrowSize.width + borderWidth + cornerRadius, y: contentView.frame.height - borderWidth/2.0))
-            bezierPath.addArc(withCenter: CGPoint(x: arrowSize.height + borderWidth + cornerRadius, y: contentView.frame.height - borderWidth - cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: .pi/2.0, endAngle: .pi, clockwise: true)
-            bezierPath.addLine(to: CGPoint(x: arrowSize.height + borderWidth/2.0, y: contentView.frame.height/2.0 + arrowSize.width/2.0 - borderWidth/2.0 + arrowOffset.vertical))
-            bezierPath.addLine(to: CGPoint(x: borderWidth/2.0, y: contentView.frame.height/2.0 + arrowOffset.vertical))
-            bezierPath.addLine(to: CGPoint(x: arrowSize.height + borderWidth/2.0, y: contentView.frame.height/2.0 - arrowSize.width/2.0 + borderWidth/2.0 + arrowOffset.vertical))
+            // 移动到左上角 准备绘制圆角
+            bezierPath.move(to: .init(x: roundedRect.minX, y: roundedRect.minY + adjustedCornerRadius))
+            bezierPath.addArc(withCenter: .init(x: roundedRect.minX + adjustedCornerRadius, y: roundedRect.minY + adjustedCornerRadius), radius: adjustedCornerRadius, startAngle: .pi, endAngle: .pi + .pi/2.0, clockwise: true)
+            // 右上角
+            bezierPath.addLine(to: .init(x: roundedRect.maxX - adjustedCornerRadius, y: roundedRect.minY))
+            bezierPath.addArc(withCenter: .init(x: roundedRect.maxX - adjustedCornerRadius, y: roundedRect.minY + adjustedCornerRadius), radius: adjustedCornerRadius, startAngle: -.pi/2.0, endAngle: 0.0, clockwise: true)
+            // 右下角
+            bezierPath.addLine(to: .init(x: roundedRect.maxX, y: roundedRect.maxY - adjustedCornerRadius))
+            bezierPath.addArc(withCenter: .init(x: roundedRect.maxX - adjustedCornerRadius, y: roundedRect.maxY - adjustedCornerRadius), radius: adjustedCornerRadius, startAngle: 0.0, endAngle: .pi/2.0, clockwise: true)
+            // 左下角
+            bezierPath.addLine(to: .init(x: roundedRect.minX + adjustedCornerRadius, y: roundedRect.maxY))
+            bezierPath.addArc(withCenter: .init(x: roundedRect.minX + adjustedCornerRadius, y: roundedRect.maxY - adjustedCornerRadius), radius: adjustedCornerRadius, startAngle: .pi/2.0, endAngle: .pi, clockwise: true)
+            // 绘制三角
+            bezierPath.addLine(to: .init(x: triangleBaseLeftX, y: triangleBaseLeftY))
+            bezierPath.addLine(to: .init(x: triangleTopX, y: triangleTopY))
+            bezierPath.addLine(to: .init(x: triangleBaseRightX, y: triangleBaseRightY))
+            
             bezierPath.close()
+            
             anchorPoint.x = 0.0
-            anchorPoint.y = (contentView.frame.height/2.0 + arrowOffset.vertical)/contentView.frame.height
+            anchorPoint.y = triangleTopY/contentView.frame.height
         case .down:
-            contentView.frame = CGRect(x: 0.0, y: 0.0, width: stackView.frame.width + contentInset.left + contentInset.right, height: stackView.frame.height + contentInset.top + contentInset.bottom + arrowSize.height)
-            stackView.frame = CGRect(x: contentInset.left, y: contentInset.top, width: stackView.frame.width, height: stackView.frame.height)
-            var contentRect = contentView.frame
-            contentRect.origin.x = rect.midX - arrowOffset.horizontal - contentRect.width/2.0
-            contentRect.origin.y = rect.minY + arrowOffset.vertical - contentRect.height
-            contentView.frame = contentRect
-            bezierPath.move(to: CGPoint(x: borderWidth/2.0, y: borderWidth + cornerRadius))
-            bezierPath.addArc(withCenter: CGPoint(x: borderWidth + cornerRadius, y: borderWidth + cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: .pi, endAngle: .pi/2.0 + .pi, clockwise: true)
-            bezierPath.addLine(to: CGPoint(x: contentView.frame.width - borderWidth - cornerRadius, y: borderWidth/2.0))
-            bezierPath.addArc(withCenter: CGPoint(x: contentView.frame.width - borderWidth - cornerRadius, y: borderWidth + cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: -.pi/2.0, endAngle: 0.0, clockwise: true)
-            bezierPath.addLine(to: CGPoint(x: contentView.frame.width - borderWidth/2.0, y: contentView.frame.height - arrowSize.height - borderWidth - cornerRadius))
-            bezierPath.addArc(withCenter: CGPoint(x: contentView.frame.width - borderWidth - cornerRadius, y: contentView.frame.height - arrowSize.height - borderWidth - cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: 0.0, endAngle: .pi/2.0, clockwise: true)
-            bezierPath.addLine(to: CGPoint(x: contentView.frame.width/2.0 + arrowSize.width/2.0 - borderWidth/2.0 + arrowOffset.horizontal, y: contentView.frame.height - arrowSize.height - borderWidth/2.0))
-            bezierPath.addLine(to: CGPoint(x: contentView.frame.width/2.0 + arrowOffset.horizontal, y: contentView.frame.height - borderWidth/2.0))
-            bezierPath.addLine(to: CGPoint(x: contentView.frame.width/2.0 - arrowSize.width/2.0 + borderWidth/2.0 + arrowOffset.horizontal, y: contentView.frame.height - arrowSize.height - borderWidth/2.0))
-            bezierPath.addLine(to: CGPoint(x: cornerRadius + borderWidth, y: contentView.frame.height - arrowSize.height - borderWidth/2.0))
-            bezierPath.addArc(withCenter: CGPoint(x: cornerRadius + borderWidth, y: contentView.frame.height - arrowSize.height - borderWidth - cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: .pi/2.0, endAngle: .pi, clockwise: true)
+            // 指向下
+            contentView.frame.size.width = borderWidth + contentInset.left + stackView.frame.width + contentInset.right + borderWidth
+            contentView.frame.size.height = borderWidth + contentInset.top + stackView.frame.height + contentInset.bottom + borderWidth + arrowSize.height
+            contentView.frame.origin.x = rect.midX - contentView.frame.width/2.0 - arrowOffset.horizontal
+            contentView.frame.origin.y = rect.minY - contentView.frame.height + arrowOffset.vertical
+            
+            stackView.frame.origin.x = borderWidth + contentInset.left
+            stackView.frame.origin.y = borderWidth + contentInset.top
+            
+            let roundedRect = contentView.bounds.inset(by: .init(top: halfBorderWidth, left: halfBorderWidth, bottom: halfBorderWidth + arrowSize.height, right: halfBorderWidth))
+            
+            // 三角形顶点位置
+            let triangleTopX = roundedRect.midX + arrowOffset.horizontal
+            let triangleTopY = roundedRect.maxY + arrowSize.height
+            // 三角形底边左侧的点
+            let triangleBaseLeftX = triangleTopX - adjustedTriangleWidth/2.0
+            let triangleBaseLeftY = roundedRect.maxY
+            // 三角形底边右侧的点
+            let triangleBaseRightX = triangleTopX + adjustedTriangleWidth/2.0
+            let triangleBaseRightY = roundedRect.maxY
+            
+            // 移动到左上角 开始绘制圆角
+            bezierPath.move(to: .init(x: roundedRect.minX, y: roundedRect.minY + adjustedCornerRadius))
+            bezierPath.addArc(withCenter: .init(x: roundedRect.minX + adjustedCornerRadius, y: roundedRect.minY + adjustedCornerRadius), radius: adjustedCornerRadius, startAngle: .pi, endAngle: .pi + .pi/2.0, clockwise: true)
+            // 右上角
+            bezierPath.addLine(to: .init(x: roundedRect.maxX - adjustedCornerRadius, y: roundedRect.minY))
+            bezierPath.addArc(withCenter: .init(x: roundedRect.maxX - adjustedCornerRadius, y: roundedRect.minY + adjustedCornerRadius), radius: adjustedCornerRadius, startAngle: -.pi/2.0, endAngle: 0.0, clockwise: true)
+            // 右下角
+            bezierPath.addLine(to: .init(x: roundedRect.maxX, y: roundedRect.maxY - adjustedCornerRadius))
+            bezierPath.addArc(withCenter: .init(x: roundedRect.maxX - adjustedCornerRadius, y: roundedRect.maxY - adjustedCornerRadius), radius: adjustedCornerRadius, startAngle: 0.0, endAngle: .pi/2.0, clockwise: true)
+            // 绘制三角
+            bezierPath.addLine(to: .init(x: triangleBaseRightX, y: triangleBaseRightY))
+            bezierPath.addLine(to: .init(x: triangleTopX, y: triangleTopY))
+            bezierPath.addLine(to: .init(x: triangleBaseLeftX, y: triangleBaseLeftY))
+            // 左下角
+            bezierPath.addLine(to: .init(x: roundedRect.minX + adjustedCornerRadius, y: roundedRect.maxY))
+            bezierPath.addArc(withCenter: .init(x: roundedRect.minX + adjustedCornerRadius, y: roundedRect.maxY - adjustedCornerRadius), radius: adjustedCornerRadius, startAngle: .pi/2.0, endAngle: .pi, clockwise: true)
+            
             bezierPath.close()
+            
             anchorPoint.y = 1.0
-            anchorPoint.x = (contentView.frame.width/2.0 + arrowOffset.horizontal)/contentView.frame.width
+            anchorPoint.x = triangleTopX/contentView.frame.width
         case .right:
-            contentView.frame = CGRect(x: 0.0, y: 0.0, width: stackView.frame.width + contentInset.left + contentInset.right + arrowSize.height, height: stackView.frame.height + contentInset.top + contentInset.bottom)
-            stackView.frame = CGRect(x: contentInset.left, y: contentInset.top, width: stackView.frame.width, height: stackView.frame.height)
-            var contentRect = contentView.frame
-            contentRect.origin.x = rect.minX + arrowOffset.horizontal - contentRect.width
-            contentRect.origin.y = rect.midY - arrowOffset.vertical - contentRect.height/2.0
-            contentView.frame = contentRect
-            bezierPath.move(to: CGPoint(x: borderWidth/2.0, y: cornerRadius + borderWidth))
-            bezierPath.addArc(withCenter: CGPoint(x: borderWidth + cornerRadius, y: borderWidth + cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: .pi, endAngle: .pi/2.0 + .pi, clockwise: true)
-            bezierPath.addLine(to: CGPoint(x: contentView.frame.width - arrowSize.height - borderWidth - cornerRadius, y: borderWidth/2.0))
-            bezierPath.addArc(withCenter: CGPoint(x: contentView.frame.width - arrowSize.height - borderWidth - cornerRadius, y: borderWidth + cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: -.pi/2.0, endAngle: 0.0, clockwise: true)
-            bezierPath.addLine(to: CGPoint(x: contentView.frame.width - arrowSize.height - borderWidth/2.0, y: contentView.frame.height/2.0 - arrowSize.width/2.0 + borderWidth/2.0 + arrowOffset.vertical))
-            bezierPath.addLine(to: CGPoint(x: contentView.frame.width - borderWidth/2.0, y: contentView.frame.height/2.0 + arrowOffset.vertical))
-            bezierPath.addLine(to: CGPoint(x: contentView.frame.width - arrowSize.height - borderWidth/2.0, y: contentView.frame.height/2.0 + arrowSize.width/2.0 - borderWidth/2.0 + arrowOffset.vertical))
-            bezierPath.addLine(to: CGPoint(x: contentView.frame.width - arrowSize.height - borderWidth/2.0, y: contentView.frame.height - borderWidth - cornerRadius))
-            bezierPath.addArc(withCenter: CGPoint(x: contentView.frame.width - arrowSize.height - borderWidth - cornerRadius, y: contentView.frame.height - borderWidth - cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: 0.0, endAngle: .pi/2.0, clockwise: true)
-            bezierPath.addLine(to: CGPoint(x: cornerRadius + borderWidth, y: contentView.frame.height - borderWidth/2.0))
-            bezierPath.addArc(withCenter: CGPoint(x: cornerRadius + borderWidth, y: contentView.frame.height - borderWidth - cornerRadius), radius: cornerRadius + borderWidth/2.0, startAngle: .pi/2.0, endAngle: .pi, clockwise: true)
+            // 指向右
+            contentView.frame.size.width = borderWidth + contentInset.left + stackView.frame.width + contentInset.right + borderWidth + arrowSize.height
+            contentView.frame.size.height = borderWidth + contentInset.top + stackView.frame.height + contentInset.bottom + borderWidth
+            contentView.frame.origin.x = rect.minX - contentView.frame.width + arrowOffset.horizontal
+            contentView.frame.origin.y = rect.midY - contentView.frame.height/2.0 - arrowOffset.vertical
+            
+            stackView.frame.origin.x = borderWidth + contentInset.left
+            stackView.frame.origin.y = borderWidth + contentInset.top
+            
+            let roundedRect = contentView.bounds.inset(by: .init(top: halfBorderWidth, left: halfBorderWidth, bottom: halfBorderWidth, right: halfBorderWidth + arrowSize.height))
+            
+            // 三角形顶点位置（在矩形顶部上方，考虑偏移）
+            let triangleTopX = roundedRect.maxX + arrowSize.height
+            let triangleTopY = roundedRect.midY + arrowOffset.vertical
+            // 三角形底边左(上)侧的点
+            let triangleBaseLeftX = roundedRect.maxX
+            let triangleBaseLeftY = triangleTopY - adjustedTriangleWidth/2.0
+            // 三角形底边右(上)侧的点
+            let triangleBaseRightX = roundedRect.maxX
+            let triangleBaseRightY = triangleTopY + adjustedTriangleWidth/2.0
+            
+            // 移动到左上角 准备绘制圆角
+            bezierPath.move(to: .init(x: roundedRect.minX, y: roundedRect.minY + adjustedCornerRadius))
+            bezierPath.addArc(withCenter: .init(x: roundedRect.minX + adjustedCornerRadius, y: roundedRect.minY + adjustedCornerRadius), radius: adjustedCornerRadius, startAngle: .pi, endAngle: .pi + .pi/2.0, clockwise: true)
+            // 右上角
+            bezierPath.addLine(to: .init(x: roundedRect.maxX - adjustedCornerRadius, y: roundedRect.minY))
+            bezierPath.addArc(withCenter: .init(x: roundedRect.maxX - adjustedCornerRadius, y: roundedRect.minY + adjustedCornerRadius), radius: adjustedCornerRadius, startAngle: -.pi/2.0, endAngle: 0.0, clockwise: true)
+            // 绘制三角
+            bezierPath.addLine(to: .init(x: triangleBaseLeftX, y: triangleBaseLeftY))
+            bezierPath.addLine(to: .init(x: triangleTopX, y: triangleTopY))
+            bezierPath.addLine(to: .init(x: triangleBaseRightX, y: triangleBaseRightY))
+            // 右下角
+            bezierPath.addLine(to: .init(x: roundedRect.maxX, y: roundedRect.maxY - adjustedCornerRadius))
+            bezierPath.addArc(withCenter: .init(x: roundedRect.maxX - adjustedCornerRadius, y: roundedRect.maxY - adjustedCornerRadius), radius: adjustedCornerRadius, startAngle: 0.0, endAngle: .pi/2.0, clockwise: true)
+            // 左下角
+            bezierPath.addLine(to: .init(x: roundedRect.minX + adjustedCornerRadius, y: roundedRect.maxY))
+            bezierPath.addArc(withCenter: .init(x: roundedRect.minX + adjustedCornerRadius, y: roundedRect.maxY - adjustedCornerRadius), radius: adjustedCornerRadius, startAngle: .pi/2.0, endAngle: .pi, clockwise: true)
+            
             bezierPath.close()
+            
             anchorPoint.x = 1.0
-            anchorPoint.y = (contentView.frame.height/2.0 + arrowOffset.vertical)/contentView.frame.height
+            anchorPoint.y = triangleTopY/contentView.frame.height
         }
         
         let maskLayer = CAShapeLayer()
         maskLayer.path = bezierPath.cgPath
+        maskLayer.lineCap = .butt
+        maskLayer.lineJoin = .round
+        maskLayer.lineWidth = borderWidth
         maskLayer.fillColor = (configuration.fillColor ?? .clear).cgColor
         maskLayer.strokeColor = (configuration.borderColor ?? .clear).cgColor
-        maskLayer.lineJoin = .round
-        maskLayer.lineCap = .round
-        maskLayer.lineWidth = borderWidth
         
         shapeView.frame = contentView.bounds
         shapeView.layer.addSublayer(maskLayer)
@@ -432,14 +485,18 @@ extension MNPopoverView {
             UIView.animate(withDuration: animated ? configuration.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.transform = .identity
+            } completion: { _ in
+                completionHandler?()
             }
         case .fade:
             contentView.alpha = 0.0
-            contentView.transform = .init(scaleX: 1.05, y: 1.05)
+            contentView.transform = .init(scaleX: 0.98, y: 0.98)
             UIView.animate(withDuration: animated ? configuration.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.alpha = 1.0
                 self.contentView.transform = .identity
+            } completion: { _ in
+                completionHandler?()
             }
         case .move:
             let target = contentView.frame
@@ -471,6 +528,7 @@ extension MNPopoverView {
                 guard let self = self else { return }
                 self.stackView.autoresizingMask = []
                 self.shapeView.autoresizingMask = []
+                completionHandler?()
             }
         }
     }
@@ -494,7 +552,7 @@ extension MNPopoverView {
             UIView.animate(withDuration: animated ? configuration.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.alpha = 0.0
-                self.contentView.transform = .init(scaleX: 0.95, y: 0.95)
+                self.contentView.transform = .init(scaleX: 0.98, y: 0.98)
             } completion: { [weak self] _ in
                 guard let self = self else { return }
                 self.removeFromSuperview()
@@ -548,7 +606,7 @@ extension MNPopoverView {
     
     /// 背景点击事件
     @objc private func backgroundTouchUpInside() {
-        guard dismissWhenTapped else { return }
+        guard closeWhenBackgroundTap else { return }
         close()
     }
 }
@@ -564,6 +622,11 @@ extension MNPopoverView: UIGestureRecognizerDelegate {
 
 // MARK: - Dismiss & Remove
 extension MNNameSpaceWrapper where Base: UIView {
+    
+    /// 是否存在弹出视图
+    public var isPopoverAppearing: Bool {
+        base.subviews.reversed().first { $0 is MNPopoverView } != nil
+    }
     
     /// 取消自身的弹出视图
     /// - Parameters:
