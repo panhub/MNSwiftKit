@@ -171,13 +171,13 @@ class MNTailorView: UIView {
         
         let videoPath: String = videoPath
         
-        var naturalSize = MNAssetExportSession.naturalSize(videoAtPath: videoPath)
+        var naturalSize = MNAssetExportSession.naturalSize(for: videoPath)
         guard naturalSize != .zero else {
             delegate?.tailorViewLoadThumbnailFailed(self)
             return
         }
         
-        let duration: TimeInterval = MNAssetExportSession.seconds(fileAtPath: videoPath)
+        let duration: TimeInterval = MNAssetExportSession.seconds(for: videoPath)
         guard duration > 0.0 else {
             delegate?.tailorViewLoadThumbnailFailed(self)
             return

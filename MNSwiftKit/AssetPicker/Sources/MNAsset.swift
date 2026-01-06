@@ -222,8 +222,8 @@ public class MNAsset: NSObject, MNAssetBrowseSupported {
         }
         if let filePath = filePath, FileManager.default.fileExists(atPath: filePath) {
             type = .video
-            cover = MNAssetExportSession.generateImage(fileAtPath: filePath)
-            duration = MNAssetExportSession.seconds(fileAtPath: filePath)
+            cover = MNAssetExportSession.generateImage(for: filePath)
+            duration = MNAssetExportSession.seconds(for: filePath)
             if let options = options, options.showFileSize, let attributes = try? FileManager.default.attributesOfItem(atPath: filePath), let fileSize = attributes[.size] as? Int64 {
                 self.fileSize = fileSize
             }

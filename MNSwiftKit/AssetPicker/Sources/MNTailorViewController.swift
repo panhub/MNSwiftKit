@@ -96,9 +96,9 @@ public class MNTailorViewController: UIViewController {
         self.init(nibName: nil, bundle: nil)
         self.videoPath = videoPath
         modalPresentationStyle = .fullScreen
-        self.duration = MNAssetExportSession.seconds(fileAtPath: videoPath)
-        self.cover = MNAssetExportSession.generateImage(fileAtPath: videoPath)
-        let naturalSize = MNAssetExportSession.naturalSize(videoAtPath: videoPath)
+        self.duration = MNAssetExportSession.seconds(for: videoPath)
+        self.cover = MNAssetExportSession.generateImage(for: videoPath)
+        let naturalSize = MNAssetExportSession.naturalSize(for: videoPath)
         if naturalSize.width > 0.0, naturalSize.height > 0.0 {
             self.naturalSize = naturalSize
         }

@@ -5738,29 +5738,29 @@ session.exportAsynchronously { progressValue in
 
 ```swift
 // 从文件路径获取
-let duration = MNMediaExportSession.seconds(fileAtPath: "媒体文件路径")
+let duration = MNMediaExportSession.seconds(for: "媒体文件路径")
 
 // 从本地 URL 获取
-let duration = MNMediaExportSession.seconds(mediaOfURL: videoURL)
+let duration = MNMediaExportSession.seconds(for: videoURL)
 ```
 
 获取视频尺寸
 
 ```swift
 // 从文件路径获取
-let size = MNMediaExportSession.naturalSize(videoAtPath: "视频文件路径")
+let size = MNMediaExportSession.naturalSize(for: "视频文件路径")
 
 // 从本地 URL 获取
-let size = MNMediaExportSession.naturalSize(videoOfURL: videoURL)
+let size = MNMediaExportSession.naturalSize(for: videoURL)
 ```
 
 获取视频截图
 
 ```swift
 // 生成第5秒处的截图，若文件是音频则忽略时间，检查文件内封面输出
-let image = MNMediaExportSession.generateImage(fileAtPath: "视频路径", at: 5.0, maximum: CGSize(width: 300, height: 300))
+let image = MNMediaExportSession.generateImage(for: "视频路径", at: 5.0, maximum: CGSize(width: 300, height: 300))
 
-let image = MNMediaExportSession.generateImage(mediaOfURL: videoURL, at: 5.0, maximum: CGSize(width: 300, height: 300))
+let image = MNMediaExportSession.generateImage(for: videoURL, at: 5.0, maximum: CGSize(width: 300, height: 300))
 ```
 
 **格式**
