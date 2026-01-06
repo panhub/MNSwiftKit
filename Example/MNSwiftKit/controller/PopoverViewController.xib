@@ -48,9 +48,9 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="1JB-Na-mSz">
-                    <rect key="frame" x="15" y="123.66666666666669" width="358" height="31"/>
+                    <rect key="frame" x="15" y="123.66666666666669" width="358" height="33"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="30" id="9iH-Da-5gL"/>
+                        <constraint firstAttribute="height" constant="32" id="9iH-Da-5gL"/>
                     </constraints>
                     <segments>
                         <segment title="Fade"/>
@@ -62,13 +62,13 @@
                     </connections>
                 </segmentedControl>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="方向" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KhD-kj-LgX">
-                    <rect key="frame" x="15" y="173.66666666666666" width="26" height="15.666666666666657"/>
+                    <rect key="frame" x="15" y="175.66666666666666" width="26" height="15.666666666666657"/>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                     <color key="textColor" systemColor="systemGray2Color"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="ONU-TA-jXK">
-                    <rect key="frame" x="15" y="194.33333333333334" width="358" height="31"/>
+                    <rect key="frame" x="15" y="196.33333333333334" width="358" height="33"/>
                     <segments>
                         <segment title="Up"/>
                         <segment title="Left"/>
@@ -80,10 +80,10 @@
                     </connections>
                 </segmentedControl>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="T1Q-PW-VWH">
-                    <rect key="frame" x="0.0" y="224.33333333333331" width="393" height="627.66666666666674"/>
+                    <rect key="frame" x="0.0" y="228.33333333333331" width="393" height="623.66666666666674"/>
                     <subviews>
                         <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FwQ-cR-aPd">
-                            <rect key="frame" x="149" y="244" width="95" height="40"/>
+                            <rect key="frame" x="149" y="242" width="95" height="40"/>
                             <color key="backgroundColor" systemColor="systemMintColor"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="40" id="FBo-d7-UnJ"/>
