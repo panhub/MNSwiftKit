@@ -15,8 +15,6 @@ class SegmentedSubpageController: UIViewController {
         case grid, table
     }
     
-    let frame: CGRect
-    
     // 表格样式
     private let style: SegmentedSubpageController.Style
     
@@ -28,13 +26,6 @@ class SegmentedSubpageController: UIViewController {
     
     init(style: SegmentedSubpageController.Style) {
         self.style = style
-        self.frame = .zero
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    init(frame: CGRect, style: SegmentedSubpageController.Style) {
-        self.style = style
-        self.frame = frame
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -45,11 +36,6 @@ class SegmentedSubpageController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        
-        if frame.isNull == false, frame.isEmpty == false {
-            
-            view.frame = frame
-        }
         
         switch style {
         case .grid:

@@ -1141,6 +1141,7 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
         targetItemCell?.updateBackgroundColor?(configuration.item.selected.backgroundColor)
         targetItemCell?.updateBackgroundImage?(configuration.item.selected.backgroundImage)
         targetItemCell?.updateCell?(selected: true, at: targetIndexPath.item)
+        indicatorView.layer.removeAllAnimations()
         collectionView.isUserInteractionEnabled = false
         UIView.animate(withDuration: configuration.indicator.animationDuration, delay: 0.01, options: .curveEaseInOut) { [weak self] in
             guard let self = self else { return }

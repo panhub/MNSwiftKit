@@ -100,13 +100,13 @@ class MNSegmentedSubpageCoordinator: NSObject {
     weak var delegate: MNSegmentedSubpageDelegate?
     /// 数据源
     weak var dataSource: MNSegmentedSubpageDataSource?
-    /// 是否在滑动
+    /// 是否在滑动(或衰减状态)
     var isScrolling: Bool {
         guard let scrollView = scrollView else { return false }
         if #available(iOS 17.4, *), scrollView.isScrollAnimating { return true }
-        return scrollView.isDragging || scrollView.isDecelerating
+        return scrollView.isTracking || scrollView.isDragging || scrollView.isDecelerating
     }
-    /// 是否允许滑动
+    /// 外界指定是否允许滑动
     var isScrollEnabled: Bool {
         get {
             guard let scrollView = scrollView else { return false }
@@ -162,10 +162,14 @@ class MNSegmentedSubpageCoordinator: NSObject {
             lastPresentationPage = presentationPage
             presentationPage.subpageState = .willDisappear
         }
-        pageViewController.setViewControllers([subpage], direction: direction, animated: animated) { _ in
+        pageViewController.setViewControllers([subpage], direction: direction, animated: animated) { [weak self] _ in
             subpage.subpageState = .didAppear
             if let lastPresentationPage = lastPresentationPage {
                 lastPresentationPage.subpageState = .didDisappear
+            }
+            if let self = self, let scrollView = self.scrollView {
+                // 确保可交互，避免滑动事件问题引起不可交互
+                scrollView.isUserInteractionEnabled = true
             }
         }
     }
@@ -193,7 +197,6 @@ class MNSegmentedSubpageCoordinator: NSObject {
             // 页面内容尺寸变化
             guard let contentSize = change[.newKey] as? CGSize  else { break }
             guard contentSize.width > 0.0, contentSize.height > 0.0 else { break }
-            //print(contentSize)
             if scrollView.mn.adjustedInset == nil {
                 // 未适配过顶部
                 // 头视图高度
@@ -341,8 +344,8 @@ extension MNSegmentedSubpageCoordinator {
 extension MNSegmentedSubpageCoordinator: UIScrollViewDelegate {
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        let key = configuration.orientation == .horizontal ? "startOffsetX" : "startOffsetY"
-        if let value = scrollView.value(forKey: key) as? CGFloat {
+        let startOffsetKey = configuration.orientation == .horizontal ? "startOffsetX" : "startOffsetY"
+        if let value = scrollView.value(forKey: startOffsetKey) as? CGFloat {
             startOffset = value
         } else {
             startOffset = configuration.orientation == .horizontal ? scrollView.contentOffset.x : scrollView.contentOffset.y
@@ -405,6 +408,15 @@ extension MNSegmentedSubpageCoordinator: UIScrollViewDelegate {
             scrolling.pageViewController(pageViewController, willScrollToSubpageAt: targetPageIndex)
         }
     }
+    
+    func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView) {
+        // FIX: 界面在衰减状态就开始新的滑动，导致页码计算错误，引发一系列未知Bug
+        scrollView.isUserInteractionEnabled = false
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        scrollView.isUserInteractionEnabled = true
+    }
 }
 
 // MARK: - UIPageViewControllerDataSource
@@ -449,7 +461,7 @@ extension MNSegmentedSubpageCoordinator: UIPageViewControllerDelegate {
             if currentSubpageIndex != targetIndex, let targetToSubpage = subpage(for: targetIndex, allowAccess: false) {
                 targetToSubpage.subpageState = .didDisappear
 #if DEBUG
-                print("⚠️⚠️⚠️⚠️⚠️PageViewController界面切换有问题⚠️⚠️⚠️⚠️⚠️")
+                print("⚠️⚠️⚠️⚠️⚠️PageViewController子界面切换有问题⚠️⚠️⚠️⚠️⚠️")
 #endif
             }
             // 告知界面切换

@@ -144,7 +144,7 @@ extension MNSegmentedSubpageConvertible {
         }
     }
     
-    /// 子页面专场状态
+    /// 子页面转场状态
     public var subpageState: UIViewController.MNSubpageState {
         get {
             (self as UIViewController).mn.subpageState
