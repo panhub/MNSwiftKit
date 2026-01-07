@@ -92,8 +92,10 @@ class PopoverViewController: UIViewController {
         }
         let popoverView = MNPopoverView(titles: "选项一", "选项二", "选项三", configuration: configuration)
         popoverView.allowUserInteraction = true
-        popoverView.popup(in: view, target: targetView, animated: true) { sender in
-            print("点击了按钮 \(sender.tag)")
+        popoverView.popup(in: view, target: targetView, animated: true) { [weak self] index in
+            guard let self = self else { return }
+            self.targetView.isSelected = false
+            print("点击了第 \(index + 1)个按钮")
         } completion: {
             print("已弹出")
         }

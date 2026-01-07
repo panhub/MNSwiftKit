@@ -21,7 +21,7 @@ public class HTTPManager {
     
     /// 禁止外部实例化
     private init() {
-        session.completionQueue = DispatchQueue(label: "com.mn.http.session.completion.queue", qos: .userInitiated, attributes: .concurrent)
+        session.callbackQueue = DispatchQueue(label: "com.mn.http.session.completion.queue", qos: .userInitiated, attributes: .concurrent)
     }
     
     /// 加载请求
@@ -96,15 +96,14 @@ extension HTTPManager {
         // 创建Task
         request.task = dataTask(request)
         guard let dataTask = request.task else { return }
-        // 回调开始
-        if request.mn_retryEventCount <= 0 {
-            DispatchQueue.main.async { [weak request] in
-                guard let request = request else { return }
-                request.startHandler?()
-            }
-        }
         // 开启请求
         dataTask.resume()
+        guard request.mn_retryEventCount <= 0 else { return }
+        // 回调开始
+        (request.queue ?? .main).async { [weak request] in
+            guard let request = request else { return }
+            request.startHandler?()
+        }
     }
     
     /// 构建数据请求任务
@@ -127,13 +126,13 @@ extension HTTPManager {
         // 创建Task
         request.task = uploadTask(request)
         guard let uploadTask = request.task else { return }
+        // 开启请求
+        uploadTask.resume()
         // 回调开始
-        DispatchQueue.main.async { [weak request] in
+        (request.queue ?? .main).async { [weak request] in
             guard let request = request else { return }
             request.startHandler?()
         }
-        // 开启请求
-        uploadTask.resume()
     }
     
     /// 构建上传任务
@@ -156,13 +155,13 @@ extension HTTPManager {
         // 创建Task
         request.task = downloadTask(request)
         guard let downloadTask = request.task else { return }
+        // 开启请求
+        downloadTask.resume()
         // 回调开始
-        DispatchQueue.main.async { [weak request] in
+        (request.queue ?? .main).async { [weak request] in
             guard let request = request else { return }
             request.startHandler?()
         }
-        // 开启请求
-        downloadTask.resume()
     }
     
     /// 构建下载任务
@@ -182,20 +181,26 @@ extension HTTPManager {
     public func cancel(download request: HTTPDownloadRequest, completion completionHandler: ((Data?) -> Void)? = nil) {
         // 询问下载实例
         guard let downloadTask = request.downloadTask else {
-            completionHandler?(nil)
+            (request.queue ?? .main).async {
+                completionHandler?(nil)
+            }
             return
         }
         // 判断是否下载中
         guard downloadTask.state == .running else {
-            completionHandler?(request.resumeData)
+            let resumeData = request.resumeData
+            (request.queue ?? .main).async {
+                completionHandler?(resumeData)
+            }
             return
         }
         // 取消下载 会触发结束回调
-        downloadTask.cancel { [weak request] data in
-            if let request = request {
-                request.resumeData = data
+        downloadTask.cancel { [weak request] resumeData in
+            guard let request = request else { return }
+            request.resumeData = resumeData
+            (request.queue ?? .main).async {
+                completionHandler?(resumeData)
             }
-            completionHandler?(data)
         }
     }
     
@@ -206,12 +211,16 @@ extension HTTPManager {
     public func resume(download request: HTTPDownloadRequest, completion completionHandler: ((Bool) -> Void)? = nil) -> Void {
         // 判断是否下载中
         guard request.isRunning == false else {
-            completionHandler?(false)
+            (request.queue ?? .main).async {
+                completionHandler?(false)
+            }
             return
         }
         // 判断是否支持暂停下载
         guard let resumeData = request.resumeData else {
-            completionHandler?(false)
+            (request.queue ?? .main).async {
+                completionHandler?(false)
+            }
             return
         }
         // 创建新的下载请求
@@ -220,7 +229,9 @@ extension HTTPManager {
             self.finish(request: request, result: result)
         }
         guard let downloadTask = request.task else {
-            completionHandler?(false)
+            (request.queue ?? .main).async {
+                completionHandler?(false)
+            }
             return
         }
         // 置空暂停标记
@@ -228,7 +239,9 @@ extension HTTPManager {
         // 开启请求
         downloadTask.resume()
         // 回调成功
-        completionHandler?(true)
+        (request.queue ?? .main).async {
+            completionHandler?(true)
+        }
     }
 }
 
@@ -241,13 +254,13 @@ extension HTTPManager {
         // 创建Task
         request.task = dataTask(request)
         guard let dataTask = request.task else { return }
+        // 开启请求
+        dataTask.resume()
         // 回调开始
-        DispatchQueue.main.async { [weak request] in
+        (request.queue ?? .main).async { [weak request] in
             guard let request = request else { return }
             request.startHandler?()
         }
-        // 开启请求
-        dataTask.resume()
     }
     
     /// 构建文件下载任务

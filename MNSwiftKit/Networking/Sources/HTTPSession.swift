@@ -31,8 +31,8 @@ public class HTTPSession: NSObject {
     private var session: URLSession!
     /// 代理缓存
     private var proxies = [Int: HTTPProxy]()
-    /// 结束回调队列
-    public var completionQueue: DispatchQueue? = .main
+    /// 回调队列
+    public var callbackQueue: DispatchQueue? = .main
     /// 信号量保证线程安全
     fileprivate let semaphore = DispatchSemaphore(value: 1)
     
@@ -118,7 +118,7 @@ extension HTTPSession {
             request = try serializer.request(with: url, method: method.uppercased())
         } catch {
             let httpError: HTTPError = error.asHttpError ?? .custom(code: error._code, msg: error.localizedDescription)
-            (completionQueue ?? .main).async {
+            (callbackQueue ?? .main).async {
                 completion?(.failure(httpError))
             }
             return nil
@@ -149,7 +149,7 @@ extension HTTPSession {
                 try FileManager.default.removeItem(at: fileURL)
             } catch {
                 let httpError = HTTPError.downloadFailure(.fileExist(fileURL, error: error))
-                (completionQueue ?? .main).async {
+                (callbackQueue ?? .main).async {
                     completion?(.failure(httpError))
                 }
                 return nil
@@ -160,7 +160,7 @@ extension HTTPSession {
                 try FileManager.default.createDirectory(at: fileURL.deletingLastPathComponent(), withIntermediateDirectories: true)
             } catch {
                 let httpError = HTTPError.downloadFailure(.cannotCreateFile(fileURL, error: error))
-                (completionQueue ?? .main).async {
+                (callbackQueue ?? .main).async {
                     completion?(.failure(httpError))
                 }
                 return nil
@@ -170,7 +170,7 @@ extension HTTPSession {
             let msg: String = "创建文件失败, 文件路径可能不可用\n-\(#file)-\(#function)-\(#line)"
             let error = NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotCreateFile, userInfo: [NSLocalizedDescriptionKey:"创建文件失败", NSLocalizedFailureReasonErrorKey:msg,NSDebugDescriptionErrorKey:msg])
             let httpError = HTTPError.downloadFailure(.cannotCreateFile(fileURL, error: error as Error))
-            (completionQueue ?? .main).async {
+            (callbackQueue ?? .main).async {
                 completion?(.failure(httpError))
             }
             return nil
@@ -184,7 +184,7 @@ extension HTTPSession {
             let msg: String = "无法确定Range, 无法开始下载\n-\(#file)-\(#function)-\(#line)"
             let nsError = NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotWriteToFile, userInfo: [NSLocalizedDescriptionKey:"读取本地文件失败", NSLocalizedFailureReasonErrorKey:msg,NSDebugDescriptionErrorKey:msg,NSUnderlyingErrorKey:error])
             let httpError = HTTPError.downloadFailure(.cannotReadFile(fileURL, error: nsError as Error))
-            (completionQueue ?? .main).async {
+            (callbackQueue ?? .main).async {
                 completion?(.failure(httpError))
             }
             return nil
@@ -195,7 +195,7 @@ extension HTTPSession {
             request = try serializer.request(with: url, method: "GET")
         } catch {
             let httpError: HTTPError = error.asHttpError ?? .custom(code: error._code, msg: error.localizedDescription)
-            (completionQueue ?? .main).async {
+            (callbackQueue ?? .main).async {
                 completion?(.failure(httpError))
             }
             return nil
@@ -235,7 +235,7 @@ extension HTTPSession {
                 filePath = fileURL.path
             }
             if fileURL.isFileURL, FileManager.default.fileExists(atPath: filePath) {
-                (completionQueue ?? .main).async {
+                (callbackQueue ?? .main).async {
                     completion?(.success(filePath))
                 }
                 return nil
@@ -247,7 +247,7 @@ extension HTTPSession {
             request = try serializer.request(with: url, method: "GET")
         } catch {
             let httpError: HTTPError = error.asHttpError ?? .custom(code: error._code, msg: error.localizedDescription)
-            (completionQueue ?? .main).async {
+            (callbackQueue ?? .main).async {
                 completion?(.failure(httpError))
             }
             return nil
@@ -300,7 +300,7 @@ extension HTTPSession {
             request = try serializer.request(with: url, method: method)
         } catch {
             let httpError: HTTPError = error.asHttpError ?? .custom(code: error._code, msg: error.localizedDescription)
-            (completionQueue ?? .main).async {
+            (callbackQueue ?? .main).async {
                 completion?(.failure(httpError))
             }
             return nil
@@ -328,7 +328,7 @@ extension HTTPSession {
             }
         }
         guard let uploadTask = uploadTask else {
-            (completionQueue ?? .main).async {
+            (callbackQueue ?? .main).async {
                 completion?(.failure(.uploadFailure(.bodyIsEmpty)))
             }
             return nil
@@ -358,8 +358,8 @@ extension HTTPSession {
         proxy.uploadHandler = upload
         proxy.locationHandler = location
         proxy.downloadHandler = download
+        proxy.callbackQueue = callbackQueue
         proxy.completionHandler = completion
-        proxy.completionQueue = completionQueue
         setProxy(proxy, forKey: task.taskIdentifier)
     }
 }

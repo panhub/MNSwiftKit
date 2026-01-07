@@ -128,7 +128,7 @@ import Foundation
             didFail(httpResult)
         }
         // 回调结果
-        (queue ?? DispatchQueue.main).async {
+        (queue ?? .main).async {
             // 回调结果
             self.completionHandler?(httpResult)
         }

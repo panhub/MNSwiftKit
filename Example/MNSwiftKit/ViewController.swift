@@ -30,17 +30,11 @@ class ViewController: UIViewController {
 
         navHeight.constant = MN_TOP_BAR_HEIGHT
         titleTop.constant = (MN_NAV_BAR_HEIGHT - titleHeight.constant)/2.0 + MN_STATUS_BAR_HEIGHT
+        // 
         
-        // https://vdept3.bdstatic.com/mda-jgczxj3hrixc6cgz/mda-jgczxj3hrixc6cgz.mp4?v_from_s=hkapp-haokan-nanjing&auth_key=1767730395-0-0-748398fc29621ccd17dfc4dc431bb8cb&bcevod_channel=searchbox_feed&cr=0&cd=0&pd=1&pt=3&logid=0795649871&vid=4503085386691377183&klogid=0795649871&abtest=
-        // https://vdept3.bdstatic.com/mda-kdun1ep7pga02wt3/v1-cae/mda-kdun1ep7pga02wt3.mp4?v_from_s=hkapp-haokan-nanjing&auth_key=1767731250-0-0-627091817697e7af51cd1eca1f97a941&bcevod_channel=searchbox_feed&cr=0&cd=0&pd=1&pt=3&logid=1650337440&vid=13600840354969990691&klogid=1650337440&abtest=
-        
-        // https://vdept3.bdstatic.com/mda-jfss685v77ndea1m/mda-jfss685v77ndea1m.mp4?v_from_s=hkapp-haokan-nanjing&auth_key=1767731312-0-0-9f1089d347503a0d4cd5f41f9cdd0b5f&bcevod_channel=searchbox_feed&cr=0&cd=0&pd=1&pt=3&logid=1712727608&vid=8986735944979594339&klogid=1712727608&abtest=
-        
-        // https://vdept3.bdstatic.com/mda-kf3pzcw3f2zu2mr2/mda-kf3pzcw3f2zu2mr2.mp4?v_from_s=hkapp-haokan-nanjing&auth_key=1767731374-0-0-6a1365e3b1821db184de58c550bc1e9b&bcevod_channel=searchbox_feed&cr=0&cd=0&pd=1&pt=3&logid=1774708086&vid=5106310553708043304&klogid=1774708086&abtest=
-        
-        let clss: [String] = ["ToastViewController", "AssetBrowserController", "AssetPickerController", "EmoticonKeyboardController", "EditingViewController", "SegmentedViewController", "AlertViewController", "PopoverViewController"]
-        let modules: [String] = ["Toast", "AssetBrowser", "AssetPicker", "EmoticonKeyboard", "EditingView", "SegmentedViewController", "Components", "Components"]
-        let names: [String] = ["Toast 提示弹窗", "资源浏览器", "资源选择器", "表情键盘", "表格编辑", "分段控制器", "提示弹框与操作表单", "弹出视图"]
+        let clss: [String] = ["ToastViewController", "AssetBrowserController", "AssetPickerController", "EmoticonKeyboardController", "EditingViewController", "SegmentedViewController", "AlertViewController", "PopoverViewController", "RequestViewController"]
+        let modules: [String] = ["Toast", "AssetBrowser", "AssetPicker", "EmoticonKeyboard", "EditingView", "SegmentedViewController", "Components", "Components", "Request"]
+        let names: [String] = ["提示弹窗", "资源浏览器", "资源选择器", "表情键盘", "表格编辑", "分段控制器", "提示弹框与操作表单", "弹出视图", "网络请求"]
         for (index, name) in names.enumerated() {
             let row = HomeListRow(index: index, title: name, cls: clss[index], module: modules[index])
             rows.append(row)

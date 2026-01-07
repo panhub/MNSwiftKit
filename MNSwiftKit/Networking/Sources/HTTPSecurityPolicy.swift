@@ -33,10 +33,11 @@ public class HTTPSecurityPolicy {
         set {
             _certificates = newValue
             publicKeys.removeAll()
-            guard let items = newValue else { return }
-            for certificateData in items {
-                guard let publicKey = MNPublicKeyForCertificate(certificateData) else { continue }
-                publicKeys.append(publicKey)
+            if let newValue = newValue {
+                for certificateData in newValue {
+                    guard let publicKey = MNPublicKeyForCertificate(certificateData) else { continue }
+                    publicKeys.append(publicKey)
+                }
             }
         }
     }
@@ -46,14 +47,14 @@ public class HTTPSecurityPolicy {
         self.certificates = certificates
     }
     
-    public static func certificates(in bundle: Bundle?) -> Set<Data>? {
+    public class func certificates(in bundle: Bundle?) -> Set<Data>? {
         let paths = (bundle ?? Bundle.main).paths(forResourcesOfType: "cer", inDirectory: ".")
         var certificates: Set<Data> = Set<Data>()
         for path in paths {
             guard let certificateData = try? Data(contentsOf: URL(fileURLWithPath: path)) else { continue }
             certificates.insert(certificateData)
         }
-        return (certificates.count > 0 ? certificates : nil)
+        return certificates.isEmpty ? nil : certificates
     }
     
     public func evaluate(server trust: SecTrust, domain: String? = nil) -> Bool {

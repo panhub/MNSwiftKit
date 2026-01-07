@@ -136,7 +136,7 @@ public class MNPopoverView: UIView {
     /// 轮廓曲线
     private let bezierPath = UIBezierPath()
     /// 事件回调
-    private var eventHandler: ((UIControl) -> Void)?
+    private var eventHandler: ((Int) -> Void)?
     
     /// 构造菜单视图
     /// - Parameters:
@@ -256,9 +256,9 @@ extension MNPopoverView {
     ///   - superview: 展示的父视图
     ///   - targetView: 目标视图
     ///   - animated: 是否使用动画
-    ///   - eventHandler: 按钮点击回调
+    ///   - eventHandler: 按钮点击回调(按钮索引)
     ///   - completionHandler: 展示后回调
-    public func popup(in superview: UIView? = nil, target targetView: UIView, animated: Bool = true, events eventHandler: ((_ sender: UIControl) -> Void)? = nil, completion completionHandler: (()->Void)? = nil) {
+    public func popup(in superview: UIView? = nil, target targetView: UIView, animated: Bool = true, events eventHandler: ((_ index: Int) -> Void)? = nil, completion completionHandler: (()->Void)? = nil) {
         guard self.superview == nil else { return }
         guard stackView.bounds.isNull == false, stackView.bounds.isEmpty == false else { return }
         guard let superview = superview ?? UIWindow.mn.current else { return }
@@ -631,7 +631,7 @@ extension MNPopoverView {
         close(animated: true) { [weak self] in
             guard let self = self else { return }
             guard let eventHandler = self.eventHandler else { return }
-            eventHandler(sender)
+            eventHandler(sender.tag)
         }
     }
     

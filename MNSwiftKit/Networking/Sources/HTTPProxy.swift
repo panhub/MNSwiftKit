@@ -44,8 +44,8 @@ public class HTTPProxy: NSObject {
     public var parser: HTTPParser?
     /// 文件句柄
     private var fileHandle: FileHandle?
-    /// 结束回调队列
-    public weak var completionQueue: DispatchQueue?
+    /// 回调队列
+    public weak var callbackQueue: DispatchQueue?
     /// 上传进度回调
     public var uploadHandler: HTTPSessionProgressHandler?
     /// 下载位置回调
@@ -91,11 +91,11 @@ public class HTTPProxy: NSObject {
     public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         guard let progress = object as? Progress else { return }
         if progress == uploadProgress {
-            (completionQueue ?? .main).async {
+            (callbackQueue ?? .main).async {
                 self.uploadHandler?(progress)
             }
         } else if progress == downloadProgress {
-            (completionQueue ?? .main).async {
+            (callbackQueue ?? .main).async {
                 self.downloadHandler?(progress)
             }
         }
@@ -151,14 +151,14 @@ public extension HTTPProxy {
             if let fileURL = fileURL {
                 try? FileManager.default.removeItem(at: fileURL)
             }
-            (completionQueue ?? .main).async {
+            (callbackQueue ?? .main).async {
                 self.completionHandler?(.failure(httpError))
             }
             return
         }
         // 检查文件已下载标记
         if task.isDownloaded {
-            (completionQueue ?? .main).async {
+            (callbackQueue ?? .main).async {
                 self.completionHandler?(.success(self.fileURL?.path ?? NSNull()))
             }
             return
@@ -174,7 +174,7 @@ public extension HTTPProxy {
                 if let fileURL = self.fileURL, parser.downloadOptions.contains(.removeExistsFile) {
                     try? FileManager.default.removeItem(at: fileURL)
                 }
-                (self.completionQueue ?? .main).async {
+                (self.callbackQueue ?? .main).async {
                     self.completionHandler?(.failure(error.asHttpError!))
                 }
                 return
@@ -188,7 +188,7 @@ public extension HTTPProxy {
                 }
             }
             // 回调结果
-            (self.completionQueue ?? .main).async {
+            (self.callbackQueue ?? .main).async {
                 self.completionHandler?(.success(result ?? NSNull()))
             }
         }
