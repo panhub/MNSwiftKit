@@ -11,35 +11,46 @@ import CoreFoundation
 
 /// 导航条事件代理
 @objc public protocol MNNavigationBarDelegate: NSObjectProtocol {
+    
     /// 获取左按钮视图
     /// - Returns: 导航左按钮
     @objc optional func navigationBarShouldCreateLeftBarItem() -> UIView?
+    
     /// 获取右按钮视图
     /// - Returns: 导航右按钮
     @objc optional func navigationBarShouldCreateRightBarItem() -> UIView?
+    
     /// 是否创建戴航返回按钮
     /// - Returns: 是否创建返回按钮
     @objc optional func navigationBarShouldDrawBackBarItem() -> Bool
+    
     /// 左按钮点击事件
     /// - Parameter leftBarItem: 导航左按钮
     @objc optional func navigationBarLeftBarItemTouchUpInside(_ leftBarItem: UIView!)
+    
     /// 右按钮点击事件
     /// - Parameter rightBarItem: 导航右按钮
     @objc optional func navigationBarRightBarItemTouchUpInside(_ rightBarItem: UIView!)
+    
     /// 已经添加完子视图
     /// - Parameter navigationBar: 导航栏
     @objc optional func navigationBarDidLayoutSubitems(_ navigationBar: MNNavigationBar)
 }
 
 public class MNNavigationBar: UIView {
+    
     /// 按钮大小
     static let itemSize: CGFloat = 20.0
+    
     /// 前边距
     static let leading: CGFloat = 18.0
+    
     /// 后边距
     static let trailing: CGFloat = 18.0
+    
     /// 事件代理
     weak var delegate: MNNavigationBarDelegate?
+    
     /// 毛玻璃视图
     private lazy var visualView: UIVisualEffectView = {
         let visualView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
@@ -47,6 +58,7 @@ public class MNNavigationBar: UIView {
         visualView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         return visualView
     }()
+    
     /// 导航左按钮
     public private(set) lazy var leftBarItem: UIView = {
         var leftBarItem: UIView
@@ -69,6 +81,7 @@ public class MNNavigationBar: UIView {
         leftBarItem.autoresizingMask = .flexibleTopMargin
         return leftBarItem
     }()
+    
     /// 导航右按钮
     public private(set) lazy var rightBarItem: UIView = {
         var rightBarItem: UIView
@@ -87,6 +100,7 @@ public class MNNavigationBar: UIView {
         rightBarItem.autoresizingMask = .flexibleTopMargin
         return rightBarItem
     }()
+    
     /// 导航底部分割线
     private lazy var separatorView: UIView = {
         let separatorView = UIView(frame: CGRect(x: 0.0, y: bounds.height - 0.7, width: bounds.width, height: 0.7))
@@ -98,6 +112,7 @@ public class MNNavigationBar: UIView {
         }
         return separatorView
     }()
+    
     /// 导航标题
     public private(set) lazy var titleLabel: UILabel = {
         let titleLabel = UILabel()
@@ -136,8 +151,8 @@ public class MNNavigationBar: UIView {
         let center: CGPoint = titleLabel.center
         let spacing: CGFloat = ceil(max(leftBarItem.frame.maxX, frame.width - rightBarItem.frame.minX)) + MNNavigationBar.trailing
         titleLabel.sizeToFit()
-        titleLabel.mn.width = min(ceil(titleLabel.frame.width), frame.width - spacing*2.0)
-        titleLabel.mn.height = min(ceil(titleLabel.frame.height), frame.height - MN_STATUS_BAR_HEIGHT)
+        titleLabel.frame.size.width = min(ceil(titleLabel.frame.width), frame.width - spacing*2.0)
+        titleLabel.frame.size.height = min(ceil(titleLabel.frame.height), frame.height - MN_STATUS_BAR_HEIGHT)
         titleLabel.center = center
     }
 }

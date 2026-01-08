@@ -1,5 +1,5 @@
 //
-//  HTTPSession.swift
+//  MNNetworkSession.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2021/7/21.
@@ -8,29 +8,35 @@
 import Foundation
 import ObjectiveC.runtime
 
-/// 请求进度回调
-public typealias HTTPSessionProgressHandler = (_ progress: Progress)->Void
-/// 下载位置回调
-public typealias HTTPSessionLocationHandler = (_ response: URLResponse?, _ url: URL?)->URL
-/// 上传内容回调 接收 URL Data String
-public typealias HTTPSessionBodyHandler = ()->Any
-/// 请求结束回调
-public typealias HTTPSessionCompletionHandler = (Result<Any, HTTPError>)->Void
-
 /// 任务实例化队列
 fileprivate let DispatchTaskQueue: DispatchQueue = DispatchQueue(label: "com.mn.url.session.task.create.queue", qos: .userInteractive)
 
-/// 定义公共通知
+/// 会话公共通知
 extension Notification.Name {
+    
+    /// 会话已处理完事件
     public static let HTTPSessionDidFinishEvents = Notification.Name("com.mn.http.session.finish.events")
+    
+    /// 会话无效通知
     public static let HTTPSessionDidBecomeInvalid = Notification.Name("com.mn.http.session.become.invalid")
 }
 
-public class HTTPSession: NSObject {
+/// 网络会话
+public class MNNetworkSession: NSObject {
+    
+    /// 上传内容回调 接收 URL Data String
+    public typealias BodyHandler = ()->Any
+    /// 进度回调
+    public typealias ProgressHandler = (Progress)->Void
+    /// 下载位置回调
+    public typealias LocationHandler = (URLResponse?, URL?)->URL
+    /// 请求结束回调
+    public typealias CompletionHandler = (Result<Any, MNNetworkError>)->Void
+    
     /// 会话实例
     private var session: URLSession!
     /// 代理缓存
-    private var proxies = [Int: HTTPProxy]()
+    private var proxies = [Int: MNNetworkProxy]()
     /// 回调队列
     public var callbackQueue: DispatchQueue? = .main
     /// 信号量保证线程安全
@@ -41,7 +47,7 @@ public class HTTPSession: NSObject {
         super.init()
         let queue = OperationQueue()
         queue.maxConcurrentOperationCount = 1
-        session = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: queue)
+        session = URLSession(configuration: .default, delegate: self, delegateQueue: queue)
         session.getTasksWithCompletionHandler { [weak self] dataTasks, uploadTasks, downloadTasks in
             // 初始化
             guard let self = self else { return }
@@ -59,15 +65,15 @@ public class HTTPSession: NSObject {
 }
 
 // MARK: - GET/POST/HEAD/DELETE
-extension HTTPSession {
+extension MNNetworkSession {
     
     /// GET请求
     /// - Parameters:
     ///   - url: 请求地址
     ///   - progress: 进度回调
     ///   - completion: 结束回调
-    public func get(url: String, progress: HTTPSessionProgressHandler? = nil, completion: HTTPSessionCompletionHandler?) {
-        guard let dataTask = dataTask(url: url, method: "GET", progress: progress, completion: completion) else { return }
+    public func get(url: String, progress: MNNetworkSession.ProgressHandler? = nil, completion: MNNetworkSession.CompletionHandler?) {
+        guard let dataTask = dataTask(url: url, method: .get, progress: progress, completion: completion) else { return }
         dataTask.resume()
     }
     
@@ -76,8 +82,8 @@ extension HTTPSession {
     ///   - url: 请求地址
     ///   - progress: 进度回调
     ///   - completion: 结束回调
-    public func post(url: String, progress: HTTPSessionProgressHandler? = nil, completion: HTTPSessionCompletionHandler?) {
-        guard let dataTask = dataTask(url: url, method: "POST", progress: progress, completion: completion) else { return }
+    public func post(url: String, progress: MNNetworkSession.ProgressHandler? = nil, completion: MNNetworkSession.CompletionHandler?) {
+        guard let dataTask = dataTask(url: url, method: .post, progress: progress, completion: completion) else { return }
         dataTask.resume()
     }
     
@@ -85,8 +91,8 @@ extension HTTPSession {
     /// - Parameters:
     ///   - url: 请求地址
     ///   - completion: 结束回调
-    public func head(url: String, completion: HTTPSessionCompletionHandler?) {
-        guard let dataTask = dataTask(url: url, method: "HEAD", completion: completion) else { return }
+    public func head(url: String, completion: MNNetworkSession.CompletionHandler?) {
+        guard let dataTask = dataTask(url: url, method: .head, completion: completion) else { return }
         dataTask.resume()
     }
     
@@ -94,14 +100,14 @@ extension HTTPSession {
     /// - Parameters:
     ///   - url: 请求地址
     ///   - completion: 结束回调
-    public func delete(url: String, completion: HTTPSessionCompletionHandler?) {
-        guard let dataTask = dataTask(url: url, method: "DELETE", completion: completion) else { return }
+    public func delete(url: String, completion: MNNetworkSession.CompletionHandler?) {
+        guard let dataTask = dataTask(url: url, method: .delete, completion: completion) else { return }
         dataTask.resume()
     }
 }
 
 // MARK: - 数据请求
-extension HTTPSession {
+extension MNNetworkSession {
     
     /// 数据请求任务
     /// - Parameters:
@@ -112,14 +118,14 @@ extension HTTPSession {
     ///   - progress: 进度回调
     ///   - completion: 结束回调
     /// - Returns: 数据请求任务实例
-    public func dataTask(url: String, method: String, serializer: HTTPSerializer = .default, parser: HTTPParser = .default, progress: HTTPSessionProgressHandler? = nil, completion: HTTPSessionCompletionHandler?) -> URLSessionDataTask? {
+    public func dataTask(url: String, method: MNNetworkMethod, serializer: MNNetworkSerializer = .default, parser: MNNetworkParser = .default, progress: MNNetworkSession.ProgressHandler? = nil, completion: MNNetworkSession.CompletionHandler?) -> URLSessionDataTask? {
         var request: URLRequest!
         do {
-            request = try serializer.request(with: url, method: method.uppercased())
+            request = try serializer.request(with: url, method: method)
         } catch {
-            let httpError: HTTPError = error.asHttpError ?? .custom(code: error._code, msg: error.localizedDescription)
+            let networkError: MNNetworkError = error.asNetworkError ?? .custom(code: error._code, msg: error.localizedDescription)
             (callbackQueue ?? .main).async {
-                completion?(.failure(httpError))
+                completion?(.failure(networkError))
             }
             return nil
         }
@@ -128,7 +134,7 @@ extension HTTPSession {
             dataTask = self.session.dataTask(with: request)
         }
         // 保存代理
-        setProxy(for: dataTask, parser: parser, location: nil, upload: (method.uppercased() == "GET" ? nil : progress), download: (method.uppercased() == "GET" ? progress : nil), completion: completion)
+        setProxy(for: dataTask, parser: parser, location: nil, upload: (method == .get ? nil : progress), download: (method == .get ? progress : nil), completion: completion)
         return dataTask
     }
     
@@ -141,16 +147,16 @@ extension HTTPSession {
     ///   - progress: 进度回调
     ///   - completion: 结束回调
     /// - Returns: 文件数据请求任务实例
-    public func dataTask(url: String, serializer: HTTPSerializer = .default, parser:HTTPParser = .default, location: @escaping HTTPSessionLocationHandler, progress: HTTPSessionProgressHandler? = nil, completion: HTTPSessionCompletionHandler?) -> URLSessionDataTask? {
+    public func dataTask(url: String, serializer: MNNetworkSerializer = .default, parser:MNNetworkParser = .default, location: @escaping MNNetworkSession.LocationHandler, progress: MNNetworkSession.ProgressHandler? = nil, completion: MNNetworkSession.CompletionHandler?) -> URLSessionDataTask? {
         // 创建文件
         let fileURL = location(nil, nil)
         if parser.downloadOptions.contains(.removeExistsFile), FileManager.default.fileExists(atPath: fileURL.path) {
             do {
                 try FileManager.default.removeItem(at: fileURL)
             } catch {
-                let httpError = HTTPError.downloadFailure(.fileExist(fileURL, error: error))
+                let networkError = MNNetworkError.downloadFailure(.fileExist(fileURL, error: error))
                 (callbackQueue ?? .main).async {
-                    completion?(.failure(httpError))
+                    completion?(.failure(networkError))
                 }
                 return nil
             }
@@ -159,9 +165,9 @@ extension HTTPSession {
             do {
                 try FileManager.default.createDirectory(at: fileURL.deletingLastPathComponent(), withIntermediateDirectories: true)
             } catch {
-                let httpError = HTTPError.downloadFailure(.cannotCreateFile(fileURL, error: error))
+                let networkError = MNNetworkError.downloadFailure(.cannotCreateFile(fileURL, error: error))
                 (callbackQueue ?? .main).async {
-                    completion?(.failure(httpError))
+                    completion?(.failure(networkError))
                 }
                 return nil
             }
@@ -169,9 +175,9 @@ extension HTTPSession {
         if FileManager.default.fileExists(atPath: fileURL.path) == false, FileManager.default.createFile(atPath: fileURL.path, contents: nil) == false {
             let msg: String = "创建文件失败, 文件路径可能不可用\n-\(#file)-\(#function)-\(#line)"
             let error = NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotCreateFile, userInfo: [NSLocalizedDescriptionKey:"创建文件失败", NSLocalizedFailureReasonErrorKey:msg,NSDebugDescriptionErrorKey:msg])
-            let httpError = HTTPError.downloadFailure(.cannotCreateFile(fileURL, error: error as Error))
+            let networkError = MNNetworkError.downloadFailure(.cannotCreateFile(fileURL, error: error as Error))
             (callbackQueue ?? .main).async {
-                completion?(.failure(httpError))
+                completion?(.failure(networkError))
             }
             return nil
         }
@@ -183,20 +189,20 @@ extension HTTPSession {
         } catch {
             let msg: String = "无法确定Range, 无法开始下载\n-\(#file)-\(#function)-\(#line)"
             let nsError = NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotWriteToFile, userInfo: [NSLocalizedDescriptionKey:"读取本地文件失败", NSLocalizedFailureReasonErrorKey:msg,NSDebugDescriptionErrorKey:msg,NSUnderlyingErrorKey:error])
-            let httpError = HTTPError.downloadFailure(.cannotReadFile(fileURL, error: nsError as Error))
+            let networkError = MNNetworkError.downloadFailure(.cannotReadFile(fileURL, error: nsError as Error))
             (callbackQueue ?? .main).async {
-                completion?(.failure(httpError))
+                completion?(.failure(networkError))
             }
             return nil
         }
         // 创建请求
         var request: URLRequest!
         do {
-            request = try serializer.request(with: url, method: "GET")
+            request = try serializer.request(with: url, method: .get)
         } catch {
-            let httpError: HTTPError = error.asHttpError ?? .custom(code: error._code, msg: error.localizedDescription)
+            let networkError: MNNetworkError = error.asNetworkError ?? .custom(code: error._code, msg: error.localizedDescription)
             (callbackQueue ?? .main).async {
-                completion?(.failure(httpError))
+                completion?(.failure(networkError))
             }
             return nil
         }
@@ -213,7 +219,7 @@ extension HTTPSession {
 }
 
 // MARK: - 下载请求
-extension HTTPSession {
+extension MNNetworkSession {
     
     /// 下载请求任务
     /// - Parameters:
@@ -224,7 +230,7 @@ extension HTTPSession {
     ///   - progress: 下载进度回调
     ///   - completion: 结束回调
     /// - Returns: 下载任务实例
-    public func downloadTask(url: String, serializer: HTTPSerializer = .default, parser:HTTPParser = .default, location: @escaping HTTPSessionLocationHandler, progress: HTTPSessionProgressHandler? = nil, completion: HTTPSessionCompletionHandler?) -> URLSessionDownloadTask? {
+    public func downloadTask(url: String, serializer: MNNetworkSerializer = .default, parser:MNNetworkParser = .default, location: @escaping MNNetworkSession.LocationHandler, progress: MNNetworkSession.ProgressHandler? = nil, completion: MNNetworkSession.CompletionHandler?) -> URLSessionDownloadTask? {
         // 判断是否需要下载文件
         if parser.downloadOptions.contains(.removeExistsFile) == false {
             var filePath: String
@@ -244,11 +250,11 @@ extension HTTPSession {
         // 初始化下载请求
         let request: URLRequest!
         do {
-            request = try serializer.request(with: url, method: "GET")
+            request = try serializer.request(with: url, method: .get)
         } catch {
-            let httpError: HTTPError = error.asHttpError ?? .custom(code: error._code, msg: error.localizedDescription)
+            let networkError: MNNetworkError = error.asNetworkError ?? .custom(code: error._code, msg: error.localizedDescription)
             (callbackQueue ?? .main).async {
-                completion?(.failure(httpError))
+                completion?(.failure(networkError))
             }
             return nil
         }
@@ -269,7 +275,7 @@ extension HTTPSession {
     ///   - progress: 下载进度回调
     ///   - completion: 下载结束回调
     /// - Returns: 下载任务实例
-    public func downloadTask(resumeData: Data, parser: HTTPParser = .default, location: @escaping HTTPSessionLocationHandler, progress: HTTPSessionProgressHandler? = nil, completion: HTTPSessionCompletionHandler?) -> URLSessionDownloadTask? {
+    public func downloadTask(resumeData: Data, parser: MNNetworkParser = .default, location: @escaping MNNetworkSession.LocationHandler, progress: MNNetworkSession.ProgressHandler? = nil, completion: MNNetworkSession.CompletionHandler?) -> URLSessionDownloadTask? {
         var downloadTask: URLSessionDownloadTask!
         DispatchTaskQueue.sync {
             downloadTask = self.session.downloadTask(withResumeData: resumeData)
@@ -281,7 +287,7 @@ extension HTTPSession {
 }
 
 // MARK: - 上传请求
-extension HTTPSession {
+extension MNNetworkSession {
     
     /// 上传请求任务
     /// - Parameters:
@@ -293,15 +299,15 @@ extension HTTPSession {
     ///   - progress: 上传进度
     ///   - completion: 上传结束回调
     /// - Returns: 上传任务实例
-    public func uploadTask(url: String, method: String = "POST", serializer: HTTPSerializer = .default, parser:HTTPParser = .default, body: HTTPSessionBodyHandler, progress: HTTPSessionProgressHandler? = nil, completion: HTTPSessionCompletionHandler?) -> URLSessionUploadTask? {
+    public func uploadTask(url: String, method: MNNetworkMethod = .post, serializer: MNNetworkSerializer = .default, parser:MNNetworkParser = .default, body: MNNetworkSession.BodyHandler, progress: MNNetworkSession.ProgressHandler? = nil, completion: MNNetworkSession.CompletionHandler?) -> URLSessionUploadTask? {
         // 创建请求
         var request: URLRequest!
         do {
             request = try serializer.request(with: url, method: method)
         } catch {
-            let httpError: HTTPError = error.asHttpError ?? .custom(code: error._code, msg: error.localizedDescription)
+            let networkError: MNNetworkError = error.asNetworkError ?? .custom(code: error._code, msg: error.localizedDescription)
             (callbackQueue ?? .main).async {
-                completion?(.failure(httpError))
+                completion?(.failure(networkError))
             }
             return nil
         }
@@ -340,7 +346,7 @@ extension HTTPSession {
 }
 
 // MARK: - 保存请求代理
-extension HTTPSession {
+extension MNNetworkSession {
     
     /// 保存任务代理
     /// - Parameters:
@@ -351,8 +357,8 @@ extension HTTPSession {
     ///   - upload: 上传进度回调
     ///   - download: 下载进度回调
     ///   - completion: 任务结束回调
-     fileprivate func setProxy(for task: URLSessionTask, parser: HTTPParser? = nil, fileUrl: URL? = nil, location: HTTPSessionLocationHandler? = nil, upload: HTTPSessionProgressHandler? = nil, download: HTTPSessionProgressHandler? = nil, completion: HTTPSessionCompletionHandler? = nil) {
-        let proxy = HTTPProxy(task: task)
+     fileprivate func setProxy(for task: URLSessionTask, parser: MNNetworkParser? = nil, fileUrl: URL? = nil, location: MNNetworkSession.LocationHandler? = nil, upload: MNNetworkSession.ProgressHandler? = nil, download: MNNetworkSession.ProgressHandler? = nil, completion: MNNetworkSession.CompletionHandler? = nil) {
+        let proxy = MNNetworkProxy(task: task)
         proxy.parser = parser
         proxy.fileURL = fileUrl
         proxy.uploadHandler = upload
@@ -365,12 +371,12 @@ extension HTTPSession {
 }
 
 // MARK: - 代理存取
-extension HTTPSession {
+extension MNNetworkSession {
     
     /// 获取任务代理
     /// - Parameter identifier: 存储标识
     /// - Returns: 任务代理
-    private func proxy(forKey identifier: Int) -> HTTPProxy? {
+    private func proxy(forKey identifier: Int) -> MNNetworkProxy? {
         semaphore.wait()
         let proxy = proxies[identifier]
         semaphore.signal()
@@ -381,7 +387,7 @@ extension HTTPSession {
     /// - Parameters:
     ///   - proxy: 任务代理
     ///   - identifier: 存储标识
-    private func setProxy(_ proxy: HTTPProxy, forKey identifier: Int) {
+    private func setProxy(_ proxy: MNNetworkProxy, forKey identifier: Int) {
         semaphore.wait()
         proxies[identifier] = proxy
         semaphore.signal()
@@ -397,7 +403,7 @@ extension HTTPSession {
 }
 
 // MARK: - URLSessionDelegate
-extension HTTPSession: URLSessionDelegate {
+extension MNNetworkSession: URLSessionDelegate {
     /**
      当前session失效时, 该代理方法被调用;
      如果使用finishTasksAndInvalidate函数使该session失效,
@@ -419,7 +425,7 @@ extension HTTPSession: URLSessionDelegate {
 }
 
 // MARK: - URLSessionTaskDelegate
-extension HTTPSession: URLSessionTaskDelegate {
+extension MNNetworkSession: URLSessionTaskDelegate {
     /**
      服务器重定向时调用
      只会在default session或者ephemeral session中调用
@@ -492,7 +498,7 @@ extension HTTPSession: URLSessionTaskDelegate {
 }
 
 // MARK: - URLSessionDataDelegate
-extension HTTPSession: URLSessionDataDelegate {
+extension MNNetworkSession: URLSessionDataDelegate {
     /**
      该data task获取到了服务器端传回的最初始回复(response);
      其中的completionHandler传入一个类型为NSURLSessionResponseDisposition的变量;
@@ -554,7 +560,7 @@ extension HTTPSession: URLSessionDataDelegate {
 }
 
 // MARK: - URLSessionDownloadDelegate
-extension HTTPSession: URLSessionDownloadDelegate {
+extension MNNetworkSession: URLSessionDownloadDelegate {
     /**
      周期性地通知下载进度
      @param session 当前session

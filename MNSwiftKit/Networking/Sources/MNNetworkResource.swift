@@ -1,5 +1,5 @@
 //
-//  NetworkResource.swift
+//  MNNetworkResource.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2025/8/23.
@@ -9,7 +9,7 @@
 import Foundation
 
 /// 资源加载器
-public class NetworkResource {
+public class MNNetworkResource {
     
     /// 资源束
     private class var bundle: Bundle {
@@ -22,14 +22,14 @@ public class NetworkResource {
             return bundle
         }
         // 尝试从当前框架/模块的 bundle 中加载（库作为 Pod 使用时）
-        if let url = Bundle(for: NetworkResource.self).url(forResource: "MNSwiftKit_Networking", withExtension: "bundle"), let bundle = Bundle(url: url) {
+        if let url = Bundle(for: MNNetworkResource.self).url(forResource: "MNSwiftKit_Networking", withExtension: "bundle"), let bundle = Bundle(url: url) {
             return bundle
         }
         // 可能是直接源代码集成，尝试在框架 bundle 的上级目录查找
-        if let url = Bundle(for: NetworkResource.self).url(forResource: "MNSwiftKit_Networking", withExtension: "bundle", subdirectory: "Frameworks/MNSwiftKit.framework"), let bundle = Bundle(url: url) {
+        if let url = Bundle(for: MNNetworkResource.self).url(forResource: "MNSwiftKit_Networking", withExtension: "bundle", subdirectory: "Frameworks/MNSwiftKit.framework"), let bundle = Bundle(url: url) {
             return bundle
         }
-        return Bundle(for: NetworkResource.self)
+        return Bundle(for: MNNetworkResource.self)
     }
     
     /// 获取资源束下文件路径
@@ -55,12 +55,12 @@ public class NetworkResource {
     /// 资源束下json文件路径
     public class var jsonPath: String? {
         
-        bundle.path(forResource: "HTTPResponseCode", ofType: "json")
+        bundle.path(forResource: "MNNetworkReason", ofType: "json")
     }
     
     /// 资源束下json文件位置
     public class var jsonURL: URL? {
         
-        bundle.url(forResource: "HTTPResponseCode", withExtension: "json")
+        bundle.url(forResource: "MNNetworkReason", withExtension: "json")
     }
 }

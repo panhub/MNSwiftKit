@@ -1,5 +1,5 @@
 //
-//  HTTPDataRequest.swift
+//  MNDataRequest.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2021/8/1.
@@ -7,34 +7,8 @@
 
 import Foundation
 
-/// 请求方式
-public enum HTTPMethod {
-    /// GET请求
-    case get
-    /// PUT请求
-    case put
-    /// POST请求
-    case post
-    /// HEAD头请求
-    case head
-    /// DELETE请求
-    case delete
-    
-    
-    /// 请求方法字符串
-    public var rawString: String {
-        switch self {
-        case .get: return "GET"
-        case .put: return "PUT"
-        case .post: return "POST"
-        case .head: return "HEAD"
-        case .delete: return "DELETE"
-        }
-    }
-}
-
 /// 分页请求支持
-public protocol HTTPPagingSupported: NSObjectProtocol where Self: HTTPDataRequest {
+public protocol MNPagingRequestSupported: NSObjectProtocol where Self: MNDataRequest {
     /// 页数
     var page: Int { set get }
     /// 是否还有更多数据
@@ -48,12 +22,14 @@ public protocol HTTPPagingSupported: NSObjectProtocol where Self: HTTPDataReques
     func clearCache() -> Void
 }
 
-/// HTTP数据请求
-open class HTTPDataRequest: HTTPRequest {
+/// 数据请求
+open class MNDataRequest: MNRequest {
     /// 数据来源
     public enum DataSource {
-        case network // 网络数据
-        case cache // 本地缓存
+        /// 网络数据
+        case network
+        /// 本地缓存
+        case cache
     }
     /// 缓存策略
     public enum CachePolicy {
@@ -67,7 +43,7 @@ open class HTTPDataRequest: HTTPRequest {
     /// POST数据体 非上传数据
     public var body: Any?
     /// 请求方式
-    public var method: HTTPMethod = .get
+    public var method: MNNetworkMethod = .get
     /// 重试次数 失败时重新请求 NSURLErrorCancelled 无效
     public var retyCount: Int = 0
     /// 重试时间间隔 默认立即重试
@@ -93,7 +69,7 @@ open class HTTPDataRequest: HTTPRequest {
     /// - Parameters:
     ///   - start: 开始请求告知
     ///   - completion: 请求结束回调
-    open func start(_ start: HTTPRequestStartHandler? = nil, completion: HTTPRequestCompletionHandler?) {
+    open func start(_ start: MNRequest.StartHandler? = nil, completion: MNRequest.CompletionHandler?) {
         prepareLoadData()
         startHandler = start
         completionHandler = completion
@@ -102,11 +78,11 @@ open class HTTPDataRequest: HTTPRequest {
     
     /// 请求结束
     /// - Parameter result: 数据体
-    final public override func loadFinish(result: Result<Any, HTTPError>) {
+    final public override func loadFinish(result: Result<Any, MNNetworkError>) {
         // 判断是否需要读取缓存
-        let httpResult = HTTPResult(result: result)
+        let httpResult = MNRequestResult(result: result)
         httpResult.request = self
-        if result.isSuccess == false, method == .get, cachePolicy == .returnCacheElseLoad, let cache = HTTPDatabase.default.cache(forKey: cacheForKey, timeInterval: cacheValidInterval) {
+        if result.isSuccess == false, method == .get, cachePolicy == .returnCacheElseLoad, let cache = MNRequestDatabase.default.cache(forKey: cacheForKey, timeInterval: cacheValidInterval) {
             source = .cache
             httpResult.data = cache
         }
@@ -116,7 +92,7 @@ open class HTTPDataRequest: HTTPRequest {
             // 依据结果回调
             if let data = httpResult.data {
                 // 判断是否缓存结果
-                if method == .get, source == .network, cachePolicy != .never, HTTPDatabase.default.setCache(data, forKey: cacheForKey) {
+                if method == .get, source == .network, cachePolicy != .never, MNRequestDatabase.default.setCache(data, forKey: cacheForKey) {
 #if DEBUG
                     print("已缓存数据")
 #endif

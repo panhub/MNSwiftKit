@@ -8,10 +8,10 @@
 import Foundation
 
 /// 网络请求结果
-extension Result where Success == Any, Failure == HTTPError {
+extension Result where Success == Any, Failure == MNNetworkError {
     
     /// 错误体
-    public var error: HTTPError? {
+    public var error: MNNetworkError? {
         switch self {
         case .failure(let error): return error
         default: return nil
@@ -22,7 +22,7 @@ extension Result where Success == Any, Failure == HTTPError {
     public var code: Int {
         switch self {
         case .failure(let error): return error.errCode
-        default: return HTTPResultCode.succeed.rawValue
+        default: return MNRequestResult.Code.succeed.rawValue
         }
     }
     
@@ -59,7 +59,7 @@ extension Result where Success == Any, Failure == HTTPError {
     }
 }
 
-extension Result: @retroactive CustomDebugStringConvertible where Success == Any, Failure == HTTPError {
+extension Result: @retroactive CustomDebugStringConvertible where Success == Any, Failure == MNNetworkError {
     
     public var debugDescription: String {
         switch self {
@@ -74,45 +74,45 @@ extension Result: @retroactive CustomDebugStringConvertible where Success == Any
     }
 }
 
-/// HTTP请求结果码
-public enum HTTPResultCode: Int {
-    case succeed = 1
-    case failed = 0
-    case unknown = -1
-    case cancelled = -999
-    case badUrl = -1000
-    case timedOut = -1001
-    case cannotFindHost = -1003
-    case cannotConnectToHost = -1004
-    case networkConnectionLost = -1005
-    case notConnectedToInternet = -1009
-    case cannotDecodeData = -1016
-    case cannotParseResponse = -1017
-    case cannotCreateFile = -3000
-    case cannotWriteToFile = -3003
-    case cannotRemoveFile = -3004
-    case cannotMoveFile = -3005
-    case cannotEncodeUrl = -1813770
-    case cannotEncodeBody = -1813771
-    case missingContentType = -1813772
-    case unacceptedContentType = -1813773
-    case unacceptedStatusCode = -1813774
-    case zeroByteData = -1813775
-    case cannotParseData = -1813776
-    case bodyIsEmpty = -1813777
-    case fileExist = -1813778
-    case cannotReadFile = -1813779
-}
-
 /// 请求结果
-public class HTTPResult: NSObject {
+public class MNRequestResult: NSObject {
+    
+    /// 请求结果码
+    public enum Code: Int {
+        case succeed = 1
+        case failed = 0
+        case unknown = -1
+        case cancelled = -999
+        case badUrl = -1000
+        case timedOut = -1001
+        case cannotFindHost = -1003
+        case cannotConnectToHost = -1004
+        case networkConnectionLost = -1005
+        case notConnectedToInternet = -1009
+        case cannotDecodeData = -1016
+        case cannotParseResponse = -1017
+        case cannotCreateFile = -3000
+        case cannotWriteToFile = -3003
+        case cannotRemoveFile = -3004
+        case cannotMoveFile = -3005
+        case cannotEncodeUrl = -1813770
+        case cannotEncodeBody = -1813771
+        case missingContentType = -1813772
+        case unacceptedContentType = -1813773
+        case unacceptedStatusCode = -1813774
+        case zeroByteData = -1813775
+        case cannotParseData = -1813776
+        case bodyIsEmpty = -1813777
+        case fileExist = -1813778
+        case cannotReadFile = -1813779
+    }
     
     /// Swift数据结果
-    private var result: Result<Any, HTTPError> = .failure(.custom(code: HTTPErrorUnknown, msg: "unknown error"))
+    private var result: Result<Any, MNNetworkError> = .failure(.custom(code: MNNetworkErrorUnknown, msg: "unknown error"))
     
     /// 响应码
-    public var code: HTTPResultCode {
-        get { HTTPResultCode(rawValue: result.code) ?? .failed }
+    public var code: MNRequestResult.Code {
+        get { MNRequestResult.Code(rawValue: result.code) ?? .failed }
         set {
             if newValue == .succeed {
                 if result.isSuccess == false {
@@ -137,7 +137,7 @@ public class HTTPResult: NSObject {
             if let responseObject = newValue {
                 result = .success(responseObject)
             } else if let _ = result.data {
-                result = .failure(.custom(code: HTTPErrorUnknown, msg: "request failed"))
+                result = .failure(.custom(code: MNNetworkErrorUnknown, msg: "request failed"))
             }
         }
     }
@@ -149,14 +149,14 @@ public class HTTPResult: NSObject {
     public var isSuccess: Bool { code == .succeed }
     
     /// 记录请求
-    public weak var request: HTTPRequest!
+    public weak var request: MNRequest!
     
     /// 调试信息
     public override var debugDescription: String { result.debugDescription }
     
     /// 构造请求结果
     /// - Parameter result: 请求结果
-    public init(result: Result<Any, HTTPError>) {
+    public init(result: Result<Any, MNNetworkError>) {
         self.result = result
     }
     

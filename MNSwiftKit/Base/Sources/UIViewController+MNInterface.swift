@@ -26,14 +26,19 @@ extension UIViewController {
 
 /// 定义控制器
 public protocol UIViewControllerInterface {
-    /// 是否是主控制器
+    
+    /// 是否是加载在标签控制器或导航控制器中
     var isRootViewController: Bool { get }
+    
     /// 是否以子控制器方式加载
     var isChildViewController: Bool { get }
 }
 
 extension UIViewControllerInterface where Self: UIViewController {
+    
     /// 获取主控制器
+    /// - 若自身加载在标签控制器或导航控制器中则返回自身
+    /// - 反之递归向上寻找
     public var rootViewController: UIViewController? {
         var viewController: UIViewController? = self
         while let vc = viewController {
@@ -45,10 +50,20 @@ extension UIViewControllerInterface where Self: UIViewController {
 }
 
 extension UIViewController: UIViewControllerInterface {
-    /// 是否是主控制器
-    @objc open var isRootViewController: Bool { false }
-    /// 是否以子控制器方式加载
-    @objc open var isChildViewController: Bool { (view.frame.width + view.frame.height) != (UIScreen.main.bounds.width + UIScreen.main.bounds.height) }
+    
+    @objc open var isRootViewController: Bool {
+        if self is UITabBarController { return false }
+        if self is UINavigationController { return false }
+        guard let parent = parent else { return false }
+        if parent is UITabBarController { return true }
+        if parent is UINavigationController { return true }
+        return false
+    }
+    
+    @objc open var isChildViewController: Bool {
+        guard let parent = parent else { return false }
+        return parent.children.contains(self)
+    }
 }
 
 /// 定制标签栏

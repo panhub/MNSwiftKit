@@ -426,18 +426,18 @@ class ViewController: MNBaseViewController {
     // 加载数据
     override func loadData() {
         // 设置请求对象
-        httpRequest = HTTPDataRequest(url: "https://api.example.com/data")
+        httpRequest = MNDataRequest(url: "https://api.example.com/data")
         super.loadData()
     }
     
     // 准备加载数据
-    override func prepareLoadData(_ request: HTTPDataRequest) {
+    override func prepareLoadData(_ request: MNDataRequest) {
         // 自定义加载提示
         contentView.mn.showActivityToast("加载中...")
     }
     
     // 完成加载数据
-    override func completeLoadData(_ result: HTTPResult) {
+    override func completeLoadData(_ result: MNRequestResult) {
         if result.isSuccess {
             // 处理数据
         } else {
@@ -830,7 +830,7 @@ class ViewController: MNBaseViewController {
     
     // 加载数据
     override func loadData() {
-        httpRequest = HTTPDataRequest(url: "https://api.example.com/data")
+        httpRequest = MNDataRequest(url: "https://api.example.com/data")
         super.loadData()
     }
     
@@ -3846,12 +3846,12 @@ class DetailViewController: UIViewController {
 class ViewController: UIViewController {
     
     // 是否允许交互式返回（默认 true）
-    override var preferredInteractiveTransition: Bool {
+    override var preferredInteractiveTransitioning: Bool {
         return true
     }
     
     // 指定转场标签栏
-    override var preferredTransitionBottomBar: UIView? {
+    override var preferredTransitioningBottomBar: UIView? {
         return tabBarController?.tabBar
     }
     
@@ -3871,12 +3871,12 @@ class ViewController: UIViewController {
     }
     
     // 询问标签栏是否应该进入（显示）
-    override func bottomBarShouldEnter() -> Bool {
+    override func bottomBarShouldEnterTransitioning() -> Bool {
         return true
     }
     
     // 询问标签栏是否应该离开（隐藏）
-    override func bottomBarShouldLeave() -> Bool {
+    override func bottomBarShouldLeaveTransitioning() -> Bool {
         return true
     }
 }
@@ -3941,7 +3941,7 @@ class ViewController: UIViewController {
 // 在控制器中控制是否允许交互式返回
 class ViewController: UIViewController {
     
-    override var preferredInteractiveTransition: Bool {
+    override var preferredInteractiveTransitioning: Bool {
         // 返回 false 禁用交互式返回
         return true
     }
@@ -4200,16 +4200,16 @@ func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElem
 
 #### 📦 模块组成
 
-- **HTTPSession**：核心会话管理类，提供所有网络请求功能
-- **HTTPSerializer**：请求序列化器，处理参数编码和请求头设置
-- **HTTPParser**：响应解析器，支持多种数据格式的自动解析
-- **HTTPProxy**：请求代理，处理 URLSession 回调
-- **HTTPError**：详细的错误定义和处理
-- **HTTPSecurityPolicy**：HTTPS 安全策略配置
-- **NetworkReachability**：网络可达性检测
-- **HTTPParam**：参数编码工具
-- **HTTPContentType**：内容类型枚举
-- **HTTPDownloadOptions**：下载选项配置
+- **MNNetworkSession**：核心会话管理类，提供所有网络请求功能
+- **MNNetworkSerializer**：请求序列化器，处理参数编码和请求头设置
+- **MNNetworkParser**：响应解析器，支持多种数据格式的自动解析
+- **MNNetworkProxy**：请求代理，处理 URLSession 回调
+- **MNNetworkError**：详细的错误定义和处理
+- **MNNetworkSecurityPolicy**：HTTPS 安全策略配置
+- **MNNetworkReachability**：网络可达性检测
+- **MNNetworkParam**：参数编码工具
+- **MNNetworkContentType**：内容类型枚举
+- **MNNetworkDownloadOptions**：下载选项配置
 
 #### 🚀 快速开始
 
@@ -4241,7 +4241,7 @@ targets: [
 
 ```swift
 // 创建会话实例
-let session = HTTPSession()
+let session = MNNetworkSession()
 
 // GET 请求
 session.get(url: "https://api.example.com/data") { result in
@@ -4262,7 +4262,7 @@ session.post(url: "https://api.example.com/submit", completion: { result in
 带参数的请求
 
 ```swift
-let serializer = HTTPSerializer()
+let serializer = MNNetworkSerializer()
 // URL 参数
 serializer.param = ["page": 1, "limit": 20]
 // 请求体
@@ -4361,7 +4361,7 @@ if let resumeData = // 获取 resumeData {
 网络状态监测
 
 ```swift
-let reachability = NetworkReachability.reachability
+let reachability = MNNetworkReachability.reachability
 // 开始监测
 reachability.start()
 // 设置状态变化回调
@@ -4382,7 +4382,7 @@ NotificationCenter.default.addObserver(
     object: nil,
     queue: .main
 ) { notification in
-    if let reachability = notification.object as? NetworkReachability {
+    if let reachability = notification.object as? MNNetworkReachability {
         print("网络状态: \(reachability.statusString)")
         print("网络类型: \(reachability.typeString)")
     }
@@ -4421,17 +4421,17 @@ reachability.stop(
 
 模块定义了详细的错误码常量，包括：
 
-- `HTTPErrorUnknown`: 未知错误
-- `HTTPErrorCancelled`: 请求取消
-- `HTTPErrorNotConnectedToInternet`: 无网络连接
-- `HTTPErrorBadUrl`: 链接无效
-- `HTTPErrorCannotEncodeUrl`: 链接编码失败
-- `HTTPErrorCannotEncodeBody`: 请求体编码失败
-- `HTTPErrorBadServerResponse`: 无法解析服务端响应
-- `HTTPErrorUnsupportedContentType`: 不支持的内容类型
-- `HTTPErrorUnsupportedStatusCode`: 不支持的状态码
-- `HTTPErrorZeroByteData`: 空数据
-- `HTTPErrorCannotParseData`: 数据解析失败
+- `MNNetworkErrorUnknown`: 未知错误
+- `MNNetworkErrorCancelled`: 请求取消
+- `MNNetworkErrorNotConnectedToInternet`: 无网络连接
+- `MNNetworkErrorBadUrl`: 链接无效
+- `MNNetworkErrorCannotEncodeUrl`: 链接编码失败
+- `MNNetworkErrorCannotEncodeBody`: 请求体编码失败
+- `MNNetworkErrorBadServerResponse`: 无法解析服务端响应
+- `MNNetworkErrorUnsupportedContentType`: 不支持的内容类型
+- `MNNetworkErrorUnsupportedStatusCode`: 不支持的状态码
+- `MNNetworkErrorZeroByteData`: 空数据
+- `MNNetworkErrorCannotParseData`: 数据解析失败
 - 更多错误码...
 
 **线程安全**
@@ -4496,7 +4496,7 @@ targets: [
 GET 请求
 
 ```swift
-let request = HTTPDataRequest(url: "https://api.example.com/users")
+let request = MNDataRequest(url: "https://api.example.com/users")
 request.method = .get
 request.start { 
     print("请求开始")
@@ -4514,7 +4514,7 @@ request.start {
 POST 请求
 
 ```swift
-let request = HTTPDataRequest(url: "https://api.example.com/login")
+let request = MNDataRequest(url: "https://api.example.com/login")
 request.method = .post
 request.param = [
     "username": "user123",
@@ -4534,7 +4534,7 @@ request.start(completion: { result in
 带 Header 的请求
 
 ```swift
-let request = HTTPDataRequest(url: "https://api.example.com/data")
+let request = MNDataRequest(url: "https://api.example.com/data")
 request.headerFields = [
     "Authorization": "Bearer token123",
     "Content-Type": "application/json"
@@ -4547,7 +4547,7 @@ request.start(completion: { result in
 请求缓存
 
 ```swift
-let request = HTTPDataRequest(url: "https://api.example.com/data")
+let request = MNDataRequest(url: "https://api.example.com/data")
 request.method = .get
 request.cachePolicy = .returnCacheElseLoad  // 优先使用缓存，失败后请求网络
 request.cacheValidInterval = 3600  // 缓存有效期1小时
@@ -4566,7 +4566,7 @@ request.start(completion: { result in
 请求重试
 
 ```swift
-let request = HTTPDataRequest(url: "https://api.example.com/data")
+let request = MNDataRequest(url: "https://api.example.com/data")
 request.retyCount = 3  // 最多重试3次
 request.retryInterval = 1.0  // 重试间隔1秒
 
@@ -4578,7 +4578,7 @@ request.start(completion: { result in
 自定义解析
 
 ```swift
-let request = HTTPDataRequest(url: "https://api.example.com/data")
+let request = MNDataRequest(url: "https://api.example.com/data")
 request.contentType = .json
 request.analyticHandler = { data, contentType in
     // 自定义解析逻辑
@@ -4597,7 +4597,7 @@ request.start(completion: { result in
 文件上传
 
 ```swift
-let request = HTTPUploadRequest(url: "https://api.example.com/upload")
+let request = MNUploadRequest(url: "https://api.example.com/upload")
 request.start(body: {
     // 返回要上传的文件路径、URL 或 Data
     return "/path/to/file.jpg"
@@ -4612,15 +4612,15 @@ request.start(body: {
 }
 ```
 
-多文件上传（使用 HTTPUploadAssistant）
+多文件上传（使用 MNUploadAssistant）
 
 ```swift
-let assistant = HTTPUploadAssistant(boundary: "Boundary-\(UUID().uuidString)")
+let assistant = MNUploadAssistant(boundary: "Boundary-\(UUID().uuidString)")
 assistant.append(name: "username", value: "user123")
 assistant.append(image: image1, name: "avatar", filename: "avatar.jpg")
 assistant.append(image: image2, name: "cover", filename: "cover.jpg")
 
-let request = HTTPUploadRequest(url: "https://api.example.com/upload")
+let request = MNUploadRequest(url: "https://api.example.com/upload")
 request.boundary = assistant.boundary
 request.start(body: {
     return assistant.data
@@ -4634,7 +4634,7 @@ request.start(body: {
 文件下载
 
 ```swift
-let request = HTTPDownloadRequest(url: "https://example.com/file.zip")
+let request = MNDownloadRequest(url: "https://example.com/file.zip")
 request.downloadOptions = [.createIntermediateDirectories, .removeExistsFile]
 
 request.start(location: { response, url in
@@ -4658,7 +4658,7 @@ request.start(location: { response, url in
 暂停和继续下载
 
 ```swift
-let request = HTTPDownloadRequest(url: "https://example.com/file.zip")
+let request = MNDownloadRequest(url: "https://example.com/file.zip")
 
 // 开始下载
 request.start(location: { _, _ in
@@ -4684,10 +4684,10 @@ request.resume { success in
 }
 ```
 
-文件下载（使用 HTTPFileRequest）
+文件下载（使用 MNFileDataRequest）
 
 ```swift
-let request = HTTPFileRequest(url: "https://example.com/file.zip")
+let request = MNFileDataRequest(url: "https://example.com/file.zip")
 request.downloadOptions = [.createIntermediateDirectories]
 
 request.start(location: {
@@ -4706,7 +4706,7 @@ request.start(location: {
 自定义回调队列
 
 ```swift
-let request = HTTPDataRequest(url: "https://api.example.com/data")
+let request = MNDataRequest(url: "https://api.example.com/data")
 request.queue = DispatchQueue.global(qos: .userInitiated)  // 自定义回调队列
 
 request.start(completion: { result in
@@ -4737,7 +4737,7 @@ request.start(completion: { result in
 取消请求
 
 ```swift
-let request = HTTPDataRequest(url: "https://api.example.com/data")
+let request = MNDataRequest(url: "https://api.example.com/data")
 request.start(completion: { result in
     // 处理结果
 })
@@ -4749,8 +4749,8 @@ request.cancel()
 忽略特定错误码
 
 ```swift
-let request = HTTPDataRequest(url: "https://api.example.com/data")
-request.ignoringErrorCodes = [HTTPErrorCancelled]  // 忽略取消错误
+let request = MNDataRequest(url: "https://api.example.com/data")
+request.ignoringErrorCodes = [MNNetworkErrorCancelled]  // 忽略取消错误
 
 request.start(completion: { result in
     // 取消错误不会触发回调
@@ -4760,7 +4760,7 @@ request.start(completion: { result in
 接受的状态码和内容类型
 
 ```swift
-let request = HTTPDataRequest(url: "https://api.example.com/data")
+let request = MNDataRequest(url: "https://api.example.com/data")
 request.acceptableStatusCodes = IndexSet(integersIn: 200..<300)  // 只接受 200-299
 request.acceptableContentTypes = [.json, .plainText]  // 只接受 JSON 和纯文本
 
@@ -4773,37 +4773,37 @@ request.start(completion: { result in
 
 ```swift
 // 写入缓存
-HTTPDatabase.default.setCache(data, forKey: "cache_key") { success in
+MNRequestDatabase.default.setCache(data, forKey: "cache_key") { success in
     print("缓存写入：\(success)")
 }
 
 // 读取缓存
-if let cache = HTTPDatabase.default.cache(forKey: "cache_key", timeInterval: 3600) {
+if let cache = MNRequestDatabase.default.cache(forKey: "cache_key", timeInterval: 3600) {
     print("读取缓存：\(cache)")
 }
 
 // 删除缓存
-HTTPDatabase.default.removeCache(forKey: "cache_key") { success in
+MNRequestDatabase.default.removeCache(forKey: "cache_key") { success in
     print("缓存删除：\(success)")
 }
 
 // 删除所有缓存
-HTTPDatabase.default.removeAll { success in
+MNRequestDatabase.default.removeAll { success in
     print("清空缓存：\(success)")
 }
 ```
 
-继承 HTTPRequest 自定义请求
+继承 MNRequest 自定义请求
 
 ```swift
-class CustomRequest: HTTPDataRequest {
+class CustomRequest: MNDataRequest {
 
     override func didSuccess(responseData: Any) {
         super.didSuccess(responseData: responseData)
         // 自定义成功处理逻辑
     }
     
-    override func didFail(_ result: HTTPResult) {
+    override func didFail(_ result: MNRequestResult) {
         super.didFail(result)
         // 自定义失败处理逻辑
     }
@@ -4813,7 +4813,7 @@ class CustomRequest: HTTPDataRequest {
 分页请求支持
 
 ```swift
-class PagingRequest: HTTPDataRequest, HTTPPagingSupported {
+class PagingRequest: MNDataRequest, MNPagingRequestSupported {
 
     var page: Int = 1
     var hasMore: Bool = true
@@ -4855,7 +4855,7 @@ class PagingRequest: HTTPDataRequest, HTTPPagingSupported {
 
 内容类型
 
-`HTTPContentType` 枚举支持以下类型：
+`MNNetworkContentType` 枚举支持以下类型：
 - `.none`: 不做处理
 - `.json`: JSON 数据
 - `.plainText`: 纯文本
@@ -4868,13 +4868,13 @@ class PagingRequest: HTTPDataRequest, HTTPPagingSupported {
 
 下载选项
 
-`HTTPDownloadOptions` 支持以下选项：
+`MNNetworkDownloadOptions` 支持以下选项：
 - `.createIntermediateDirectories`: 自动创建中间目录
 - `.removeExistsFile`: 删除已存在的文件
 
 错误类型
 
-`HTTPError` 提供了完善的错误类型：
+`MNNetworkError` 提供了完善的错误类型：
 - `requestSerializationFailure`: 请求序列化错误
 - `responseParseFailure`: 响应解析错误
 - `dataParseFailure`: 数据解析错误
@@ -4889,13 +4889,13 @@ class PagingRequest: HTTPDataRequest, HTTPPagingSupported {
 - **内存管理**：请求对象会被强引用直到请求完成，无需担心提前释放。
 - **缓存机制**：缓存基于 `SQLite` 数据库，默认路径为 `Documents/http_caches.sqlite`。
 - **重试机制**：重试只对网络错误有效，不会对序列化错误、解析错误、取消操作进行重试。
-- **断点续传**：`HTTPDownloadRequest` 支持断点续传，暂停后可以继续下载。
-- **文件下载**：`HTTPFileRequest` 使用 DataTask 下载，适合小文件；`HTTPDownloadRequest` 使用 DownloadTask，支持断点续传，适合大文件。
+- **断点续传**：`MNDownloadRequest` 支持断点续传，暂停后可以继续下载。
+- **文件下载**：`MNFileDataRequest` 使用 DataTask 下载，适合小文件；`MNDownloadRequest` 使用 DownloadTask，支持断点续传，适合大文件。
 - **参数编码**：参数会自动进行 URL 编码，支持字典、字符串等多种格式。
 - **错误处理**：建议检查 `result.isSuccess` 判断请求是否成功，失败时查看 `result.msg` 获取错误信息。
-- **网络检测**：可以使用 `NetworkReachability` 检测网络状态，但请求本身会自动处理网络错误。
+- **网络检测**：可以使用 `MNNetworkReachability` 检测网络状态，但请求本身会自动处理网络错误。
 - **并发请求**：模块支持多个请求并发执行，由 `URLSession` 统一管理。
-- **请求取消**：取消请求会触发错误回调，错误码为 `HTTPErrorCancelled`。
+- **请求取消**：取消请求会触发错误回调，错误码为 `MNNetworkErrorCancelled`。
 
 ### Database
 

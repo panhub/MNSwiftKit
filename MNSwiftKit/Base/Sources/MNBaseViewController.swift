@@ -32,7 +32,7 @@ open class MNBaseViewController: UIViewController {
     open var statusBarAnimation: UIStatusBarAnimation = .fade
     
     /// 数据请求体
-    open var httpRequest: HTTPPagingSupported?
+    open var httpRequest: MNPagingRequestSupported?
     
     /// 内容视图
     open private(set) lazy var contentView: UIView = {
@@ -157,7 +157,7 @@ extension MNBaseViewController {
     
     /// 即将开始请求
     /// - Parameter request: 请求体
-    @objc open func prepareLoadData(_ request: HTTPDataRequest) {
+    @objc open func prepareLoadData(_ request: MNDataRequest) {
         guard contentView.mn.isToastAppearing == false else { return }
         contentView.mn.showActivityToast("请稍后")
     }
@@ -165,7 +165,7 @@ extension MNBaseViewController {
     /// 请求结束
     /// - Parameters:
     ///   - result: 请求结果
-    @objc open func completeLoadData(_ result: HTTPResult) {
+    @objc open func completeLoadData(_ result: MNRequestResult) {
         if result.isSuccess {
             contentView.mn.closeToast()
         } else {

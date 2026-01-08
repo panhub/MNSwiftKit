@@ -1,5 +1,5 @@
 //
-//  HTTPParam.swift
+//  MNNetworkParam.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2021/7/19.
@@ -8,7 +8,7 @@
 import Foundation
 import CoreFoundation
 
-public struct HTTPParam {
+public struct MNNetworkParam {
     
     /// 字段
     public let field: String
@@ -35,15 +35,15 @@ public struct HTTPParam {
     }
 }
 
-extension HTTPParam {
+extension MNNetworkParam {
     
     /// 字符串形式
     /// - Parameter options: 编码选项
     /// - Returns: 字符串形式
     public func encode(options: EncodeOptions = .all) -> String? {
-        let field = options.contains(.field) ? HTTPParam.encoding(field) : field
+        let field = options.contains(.field) ? MNNetworkParam.encoding(field) : field
         guard let field = field, field.isEmpty == false else { return nil }
-        let value = options.contains(.value) ? HTTPParam.encoding(value) : value
+        let value = options.contains(.value) ? MNNetworkParam.encoding(value) : value
         guard let value = value else { return nil }
         return field + "=" + value
     }
@@ -79,12 +79,12 @@ extension HTTPParam {
     ///   - param: 参数来源
     ///   - options: 编码选项
     /// - Returns: 参数字符串
-    public static func extract(_ param: Any!, options: HTTPParam.EncodeOptions = .all) -> String? {
+    public static func extract(_ param: Any!, options: MNNetworkParam.EncodeOptions = .all) -> String? {
         guard let param = param else { return nil }
         // 字符串直接编码
         if param is String {
             let string = param as! String
-            return options.isEmpty ? string : HTTPParam.encoding(string)
+            return options.isEmpty ? string : MNNetworkParam.encoding(string)
         }
         // 字典
         guard let dic = param as? [String: Any] else { return nil }
@@ -96,8 +96,8 @@ extension HTTPParam {
     /// 提取网络请求使用的参数集合
     /// - Parameter items: 参数集合来源
     /// - Returns: 参数集合
-    public static func pairs(from items: [String: Any]) -> [HTTPParam]? {
-        var pairs = [HTTPParam]()
+    public static func pairs(from items: [String: Any]) -> [MNNetworkParam]? {
+        var pairs = [MNNetworkParam]()
         for (key, param) in items {
             var value: String?
             if param is String {
@@ -116,7 +116,7 @@ extension HTTPParam {
                 value = String(data: data, encoding: .utf8)
             }
             guard let value = value else { continue }
-            let pair = HTTPParam(field: key, value: value)
+            let pair = MNNetworkParam(field: key, value: value)
             pairs.append(pair)
         }
         return pairs.isEmpty ? nil : pairs

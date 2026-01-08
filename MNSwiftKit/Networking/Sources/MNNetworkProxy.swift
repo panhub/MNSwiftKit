@@ -1,5 +1,5 @@
 //
-//  HTTPProxy.swift
+//  MNNetworkProxy.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2021/7/21.
@@ -29,31 +29,31 @@ fileprivate extension URLSessionTask {
         set { objc_setAssociatedObject(self, &MNHTTPAssociated.challengeFailure, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
     }
     
-    var downloadError: HTTPError? {
-        get { objc_getAssociatedObject(self, &MNHTTPAssociated.downloadFailure) as? HTTPError }
+    var downloadError: MNNetworkError? {
+        get { objc_getAssociatedObject(self, &MNHTTPAssociated.downloadFailure) as? MNNetworkError }
         set { objc_setAssociatedObject(self, &MNHTTPAssociated.downloadFailure, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
     }
 }
 
-public class HTTPProxy: NSObject {
+public class MNNetworkProxy: NSObject {
     /// 下载的位置
     public var fileURL: URL?
     /// 服务端返回的数据
     private var data: Data = Data()
     /// 解析器
-    public var parser: HTTPParser?
+    public var parser: MNNetworkParser?
     /// 文件句柄
     private var fileHandle: FileHandle?
     /// 回调队列
     public weak var callbackQueue: DispatchQueue?
     /// 上传进度回调
-    public var uploadHandler: HTTPSessionProgressHandler?
+    public var uploadHandler: MNNetworkSession.ProgressHandler?
     /// 下载位置回调
-    public var locationHandler: HTTPSessionLocationHandler?
+    public var locationHandler: MNNetworkSession.LocationHandler?
     /// 下载进度回调
-    public var downloadHandler: HTTPSessionProgressHandler?
+    public var downloadHandler: MNNetworkSession.ProgressHandler?
     /// 结束回调
-    public var completionHandler: HTTPSessionCompletionHandler?
+    public var completionHandler: MNNetworkSession.CompletionHandler?
     /// 上传进度
     public let uploadProgress: Progress = Progress(parent: nil, userInfo: nil)
     /// 下载进度
@@ -102,13 +102,13 @@ public class HTTPProxy: NSObject {
     }
 }
 
-public extension HTTPProxy {
+public extension MNNetworkProxy {
     
     func urlSession(_ session: URLSession, task: URLSessionTask, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         var credential: URLCredential?
         var disposition = URLSession.AuthChallengeDisposition.performDefaultHandling
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust {
-            if HTTPSecurityPolicy.default.evaluate(server: challenge.protectionSpace.serverTrust!, domain: challenge.protectionSpace.host) {
+            if MNNetworkSecurityPolicy.default.evaluate(server: challenge.protectionSpace.serverTrust!, domain: challenge.protectionSpace.host) {
                 disposition = .useCredential
                 credential = URLCredential(trust: challenge.protectionSpace.serverTrust!)
             } else {
@@ -141,18 +141,18 @@ public extension HTTPProxy {
             }
         }
         // 检查错误
-        var httpError: HTTPError?
+        var networkError: MNNetworkError?
         if task.isChallengeFailure {
-            httpError = .httpsChallengeFailure(.underlyingError(error!))
+            networkError = .httpsChallengeFailure(.underlyingError(error!))
         } else if let downloadError = task.downloadError {
-            httpError = downloadError
+            networkError = downloadError
         }
-        if let httpError = httpError {
+        if let networkError = networkError {
             if let fileURL = fileURL {
                 try? FileManager.default.removeItem(at: fileURL)
             }
             (callbackQueue ?? .main).async {
-                self.completionHandler?(.failure(httpError))
+                self.completionHandler?(.failure(networkError))
             }
             return
         }
@@ -175,11 +175,11 @@ public extension HTTPProxy {
                     try? FileManager.default.removeItem(at: fileURL)
                 }
                 (self.callbackQueue ?? .main).async {
-                    self.completionHandler?(.failure(error.asHttpError!))
+                    self.completionHandler?(.failure(error.asNetworkError!))
                 }
                 return
             }
-            if let fileURL = self.fileURL, parser.contentType == .none {
+            if let fileURL = self.fileURL, parser.serializationType == .none {
                 // 下载请求, 将下载路径返回
                 if #available(iOS 16.0, *) {
                     result = fileURL.path(percentEncoded: false)
@@ -195,14 +195,14 @@ public extension HTTPProxy {
     }
 }
 
-public extension HTTPProxy {
+public extension MNNetworkProxy {
     
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
         if let fileURL = fileURL {
             // 转换响应者
             guard let response = response as? HTTPURLResponse else {
-                let httpError = HTTPError.responseParseFailure(.cannotParseResponse(response))
-                dataTask.downloadError = httpError
+                let networkError = MNNetworkError.responseParseFailure(.cannotParseResponse(response))
+                dataTask.downloadError = networkError
                 completionHandler(.cancel)
                 return
             }
@@ -213,8 +213,8 @@ public extension HTTPProxy {
             } catch {
                 let msg: String = "已接收到响应, 读取本地文件失败, 主动取消请求\n-\(#file)-\(#function)-\(#line)"
                 let nsError = NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotWriteToFile, userInfo: [NSLocalizedDescriptionKey:"读取本地文件失败", NSLocalizedFailureReasonErrorKey:msg,NSDebugDescriptionErrorKey:msg,NSUnderlyingErrorKey:error])
-                let httpError = HTTPError.downloadFailure(.cannotReadFile(fileURL, error: nsError as Error))
-                dataTask.downloadError = httpError
+                let networkError = MNNetworkError.downloadFailure(.cannotReadFile(fileURL, error: nsError as Error))
+                dataTask.downloadError = networkError
                 completionHandler(.cancel)
                 return
             }
@@ -226,8 +226,8 @@ public extension HTTPProxy {
                 } catch {
                     let msg: String = "已接收到响应, 读取本地文件失败, 主动取消请求\n-\(#file)-\(#function)-\(#line)"
                     let nsError = NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotWriteToFile, userInfo: [NSLocalizedDescriptionKey:"读取本地文件失败", NSLocalizedFailureReasonErrorKey:msg,NSDebugDescriptionErrorKey:msg,NSUnderlyingErrorKey:error])
-                    let httpError = HTTPError.downloadFailure(.cannotReadFile(fileURL, error: nsError as Error))
-                    dataTask.downloadError = httpError
+                    let networkError = MNNetworkError.downloadFailure(.cannotReadFile(fileURL, error: nsError as Error))
+                    dataTask.downloadError = networkError
                     completionHandler(.cancel)
                     return
                 }
@@ -244,8 +244,8 @@ public extension HTTPProxy {
                     // 失败处理
                     let msg: String = "主动取消请求, 响应码不合法: \(response.statusCode)\n- 可能是文件变化导致Range超出边界;\n- 服务端不支持分片下载;\n-\(#file)-\(#function)-\(#line)"
                     let error = NSError(domain: NSURLErrorDomain, code: NSURLErrorDataLengthExceedsMaximum, userInfo: [NSLocalizedDescriptionKey:"无法下载文件", NSLocalizedFailureReasonErrorKey:msg,NSDebugDescriptionErrorKey:msg])
-                    let httpError = HTTPError.downloadFailure(.cannotWriteToFile(fileURL, error: error as Error))
-                    dataTask.downloadError = httpError
+                    let networkError = MNNetworkError.downloadFailure(.cannotWriteToFile(fileURL, error: error as Error))
+                    dataTask.downloadError = networkError
                 }
                 completionHandler(.cancel)
                 return
@@ -270,8 +270,8 @@ public extension HTTPProxy {
                 } catch {
                     let msg: String = "主动终止请求, 写入数据失败, 已写入: \(downloadProgress.completedUnitCount)\n-\(#file)-\(#function)-\(#line)"
                     let nsError = NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotWriteToFile, userInfo: [NSLocalizedDescriptionKey:"写入数据失败", NSLocalizedFailureReasonErrorKey:msg,NSDebugDescriptionErrorKey:msg,NSUnderlyingErrorKey:error])
-                    let httpError = HTTPError.downloadFailure(.cannotWriteToFile(nil, error: nsError as Error))
-                    dataTask.downloadError = httpError
+                    let networkError = MNNetworkError.downloadFailure(.cannotWriteToFile(nil, error: nsError as Error))
+                    dataTask.downloadError = networkError
                     dataTask.cancel()
                     return
                 }
@@ -288,7 +288,7 @@ public extension HTTPProxy {
     }
 }
 
-public extension HTTPProxy {
+public extension MNNetworkProxy {
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) -> Void {
         downloadProgress.totalUnitCount = totalBytesExpectedToWrite
@@ -307,8 +307,8 @@ public extension HTTPProxy {
         let fileURL: URL? = locationHandler?(downloadTask.response, location)
         guard let fileURL = fileURL, fileURL.isFileURL else {
             let error = NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotMoveFile, userInfo: [NSLocalizedDescriptionKey:"文件路径不合法", NSLocalizedFailureReasonErrorKey:"文件路径回调可能未实现或返回的路径不可用",NSDebugDescriptionErrorKey:"文件路径不合法, 文件路径回调可能未实现或返回的路径不可用"])
-            let httpError = HTTPError.downloadFailure(.cannotMoveFile(fileURL, error: error as Error))
-            downloadTask.downloadError = httpError
+            let networkError = MNNetworkError.downloadFailure(.cannotMoveFile(fileURL, error: error as Error))
+            downloadTask.downloadError = networkError
             return
         }
         
@@ -320,8 +320,8 @@ public extension HTTPProxy {
                 do {
                     try FileManager.default.removeItem(at: fileURL)
                 } catch {
-                    let httpError = HTTPError.downloadFailure(.cannotRemoveFile(fileURL, error: error))
-                    downloadTask.downloadError = httpError
+                    let networkError = MNNetworkError.downloadFailure(.cannotRemoveFile(fileURL, error: error))
+                    downloadTask.downloadError = networkError
                     return
                 }
             }
@@ -339,8 +339,8 @@ public extension HTTPProxy {
             do {
                 try FileManager.default.createDirectory(at: fileURL.deletingLastPathComponent(), withIntermediateDirectories: true)
             } catch {
-                let httpError = HTTPError.downloadFailure(.cannotCreateFile(fileURL, error: error))
-                downloadTask.downloadError = httpError
+                let networkError = MNNetworkError.downloadFailure(.cannotCreateFile(fileURL, error: error))
+                downloadTask.downloadError = networkError
                 return
             }
         }
@@ -349,8 +349,8 @@ public extension HTTPProxy {
         do {
             try FileManager.default.moveItem(at: location, to: fileURL)
         } catch {
-            let httpError = HTTPError.downloadFailure(.cannotMoveFile(fileURL, error: error))
-            downloadTask.downloadError = httpError
+            let networkError = MNNetworkError.downloadFailure(.cannotMoveFile(fileURL, error: error))
+            downloadTask.downloadError = networkError
             return
         }
         

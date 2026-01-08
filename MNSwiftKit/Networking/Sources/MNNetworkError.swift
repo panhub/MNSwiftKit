@@ -8,53 +8,53 @@
 import Foundation
 
 ///未知错误
-public let HTTPErrorUnknown: Int = NSURLErrorUnknown
+public let MNNetworkErrorUnknown: Int = NSURLErrorUnknown
 ///取消 -999
-public let HTTPErrorCancelled: Int = NSURLErrorCancelled
+public let MNNetworkErrorCancelled: Int = NSURLErrorCancelled
 ///网络中断
-public let HTTPErrorNetworkConnectionLost: Int = NSURLErrorNetworkConnectionLost
+public let MNNetworkErrorConnectionLost: Int = NSURLErrorNetworkConnectionLost
 ///无网络连接
-public let HTTPErrorNotConnectedToInternet: Int = NSURLErrorNotConnectedToInternet
+public let MNNetworkErrorNotConnectedToInternet: Int = NSURLErrorNotConnectedToInternet
 
 ///链接无效
-public let HTTPErrorBadUrl: Int = NSURLErrorBadURL
+public let MNNetworkErrorBadUrl: Int = NSURLErrorBadURL
 ///链接拼接失败
-public let HTTPErrorCannotEncodeUrl: Int = -1813770
+public let MNNetworkErrorCannotEncodeUrl: Int = -1813770
 ///请求体编码失败
-public let HTTPErrorCannotEncodeBody: Int = -1813771
+public let MNNetworkErrorCannotEncodeBody: Int = -1813771
 
 ///无法解析服务端响应体
-public let HTTPErrorBadServerResponse: Int = NSURLErrorCannotParseResponse
+public let MNNetworkErrorBadServerResponse: Int = NSURLErrorCannotParseResponse
 ///未知ContentType
-public let HTTPErrorMissingContentType: Int = -1813772
+public let MNNetworkErrorMissingContentType: Int = -1813772
 ///不接受的ContentType
-public let HTTPErrorUnsupportedContentType: Int = -1813773
+public let MNNetworkErrorUnsupportedContentType: Int = -1813773
 ///不接受的StatusCode
-public let HTTPErrorUnsupportedStatusCode: Int = -1813774
+public let MNNetworkErrorUnsupportedStatusCode: Int = -1813774
 
 ///空数据
-public let HTTPErrorZeroByteData: Int = -1813775
+public let MNNetworkErrorZeroByteData: Int = -1813775
 ///不能解析数据
-public let HTTPErrorCannotParseData: Int = -1813776
+public let MNNetworkErrorCannotParseData: Int = -1813776
 
 ///未知上传内容
-public let HTTPErrorBodyIsEmpty: Int = -1813777
+public let MNNetworkErrorBodyIsEmpty: Int = -1813777
 
 ///文件已存在
-public let HTTPErrorFileExist: Int = -1813778
+public let MNNetworkErrorFileExist: Int = -1813778
 ///读取文件失败
-public let HTTPErrorCannotReadFile: Int = -1813779
+public let MNNetworkErrorCannotReadFile: Int = -1813779
 ///无法保存文件
-public let HTTPErrorCannotWriteToFile: Int = NSURLErrorCannotWriteToFile
+public let MNNetworkErrorCannotWriteToFile: Int = NSURLErrorCannotWriteToFile
 ///删除文件失败
-public let HTTPErrorCannotRemoveFile: Int = NSURLErrorCannotRemoveFile
+public let MNNetworkErrorCannotRemoveFile: Int = NSURLErrorCannotRemoveFile
 ///创建文件失败
-public let HTTPErrorCannotCreateFile: Int = NSURLErrorCannotCreateFile
+public let MNNetworkErrorCannotCreateFile: Int = NSURLErrorCannotCreateFile
 ///移动文件失败
-public let HTTPErrorCannotMoveFile: Int = NSURLErrorCannotMoveFile
+public let MNNetworkErrorCannotMoveFile: Int = NSURLErrorCannotMoveFile
 
 ///错误信息
-public enum HTTPError: Swift.Error {
+public enum MNNetworkError: Swift.Error {
     
     /// 请求序列化错误
     public enum RequestSerializationReason {
@@ -67,7 +67,7 @@ public enum HTTPError: Swift.Error {
     public enum ResponseParseReason {
         case missingMimeType
         case cannotParseResponse(URLResponse?)
-        case unacceptedContentType(String, accepts: [String])
+        case unacceptedContentType(String)
         case unacceptedStatusCode(Int)
         case underlyingError(Error)
     }
@@ -111,10 +111,10 @@ public enum HTTPError: Swift.Error {
 extension Swift.Error {
     
     /// 转换错误类型
-    public var asHttpError: HTTPError? { self as? HTTPError }
+    public var asNetworkError: MNNetworkError? { self as? MNNetworkError }
 }
 
-extension HTTPError {
+extension MNNetworkError {
     
     /// 错误码
     public var errCode: Int {
@@ -185,7 +185,7 @@ extension HTTPError {
     }
     
     /// 是否是取消带来的错误
-    public var isCancelled: Bool { errCode == HTTPErrorCancelled }
+    public var isCancelled: Bool { errCode == MNNetworkErrorCancelled }
     
     /// 是否是请求编码时的错误
     public var isSerializationError: Bool {
@@ -204,7 +204,7 @@ extension HTTPError {
     }
 }
 
-extension HTTPError: CustomNSError {
+extension MNNetworkError: CustomNSError {
     
     public var errorCode: Int {
         errCode
@@ -219,7 +219,7 @@ extension HTTPError: CustomNSError {
     }
 }
 
-extension HTTPError: CustomDebugStringConvertible {
+extension MNNetworkError: CustomDebugStringConvertible {
     
     public var debugDescription: String {
         switch self {
@@ -241,16 +241,16 @@ extension HTTPError: CustomDebugStringConvertible {
     }
 }
 
-extension HTTPError.RequestSerializationReason {
+extension MNNetworkError.RequestSerializationReason {
     
     public var errCode: Int {
         switch self {
         case .badUrl:
-            return HTTPErrorBadUrl
+            return MNNetworkErrorBadUrl
         case .cannotEncodeUrl:
-            return HTTPErrorCannotEncodeUrl
+            return MNNetworkErrorCannotEncodeUrl
         case .cannotEncodeBody:
-            return HTTPErrorCannotEncodeBody
+            return MNNetworkErrorCannotEncodeBody
         }
     }
     
@@ -279,18 +279,18 @@ extension HTTPError.RequestSerializationReason {
     public var underlyingError: Error? { nil }
 }
 
-extension HTTPError.ResponseParseReason {
+extension MNNetworkError.ResponseParseReason {
     
     public var errCode: Int {
         switch self {
         case .cannotParseResponse:
-            return HTTPErrorBadServerResponse
+            return MNNetworkErrorBadServerResponse
         case .missingMimeType:
-            return HTTPErrorMissingContentType
+            return MNNetworkErrorMissingContentType
         case .unacceptedContentType:
-            return HTTPErrorUnsupportedContentType
+            return MNNetworkErrorUnsupportedContentType
         case .unacceptedStatusCode:
-            return HTTPErrorUnsupportedStatusCode
+            return MNNetworkErrorUnsupportedStatusCode
         case .underlyingError(let error):
             return error._code
         }
@@ -327,8 +327,8 @@ extension HTTPError.ResponseParseReason {
             return "无法解析响应体"
         case .missingMimeType:
             return "未知ContentType"
-        case .unacceptedContentType(let mimeType, let accepts):
-            return "不接受ContentType mimeType:\(mimeType) accepts:\(accepts)"
+        case .unacceptedContentType(let mimeType):
+            return "不接受ContentType mimeType:\(mimeType)"
         case .unacceptedStatusCode(let code):
             return "响应码错误 code: \(code)"
         case .underlyingError(let error):
@@ -344,14 +344,14 @@ extension HTTPError.ResponseParseReason {
     }
 }
 
-extension HTTPError.DataParseReason {
+extension MNNetworkError.DataParseReason {
     
     public var errCode: Int {
         switch self {
         case .zeroByteData:
-            return HTTPErrorZeroByteData
+            return MNNetworkErrorZeroByteData
         case .cannotDecodeData:
-            return HTTPErrorCannotParseData
+            return MNNetworkErrorCannotParseData
         case .underlyingError(let error):
             return error._code
         }
@@ -387,10 +387,10 @@ extension HTTPError.DataParseReason {
     }
 }
 
-extension HTTPError.UploadFailureReason {
+extension MNNetworkError.UploadFailureReason {
     
     public var errCode: Int {
-        HTTPErrorBodyIsEmpty
+        MNNetworkErrorBodyIsEmpty
     }
     
     public var errMsg: String {
@@ -404,22 +404,22 @@ extension HTTPError.UploadFailureReason {
     public var underlyingError: Error? { nil }
 }
 
-extension HTTPError.DownloadFailureReason {
+extension MNNetworkError.DownloadFailureReason {
     
     public var errCode: Int {
         switch self {
         case .fileExist:
-            return HTTPErrorFileExist
+            return MNNetworkErrorFileExist
         case .cannotReadFile:
-            return HTTPErrorCannotReadFile
+            return MNNetworkErrorCannotReadFile
         case .cannotCreateFile:
-            return HTTPErrorCannotCreateFile
+            return MNNetworkErrorCannotCreateFile
         case .cannotMoveFile:
-            return HTTPErrorCannotMoveFile
+            return MNNetworkErrorCannotMoveFile
         case .cannotWriteToFile:
-            return HTTPErrorCannotWriteToFile
+            return MNNetworkErrorCannotWriteToFile
         case .cannotRemoveFile:
-            return HTTPErrorCannotRemoveFile
+            return MNNetworkErrorCannotRemoveFile
         }
     }
     
@@ -472,7 +472,7 @@ extension HTTPError.DownloadFailureReason {
     }
 }
 
-extension HTTPError.SSLChallengeReason {
+extension MNNetworkError.SSLChallengeReason {
     
     public var errCode: Int {
         switch self {

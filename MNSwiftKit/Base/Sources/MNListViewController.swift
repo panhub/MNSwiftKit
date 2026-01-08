@@ -14,19 +14,19 @@ open class MNListViewController: MNExtendViewController {
     @objc public enum ListType: Int {
         /// Table
         case table
-        /// 瀑布流
-        case collection
+        /// 网格布局
+        case grid
     }
     
     /// 是否需要刷新列表
     private var executeReloadList: Bool = false
     
     /// 数据列表视图
-    open var listView: UIScrollView { preferredListType == .table ? tableView : collectionView }
+    open var listView: UIScrollView { preferredListType == .table ? tableView : gridView }
     
     /// 集合视图
-    public private(set) lazy var collectionView: UICollectionView = {
-        let collectionView = preferredCollectionView
+    public private(set) lazy var gridView: UICollectionView = {
+        let collectionView = preferredGridView
         collectionView.delegate = self
         collectionView.dataSource = self
         return collectionView
@@ -62,12 +62,12 @@ open class MNListViewController: MNExtendViewController {
 // MARK: - 数据请求
 extension MNListViewController {
     
-    open override func prepareLoadData(_ request: HTTPDataRequest) {
+    open override func prepareLoadData(_ request: MNDataRequest) {
         guard contentView.mn.isToastAppearing == false, listView.mn.isLoading == false else { return }
         contentView.mn.showActivityToast("请稍后")
     }
     
-    open override func completeLoadData(_ result: HTTPResult) {
+    open override func completeLoadData(_ result: MNRequestResult) {
         reloadList()
         endRefrshing()
         super.completeLoadData(result)
@@ -79,10 +79,11 @@ extension MNListViewController {
     
     /// 重载列表
     @objc open func reloadList() -> Void {
-        if preferredListType == .table {
+        switch preferredListType {
+        case .table:
             tableView.reloadData()
-        } else {
-            collectionView.reloadData()
+        case .grid:
+            gridView.reloadData()
         }
     }
     
@@ -216,7 +217,7 @@ extension MNListViewController {
     
     /// 默认集合视图
     /// - Returns: 集合视图
-    @objc open var preferredCollectionView: UICollectionView {
+    @objc open var preferredGridView: UICollectionView {
         let collectionView = UICollectionView(frame: contentView.bounds, collectionViewLayout: preferredCollectionViewLayout)
         collectionView.backgroundColor = .white
         collectionView.keyboardDismissMode = .onDrag

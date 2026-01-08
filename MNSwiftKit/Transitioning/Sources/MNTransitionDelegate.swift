@@ -116,7 +116,7 @@ extension MNTransitionDelegate: UINavigationControllerDelegate {
             animator.bottomBarAnimation = bottomBarAnimation
         }
         if animator.bottomBar == nil {
-            if operation == .push, let bottomBar = fromVC.preferredTransitionBottomBar {
+            if operation == .push, let bottomBar = fromVC.preferredTransitioningBottomBar {
                 // 使用自定义
                 animator.bottomBar = bottomBar
             } else {
@@ -139,7 +139,7 @@ extension MNTransitionDelegate: UINavigationControllerDelegate {
                 // 恢复标签栏
                 if let bottomBar = viewController.mn.transitioningBottomBar {
                     viewController.mn.transitioningBottomBar = nil
-                    if viewController.bottomBarShouldEnter() {
+                    if viewController.bottomBarShouldEnterTransitioning() {
                         bottomBar.isHidden = false
                     }
                 }
@@ -148,19 +148,17 @@ extension MNTransitionDelegate: UINavigationControllerDelegate {
                     viewController.mn.transitioningBottomSnapshot = nil
                     snapshotView.removeFromSuperview()
                 }
-            } else {
+            } else if let bottomBar = bottomBar, let vc = navigationController.viewControllers.first {
                 // 保存标签栏
-                guard let bottomBar = bottomBar else { return }
-                guard let first = navigationController.viewControllers.first else { return }
-                if first.mn.transitioningBottomBar == nil {
-                    first.mn.transitioningBottomBar = bottomBar
-                    if first.bottomBarShouldLeave() {
+                if vc.mn.transitioningBottomBar == nil {
+                    vc.mn.transitioningBottomBar = bottomBar
+                    if vc.bottomBarShouldLeaveTransitioning() {
                         bottomBar.isHidden = true
                     }
                 }
-                if first.mn.transitioningBottomSnapshot == nil {
+                if vc.mn.transitioningBottomSnapshot == nil {
                     let snapshotView = bottomBar.mn.transitioningSnapshotView
-                    first.mn.transitioningBottomSnapshot = snapshotView
+                    vc.mn.transitioningBottomSnapshot = snapshotView
                 }
             }
         }
@@ -188,6 +186,6 @@ extension MNTransitionDelegate: UINavigationControllerDelegate {
 extension MNTransitionDelegate: UIGestureRecognizerDelegate {
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         guard let nav = navigationController, nav.viewControllers.count > 1 else { return false }
-        return nav.viewControllers.last!.preferredInteractiveTransition
+        return nav.viewControllers.last!.preferredInteractiveTransitioning
     }
 }

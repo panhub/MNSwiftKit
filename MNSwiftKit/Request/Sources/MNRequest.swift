@@ -1,5 +1,5 @@
 //
-//  HTTPRequest.swift
+//  MNRequest.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2021/8/1.
@@ -7,15 +7,14 @@
 
 import Foundation
 
-/// 请求开始回调
-public typealias HTTPRequestStartHandler = ()->Void
-/// 请求结束回调
-public typealias HTTPRequestCompletionHandler = (_ result: HTTPResult)->Void
-/// 请求进度回调
-public typealias HTTPRequestProgressHandler = HTTPSessionProgressHandler
-
 /// HTTP请求基类
-open class HTTPRequest: NSObject {
+open class MNRequest: NSObject {
+    
+    /// 请求开始回调
+    public typealias StartHandler = ()->Void
+    /// 请求结束回调
+    public typealias CompletionHandler = (MNRequestResult)->Void
+    
     /// 请求地址
     public var url: String = ""
     /// 请求参数 支持String, [String:String]
@@ -29,25 +28,23 @@ open class HTTPRequest: NSObject {
     /// 是否允许使用蜂窝网络
     public var allowsCellularAccess: Bool = true
     /// 忽略的错误码集合
-    public var ignoringErrorCodes: [Int] = [HTTPErrorCancelled]
+    public var ignoringErrorCodes: [Int] = [MNNetworkErrorCancelled]
     /// Header信息
     public var headerFields: [String: String]?
     /// 服务端认证信息
     public var authHeaderField: [String: String]?
     /// 参数编码选项
-    public var serializationOptions: HTTPParam.EncodeOptions = .all
+    public var serializationOptions: MNNetworkParam.EncodeOptions = .all
     /// 字符串编码格式
     public var stringReadingEncoding: String.Encoding = .utf8
     /// 接受的响应码
     public var acceptableStatusCodes: IndexSet = IndexSet(integersIn: 200..<300)
-    /// 接受的响应数据类型
-    public var acceptableContentTypes: [HTTPContentType]?
     /// JSON格式编码选项
     public var jsonReadingOptions: JSONSerialization.ReadingOptions = []
     /// 数据类型
-    public var contentType: HTTPContentType = .json
+    public var serializationType: MNNetworkSerializationType = .json
     /// 数据解析回调
-    public var analyticHandler: HTTPParser.AnalyticHandler?
+    public var analyticHandler: MNNetworkParser.AnalyticHandler?
     
     /// 请求产生的Task
     public var task: URLSessionTask?
@@ -60,11 +57,11 @@ open class HTTPRequest: NSObject {
     }
     
     /// 开始回调
-    public var startHandler: HTTPRequestStartHandler?
-    /// 结束回调
-    public var completionHandler: HTTPRequestCompletionHandler?
+    public var startHandler: MNRequest.StartHandler?
     /// 进度回调
-    public var progressHandler: HTTPRequestProgressHandler?
+    public var progressHandler: MNNetworkSession.ProgressHandler?
+    /// 结束回调
+    public var completionHandler: MNRequest.CompletionHandler?
     
     public override init() {
         super.init()
@@ -86,18 +83,18 @@ open class HTTPRequest: NSObject {
     
     /// 触发请求操作
     open func resume() {
-        HTTPManager.default.resume(request: self)
+        MNRequestManager.default.resume(self)
     }
     
     /// 取消请求
     open func cancel() {
-        HTTPManager.default.cancel(request: self)
+        MNRequestManager.default.cancel(self)
     }
     
     /// 请求结束处理
     /// - Parameter result: 数据结果
-    open func loadFinish(result: Result<Any, HTTPError>) {
-        let httpResult = HTTPResult(result: result)
+    open func loadFinish(result: Result<Any, MNNetworkError>) {
+        let httpResult = MNRequestResult(result: result)
         httpResult.request = self
         if let data = httpResult.data {
             didFinish(result: httpResult)
@@ -114,7 +111,7 @@ open class HTTPRequest: NSObject {
     
     /// 处理响应结果
     /// - Parameter result: 响应结果
-    open func didFinish(result: HTTPResult) {}
+    open func didFinish(result: MNRequestResult) {}
     
     /// 请求成功
     /// - Parameter responseObject: 请求数据
@@ -122,5 +119,5 @@ open class HTTPRequest: NSObject {
     
     /// 请求失败
     /// - Parameter result: 请求结果
-    open func didFail(_ result: HTTPResult) {}
+    open func didFail(_ result: MNRequestResult) {}
 }

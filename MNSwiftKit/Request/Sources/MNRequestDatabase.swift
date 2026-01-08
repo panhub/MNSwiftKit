@@ -1,5 +1,5 @@
 //
-//  HTTPDatabase.swift
+//  MNRequestDatabase.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2021/8/3.
@@ -11,7 +11,7 @@ import Foundation
 fileprivate let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
 
 /// 网络数据缓存
-public class HTTPDatabase {
+public class MNRequestDatabase {
     /// 定义存储项
     fileprivate struct Row {
         var time: Int = 0
@@ -19,15 +19,15 @@ public class HTTPDatabase {
         var value: Data!
     }
     /// 默认表名
-    public static let Table: String = "t_cache"
+    public static let Table: String = "t_request_result"
     /// 默认数据库路径
-    public static let Path: String = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/http_caches.sqlite"
+    public static let Path: String = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/request_cache.sqlite"
     /// 操作线程
-    private let queue = DispatchQueue(label: "com.mn.http.data.cache.queue", attributes: .concurrent)
+    private let queue = DispatchQueue(label: "com.mn.request.data.result.queue", attributes: .concurrent)
     /// 数据库路径
     private var path: String = Path
     /// 快速实例入口
-    public static let `default`: HTTPDatabase = HTTPDatabase()
+    public static let `default`: MNRequestDatabase = MNRequestDatabase()
     /// 线程安全
     private let semaphore = DispatchSemaphore(value: 1)
     /// 句柄缓存
@@ -199,11 +199,11 @@ public class HTTPDatabase {
 }
 
 // MARK: - 数据库支持
-fileprivate extension HTTPDatabase {
+fileprivate extension MNRequestDatabase {
     /**打开数据库*/
     func open() -> Bool {
         if let _ = db { return true }
-        if sqlite3_open(path.cString(using: .utf8), &db) == SQLITE_OK, execute(sql: "create table if not exists '\(HTTPDatabase.Table)' (id integer primary key autoincrement, time integer, key text, value blob);") {
+        if sqlite3_open(path.cString(using: .utf8), &db) == SQLITE_OK, execute(sql: "create table if not exists '\(MNRequestDatabase.Table)' (id integer primary key autoincrement, time integer, key text, value blob);") {
 #if DEBUG
             print("\n已打开网络缓存数据库")
 #endif
@@ -248,7 +248,7 @@ fileprivate extension HTTPDatabase {
     /**保存数据项*/
     func insertRow(_ row: Row) -> Bool {
         guard let key = row.key, let value = row.value else { return false }
-        let sql: String = "insert into '\(HTTPDatabase.Table)' (time, key, value) values (?1, ?2, ?3);"
+        let sql: String = "insert into '\(MNRequestDatabase.Table)' (time, key, value) values (?1, ?2, ?3);"
         guard let stmt = stmt(sql: sql) else { return false }
         let time = Int32(time(nil))
         sqlite3_bind_int(stmt, 1, time)
@@ -261,7 +261,7 @@ fileprivate extension HTTPDatabase {
     func updateRow(_ row: Row) -> Bool {
         guard let key = row.key, let value = row.value else { return false }
         let time = Int32(time(nil))
-        let sql: String = "update '\(HTTPDatabase.Table)' set time = ?1, value = ?2 where key = ?3;"
+        let sql: String = "update '\(MNRequestDatabase.Table)' set time = ?1, value = ?2 where key = ?3;"
         guard let stmt = stmt(sql: sql) else { return false }
         sqlite3_bind_int(stmt, 1, time)
         sqlite3_bind_blob(stmt, 2, [UInt8](value), Int32(value.count), SQLITE_TRANSIENT)
@@ -271,7 +271,7 @@ fileprivate extension HTTPDatabase {
     
     /**获取指定数据*/
     func row(for key: String) -> Row? {
-        let sql: String = "select time, value from '\(HTTPDatabase.Table)' where key = ?1;"
+        let sql: String = "select time, value from '\(MNRequestDatabase.Table)' where key = ?1;"
         guard let stmt = stmt(sql: sql) else { return nil }
         guard sqlite3_bind_text(stmt, 1, key.cString(using: .utf8), -1, SQLITE_TRANSIENT) == SQLITE_OK else { return nil }
         if sqlite3_step(stmt) == SQLITE_ROW {
@@ -291,7 +291,7 @@ fileprivate extension HTTPDatabase {
     
     /**获取数据数量*/
     func count(for key: String) -> Int? {
-        let sql = "select count(*) from '\(HTTPDatabase.Table)' where key = ?1;"
+        let sql = "select count(*) from '\(MNRequestDatabase.Table)' where key = ?1;"
         guard let stmt = stmt(sql: sql) else { return nil }
         guard sqlite3_bind_text(stmt, 1, key.cString(using: .utf8), -1, SQLITE_TRANSIENT) == SQLITE_OK else { return nil }
         if sqlite3_step(stmt) == SQLITE_ROW {
@@ -304,13 +304,13 @@ fileprivate extension HTTPDatabase {
     /**删除指定数据*/
     func deleteRow(for key: String) -> Bool {
         guard open() else { return false }
-        return execute(sql: "delete from '\(HTTPDatabase.Table)' where key = '\(key)';")
+        return execute(sql: "delete from '\(MNRequestDatabase.Table)' where key = '\(key)';")
     }
     
     /**删除所有数据*/
     func deleteAll() -> Bool {
         guard open() else { return false }
-        return execute(sql: "delete from '\(HTTPDatabase.Table)';")
+        return execute(sql: "delete from '\(MNRequestDatabase.Table)';")
     }
     
     /**执行语句*/

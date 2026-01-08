@@ -133,7 +133,7 @@ extension MNTransitionAnimator {
             let snapshotView = bottomBar.mn.transitioningSnapshotView
             fromController.mn.transitioningBottomBar = bottomBar
             fromController.mn.transitioningBottomSnapshot = snapshotView
-            guard fromController.bottomBarShouldLeave() else { break }
+            guard fromController.bottomBarShouldLeaveTransitioning() else { break }
             switch bottomBarAnimation {
             case .adsorb:
                 // 吸附效果
@@ -150,7 +150,7 @@ extension MNTransitionAnimator {
             }
         case .pop:
             // 出栈转场
-            guard toController.bottomBarShouldEnter() else { break }
+            guard toController.bottomBarShouldEnterTransitioning() else { break }
             guard let snapshotView = toController.mn.transitioningBottomSnapshot else { break }
             snapshotView.transform = .identity
             switch bottomBarAnimation {
@@ -233,7 +233,7 @@ extension MNTransitionAnimator {
             }
             if transitionCompleted == false, let bottomBar = fromController.mn.transitioningBottomBar {
                 fromController.mn.transitioningBottomBar = nil
-                if fromController.bottomBarShouldLeave() {
+                if fromController.bottomBarShouldLeaveTransitioning() {
                     bottomBar.isHidden = false
                 }
             }
@@ -247,7 +247,7 @@ extension MNTransitionAnimator {
             }
             if transitionCompleted, let bottomBar = toController.mn.transitioningBottomBar {
                 toController.mn.transitioningBottomBar = nil
-                if toController.bottomBarShouldEnter() {
+                if toController.bottomBarShouldEnterTransitioning() {
                     bottomBar.isHidden = false
                 }
             }

@@ -83,9 +83,9 @@ extension MNNameSpaceWrapper where Base: UIViewController {
 
 public protocol UIViewControllerTransitioning {
     /// 是否允许手动交互返回
-    var preferredInteractiveTransition: Bool { get }
+    var preferredInteractiveTransitioning: Bool { get }
     /// 指定转场标签栏
-    var preferredTransitionBottomBar: UIView? { get }
+    var preferredTransitioningBottomBar: UIView? { get }
     /// 指定转场背景
     var preferredTransitionBackgroundColor: UIColor? { get }
     /// 定制进栈转场动画
@@ -93,20 +93,20 @@ public protocol UIViewControllerTransitioning {
     /// 定制出栈转场动画
     var preferredLeaveTransitionAnimator: MNTransitionAnimator? { get }
     /// 询问标签栏进栈转场
-    func bottomBarShouldEnter() -> Bool
+    func bottomBarShouldEnterTransitioning() -> Bool
     /// 询问标签栏出栈转场
-    func bottomBarShouldLeave() -> Bool
+    func bottomBarShouldLeaveTransitioning() -> Bool
 }
 
 extension UIViewController: UIViewControllerTransitioning {
     /// 询问标签栏进栈转场
-    @objc open func bottomBarShouldEnter() -> Bool { true }
+    @objc open func bottomBarShouldEnterTransitioning() -> Bool { true }
     /// 询问标签栏出栈转场
-    @objc open func bottomBarShouldLeave() -> Bool { true }
+    @objc open func bottomBarShouldLeaveTransitioning() -> Bool { true }
     /// 是否允许手动交互返回
-    @objc open var preferredInteractiveTransition: Bool { true }
+    @objc open var preferredInteractiveTransitioning: Bool { true }
     /// 指定转场标签栏
-    @objc open var preferredTransitionBottomBar: UIView? { nil }
+    @objc open var preferredTransitioningBottomBar: UIView? { nil }
     /// 指定转场背景
     @objc open var preferredTransitionBackgroundColor: UIColor? { .white }
     /// 定制进栈转场动画

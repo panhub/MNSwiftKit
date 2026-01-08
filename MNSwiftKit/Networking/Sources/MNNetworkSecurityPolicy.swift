@@ -9,7 +9,7 @@ import UIKit
 import Security
 import CoreFoundation
 
-public class HTTPSecurityPolicy {
+public class MNNetworkSecurityPolicy {
     /**验证模式*/
     public enum Mode {
         case none //不验证
@@ -17,7 +17,7 @@ public class HTTPSecurityPolicy {
         case certificate // 验证证书
     }
     /**默认验证实例*/
-    nonisolated(unsafe) public static var `default`: HTTPSecurityPolicy = HTTPSecurityPolicy()
+    nonisolated(unsafe) public static var `default`: MNNetworkSecurityPolicy = MNNetworkSecurityPolicy()
     /**验证模式*/
     public var mode: Mode = .none
     /**是否验证域名*/
@@ -42,7 +42,7 @@ public class HTTPSecurityPolicy {
         }
     }
     
-    public init(mode: HTTPSecurityPolicy.Mode = .none, certificates: Set<Data>? = nil) {
+    public init(mode: MNNetworkSecurityPolicy.Mode = .none, certificates: Set<Data>? = nil) {
         self.mode = mode
         self.certificates = certificates
     }

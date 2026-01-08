@@ -1,5 +1,5 @@
 //
-//  HTTPUploadAssistant.swift
+//  MNUploadAssistant.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2025/11/20.
@@ -13,7 +13,7 @@ import CoreServices
 import UniformTypeIdentifiers
 
 /// 上传内容表单辅助
-public class HTTPUploadAssistant {
+public class MNUploadAssistant {
     
     /// 边界标记
     public let boundary: String
@@ -132,7 +132,7 @@ public class HTTPUploadAssistant {
 #endif
             return false
         }
-        let mimeType = HTTPUploadAssistant.mimeType(withExtension: url.pathExtension)
+        let mimeType = MNUploadAssistant.mimeType(withExtension: url.pathExtension)
         return append(data: fileData, name: name, mime: mimeType, filename: url.lastPathComponent)
     }
     

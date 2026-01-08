@@ -9,6 +9,24 @@ import UIKit
 
 extension MNNameSpaceWrapper where Base: UIViewController {
     
+    /// 寻找当前控制器
+    public class var current: UIViewController? {
+        guard let window = UIWindow.mn.current else { return nil }
+        var viewController = window.rootViewController
+        while let vc = viewController {
+            if let presented = vc.presentedViewController {
+                viewController = presented
+            } else if vc is UINavigationController {
+                let navigationController = vc as! UINavigationController
+                viewController = navigationController.viewControllers.last
+            } else if vc is UITabBarController {
+                let tabBarController = vc as! UITabBarController
+                viewController = tabBarController.selectedViewController
+            } else { break }
+        }
+        return viewController
+    }
+    
     /// 依据情况出栈或模态弹出
     /// - Parameters:
     ///   - animated: 是否动态显示
@@ -64,21 +82,7 @@ extension MNNameSpaceWrapper where Base: UIViewController {
         childController.didMove(toParent: base)
     }
     
-    /// 寻找当前控制器
-    public class var current: UIViewController? {
-        guard let window = UIWindow.mn.current else { return nil }
-        var viewController = window.rootViewController
-        while let vc = viewController {
-            if let presented = vc.presentedViewController {
-                viewController = presented
-            } else if vc is UINavigationController {
-                let navigationController = vc as! UINavigationController
-                viewController = navigationController.viewControllers.last
-            } else if vc is UITabBarController {
-                let tabBarController = vc as! UITabBarController
-                viewController = tabBarController.selectedViewController
-            } else { break }
-        }
-        return viewController
-    }
+    
+    
+    
 }
