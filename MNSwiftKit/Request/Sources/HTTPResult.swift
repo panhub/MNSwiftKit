@@ -75,7 +75,7 @@ extension Result: @retroactive CustomDebugStringConvertible where Success == Any
 }
 
 /// HTTP请求结果码
-@objc public enum HTTPResultCode: Int {
+public enum HTTPResultCode: Int {
     case succeed = 1
     case failed = 0
     case unknown = -1
@@ -105,13 +105,13 @@ extension Result: @retroactive CustomDebugStringConvertible where Success == Any
 }
 
 /// 请求结果
-@objc public class HTTPResult: NSObject {
+public class HTTPResult: NSObject {
     
     /// Swift数据结果
     private var result: Result<Any, HTTPError> = .failure(.custom(code: HTTPErrorUnknown, msg: "unknown error"))
     
     /// 响应码
-    @objc public var code: HTTPResultCode {
+    public var code: HTTPResultCode {
         get { HTTPResultCode(rawValue: result.code) ?? .failed }
         set {
             if newValue == .succeed {
@@ -125,13 +125,13 @@ extension Result: @retroactive CustomDebugStringConvertible where Success == Any
     }
     
     /// 错误信息
-    @objc public var msg: String {
+    public var msg: String {
         get { result.msg }
         set { result = .failure(.custom(code: result.code, msg: newValue)) }
     }
     
     /// 响应数据
-    @objc public var data: Any! {
+    public var data: Any! {
         get { result.data }
         set {
             if let responseObject = newValue {
@@ -143,27 +143,26 @@ extension Result: @retroactive CustomDebugStringConvertible where Success == Any
     }
     
     /// HTTP响应码
-    @objc public var responseCode: Int { result.responseCode }
+    public var responseCode: Int { result.responseCode }
     
     /// 请求是否成功
-    @objc public var isSuccess: Bool { code == .succeed }
+    public var isSuccess: Bool { code == .succeed }
     
     /// 记录请求
-    @objc public weak var request: HTTPRequest!
+    public weak var request: HTTPRequest!
     
     /// 调试信息
     public override var debugDescription: String { result.debugDescription }
     
     /// 构造请求结果
     /// - Parameter result: 请求结果
-    public convenience init(result: Result<Any, HTTPError>) {
-        self.init()
+    public init(result: Result<Any, HTTPError>) {
         self.result = result
     }
     
     /// 构造请求结果
     /// - Parameter data: 响应数据
-    @objc public convenience init(data: Any) {
+    public convenience init(data: Any) {
         self.init(result: .success(data))
     }
 }

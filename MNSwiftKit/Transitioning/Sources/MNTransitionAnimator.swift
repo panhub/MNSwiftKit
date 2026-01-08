@@ -10,35 +10,35 @@ import Foundation
 
 open class MNTransitionAnimator: NSObject {
     /// 转场样式
-    @objc public enum Animation: Int {
+    public enum Animation: Int {
         case normal, drawer, modal, flip
     }
     /// 标签栏转场类型
-    @objc public enum BottomBarAnimation: Int {
+    public enum BottomBarAnimation {
         case none, adsorb, move
     }
     /// 转场时间
-    @objc open var duration: TimeInterval { 0.3 }
+    open var duration: TimeInterval { 0.3 }
     /// 转场方向
-    @objc open var operation: UINavigationController.Operation = .push
+    open var operation: UINavigationController.Operation = .push
     /// 标签栏转场类型
-    @objc open var bottomBarAnimation: BottomBarAnimation = .adsorb
+    open var bottomBarAnimation: BottomBarAnimation = .adsorb
     /// 是否交互转场
     private var isInteractive: Bool = false
     /// 标签栏
-    @objc open weak var bottomBar: UIView?
+    open weak var bottomBar: UIView?
     /// 起始控制器视图
-    @objc public private(set) var fromView: UIView!
+    public private(set) var fromView: UIView!
     /// 起始控制器
-    @objc public private(set) var fromController: UIViewController!
+    public private(set) var fromController: UIViewController!
     /// 目标控制器视图
-    @objc public private(set) var toView: UIView!
+    public private(set) var toView: UIView!
     /// 目标控制器
-    @objc public private(set) var toController: UIViewController!
+    public private(set) var toController: UIViewController!
     /// 转场视图
-    @objc public private(set) var containerView: UIView!
+    public private(set) var containerView: UIView!
     /// 转场上下文
-    @objc public private(set) var context: UIViewControllerContextTransitioning!
+    public private(set) var context: UIViewControllerContextTransitioning!
     /// 转场类
     private static let Animations: [String] = ["MNNormalAnimator", "MNDrawerAnimator", "MNModalAnimator", "MNFlipAnimator"]
     
@@ -47,7 +47,7 @@ open class MNTransitionAnimator: NSObject {
     }
     
     /// 获取转场实例
-    @objc public class func animator(animation: Animation = .normal) -> MNTransitionAnimator {
+    public class func animator(animation: Animation = .normal) -> MNTransitionAnimator {
         // 获取命名空间
         let nameSpace = NSStringFromClass(MNTransitionAnimator.self).components(separatedBy: ".").first!
         // 转换为类
@@ -55,8 +55,8 @@ open class MNTransitionAnimator: NSObject {
         return cls.init()
     }
     
-    /**初始化转场参数*/
-    @objc open func beginTransition(using transitionContext: UIViewControllerContextTransitioning) {
+    /// 初始化转场参数
+    open func beginTransition(using transitionContext: UIViewControllerContextTransitioning) {
         context = transitionContext
         isInteractive = transitionContext.isInteractive
         containerView = transitionContext.containerView
@@ -117,8 +117,14 @@ extension MNTransitionAnimator: UIViewControllerAnimatedTransitioning {
 
 // MARK: - 定制转场动画
 extension MNTransitionAnimator {
+    
+    /// 进入新界面时动画
     @objc open func enterTransitionAnimation() {}
+    
+    /// 页面离开时动画
     @objc open func leaveTransitionAnimation() {}
+    
+    /// 标签栏即将开始转场
     private func prepareBottomBarTransition() {
         switch operation {
         case .push:
@@ -162,6 +168,40 @@ extension MNTransitionAnimator {
         default: break
         }
     }
+    
+    /// 交互转场动画
+    @objc open func beginInteractiveTransition() {
+        // 添加视图
+        toView.transform = .identity;
+        toView.frame = context.finalFrame(for: toController)
+        toView.transform = CGAffineTransform(scaleX: 0.93, y: 0.93)
+        containerView.insertSubview(toView, belowSubview: fromView)
+        // 添加阴影
+        fromView.mn.addTransitioningShadow()
+        // 动画
+        let backgroundColor = containerView.backgroundColor
+        let transform = CGAffineTransform(translationX: containerView.frame.width, y: 0.0)
+        containerView.backgroundColor = toController.preferredTransitionBackgroundColor ?? .white
+        UIView.animate(withDuration: transitionDuration(using: context)) { [weak self] in
+            guard let self = self else { return }
+            self.toView.transform = .identity
+            self.fromView.transform = transform
+        } completion: { [weak self] _ in
+            guard let self = self else { return }
+            self.toView.transform = .identity
+            self.fromView.transform = .identity
+            self.fromView.mn.removeTransitioningShadow()
+            self.containerView.backgroundColor = backgroundColor
+            self.completeTransitionAnimation()
+        }
+    }
+    
+    /// 结束转场动画
+    @objc open func completeTransitionAnimation() {
+        context.completeTransition(context.transitionWasCancelled == false)
+    }
+    
+    /// 标签栏转场动画
     private func bottomBarTransitionAnimation() {
         switch bottomBarAnimation {
         case .move:
@@ -179,6 +219,8 @@ extension MNTransitionAnimator {
         default: break
         }
     }
+    
+    /// 结束标签栏转场
     private func completeBottomBarTransition(_ transitionCompleted: Bool = true) {
         switch operation {
         case .push:
@@ -211,33 +253,5 @@ extension MNTransitionAnimator {
             }
         default: break
         }
-    }
-    @objc open func beginInteractiveTransition() {
-        // 添加视图
-        toView.transform = .identity;
-        toView.frame = context.finalFrame(for: toController)
-        toView.transform = CGAffineTransform(scaleX: 0.93, y: 0.93)
-        containerView.insertSubview(toView, belowSubview: fromView)
-        // 添加阴影
-        fromView.mn.addTransitioningShadow()
-        // 动画
-        let backgroundColor = containerView.backgroundColor
-        let transform = CGAffineTransform(translationX: containerView.frame.width, y: 0.0)
-        containerView.backgroundColor = toController.preferredTransitionBackgroundColor ?? .white
-        UIView.animate(withDuration: transitionDuration(using: context)) { [weak self] in
-            guard let self = self else { return }
-            self.toView.transform = .identity
-            self.fromView.transform = transform
-        } completion: { [weak self] _ in
-            guard let self = self else { return }
-            self.toView.transform = .identity
-            self.fromView.transform = .identity
-            self.fromView.mn.removeTransitioningShadow()
-            self.containerView.backgroundColor = backgroundColor
-            self.completeTransitionAnimation()
-        }
-    }
-    @objc open func completeTransitionAnimation() {
-        context.completeTransition(context.transitionWasCancelled == false)
     }
 }

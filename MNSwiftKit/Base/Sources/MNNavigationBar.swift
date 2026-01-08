@@ -31,7 +31,7 @@ import CoreFoundation
     @objc optional func navigationBarDidLayoutSubitems(_ navigationBar: MNNavigationBar)
 }
 
-@objc public class MNNavigationBar: UIView {
+public class MNNavigationBar: UIView {
     /// 按钮大小
     static let itemSize: CGFloat = 20.0
     /// 前边距
@@ -39,7 +39,7 @@ import CoreFoundation
     /// 后边距
     static let trailing: CGFloat = 18.0
     /// 事件代理
-    @objc weak var delegate: MNNavigationBarDelegate?
+    weak var delegate: MNNavigationBarDelegate?
     /// 毛玻璃视图
     private lazy var visualView: UIVisualEffectView = {
         let visualView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
@@ -48,7 +48,7 @@ import CoreFoundation
         return visualView
     }()
     /// 导航左按钮
-    @objc public private(set) lazy var leftBarItem: UIView = {
+    public private(set) lazy var leftBarItem: UIView = {
         var leftBarItem: UIView
         if let delegate = delegate, let barItem = delegate.navigationBarShouldCreateLeftBarItem?() {
             leftBarItem = barItem
@@ -70,7 +70,7 @@ import CoreFoundation
         return leftBarItem
     }()
     /// 导航右按钮
-    @objc public private(set) lazy var rightBarItem: UIView = {
+    public private(set) lazy var rightBarItem: UIView = {
         var rightBarItem: UIView
         if let delegate = delegate, let barItem = delegate.navigationBarShouldCreateRightBarItem?() {
             rightBarItem = barItem
@@ -99,7 +99,7 @@ import CoreFoundation
         return separatorView
     }()
     /// 导航标题
-    @objc public private(set) lazy var titleLabel: UILabel = {
+    public private(set) lazy var titleLabel: UILabel = {
         let titleLabel = UILabel()
         titleLabel.center = CGPoint(x: frame.width/2.0, y: (frame.height - MN_STATUS_BAR_HEIGHT)/2.0 + MN_STATUS_BAR_HEIGHT)
         titleLabel.numberOfLines = 0
@@ -146,13 +146,13 @@ import CoreFoundation
 extension MNNavigationBar {
     
     /// 导航栏是否启用毛玻璃效果
-    @objc public var translucent: Bool {
+    public var translucent: Bool {
         get { visualView.isHidden == false }
         set { visualView.isHidden = newValue == false }
     }
     
     /// 导航栏标题字体
-    @objc public var title: String? {
+    public var title: String? {
         get { titleLabel.text }
         set {
             titleLabel.text = newValue
@@ -163,7 +163,7 @@ extension MNNavigationBar {
     }
     
     /// 导航栏富文本标题
-    @objc public var attributedTitle: NSAttributedString? {
+    public var attributedTitle: NSAttributedString? {
         get { titleLabel.attributedText }
         set {
             titleLabel.attributedText = newValue
@@ -173,7 +173,7 @@ extension MNNavigationBar {
     }
     
     /// 导航栏标题字体
-    @objc public var titleFont: UIFont? {
+    public var titleFont: UIFont? {
         get { titleLabel.font }
         set {
             titleLabel.font = newValue
@@ -183,13 +183,13 @@ extension MNNavigationBar {
     }
     
     /// 导航栏标题颜色
-    @objc public var titleColor: UIColor? {
+    public var titleColor: UIColor? {
         get { titleLabel.textColor }
         set { titleLabel.textColor = newValue }
     }
     
     /// 导航栏返回按钮颜色
-    @objc public var backColor: UIColor? {
+    public var backColor: UIColor? {
         get { nil }
         set {
             guard let image = BaseResource.image(named: "back") else { return }
@@ -199,25 +199,25 @@ extension MNNavigationBar {
     }
     
     /// 导航栏左按钮图片
-    @objc public var leftItemImage: UIImage? {
+    public var leftItemImage: UIImage? {
         get { leftBarItem.mn.contents }
         set { leftBarItem.mn.contents = newValue }
     }
     
     /// 导航栏右按钮图片
-    @objc public var rightItemImage: UIImage? {
+    public var rightItemImage: UIImage? {
         get { rightBarItem.mn.contents }
         set { rightBarItem.mn.contents = newValue }
     }
     
     /// 顶部阴影线颜色
-    @objc public var separatorColor: UIColor? {
+    public var separatorColor: UIColor? {
         get { separatorView.backgroundColor }
         set { separatorView.backgroundColor = newValue }
     }
     
     /// 导航栏阴影线位置
-    @objc public var shadowInset: UIEdgeInsets {
+    public var shadowInset: UIEdgeInsets {
         get { UIEdgeInsets(top: separatorView.frame.minY, left: separatorView.frame.minX, bottom: 0.0, right: frame.width - separatorView.frame.maxX) }
         set {
             let mask = separatorView.autoresizingMask
@@ -230,14 +230,14 @@ extension MNNavigationBar {
 }
  
 // MARK: - Event
-private extension MNNavigationBar {
+extension MNNavigationBar {
     
-    @objc func leftBarItemTouchUpInside(_ leftBarItem: UIView) {
+    @objc private func leftBarItemTouchUpInside(_ leftBarItem: UIView) {
         guard let delegate = delegate else { return }
         delegate.navigationBarLeftBarItemTouchUpInside?(leftBarItem)
     }
     
-    @objc func rightBarItemTouchUpInside(_ rightBarItem: UIView) {
+    @objc private func rightBarItemTouchUpInside(_ rightBarItem: UIView) {
         guard let delegate = delegate else { return }
         delegate.navigationBarRightBarItemTouchUpInside?(rightBarItem)
     }

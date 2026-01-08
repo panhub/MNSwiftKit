@@ -11,26 +11,26 @@ import Foundation
 public typealias HTTPDownloadLocationHandler = HTTPSessionLocationHandler
 
 /// 下载请求
-@objc public class HTTPDownloadRequest: HTTPRequest {
+public class HTTPDownloadRequest: HTTPRequest {
     /**
      断点下载
      - 不是下载数据本身, 而是已经下载好的数据相关信息
      - 如: 文件名, 存储位置, 已经下载好的数据的长度等
      */
-    @objc public var resumeData: Data?
+    public var resumeData: Data?
     /// 询问下载位置回调 可能会触发多次回调 下载前检查文件是否存在
     public var locationHandler: HTTPDownloadLocationHandler?
     /// 下载选项
     public var downloadOptions: HTTPDownloadOptions = [.createIntermediateDirectories, .removeExistsFile]
     /// 请求产生的Task
-    @objc public var downloadTask: URLSessionDownloadTask? { task as? URLSessionDownloadTask }
+    public var downloadTask: URLSessionDownloadTask? { task as? URLSessionDownloadTask }
     
     public override init() {
         super.init()
         contentType = .none
     }
     
-    @objc public override init(url: String) {
+    public override init(url: String) {
         super.init(url: url)
         contentType = .none
     }
@@ -47,7 +47,7 @@ public typealias HTTPDownloadLocationHandler = HTTPSessionLocationHandler
     ///   - location: 下载位置
     ///   - progress: 进度回调
     ///   - completion: 结束回调
-    @objc open func start(_ start: HTTPRequestStartHandler? = nil, location: @escaping HTTPDownloadLocationHandler, progress: HTTPRequestProgressHandler? = nil, completion: HTTPRequestCompletionHandler?) {
+    open func start(_ start: HTTPRequestStartHandler? = nil, location: @escaping HTTPDownloadLocationHandler, progress: HTTPRequestProgressHandler? = nil, completion: HTTPRequestCompletionHandler?) {
         resumeData = nil
         startHandler = start
         locationHandler = location
@@ -58,13 +58,13 @@ public typealias HTTPDownloadLocationHandler = HTTPSessionLocationHandler
     
     /// 暂停下载
     /// - Parameter completion: 重新启动所需信息
-    @objc open func suspend(completion: ((Data?) -> Void)? = nil) {
+    open func suspend(completion: ((Data?) -> Void)? = nil) {
         HTTPManager.default.cancel(download: self, completion: completion)
     }
     
     /// 继续下载
     /// - Parameter completion: 操作完成回调
-    @objc open func resume(completion: ((Bool) -> Void)?) {
+    open func resume(completion: ((Bool) -> Void)?) {
         HTTPManager.default.resume(download: self, completion: completion)
     }
 }

@@ -17,7 +17,7 @@ public typealias HTTPFileLocationHandler = ()->URL
 public class HTTPFileRequest: HTTPRequest {
     
     /// 请求产生的Task
-    @objc public var dataTask: URLSessionDataTask? { task as? URLSessionDataTask }
+    public var dataTask: URLSessionDataTask? { task as? URLSessionDataTask }
     
     /// 询问下载位置回调
     public var locationHandler: HTTPFileLocationHandler?
@@ -30,7 +30,7 @@ public class HTTPFileRequest: HTTPRequest {
         contentType = .none
     }
     
-    @objc public override init(url: String) {
+    public override init(url: String) {
         super.init(url: url)
         contentType = .none
     }
@@ -46,7 +46,7 @@ public class HTTPFileRequest: HTTPRequest {
     ///   - location: 下载位置回调
     ///   - progress: 进度回调
     ///   - completion: 结束回调
-    @objc open func start(_ start: HTTPRequestStartHandler? = nil, location: @escaping HTTPFileLocationHandler, progress: HTTPRequestProgressHandler? = nil, completion: HTTPRequestCompletionHandler?) {
+    open func start(_ start: HTTPRequestStartHandler? = nil, location: @escaping HTTPFileLocationHandler, progress: HTTPRequestProgressHandler? = nil, completion: HTTPRequestCompletionHandler?) {
         startHandler = start
         locationHandler = location
         progressHandler = progress

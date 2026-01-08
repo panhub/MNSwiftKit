@@ -15,46 +15,46 @@ public typealias HTTPRequestCompletionHandler = (_ result: HTTPResult)->Void
 public typealias HTTPRequestProgressHandler = HTTPSessionProgressHandler
 
 /// HTTP请求基类
-@objc open class HTTPRequest: NSObject {
+open class HTTPRequest: NSObject {
     /// 请求地址
-    @objc public var url: String = ""
+    public var url: String = ""
     /// 请求参数 支持String, [String:String]
-    @objc public var param: Any?
+    public var param: Any?
     /// 回调队列
-    @objc public weak var queue: DispatchQueue?
+    public weak var queue: DispatchQueue?
     /// 请求超时时间
-    @objc public var timeoutInterval: TimeInterval = 10.0
+    public var timeoutInterval: TimeInterval = 10.0
     /// 字符串编码格式
     public var stringWritingEncoding: String.Encoding = .utf8
     /// 是否允许使用蜂窝网络
-    @objc public var allowsCellularAccess: Bool = true
+    public var allowsCellularAccess: Bool = true
     /// 忽略的错误码集合
-    @objc public var ignoringErrorCodes: [Int] = [HTTPErrorCancelled]
+    public var ignoringErrorCodes: [Int] = [HTTPErrorCancelled]
     /// Header信息
-    @objc public var headerFields: [String: String]?
+    public var headerFields: [String: String]?
     /// 服务端认证信息
-    @objc public var authHeaderField: [String: String]?
+    public var authHeaderField: [String: String]?
     /// 参数编码选项
     public var serializationOptions: HTTPParam.EncodeOptions = .all
     /// 字符串编码格式
     public var stringReadingEncoding: String.Encoding = .utf8
     /// 接受的响应码
-    @objc public var acceptableStatusCodes: IndexSet = IndexSet(integersIn: 200..<300)
+    public var acceptableStatusCodes: IndexSet = IndexSet(integersIn: 200..<300)
     /// 接受的响应数据类型
     public var acceptableContentTypes: [HTTPContentType]?
     /// JSON格式编码选项
-    @objc public var jsonReadingOptions: JSONSerialization.ReadingOptions = []
+    public var jsonReadingOptions: JSONSerialization.ReadingOptions = []
     /// 数据类型
-    @objc public var contentType: HTTPContentType = .json
+    public var contentType: HTTPContentType = .json
     /// 数据解析回调
-    @objc public var analyticHandler: HTTPParser.AnalyticHandler?
+    public var analyticHandler: HTTPParser.AnalyticHandler?
     
     /// 请求产生的Task
-    @objc public var task: URLSessionTask?
+    public var task: URLSessionTask?
     /// 是否是第一次请求
-    @objc public var isFirstRunning: Bool = true
+    public var isFirstRunning: Bool = true
     /// 是否在请求
-    @objc public var isRunning: Bool {
+    public var isRunning: Bool {
         guard let task = task else { return false }
         return task.state == .running
     }
@@ -72,7 +72,7 @@ public typealias HTTPRequestProgressHandler = HTTPSessionProgressHandler
     
     /// 构造请求体
     /// - Parameter url: 链接字符串
-    @objc public init(url: String) {
+    public init(url: String) {
         super.init()
         self.url = url
     }
@@ -85,12 +85,12 @@ public typealias HTTPRequestProgressHandler = HTTPSessionProgressHandler
     }
     
     /// 触发请求操作
-    @objc open func resume() {
+    open func resume() {
         HTTPManager.default.resume(request: self)
     }
     
     /// 取消请求
-    @objc open func cancel() {
+    open func cancel() {
         HTTPManager.default.cancel(request: self)
     }
     
@@ -114,13 +114,13 @@ public typealias HTTPRequestProgressHandler = HTTPSessionProgressHandler
     
     /// 处理响应结果
     /// - Parameter result: 响应结果
-    @objc open func didFinish(result: HTTPResult) {}
+    open func didFinish(result: HTTPResult) {}
     
     /// 请求成功
     /// - Parameter responseObject: 请求数据
-    @objc open func didSuccess(responseData: Any) {}
+    open func didSuccess(responseData: Any) {}
     
     /// 请求失败
     /// - Parameter result: 请求结果
-    @objc open func didFail(_ result: HTTPResult) {}
+    open func didFail(_ result: HTTPResult) {}
 }

@@ -139,19 +139,19 @@ public class MNTabBar: UIView {
 extension MNTabBar {
     
     /// 是否需要毛玻璃效果
-    @objc public var translucent: Bool {
+    public var translucent: Bool {
         get { visualView.isHidden == false }
         set { visualView.isHidden = newValue == false }
     }
     
     /// 顶部阴影线颜色
-    @objc public var separatorColor: UIColor? {
+    public var separatorColor: UIColor? {
         get { separatorView.backgroundColor }
         set { separatorView.backgroundColor = newValue }
     }
     
     ///  阴影线位置
-    @objc public var separatorInset: UIEdgeInsets {
+    public var separatorInset: UIEdgeInsets {
         get { UIEdgeInsets(top: 0.0, left: separatorView.frame.minX, bottom: frame.height - separatorView.frame.maxY, right: frame.width - separatorView.frame.maxX) }
         set {
             let autoresizingMask = separatorView.autoresizingMask

@@ -8,7 +8,7 @@
 import Foundation
 
 /// 请求方式
-@objc public enum HTTPMethod: Int {
+public enum HTTPMethod {
     /// GET请求
     case get
     /// PUT请求
@@ -34,7 +34,7 @@ import Foundation
 }
 
 /// 分页请求支持
-@objc public protocol HTTPPagingSupported: NSObjectProtocol where Self: HTTPDataRequest {
+public protocol HTTPPagingSupported: NSObjectProtocol where Self: HTTPDataRequest {
     /// 页数
     var page: Int { set get }
     /// 是否还有更多数据
@@ -49,14 +49,14 @@ import Foundation
 }
 
 /// HTTP数据请求
-@objc open class HTTPDataRequest: HTTPRequest {
+open class HTTPDataRequest: HTTPRequest {
     /// 数据来源
-    @objc public enum DataSource: Int {
+    public enum DataSource {
         case network // 网络数据
         case cache // 本地缓存
     }
     /// 缓存策略
-    @objc public enum CachePolicy: Int {
+    public enum CachePolicy {
         /// 不使用缓存
         case never
         /// 优先请求, 失败后考虑使用缓存
@@ -65,35 +65,35 @@ import Foundation
         case returnCacheDontLoad
     }
     /// POST数据体 非上传数据
-    @objc public var body: Any?
+    public var body: Any?
     /// 请求方式
-    @objc public var method: HTTPMethod = .get
+    public var method: HTTPMethod = .get
     /// 重试次数 失败时重新请求 NSURLErrorCancelled 无效
-    @objc public var retyCount: Int = 0
+    public var retyCount: Int = 0
     /// 重试时间间隔 默认立即重试
-    @objc public var retryInterval: TimeInterval = 0.0
+    public var retryInterval: TimeInterval = 0.0
     /// 数据来源
-    @objc public var source: DataSource = .network
+    public var source: DataSource = .network
     /// 缓存策略
-    @objc public var cachePolicy: CachePolicy = .never
+    public var cachePolicy: CachePolicy = .never
     /// 缓存有效时长 单位秒 0则无限期 默认0
-    @objc public var cacheValidInterval: Int = 0
+    public var cacheValidInterval: Int = 0
     /// 缓存的key 支持定制
-    @objc open var cacheForKey: String { url }
+    open var cacheForKey: String { url }
     /// 请求产生的Task
-    @objc public var dataTask: URLSessionDataTask? { task as? URLSessionDataTask }
+    public var dataTask: URLSessionDataTask? { task as? URLSessionDataTask }
     
     /// 即将刷新数据
-    @objc open func prepareReload() {}
+    open func prepareReload() {}
     
     /// 即将开始加载数据
-    @objc open func prepareLoadData() {}
+    open func prepareLoadData() {}
     
     /// 请求数据
     /// - Parameters:
     ///   - start: 开始请求告知
     ///   - completion: 请求结束回调
-    @objc open func start(_ start: HTTPRequestStartHandler? = nil, completion: HTTPRequestCompletionHandler?) {
+    open func start(_ start: HTTPRequestStartHandler? = nil, completion: HTTPRequestCompletionHandler?) {
         prepareLoadData()
         startHandler = start
         completionHandler = completion

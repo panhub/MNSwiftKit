@@ -49,7 +49,7 @@ extension MNNameSpaceWrapper where Base: UINavigationController {
                 if #available(iOS 11.0, *) {
                     recognizer.name = "com.mn.navigation.interactive.pop"
                 }
-                recognizer.addTarget(newValue, action: #selector(newValue.handleNavigationTransition(_:)))
+                recognizer.addTarget(newValue, action: #selector(newValue.handleInteractiveTransition(_:)))
             }
         }
     }
@@ -57,11 +57,11 @@ extension MNNameSpaceWrapper where Base: UINavigationController {
 
 public class MNTransitionDelegate: NSObject {
     /// 标签栏
-    @objc public weak var bottomBar: UIView?
+    public weak var bottomBar: UIView?
     /// 转场动画
-    @objc public var transitionAnimation: MNTransitionAnimator.Animation = .normal
+    public var transitionAnimation: MNTransitionAnimator.Animation = .normal
     /// 标签栏转场动画类型
-    @objc public var bottomBarAnimation: MNTransitionAnimator.BottomBarAnimation = .adsorb
+    public var bottomBarAnimation: MNTransitionAnimator.BottomBarAnimation = .adsorb
     /// 转发代理事件
     fileprivate weak var delegate: UINavigationControllerDelegate?
     /// 导航控制器
@@ -71,7 +71,7 @@ public class MNTransitionDelegate: NSObject {
     
     /// 处理导航交互式Pop
     /// - Parameter recognizer: 交互手势
-    @objc fileprivate func handleNavigationTransition(_ recognizer: UIScreenEdgePanGestureRecognizer) {
+    @objc fileprivate func handleInteractiveTransition(_ recognizer: UIScreenEdgePanGestureRecognizer) {
         switch recognizer.state {
         case .began:
             interactiveTransitionDriver = UIPercentDrivenInteractiveTransition()
@@ -108,21 +108,29 @@ extension MNTransitionDelegate: UINavigationControllerDelegate {
     }
     
     public func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        guard operation != .none else { return nil }
-        var animator: MNTransitionAnimator! = (operation == .push ? toVC.preferredEnterTransitionAnimator : fromVC.preferredLeaveTransitionAnimator)
+        if operation == .none { return nil }
+        var animator: MNTransitionAnimator! = operation == .push ? toVC.preferredEnterTransitionAnimator : fromVC.preferredLeaveTransitionAnimator
         if animator == nil {
+            // 使用默认
             animator = MNTransitionAnimator.animator(animation: transitionAnimation)
             animator.bottomBarAnimation = bottomBarAnimation
         }
         if animator.bottomBar == nil {
-            animator.bottomBar = (operation == .push ? fromVC.preferredTransitionBottomBar : nil) ?? bottomBar
+            if operation == .push, let bottomBar = fromVC.preferredTransitionBottomBar {
+                // 使用自定义
+                animator.bottomBar = bottomBar
+            } else {
+                // 使用默认
+                animator.bottomBar = bottomBar
+            }
         }
         animator.operation = operation
         return animator
     }
     
     public func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        delegate?.navigationController?(navigationController, willShow: viewController, animated: animated)
+        guard let delegate = delegate else { return }
+        delegate.navigationController?(navigationController, willShow: viewController, animated: animated)
     }
     
     public func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
@@ -156,7 +164,9 @@ extension MNTransitionDelegate: UINavigationControllerDelegate {
                 }
             }
         }
-        delegate?.navigationController?(navigationController, didShow: viewController, animated: animated)
+        if let delegate = delegate {
+            delegate.navigationController?(navigationController, didShow: viewController, animated: animated)
+        }
     }
     
     public func navigationControllerSupportedInterfaceOrientations(_ navigationController: UINavigationController) -> UIInterfaceOrientationMask {

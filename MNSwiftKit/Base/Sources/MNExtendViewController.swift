@@ -14,7 +14,7 @@ open class MNExtendViewController: MNBaseViewController {
     fileprivate var referenceNavigationBar: MNNavigationBar!
     
     /// 获取导航栏
-    @objc public override var navigationBar: MNNavigationBar! { referenceNavigationBar }
+    public override var navigationBar: MNNavigationBar! { referenceNavigationBar }
     
     /// 标题
     open override var title: String? {

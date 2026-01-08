@@ -59,9 +59,9 @@ extension MNNameSpaceWrapper where Base: UIView {
 extension UIViewController {
     
     fileprivate struct MNTransitioningAssociated {
-        
+        /// 底部标签栏
         nonisolated(unsafe) static var bottomBar: Void?
-        
+        /// 底部标签栏截图
         nonisolated(unsafe) static var bottomSnapshot: Void?
     }
 }

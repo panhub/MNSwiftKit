@@ -13,6 +13,10 @@ public class NetworkResource {
     
     /// 资源束
     private class var bundle: Bundle {
+#if SWIFT_PACKAGE
+        // SPM 会为每个包含资源的模块自动生成一个 Bundle.module 属性
+        return Bundle.module
+#endif
         // 尝试从 CocoaPods 生成的 bundle 中加载（库作为 Pod 使用时）
         if let url = Bundle.main.url(forResource: "MNSwiftKit_Networking", withExtension: "bundle"), let bundle = Bundle(url: url) {
             return bundle
@@ -51,12 +55,12 @@ public class NetworkResource {
     /// 资源束下json文件路径
     public class var jsonPath: String? {
         
-        bundle.path(forResource: "HTTPCode", ofType: "json")
+        bundle.path(forResource: "HTTPResponseCode", ofType: "json")
     }
     
     /// 资源束下json文件位置
     public class var jsonURL: URL? {
         
-        bundle.url(forResource: "HTTPCode", withExtension: "json")
+        bundle.url(forResource: "HTTPResponseCode", withExtension: "json")
     }
 }

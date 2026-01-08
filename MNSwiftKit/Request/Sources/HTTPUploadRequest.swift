@@ -11,13 +11,13 @@ import Foundation
 public typealias HTTPUploadBodyHandler = HTTPSessionBodyHandler
 
 /// 上传请求
-@objc public class HTTPUploadRequest: HTTPRequest {
+public class HTTPUploadRequest: HTTPRequest {
     /// 上传请求的文件内容边界
-    @objc public var boundary: String?
+    public var boundary: String?
     /// 询问下载位置回调
     var bodyHandler: HTTPUploadBodyHandler?
     /// 请求产生的Task
-    @objc public var uploadTask: URLSessionUploadTask? { task as? URLSessionUploadTask }
+    public var uploadTask: URLSessionUploadTask? { task as? URLSessionUploadTask }
     
     deinit {
         bodyHandler = nil
@@ -30,7 +30,7 @@ public typealias HTTPUploadBodyHandler = HTTPSessionBodyHandler
     ///   - body: 上传请求体
     ///   - progress: 进度回调
     ///   - completion: 结束回调
-    @objc open func start(_ start: HTTPRequestStartHandler? = nil, body: @escaping HTTPUploadBodyHandler, progress: HTTPRequestProgressHandler? = nil, completion: HTTPRequestCompletionHandler? = nil) {
+    open func start(_ start: HTTPRequestStartHandler? = nil, body: @escaping HTTPUploadBodyHandler, progress: HTTPRequestProgressHandler? = nil, completion: HTTPRequestCompletionHandler? = nil) {
         startHandler = start
         bodyHandler = body
         progressHandler = progress

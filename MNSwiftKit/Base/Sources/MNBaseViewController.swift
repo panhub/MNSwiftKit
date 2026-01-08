@@ -15,10 +15,10 @@ open class MNBaseViewController: UIViewController {
     private var frame: CGRect = UIScreen.main.bounds
     
     /// 是否在显示中
-    @objc public private(set) var isAppear: Bool = true
+    public private(set) var isAppear: Bool = true
     
     /// 是否第一次显示
-    @objc public private(set) var isFirstAppear: Bool = true
+    public private(set) var isFirstAppear: Bool = true
     
     /// 标记是否加载过数据
     private var isDataLoaded: Bool = false
@@ -27,15 +27,15 @@ open class MNBaseViewController: UIViewController {
     private var executeReloadData: Bool = false
     
     /// 状态栏相关
-    @objc open var isStatusBarHidden: Bool = false
-    @objc open var statusBarStyle: UIStatusBarStyle = .default
-    @objc open var statusBarAnimation: UIStatusBarAnimation = .fade
+    open var isStatusBarHidden: Bool = false
+    open var statusBarStyle: UIStatusBarStyle = .default
+    open var statusBarAnimation: UIStatusBarAnimation = .fade
     
     /// 数据请求体
-    @objc open var httpRequest: HTTPPagingSupported?
+    open var httpRequest: HTTPPagingSupported?
     
     /// 内容视图
-    @objc open private(set) lazy var contentView: UIView = {
+    open private(set) lazy var contentView: UIView = {
         let contentView = UIView(frame: view.bounds.inset(by: UIEdgeInsets(top: 0.0, left: 0.0, bottom: preferredContentEdges.contains(.bottom) ? MN_BOTTOM_BAR_HEIGHT : 0.0, right: 0.0)))
         contentView.backgroundColor = .white
         return contentView
@@ -46,12 +46,12 @@ open class MNBaseViewController: UIViewController {
         initialized()
     }
     
-    @objc public init() {
+    public init() {
         super.init(nibName: nil, bundle: nil)
         initialized()
     }
     
-    @objc public init(frame: CGRect) {
+    public init(frame: CGRect) {
         super.init(nibName: nil, bundle: nil)
         self.frame = frame
         initialized()
@@ -62,7 +62,7 @@ open class MNBaseViewController: UIViewController {
     }
     
     /// 初始化自身属性
-    @objc open func initialized() {}
+    open func initialized() {}
     
     /// 加载视图
     open override func loadView() {

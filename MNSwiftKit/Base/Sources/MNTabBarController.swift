@@ -24,7 +24,7 @@ open class MNTabBarController: UITabBarController {
     public override var bottomBar: MNTabBar! { referenceBottomBar }
     
     /// 设置子控制器
-    @objc public var controllers: [Any]? {
+    public var controllers: [Any]? {
         didSet {
             self.viewControllers = nil
             guard let controllers = controllers else { return }
@@ -119,7 +119,7 @@ open class MNTabBarController: UITabBarController {
     ///   - viewController: 控制器
     ///   - index: 索引
     /// - Returns: 包装后的控制器
-    @objc open func prepareAddChild(_ viewController: UIViewController, for index: Int) -> UIViewController? {
+    open func prepareAddChild(_ viewController: UIViewController, for index: Int) -> UIViewController? {
         if viewController is UINavigationController {
             return viewController
         }

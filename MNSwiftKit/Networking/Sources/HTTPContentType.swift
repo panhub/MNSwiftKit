@@ -9,7 +9,7 @@
 import Foundation
 
 /// 编码选项
-@objc public enum HTTPContentType: Int {
+public enum HTTPContentType {
     
     /// 不做处理
     case none

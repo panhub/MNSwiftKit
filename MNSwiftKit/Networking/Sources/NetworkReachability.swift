@@ -11,22 +11,30 @@ import CoreTelephony
 import SystemConfiguration
 import ObjectiveC.objc_sync
 
-// 定义网络状态
-@objc public enum NetworkStatus: Int {
-    case unreachable // 不可达
-    case wwan // 基带网络
-    case wifi // "Wi-Fi"
+/// 定义网络状态
+public enum NetworkStatus {
+    /// 不可达
+    case unreachable
+    /// 基带网络
+    case wwan
+    /// 局域网Wi-Fi
+    case wifi
 }
 
 extension NetworkStatus {
     
+    /// 网络状态字符串表示
     public var rawString: String {
-        ["", "WWAN", "Wi-Fi"][rawValue]
+        switch self {
+        case .unreachable: return "Unreachable"
+        case .wwan: return "WWAN"
+        case .wifi: return "Wi-Fi"
+        }
     }
 }
 
-// 定义广域网状态
-@objc public enum NetworkType: Int {
+/// 定义广域网状态
+public enum NetworkType {
     case unknown
     case wwan2g
     case wwan3g
@@ -36,8 +44,15 @@ extension NetworkStatus {
 
 extension NetworkType {
     
+    /// 广域网字符串表示
     public var rawString: String {
-        ["", "2G", "3G", "4G", "5G"][rawValue]
+        switch self {
+        case .unknown: return "unknown"
+        case .wwan2g: return "2G"
+        case .wwan3g: return "3G"
+        case .wwan4g: return "4G"
+        case .wwan5g: return "5G"
+        }
     }
 }
 
@@ -50,15 +65,15 @@ public class NetworkReachability: NSObject {
     // 内部检测实例
     private var reachability: SCNetworkReachability?
     // 外界快速获取实例
-    @objc public static let reachability: NetworkReachability = NetworkReachability()
+    public static let reachability: NetworkReachability = NetworkReachability()
     // 是否在检测
-    @objc public private(set) var isRunning: Bool = false
+    public private(set) var isRunning: Bool = false
     // 网络信息
     private let networkInfo = CTTelephonyNetworkInfo()
     // 检测回调队列
-    private static let Queue = DispatchQueue(label: "com.mn.net.reachability")
+    private static let Queue = DispatchQueue(label: "com.mn.network.reachability")
     // 检测事件回调 主线程
-    @objc public var updateHandler: ((NetworkStatus)->Void)?
+    public var updateHandler: ((NetworkStatus)->Void)?
     // 获取广域网状态标识
     private lazy var technologys: [String: NetworkType] = {
         var technologys: [String: NetworkType] = [String: NetworkType]()
@@ -110,24 +125,24 @@ public class NetworkReachability: NSObject {
         self.reachability = reachability
     }
     
-    @objc public init(reachability: SCNetworkReachability) {
+    public init(reachability: SCNetworkReachability) {
         super.init()
         self.reachability = reachability
     }
     
-    @objc public convenience init?(hostname: String) {
+    public convenience init?(hostname: String) {
         guard let chars = hostname.cString(using: .utf8) else { return nil }
         guard let reachability = SCNetworkReachabilityCreateWithName(nil, chars) else { return nil }
         self.init(reachability: reachability)
     }
     
-    @objc public convenience init?(address: sockaddr) {
+    public convenience init?(address: sockaddr) {
         var addr = address
         guard let reachability = SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault, &addr) else { return nil }
         self.init(reachability: reachability)
     }
     
-    @objc public func start() {
+    public func start() {
         objc_sync_enter(self)
         defer { objc_sync_exit(self) }
         guard isRunning == false, let reachability = reachability else { return }
@@ -149,7 +164,7 @@ public class NetworkReachability: NSObject {
         isRunning = true
     }
     
-    @objc public func stop() {
+    public func stop() {
         objc_sync_enter(self)
         defer { objc_sync_exit(self) }
         guard isRunning, let reachability = reachability else { return }
@@ -160,15 +175,15 @@ public class NetworkReachability: NSObject {
 }
 
 // MARK: - 网络状态
-public extension NetworkReachability {
+extension NetworkReachability {
     // 是否可达
-    @objc var isReachable: Bool { status != .unreachable }
+    public var isReachable: Bool { status != .unreachable }
     // 是否是Wifi
-    @objc var isWifiReachable: Bool { status == .wifi }
+    public var isWifiReachable: Bool { status == .wifi }
     // 是否是无线广域网
-    @objc var isCellularReachable: Bool { status == .wwan }
+    public var isCellularReachable: Bool { status == .wwan }
     // 当前网络状态
-    @objc var status: NetworkStatus {
+    public var status: NetworkStatus {
         guard let reachability = reachability else { return .unreachable }
         var flags: SCNetworkReachabilityFlags = []
         guard SCNetworkReachabilityGetFlags(reachability, &flags) else { return .unreachable }
@@ -193,7 +208,7 @@ public extension NetworkReachability {
 // MARK: - 无线广域网类型
 extension NetworkReachability {
     // 当前广域网状态
-    @objc public var type: NetworkType {
+    public var type: NetworkType {
         guard isCellularReachable else { return .unknown }
         var type: NetworkType = .unknown
         if #available(iOS 12.0, *) {
@@ -217,11 +232,11 @@ extension NetworkReachability {
 // MARK: - DEBUG
 extension NetworkReachability {
     
-    @objc public var statusString: String {
+    public var statusString: String {
         status.rawString
     }
     
-    @objc public var typeString: String {
+    public var typeString: String {
         type.rawString
     }
     

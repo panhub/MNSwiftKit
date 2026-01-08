@@ -22,10 +22,10 @@ open class MNListViewController: MNExtendViewController {
     private var executeReloadList: Bool = false
     
     /// 数据列表视图
-    @objc open var listView: UIScrollView { preferredListType == .table ? tableView : collectionView }
+    open var listView: UIScrollView { preferredListType == .table ? tableView : collectionView }
     
     /// 集合视图
-    @objc public private(set) lazy var collectionView: UICollectionView = {
+    public private(set) lazy var collectionView: UICollectionView = {
         let collectionView = preferredCollectionView
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -33,7 +33,7 @@ open class MNListViewController: MNExtendViewController {
     }()
     
     /// 表格视图
-    @objc public private(set) lazy var tableView: UITableView = {
+    public private(set) lazy var tableView: UITableView = {
         let tableView = preferredTableView
         tableView.delegate = self
         tableView.dataSource = self

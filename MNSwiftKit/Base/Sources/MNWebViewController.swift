@@ -31,11 +31,11 @@ open class MNWebViewController: MNExtendViewController {
     /// 资源定位器
     open var url: URL!
     /// 静态网页 优先级高于url
-    @objc open var html: String?
+    open var html: String?
     /// 外界指定请求对象
-    @objc public var request: URLRequest?
+    public var request: URLRequest?
     /// 外界可指定配置信息
-    @objc public var configuration: WKWebViewConfiguration?
+    public var configuration: WKWebViewConfiguration?
     /// 关闭按钮
     private(set) var closeButton: UIButton!
     /// 刷新按钮
@@ -45,13 +45,13 @@ open class MNWebViewController: MNExtendViewController {
     /// 交互代理
     private let messageHandler = MNScriptMessageHandler()
     /// 加载事件代理
-    @objc public weak var delegate: MNWebControllerDelegate?
+    public weak var delegate: MNWebControllerDelegate?
     /// 进度条
-    @objc public lazy var progressView: MNWebProgressView = MNWebProgressView()
+    public private(set) lazy var progressView: MNWebProgressView = MNWebProgressView()
     /// 是否在显示时刷新网页
-    @objc public var reloadWhenAppear: Bool = false
+    public var reloadWhenAppear: Bool = false
     /// 是否允许刷新标题
-    @objc public var allowsUpdateTitle: Bool = true
+    public var allowsUpdateTitle: Bool = true
     
     override init() {
         super.init()
@@ -66,7 +66,7 @@ open class MNWebViewController: MNExtendViewController {
         self.url = url
     }
     
-    @objc convenience init(string: String) {
+    public convenience init(string: String) {
         self.init(url: URL(string: string))
     }
     

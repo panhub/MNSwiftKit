@@ -9,11 +9,11 @@ import WebKit
 import Foundation
 
 // MARK: - 响应处理
-@objc public protocol MNWebScriptBridge {
+public protocol MNWebScriptBridge {
     // 支持的命令
-    @objc var cmds: [String] { get }
+    var cmds: [String] { get }
     // 调用命令
-    @objc func call(cmd: String, body: Any)
+    func call(cmd: String, body: Any)
 }
 
 // MARK: - 添加响应处理
