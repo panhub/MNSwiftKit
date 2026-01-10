@@ -177,7 +177,7 @@ fileprivate class MNSecureItemView: UIImageView {
 /// 密码视图
 @IBDesignable public class MNSecureView: UIView {
     /// 方向
-    @IBInspectable public var axis: NSLayoutConstraint.Axis {
+    public var axis: NSLayoutConstraint.Axis {
         get { stackView.axis }
         set { stackView.axis = newValue }
     }
@@ -236,6 +236,7 @@ fileprivate class MNSecureItemView: UIImageView {
                     ])
                 }
             }
+            setNeedsLayout()
         }
     }
     /// 内部约束视图
