@@ -7,7 +7,6 @@ PODS:
     - MNSwiftKit/AnimatedImage
     - MNSwiftKit/Definition
     - MNSwiftKit/Extension
-    - MNSwiftKit/Layout
     - MNSwiftKit/Player
     - MNSwiftKit/Slider
   - MNSwiftKit/AssetPicker (0.1.3):
@@ -16,7 +15,6 @@ PODS:
     - MNSwiftKit/Definition
     - MNSwiftKit/EmptyView
     - MNSwiftKit/Extension
-    - MNSwiftKit/Layout
     - MNSwiftKit/MediaExport
     - MNSwiftKit/NameSpace
     - MNSwiftKit/Player
@@ -28,7 +26,6 @@ PODS:
     - MNSwiftKit/Definition
     - MNSwiftKit/EmptyView
     - MNSwiftKit/Extension
-    - MNSwiftKit/Layout
     - MNSwiftKit/NameSpace
     - MNSwiftKit/Refresh
     - MNSwiftKit/Request
@@ -36,7 +33,6 @@ PODS:
   - MNSwiftKit/CollectionLayout (0.1.3)
   - MNSwiftKit/Components (0.1.3):
     - MNSwiftKit/Extension
-    - MNSwiftKit/Layout
     - MNSwiftKit/NameSpace
   - MNSwiftKit/Database (0.1.3)
   - MNSwiftKit/Definition (0.1.3):
@@ -67,7 +63,6 @@ PODS:
     - MNSwiftKit/EmoticonKeyboard
     - MNSwiftKit/EmptyView
     - MNSwiftKit/Extension
-    - MNSwiftKit/Layout
     - MNSwiftKit/MediaExport
     - MNSwiftKit/NameSpace
     - MNSwiftKit/Networking
@@ -81,8 +76,6 @@ PODS:
     - MNSwiftKit/Toast
     - MNSwiftKit/Transitioning
     - MNSwiftKit/Utility
-  - MNSwiftKit/Layout (0.1.3):
-    - MNSwiftKit/NameSpace
   - MNSwiftKit/MediaExport (0.1.3):
     - MNSwiftKit/NameSpace
   - MNSwiftKit/NameSpace (0.1.3)
@@ -111,7 +104,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: 3f960a4346a7407f77dba2c7f337ffe5ee44e838
+  MNSwiftKit: c4181d3c4940352cdbe88521f6b57fc95baeb446
 
 PODFILE CHECKSUM: 6945f8f3025c0c190cd98bd04f84e75ce33964db
 

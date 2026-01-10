@@ -155,12 +155,12 @@ class MNTailorHandler: UIView {
         if isNormal {
             UIView.animate(withDuration: animated ? AnimationDuration : 0.0, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
                 guard let self = self else { return }
-                self.leftHandler.mn.minX = 0.0
-                self.rightHandler.mn.maxX = self.frame.width
-                self.topSeparator.mn.minX = self.leftHandler.frame.maxX
-                self.topSeparator.mn.width = self.rightHandler.frame.minX - self.leftHandler.frame.maxX
-                self.bottomSeparator.mn.minX = self.topSeparator.frame.minX
-                self.bottomSeparator.mn.width = self.topSeparator.frame.width
+                self.leftHandler.frame.origin.x = 0.0
+                self.rightHandler.frame.origin.x = self.frame.width - self.rightHandler.frame.width
+                self.topSeparator.frame.origin.x = self.leftHandler.frame.maxX
+                self.topSeparator.frame.size.width = self.rightHandler.frame.minX - self.leftHandler.frame.maxX
+                self.bottomSeparator.frame.origin.x = self.topSeparator.frame.minX
+                self.bottomSeparator.frame.size.width = self.topSeparator.frame.width
             }, completion: nil)
         }
         if isNormal == isHighlighted {
@@ -213,18 +213,18 @@ extension MNTailorHandler {
         let previous = touch.previousLocation(in: self)
         let transition = location.x - previous.x
         if status == .left {
-            leftHandler.mn.minX += transition
-            leftHandler.mn.minX = max(0.0, leftHandler.frame.minX)
-            leftHandler.mn.maxX = min(leftHandler.frame.maxX, rightHandler.frame.minX - spacing)
+            leftHandler.frame.origin.x += transition
+            leftHandler.frame.origin.x = max(0.0, leftHandler.frame.minX)
+            leftHandler.frame.origin.x = min(leftHandler.frame.minX, rightHandler.frame.minX - spacing - leftHandler.frame.width)
         } else {
-            rightHandler.mn.minX += transition
-            rightHandler.mn.minX = max(rightHandler.frame.minX, leftHandler.frame.maxX + spacing)
-            rightHandler.mn.maxX = min(frame.width, rightHandler.frame.maxX)
+            rightHandler.frame.origin.x += transition
+            rightHandler.frame.origin.x = max(rightHandler.frame.minX, leftHandler.frame.maxX + spacing)
+            rightHandler.frame.origin.x = min(rightHandler.frame.minX, frame.width - rightHandler.frame.width)
         }
-        topSeparator.mn.minX = leftHandler.frame.maxX
-        topSeparator.mn.width = rightHandler.frame.minX - leftHandler.frame.maxX
-        bottomSeparator.mn.minX = topSeparator.frame.minX
-        bottomSeparator.mn.width = topSeparator.frame.width
+        topSeparator.frame.origin.x = leftHandler.frame.maxX
+        topSeparator.frame.size.width = rightHandler.frame.minX - leftHandler.frame.maxX
+        bottomSeparator.frame.origin.x = topSeparator.frame.minX
+        bottomSeparator.frame.size.width = topSeparator.frame.width
         if status == .left {
             delegate?.tailorLeftHandlerDidDragging(self)
         } else {

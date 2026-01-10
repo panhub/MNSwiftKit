@@ -89,7 +89,7 @@ extension SegmentedViewController: MNSegmentedViewControllerDataSource {
         
         let image = UIImage(named: "b_16")!
         let imageView = UIImageView(image: image)
-        imageView.mn.size = .init(width: view.frame.width, height: ceil(image.size.height/image.size.width*view.frame.width))
+        imageView.frame.size = .init(width: view.frame.width, height: ceil(image.size.height/image.size.width*view.frame.width))
         return imageView
     }
     

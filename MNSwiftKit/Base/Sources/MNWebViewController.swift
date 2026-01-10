@@ -116,7 +116,7 @@ open class MNWebViewController: MNExtendViewController {
         webView.addObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), options: .new, context: nil)
         contentView.addSubview(webView)
         
-        progressView.mn.size = CGSize(width: contentView.frame.width, height: 3.0)
+        progressView.frame.size = CGSize(width: contentView.frame.width, height: 3.0)
         progressView.autoresizingMask = .flexibleWidth
         contentView.addSubview(progressView)
     }
@@ -234,16 +234,16 @@ extension MNWebViewController {
     open override func navigationBarShouldCreateLeftBarItem() -> UIView? {
         let leftItemView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 62.0, height: 22.0))
         let backButton = UIButton(type: .custom)
-        backButton.mn.size = CGSize(width: leftItemView.frame.height, height: leftItemView.frame.height)
+        backButton.frame.size = CGSize(width: leftItemView.frame.height, height: leftItemView.frame.height)
         backButton.setBackgroundImage(BaseResource.image(named: "back"), for: .normal)
         backButton.setBackgroundImage(BaseResource.image(named: "back"), for: .highlighted)
         backButton.addTarget(self, action: #selector(back), for: .touchUpInside)
         leftItemView.addSubview(backButton)
         closeButton = UIButton(type: .custom)
         closeButton.isHidden = true
-        closeButton.mn.size = CGSize(width: 20.0, height: 20.0)
-        closeButton.mn.maxX = leftItemView.frame.width
-        closeButton.mn.midY = leftItemView.frame.height/2.0
+        closeButton.frame.size = CGSize(width: 20.0, height: 20.0)
+        closeButton.frame.origin.x = leftItemView.frame.width - closeButton.frame.width
+        closeButton.frame.origin.y = (leftItemView.frame.height - closeButton.frame.height)/2.0
         closeButton.setBackgroundImage(BaseResource.image(named: "close"), for: .normal)
         closeButton.setBackgroundImage(BaseResource.image(named: "close"), for: .highlighted)
         closeButton.addTarget(self, action: #selector(close), for: .touchUpInside)

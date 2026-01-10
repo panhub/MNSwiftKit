@@ -117,11 +117,11 @@ public class MNTabBar: UIView {
         let m: CGFloat = ceil((bounds.width - width)/CGFloat(items.count + 1))
         var x: CGFloat = m + itemOffset.horizontal
         for item in items {
-            item.mn.minX = x
+            item.frame.origin.x = x
             if MN_BOTTOM_SAFE_HEIGHT > 0.0 {
-                item.mn.maxY = bounds.height - MN_BOTTOM_SAFE_HEIGHT + itemOffset.vertical
+                item.frame.origin.y = bounds.height - MN_BOTTOM_SAFE_HEIGHT - item.frame.height + itemOffset.vertical
             } else {
-                item.mn.midY = bounds.midY + itemOffset.vertical
+                item.frame.origin.y = bounds.midY - item.frame.height/2.0 + itemOffset.vertical
             }
             x = item.frame.maxX + m + itemOffset.horizontal
         }
@@ -157,8 +157,8 @@ extension MNTabBar {
             let autoresizingMask = separatorView.autoresizingMask
             separatorView.autoresizingMask = []
             let rect = bounds.inset(by: UIEdgeInsets(top: 0.0, left: max(newValue.left, 0.0), bottom: frame.height - separatorView.frame.maxY, right: max(newValue.right, 0.0)))
-            separatorView.mn.minX = rect.minX
-            separatorView.mn.width = rect.width
+            separatorView.frame.origin.x = rect.minX
+            separatorView.frame.size.width = rect.width
             separatorView.autoresizingMask = autoresizingMask
         }
     }

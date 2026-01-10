@@ -115,11 +115,11 @@ public class MNAssetScrollView: UIScrollView {
         if frame.size == .zero { return }
         zoomScale = 1.0
         contentOffset = .zero
-        contentView.mn.size = image.size.mn.scaleFit(in: CGSize(width: frame.width, height: frame.height - 1.0))
+        contentView.frame.size = image.size.mn.scaleFit(in: CGSize(width: frame.width, height: frame.height - 1.0))
         contentSize = CGSize(width: frame.width, height: max(contentView.frame.height, frame.height))
         contentView.center = CGPoint(x: frame.width/2.0, y: frame.height/2.0)
         if (contentView.frame.height > frame.height) {
-            contentView.mn.minY = 0.0
+            contentView.frame.origin.y = 0.0
             contentOffset = CGPoint(x: 0.0, y: (contentView.frame.height - frame.height)/2.0)
         }
     }

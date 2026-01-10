@@ -9,7 +9,6 @@
 import UIKit
 import Foundation
 #if SWIFT_PACKAGE
-@_exported import MNLayout
 @_exported import MNExtension
 @_exported import MNNameSpace
 #endif

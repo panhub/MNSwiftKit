@@ -42,7 +42,6 @@ Pod::Spec.new do |s|
         'MNSwiftKit_Base' => ['MNSwiftKit/Base/Resources/*']
     }
     b.dependency 'MNSwiftKit/Toast'
-    b.dependency 'MNSwiftKit/Layout'
     b.dependency 'MNSwiftKit/Refresh'
     b.dependency 'MNSwiftKit/Request'
     b.dependency 'MNSwiftKit/Definition'
@@ -78,13 +77,6 @@ Pod::Spec.new do |s|
   s.subspec 'Player' do |p|
     p.frameworks = 'UIKit', 'AVFAudio', 'Foundation', 'AudioToolbox', 'AVFoundation'
     p.source_files = 'MNSwiftKit/Player/Sources/**/*.swift'
-  end
-  
-  # Layout <UI布局快速获取>
-  s.subspec 'Layout' do |a|
-    a.frameworks = 'UIKit', 'Foundation', 'QuartzCore', 'CoreFoundation'
-    a.source_files = 'MNSwiftKit/Layout/Sources/**/*.swift'
-    a.dependency 'MNSwiftKit/NameSpace'
   end
   
   # Refresh <刷新控件>
@@ -164,7 +156,6 @@ Pod::Spec.new do |s|
     p.dependency 'MNSwiftKit/Toast'
     p.dependency 'MNSwiftKit/Slider'
     p.dependency 'MNSwiftKit/Player'
-    p.dependency 'MNSwiftKit/Layout'
     p.dependency 'MNSwiftKit/Refresh'
     p.dependency 'MNSwiftKit/Definition'
     p.dependency 'MNSwiftKit/Extension'
@@ -184,7 +175,6 @@ Pod::Spec.new do |s|
     }
     a.dependency 'MNSwiftKit/Slider'
     a.dependency 'MNSwiftKit/Player'
-    a.dependency 'MNSwiftKit/Layout'
     a.dependency 'MNSwiftKit/Definition'
     a.dependency 'MNSwiftKit/Extension'
     a.dependency 'MNSwiftKit/AnimatedImage'
@@ -216,7 +206,6 @@ Pod::Spec.new do |s|
     c.resource_bundles = {
         'MNSwiftKit_Components' => ['MNSwiftKit/Components/Resources/**/*.{png,jpg,jpeg}']
     }
-    c.dependency 'MNSwiftKit/Layout'
     c.dependency 'MNSwiftKit/Extension'
     c.dependency 'MNSwiftKit/NameSpace'
   end
@@ -271,7 +260,6 @@ Pod::Spec.new do |s|
     full.dependency 'MNSwiftKit/Slider'
     full.dependency 'MNSwiftKit/Utility'
     full.dependency 'MNSwiftKit/Player'
-    full.dependency 'MNSwiftKit/Layout'
     full.dependency 'MNSwiftKit/Refresh'
     full.dependency 'MNSwiftKit/Request'
     full.dependency 'MNSwiftKit/Purchase'

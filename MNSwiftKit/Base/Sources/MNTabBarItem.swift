@@ -236,15 +236,15 @@ public class MNTabBarItem: UIControl {
         if text.isEmpty {
             // 圆点
             badgeLabel.frame = .zero
-            badgeView.mn.size = .init(width: badgeContentInset.left + badgeContentInset.right, height: badgeContentInset.top + badgeContentInset.bottom)
+            badgeView.frame.size = .init(width: badgeContentInset.left + badgeContentInset.right, height: badgeContentInset.top + badgeContentInset.bottom)
             badgeView.layer.cornerRadius = badgeView.frame.height/2.0
         } else {
             // 文字
             badgeLabel.sizeToFit()
-            badgeLabel.mn.origin = .init(x: badgeContentInset.left, y: badgeContentInset.top)
+            badgeLabel.frame.origin = .init(x: badgeContentInset.left, y: badgeContentInset.top)
             var badgeSize = CGSize(width: badgeContentInset.left + badgeLabel.frame.width + badgeContentInset.right, height: badgeContentInset.top + badgeLabel.frame.height + badgeContentInset.bottom)
             badgeSize.width = max(badgeSize.width, badgeSize.height)
-            badgeView.mn.size = badgeSize
+            badgeView.frame.size = badgeSize
             badgeView.layer.cornerRadius = badgeSize.height/2.0
         }
         layoutBadge()

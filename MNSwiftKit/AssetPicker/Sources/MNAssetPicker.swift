@@ -11,7 +11,6 @@ import Foundation
 @_exported import MNToast
 @_exported import MNSlider
 @_exported import MNPlayer
-@_exported import MNLayout
 @_exported import MNRefresh
 @_exported import MNDefinition
 @_exported import MNExtension

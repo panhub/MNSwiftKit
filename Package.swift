@@ -15,7 +15,6 @@ let package = Package(
         .library(name: "MNSlider",targets: ["MNSlider"]),
         .library(name: "MNToast", targets: ["MNToast"]),
         .library(name: "MNPlayer", targets: ["MNPlayer"]),
-        .library(name: "MNLayout",targets: ["MNLayout"]),
         .library(name: "MNRefresh",targets: ["MNRefresh"]),
         .library(name: "MNRequest", targets: ["MNRequest"]),
         .library(name: "MNPurchase", targets: ["MNPurchase"]),
@@ -41,14 +40,14 @@ let package = Package(
         .target(
             name: "MNSwiftKit",
             dependencies: [
-                "MNBase", "MNUtility", "MNSlider", "MNToast", "MNPlayer", "MNLayout", "MNRefresh", "MNRequest", "MNPurchase", "MNDatabase", "MNDefinition", "MNExtension", "MNEmptyView", "MNNetworking", "MNEditingView", "MNAssetPicker", "MNNameSpace", "MNPageControl", "MNComponents", "MNMediaExport", "MNTransitioning", "MNAssetBrowser", "MNAnimatedImage", "MNCollectionLayout", "MNEmoticonKeyboard", "MNSegmentedViewController"
+                "MNBase", "MNUtility", "MNSlider", "MNToast", "MNPlayer", "MNRefresh", "MNRequest", "MNPurchase", "MNDatabase", "MNDefinition", "MNExtension", "MNEmptyView", "MNNetworking", "MNEditingView", "MNAssetPicker", "MNNameSpace", "MNPageControl", "MNComponents", "MNMediaExport", "MNTransitioning", "MNAssetBrowser", "MNAnimatedImage", "MNCollectionLayout", "MNEmoticonKeyboard", "MNSegmentedViewController"
             ],
             path: "MNSwiftKit/MNSwiftKit"
         ),
         .target(
             name: "MNBase",
             dependencies: [
-                "MNToast", "MNLayout", "MNRefresh", "MNRequest", "MNDefinition", "MNExtension", "MNEmptyView", "MNNameSpace", "MNCollectionLayout"
+                "MNToast", "MNRefresh", "MNRequest", "MNDefinition", "MNExtension", "MNEmptyView", "MNNameSpace", "MNCollectionLayout"
             ],
             path: "MNSwiftKit/Base",
             resources: [
@@ -112,19 +111,6 @@ let package = Package(
                 .linkedFramework("Foundation"),
                 .linkedFramework("AudioToolbox"),
                 .linkedFramework("AVFoundation")
-            ]
-        ),
-        .target(
-            name: "MNLayout",
-            dependencies: [
-                "MNNameSpace"
-            ],
-            path: "MNSwiftKit/Layout",
-            linkerSettings: [
-                .linkedFramework("UIKit"),
-                .linkedFramework("Foundation"),
-                .linkedFramework("QuartzCore"),
-                .linkedFramework("CoreFoundation")
             ]
         ),
         .target(
@@ -245,7 +231,7 @@ let package = Package(
         .target(
             name: "MNAssetPicker",
             dependencies: [
-                "MNToast", "MNSlider", "MNPlayer", "MNLayout", "MNRefresh", "MNDefinition", "MNExtension", "MNEmptyView", "MNNameSpace", "MNMediaExport", "MNAssetBrowser", "MNAnimatedImage"
+                "MNToast", "MNSlider", "MNPlayer", "MNRefresh", "MNDefinition", "MNExtension", "MNEmptyView", "MNNameSpace", "MNMediaExport", "MNAssetBrowser", "MNAnimatedImage"
             ],
             path: "MNSwiftKit/AssetPicker",
             resources: [
@@ -284,7 +270,7 @@ let package = Package(
         .target(
             name: "MNComponents",
             dependencies: [
-                "MNLayout", "MNExtension", "MNNameSpace"
+                "MNExtension", "MNNameSpace"
             ],
             path: "MNSwiftKit/Components",
             resources: [
@@ -330,7 +316,7 @@ let package = Package(
         .target(
             name: "MNAssetBrowser",
             dependencies: [
-                "MNSlider", "MNPlayer", "MNLayout", "MNDefinition", "MNExtension", "MNAnimatedImage"
+                "MNSlider", "MNPlayer", "MNDefinition", "MNExtension", "MNAnimatedImage"
             ],
             path: "MNSwiftKit/AssetBrowser",
             resources: [

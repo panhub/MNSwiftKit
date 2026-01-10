@@ -11,7 +11,6 @@
 @_exported import MNSlider
 @_exported import MNUtility
 @_exported import MNPlayer
-@_exported import MNLayout
 @_exported import MNRefresh
 @_exported import MNRequest
 @_exported import MNPurchase
