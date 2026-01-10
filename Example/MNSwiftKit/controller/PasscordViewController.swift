@@ -23,6 +23,8 @@ class PasscordViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
+        backTop.constant = (MN_NAV_BAR_HEIGHT - backHeight.constant)/2.0 + MN_STATUS_BAR_HEIGHT
+        
         secureView.capacity = 5
         secureView.spacing = 15.0
         secureView.delegate = self

@@ -13,7 +13,7 @@ open class MNTransitionAnimator: NSObject {
     public enum Style: String {
         /// 默认样式
         case normal = "MNNormalAnimator"
-        /// 开关门
+        /// 远近
         case drawer = "MNDrawerAnimator"
         /// 模态
         case modal = "MNModalAnimator"
@@ -275,7 +275,7 @@ extension MNTransitionAnimator {
     /// 模态动画转场
     public class var modal: MNTransitionAnimator { .animator(with: .modal) }
     
-    /// 开关门动画转场
+    /// 远近动画转场
     public class var drawer: MNTransitionAnimator { .animator(with: .drawer) }
     
     /// 进出栈动画转场

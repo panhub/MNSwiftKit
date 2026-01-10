@@ -79,46 +79,36 @@
                         <action selector="directionValueChanged:" destination="-1" eventType="valueChanged" id="WAr-sE-mPP"/>
                     </connections>
                 </segmentedControl>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="T1Q-PW-VWH">
-                    <rect key="frame" x="0.0" y="228.33333333333331" width="393" height="623.66666666666674"/>
-                    <subviews>
-                        <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FwQ-cR-aPd">
-                            <rect key="frame" x="149" y="242" width="95" height="40"/>
-                            <color key="backgroundColor" systemColor="systemMintColor"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="40" id="FBo-d7-UnJ"/>
-                                <constraint firstAttribute="width" constant="95" id="KOI-J9-ywY"/>
-                            </constraints>
-                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="15"/>
-                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            <state key="normal" title="点击弹出">
-                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </state>
-                            <state key="selected" title="点击收起"/>
-                            <userDefinedRuntimeAttributes>
-                                <userDefinedRuntimeAttribute type="number" keyPath="mn_radius">
-                                    <real key="value" value="8"/>
-                                </userDefinedRuntimeAttribute>
-                            </userDefinedRuntimeAttributes>
-                            <connections>
-                                <action selector="buttonTouchUpInside:" destination="-1" eventType="touchUpInside" id="c7j-i0-ETK"/>
-                            </connections>
-                        </button>
-                    </subviews>
-                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FwQ-cR-aPd">
+                    <rect key="frame" x="149" y="406" width="95" height="40"/>
+                    <color key="backgroundColor" systemColor="systemMintColor"/>
                     <constraints>
-                        <constraint firstItem="FwQ-cR-aPd" firstAttribute="centerY" secondItem="T1Q-PW-VWH" secondAttribute="centerY" constant="-50" id="5ld-ul-If2"/>
-                        <constraint firstItem="FwQ-cR-aPd" firstAttribute="centerX" secondItem="T1Q-PW-VWH" secondAttribute="centerX" id="gXD-Iy-yY5"/>
+                        <constraint firstAttribute="height" constant="40" id="FBo-d7-UnJ"/>
+                        <constraint firstAttribute="width" constant="95" id="KOI-J9-ywY"/>
                     </constraints>
-                </view>
+                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="15"/>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" title="点击弹出">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </state>
+                    <state key="selected" title="点击收起"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="mn_radius">
+                            <real key="value" value="8"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                    <connections>
+                        <action selector="buttonTouchUpInside:" destination="-1" eventType="touchUpInside" id="c7j-i0-ETK"/>
+                    </connections>
+                </button>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="ONU-TA-jXK" firstAttribute="height" secondItem="1JB-Na-mSz" secondAttribute="height" id="2cY-am-VM3"/>
-                <constraint firstAttribute="trailing" secondItem="T1Q-PW-VWH" secondAttribute="trailing" id="5f6-ac-vCK"/>
                 <constraint firstItem="i8f-AE-2fc" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="63" id="CcI-DK-rl6"/>
                 <constraint firstItem="qFP-5p-Ti5" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="EDp-KP-MF0"/>
                 <constraint firstItem="ONU-TA-jXK" firstAttribute="trailing" secondItem="1JB-Na-mSz" secondAttribute="trailing" id="IAq-hE-AOD"/>
+                <constraint firstItem="FwQ-cR-aPd" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="JBn-66-r9m"/>
                 <constraint firstItem="Kh3-bD-s2H" firstAttribute="leading" secondItem="i8f-AE-2fc" secondAttribute="leading" id="Jup-s5-T9P"/>
                 <constraint firstItem="Kh3-bD-s2H" firstAttribute="top" secondItem="i8f-AE-2fc" secondAttribute="bottom" constant="20" id="KLb-Sy-Zjj"/>
                 <constraint firstAttribute="trailing" secondItem="1JB-Na-mSz" secondAttribute="trailing" constant="20" id="O6h-VX-3NY"/>
@@ -126,13 +116,11 @@
                 <constraint firstItem="1JB-Na-mSz" firstAttribute="leading" secondItem="i8f-AE-2fc" secondAttribute="leading" id="Pdy-lQ-4SA"/>
                 <constraint firstItem="i8f-AE-2fc" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="15" id="R8A-ue-vTl"/>
                 <constraint firstItem="KhD-kj-LgX" firstAttribute="leading" secondItem="i8f-AE-2fc" secondAttribute="leading" id="T9x-b1-ctJ"/>
+                <constraint firstItem="FwQ-cR-aPd" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="UUf-fe-Ek4"/>
                 <constraint firstItem="qFP-5p-Ti5" firstAttribute="centerY" secondItem="i8f-AE-2fc" secondAttribute="centerY" id="YHa-kS-Xat"/>
                 <constraint firstItem="1JB-Na-mSz" firstAttribute="top" secondItem="Kh3-bD-s2H" secondAttribute="bottom" constant="5" id="aCW-Wn-u40"/>
-                <constraint firstItem="T1Q-PW-VWH" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="jM0-oA-TaU"/>
-                <constraint firstItem="T1Q-PW-VWH" firstAttribute="top" secondItem="ONU-TA-jXK" secondAttribute="bottom" id="t7i-Se-877"/>
                 <constraint firstItem="ONU-TA-jXK" firstAttribute="leading" secondItem="1JB-Na-mSz" secondAttribute="leading" id="zUr-Ez-BYL"/>
                 <constraint firstItem="ONU-TA-jXK" firstAttribute="top" secondItem="KhD-kj-LgX" secondAttribute="bottom" constant="5" id="zjh-dY-0Ly"/>
-                <constraint firstAttribute="bottom" secondItem="T1Q-PW-VWH" secondAttribute="bottom" id="zu2-uJ-NDr"/>
             </constraints>
             <nil key="simulatedTopBarMetrics"/>
             <nil key="simulatedBottomBarMetrics"/>
@@ -141,14 +129,11 @@
     </objects>
     <resources>
         <image name="back" width="50" height="50"/>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemMintColor">
-            <color red="0.0" green="0.7803921568627451" blue="0.74509803921568629" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.78039215689999997" blue="0.74509803919999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

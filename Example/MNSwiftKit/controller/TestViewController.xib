@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="TestViewController" customModule="MNSwiftKit_Example" customModuleProvider="target">
+            <connections>
+                <outlet property="backHeight" destination="mpq-gB-mOL" id="ica-pl-abr"/>
+                <outlet property="backTop" destination="66t-ZG-A29" id="aut-sU-HsI"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="transition_bg" translatesAutoresizingMaskIntoConstraints="NO" id="mXf-dv-eYs">
+                    <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                </imageView>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eDa-TR-Ywh">
+                    <rect key="frame" x="15" y="63" width="20" height="20"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="eDa-TR-Ywh" secondAttribute="height" multiplier="1:1" id="hLj-tj-oUJ"/>
+                        <constraint firstAttribute="height" constant="20" id="mpq-gB-mOL"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" backgroundImage="back"/>
+                    <connections>
+                        <action selector="back" destination="-1" eventType="touchUpInside" id="idH-je-e3Q"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="eDa-TR-Ywh" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="63" id="66t-ZG-A29"/>
+                <constraint firstAttribute="trailing" secondItem="mXf-dv-eYs" secondAttribute="trailing" id="8xb-gj-5Hh"/>
+                <constraint firstAttribute="bottom" secondItem="mXf-dv-eYs" secondAttribute="bottom" id="UTN-yv-vER"/>
+                <constraint firstItem="mXf-dv-eYs" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="kOn-Xa-FMW"/>
+                <constraint firstItem="eDa-TR-Ywh" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="15" id="sXw-J1-aRA"/>
+                <constraint firstItem="mXf-dv-eYs" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="x8D-6m-tjO"/>
+            </constraints>
+            <nil key="simulatedTopBarMetrics"/>
+            <nil key="simulatedBottomBarMetrics"/>
+            <point key="canvasLocation" x="138" y="20"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="back" width="50" height="50"/>
+        <image name="transition_bg" width="295.66665649414062" height="640"/>
+    </resources>
+</document>

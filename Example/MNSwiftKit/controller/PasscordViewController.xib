@@ -23,7 +23,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5Zw-S1-zHu">
-                    <rect key="frame" x="20" y="63" width="20" height="20"/>
+                    <rect key="frame" x="15" y="63" width="20" height="20"/>
                     <constraints>
                         <constraint firstAttribute="width" secondItem="5Zw-S1-zHu" secondAttribute="height" multiplier="1:1" id="IAF-Ex-i79"/>
                         <constraint firstAttribute="height" constant="20" id="REh-xo-ekn"/>
@@ -34,8 +34,8 @@
                         <action selector="back" destination="-1" eventType="touchUpInside" id="yVo-VW-wVN"/>
                     </connections>
                 </button>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="密码输入" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="G0K-lf-8WQ">
-                    <rect key="frame" x="160.66666666666666" y="60.333333333333336" width="72" height="25.333333333333336"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="数字键盘与密码输入框" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="G0K-lf-8WQ">
+                    <rect key="frame" x="106.66666666666669" y="60.333333333333336" width="180" height="25.333333333333336"/>
                     <fontDescription key="fontDescription" name="PingFangSC-Medium" family="PingFang SC" pointSize="18"/>
                     <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <nil key="highlightedColor"/>
@@ -75,7 +75,7 @@
                 <constraint firstItem="4dI-Nt-bj2" firstAttribute="top" secondItem="5Zw-S1-zHu" secondAttribute="bottom" constant="55" id="FFh-qU-2Vx"/>
                 <constraint firstItem="4dI-Nt-bj2" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="30" id="Frl-qG-y6M"/>
                 <constraint firstItem="5Zw-S1-zHu" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="63" id="Ljb-3S-CQO"/>
-                <constraint firstItem="5Zw-S1-zHu" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="20" id="Ry2-zU-hSw"/>
+                <constraint firstItem="5Zw-S1-zHu" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="15" id="Ry2-zU-hSw"/>
                 <constraint firstItem="G0K-lf-8WQ" firstAttribute="centerY" secondItem="5Zw-S1-zHu" secondAttribute="centerY" id="Utr-1s-tiC"/>
                 <constraint firstItem="dxD-pu-xXU" firstAttribute="top" secondItem="4dI-Nt-bj2" secondAttribute="bottom" constant="15" id="b8D-ym-fgs"/>
                 <constraint firstAttribute="trailing" secondItem="4dI-Nt-bj2" secondAttribute="trailing" constant="30" id="v87-05-Ad6"/>

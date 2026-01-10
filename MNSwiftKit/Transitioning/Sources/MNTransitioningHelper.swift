@@ -1,5 +1,5 @@
 //
-//  UIView+MNTransitionHelper.swift
+//  MNTransitioningHelper.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2021/8/17.

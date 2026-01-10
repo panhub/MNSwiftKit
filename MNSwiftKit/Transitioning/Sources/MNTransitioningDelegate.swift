@@ -1,5 +1,5 @@
 //
-//  MNTransitionDelegate.swift
+//  MNTransitioningDelegate.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2022/6/23.
@@ -19,8 +19,8 @@ extension UINavigationController {
 extension MNNameSpaceWrapper where Base: UINavigationController {
     
     /// 转场代理
-    public var transitioningDelegate: MNTransitionDelegate? {
-        get { objc_getAssociatedObject(base, &UINavigationController.MNTransitionAssociated.delegate) as? MNTransitionDelegate }
+    public var transitioningDelegate: MNTransitioningDelegate? {
+        get { objc_getAssociatedObject(base, &UINavigationController.MNTransitionAssociated.delegate) as? MNTransitioningDelegate }
         set {
             objc_setAssociatedObject(base, &UINavigationController.MNTransitionAssociated.delegate, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             guard let newValue = newValue else { return }
@@ -54,7 +54,7 @@ extension MNNameSpaceWrapper where Base: UINavigationController {
     }
 }
 
-public class MNTransitionDelegate: NSObject {
+public class MNTransitioningDelegate: NSObject {
     /// 标签栏
     public weak var bottomBar: UIView?
     /// 转场动画
@@ -100,7 +100,7 @@ public class MNTransitionDelegate: NSObject {
 }
 
 // MARK: - UINavigationControllerDelegate
-extension MNTransitionDelegate: UINavigationControllerDelegate {
+extension MNTransitioningDelegate: UINavigationControllerDelegate {
     
     public func navigationController(_ navigationController: UINavigationController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         interactiveTransitionDriver
@@ -182,7 +182,8 @@ extension MNTransitionDelegate: UINavigationControllerDelegate {
 }
 
 // MARK: - UIGestureRecognizerDelegate
-extension MNTransitionDelegate: UIGestureRecognizerDelegate {
+extension MNTransitioningDelegate: UIGestureRecognizerDelegate {
+    
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         guard let nav = navigationController, nav.viewControllers.count > 1 else { return false }
         return nav.viewControllers.last!.preferredInteractiveTransitioning

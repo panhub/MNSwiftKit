@@ -3744,7 +3744,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         // 创建转场代理
-        let delegate = MNTransitionDelegate()
+        let delegate = MNTransitioningDelegate()
         delegate.transitionAnimation = .normal  // 转场样式
         delegate.bottomBarAnimation = .adsorb    // 标签栏动画
         
@@ -3757,7 +3757,7 @@ class ViewController: UIViewController {
 转场样式
 
 ```swift
-let delegate = MNTransitionDelegate()
+let delegate = MNTransitioningDelegate()
 
 // 普通转场（仿系统转场，带半透明黑色背景）
 delegate.transitionAnimation = .normal
@@ -3777,7 +3777,7 @@ navigationController?.mn.transitioningDelegate = delegate
 标签栏转场动画
 
 ```swift
-let delegate = MNTransitionDelegate()
+let delegate = MNTransitioningDelegate()
 
 // 无动画
 delegate.bottomBarAnimation = .none
