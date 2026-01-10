@@ -9,22 +9,19 @@ import UIKit
 
 /// 数字键盘代理
 @objc public protocol MNNumberKeyboardDelegate: NSObjectProtocol {
+    
     /// 询问是否响应数字按键
     /// - Parameters:
     ///   - keyboard: 数字键盘
     ///   - key: 按键类型
     /// - Returns: 是否响应按键
     @objc optional func numberKeyboard(_ keyboard: MNNumberKeyboard, shouldInput key: MNNumberKeyboard.Key) -> Bool
+    
     /// 按键响应告知
     /// - Parameters:
     ///   - keyboard: 数字键盘
     ///   - key: 按键类型
-    @objc optional func numberKeyboard(_ keyboard: MNNumberKeyboard, didInput key: MNNumberKeyboard.Key) -> Void
-    /// 按键点击告知
-    /// - Parameters:
-    ///   - keyboard: 数字键盘
-    ///   - key: 按键类型
-    @objc optional func numberKeyboard(_ keyboard: MNNumberKeyboard, didClick key: MNNumberKeyboard.Key) -> Void
+    func numberKeyboard(_ keyboard: MNNumberKeyboard, didInput key: MNNumberKeyboard.Key)
 }
 
 public class MNNumberKeyboard: UIView {
@@ -33,6 +30,7 @@ public class MNNumberKeyboard: UIView {
     @objc public enum Key: Int {
         
         public enum Name {
+            
             case none, decimal, delete, clear, done
         }
         
@@ -40,23 +38,21 @@ public class MNNumberKeyboard: UIView {
     }
     
     /// 数字键盘配置
-    public struct Options {
+    public struct Configuration {
         /// 列数
         public let columns: Int = 3
         /// 按键间隔
         public var spacing: CGFloat = 1.5
         /// 是否可以输入小数点
         public var decimalCapable: Bool = true
-        /// 按键高度
-        public var keyButtonHeight: CGFloat = 55.0
         /// 按键标题字体
         public var textFont: UIFont?
         /// 是否乱序排列数字
         public var isScramble: Bool = false
         /// 左键类型
-        public var leftKey: Key.Name = .none
+        public var leftKeyName: Key.Name = .none
         /// 右键类型
-        public var rightKey: Key.Name = .none
+        public var rightKeyName: Key.Name = .none
         /// 按键标题颜色
         public var textColor: UIColor?
         /// 按键背景颜色
@@ -64,41 +60,28 @@ public class MNNumberKeyboard: UIView {
         /// 按键高亮颜色
         public var keyHighlightedColor: UIColor?
         
-        /// 键盘高度
-        public var visibleHeight: CGFloat {
-            var bottomInset = 0.0
-            if #available(iOS 11.0, *) {
-                bottomInset = UIWindow().safeAreaInsets.bottom
-            }
-            let rows: Int = 12/columns
-            return (spacing + keyButtonHeight)*CGFloat(rows) + bottomInset
-        }
-        
         public init() {}
     }
     
     /// 输入结果
     public private(set) var text: String = ""
+    
+    /// 内部布局视图
+    private let stackView = UIStackView()
+    
     /// 事件代理
     public weak var delegate: MNNumberKeyboardDelegate?
     
-    /// 数字键盘构造入口
-    /// - Parameter options: 配置选项
-    public required init(options: Options) {
-        super.init(frame: CGRect(x: 0.0, y: 0.0, width: UIScreen.main.bounds.width, height: options.visibleHeight))
+    
+    /// 构造数字键盘
+    /// - Parameters:
+    ///   - frame: 位置
+    ///   - configuration: 配置信息
+    public init(frame: CGRect, configuration: Configuration) {
+        super.init(frame: frame)
         
-        backgroundColor = UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0)
-        
-        let columns: Int = options.columns
-        let height: CGFloat = options.keyButtonHeight
-        let spacing: CGFloat = max(options.spacing, 0.0)
-        let width: CGFloat = ceil((frame.width - spacing*CGFloat(columns - 1))/CGFloat(columns))
-        let textFont = options.textFont ?? .systemFont(ofSize: 20.0, weight: .medium)
-        let textColor = options.textColor ?? .black
-        let backgroundImage = UIImage(color: options.keyBackgroundColor ?? .white)
-        let highlightedImage = UIImage(color: options.keyHighlightedColor ?? UIColor(red: 169.0/255.0, green: 169.0/255.0, blue: 169.0/255.0, alpha: 1.0))
         var keys: [MNNumberKeyboard.Key] = [.one, .two, .three, .four, .five, .six, .seven, .eight, .nine, .zero]
-        if options.isScramble {
+        if configuration.isScramble {
             for index in 1..<keys.count {
                 let random = Int(arc4random_uniform(100000)) % index
                 if random != index {
@@ -106,58 +89,76 @@ public class MNNumberKeyboard: UIView {
                 }
             }
         }
-        let last = keys.removeLast()
-        keys.appendKey(options.leftKey)
-        keys.append(last)
-        keys.appendKey(options.rightKey)
+        keys.insertKey(configuration.leftKeyName, at: keys.count - 2)
+        keys.appendKey(configuration.rightKeyName)
         
-        for idx in 0..<keys.count {
-            let x = (width + spacing)*CGFloat(idx%columns)
-            let y = spacing + (height + spacing)*CGFloat(idx/columns)
-            let rect = CGRect(x: x, y: y, width: width, height: height)
-            
-            let key = keys[idx]
-            if key == .none { return }
-            
-            let button: UIButton = UIButton(type: .custom)
-            if #available(iOS 15.0, *) {
-                var attributedTitle = AttributedString(key.rawTitle)
-                attributedTitle.font = key == .decimal ? .systemFont(ofSize: 37.0, weight: .bold) : textFont
-                attributedTitle.foregroundColor = textColor
-                var configuration = UIButton.Configuration.plain()
-                configuration.titleAlignment = .center
-                configuration.attributedTitle = attributedTitle
-                configuration.background.backgroundColor = .clear
-                button.configuration = configuration
-                button.configurationUpdateHandler = { sender in
-                    switch sender.state {
-                    case .normal:
-                        sender.configuration?.background.image = backgroundImage
-                    case .highlighted:
-                        sender.configuration?.background.image = highlightedImage
-                    default: break
-                    }
-                }
-            } else {
-                let attributedTitle = NSMutableAttributedString(string: key.rawTitle)
-                attributedTitle.addAttribute(.foregroundColor, value: textColor, range: NSRange(location: 0, length: attributedTitle.length))
-                attributedTitle.addAttribute(.font, value: key == .decimal ? .systemFont(ofSize: 37.0, weight: .bold) : textFont, range: NSRange(location: 0, length: attributedTitle.length))
-                button.contentVerticalAlignment = .center
-                button.contentHorizontalAlignment = .center
-                button.setAttributedTitle(attributedTitle, for: .normal)
-                button.setBackgroundImage(backgroundImage, for: .normal)
-                button.setBackgroundImage(highlightedImage, for: .highlighted)
-            }
-            button.frame = rect
-            button.tag = key.rawValue
-            button.addTarget(self, action: #selector(keyButtonTouchUpInside(_:)), for: .touchUpInside)
-            addSubview(button)
+        let elements: [[MNNumberKeyboard.Key]] = stride(from: 0, to: keys.count, by: 3).map {
+            Array(keys[$0..<Swift.min($0 + 3, keys.count)])
         }
-    }
-    
-    /// 以默认配置初始化键盘
-    public convenience init() {
-        self.init(options: Options())
+        
+        
+        stackView.axis = .vertical
+        stackView.alignment = .fill
+        stackView.distribution = .fillEqually
+        stackView.spacing = configuration.spacing
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(stackView)
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: topAnchor, constant: configuration.spacing),
+            stackView.leftAnchor.constraint(equalTo: leftAnchor),
+            stackView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            stackView.rightAnchor.constraint(equalTo: rightAnchor, constant: -configuration.spacing)
+        ])
+        
+        let textFont = configuration.textFont ?? .systemFont(ofSize: 20.0, weight: .medium)
+        let textColor = configuration.textColor ?? .black
+        let backgroundImage = UIImage(color: configuration.keyBackgroundColor ?? .white)
+        let highlightedImage = UIImage(color: configuration.keyHighlightedColor ?? UIColor(red: 169.0/255.0, green: 169.0/255.0, blue: 169.0/255.0, alpha: 1.0))
+        
+        for element in elements {
+            
+            let arrangedStackView = UIStackView()
+            arrangedStackView.axis = .horizontal
+            arrangedStackView.alignment = .fill
+            arrangedStackView.distribution = .fillEqually
+            arrangedStackView.spacing = configuration.spacing
+            stackView.addArrangedSubview(arrangedStackView)
+            
+            for key in element {
+                
+                let button: UIButton = UIButton(type: .custom)
+                if #available(iOS 15.0, *) {
+                    var attributedTitle = AttributedString(key.text)
+                    attributedTitle.font = key == .decimal ? textFont.withSize(30.0) : textFont
+                    attributedTitle.foregroundColor = textColor
+                    var configuration = UIButton.Configuration.plain()
+                    configuration.titleAlignment = .center
+                    configuration.attributedTitle = attributedTitle
+                    configuration.background.backgroundColor = .clear
+                    button.configuration = configuration
+                    button.configurationUpdateHandler = { sender in
+                        switch sender.state {
+                        case .normal:
+                            sender.configuration?.background.image = backgroundImage
+                        case .highlighted:
+                            sender.configuration?.background.image = highlightedImage
+                        default: break
+                        }
+                    }
+                } else {
+                    let attributedTitle = NSAttributedString(string: key.text, attributes: [.foregroundColor : textColor, .font : key == .decimal ? textFont.withSize(30.0) : textFont])
+                    button.contentVerticalAlignment = .center
+                    button.contentHorizontalAlignment = .center
+                    button.setAttributedTitle(attributedTitle, for: .normal)
+                    button.setBackgroundImage(backgroundImage, for: .normal)
+                    button.setBackgroundImage(highlightedImage, for: .highlighted)
+                }
+                button.alpha = key == .none ? 0.0 : 1.0
+                button.tag = key.rawValue
+                button.addTarget(self, action: #selector(keyButtonTouchUpInside(_:)), for: .touchUpInside)
+                arrangedStackView.addArrangedSubview(button)
+            }
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -169,44 +170,39 @@ public class MNNumberKeyboard: UIView {
     @objc private func keyButtonTouchUpInside(_ sender: UIButton) {
         UIDevice.current.playInputClick()
         guard let key = MNNumberKeyboard.Key(rawValue: sender.tag) else { return }
-        if (delegate?.numberKeyboard?(self, shouldInput: key) ?? true) == true {
-            var inputed: Bool = false
-            // 按键分析
-            switch key {
-            case .delete:
-                // 删除
-                if text.isEmpty == false {
-                    inputed = true
-                    text.removeLast()
-                }
-            case .clear:
-                // 清空
-                if text.isEmpty == false {
-                    inputed = true
-                    text.removeAll()
-                }
-            case .decimal:
-                // 小数点
-                let string = key.rawString
-                if text.isEmpty == false, text.contains(string) == false {
-                    inputed = true
-                    let number = NSDecimalNumber(string: text)
-                    text.removeAll()
-                    text.append(number.stringValue)
-                    text.append(string)
-                }
-            case .done, .none: break
-            default:
+        if let delegate = delegate, let shouldInput = delegate.numberKeyboard?(self, shouldInput: key), shouldInput == false { return }
+        var inputed = false
+        // 按键分析
+        switch key {
+        case .delete:
+            // 删除
+            guard text.isEmpty == false else { break }
+            text.removeLast()
+            inputed = true
+        case .clear:
+            // 清空
+            guard text.isEmpty == false else { break }
+            text.removeAll()
+            inputed = true
+        case .decimal:
+            // 小数点
+            let string = key.text
+            if text.isEmpty == false, text.contains(string) == false {
+                let number = NSDecimalNumber(string: text)
+                text.removeAll()
+                text.append(number.stringValue)
+                text.append(string)
                 inputed = true
-                text.append(key.rawString)
             }
-            // 响应告知
-            if inputed {
-                delegate?.numberKeyboard?(self, didInput: key)
-            }
+        case .done, .none: break
+        default:
+            inputed = true
+            text.append(key.text)
         }
-        // 点击告知
-        delegate?.numberKeyboard?(self, didClick: key)
+        // 输入后告知
+        if inputed, let delegate = delegate {
+            delegate.numberKeyboard(self, didInput: key)
+        }
     }
 }
 
@@ -217,12 +213,13 @@ extension MNNumberKeyboard {
     ///   - font: 字体
     ///   - key: 按键类型
     public func setFont(_ font: UIFont, for key: MNNumberKeyboard.Key) {
-        for subview in subviews {
-            guard let k: MNNumberKeyboard.Key = MNNumberKeyboard.Key(rawValue: subview.tag) else { continue }
+        let stackViews = stackView.arrangedSubviews.compactMap { $0 as? UIStackView }
+        let buttons = stackViews.flatMap { $0.arrangedSubviews.compactMap { $0 as? UIButton }}
+        for button in buttons {
+            guard let k: MNNumberKeyboard.Key = MNNumberKeyboard.Key(rawValue: button.tag) else { continue }
             guard k == key else { continue }
-            guard let button = subview as? UIButton else { break }
             if #available(iOS 15.0, *) {
-                guard var attributedTitle = button.configuration?.attributedTitle  else { break }
+                guard let configuration = button.configuration, var attributedTitle = configuration.attributedTitle else { break }
                 attributedTitle.font = font
                 button.configuration?.attributedTitle = attributedTitle
                 button.updateConfiguration()
@@ -240,12 +237,13 @@ extension MNNumberKeyboard {
     ///   - title: 标题
     ///   - key: 按键类型
     public func setTitle(_ title: String, for key: MNNumberKeyboard.Key) {
-        for subview in subviews {
-            guard let k: MNNumberKeyboard.Key = MNNumberKeyboard.Key(rawValue: subview.tag) else { continue }
+        let stackViews = stackView.arrangedSubviews.compactMap { $0 as? UIStackView }
+        let buttons = stackViews.flatMap { $0.arrangedSubviews.compactMap { $0 as? UIButton }}
+        for button in buttons {
+            guard let k: MNNumberKeyboard.Key = MNNumberKeyboard.Key(rawValue: button.tag) else { continue }
             guard k == key else { continue }
-            guard let button = subview as? UIButton else { break }
             if #available(iOS 15.0, *) {
-                guard let attributedString = button.configuration?.attributedTitle  else { break }
+                guard let configuration = button.configuration, let attributedString = configuration.attributedTitle  else { break }
                 var attributedTitle = AttributedString(title)
                 attributedTitle.font = attributedString.font
                 attributedTitle.foregroundColor = attributedString.foregroundColor
@@ -268,12 +266,7 @@ extension MNNumberKeyboard: UIInputViewAudioFeedback {
 
 extension MNNumberKeyboard.Key {
     
-    fileprivate var rawTitle: String {
-        if self == .decimal { return "·" }
-        return rawString
-    }
-    
-    fileprivate var rawString: String {
+    fileprivate var text: String {
         switch self {
         case .zero: return "0"
         case .one: return "1"
@@ -308,6 +301,21 @@ fileprivate extension Array where Element == MNNumberKeyboard.Key {
             append(.clear)
         case .done:
             append(.done)
+        }
+    }
+    
+    mutating func insertKey(_ name: MNNumberKeyboard.Key.Name, at index: Int) {
+        switch name {
+        case .none:
+            insert(.none, at: index)
+        case .decimal:
+            insert(.decimal, at: index)
+        case .delete:
+            insert(.delete, at: index)
+        case .clear:
+            insert(.clear, at: index)
+        case .done:
+            insert(.done, at: index)
         }
     }
 }
