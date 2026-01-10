@@ -66,7 +66,7 @@ extension PasscordViewController: MNNumberKeyboardDelegate {
     
     func numberKeyboard(_ keyboard: MNNumberKeyboard, shouldInput key: MNNumberKeyboard.Key) -> Bool {
         
-        if key == .delete { return true }
+        if key == .delete || key == .clear { return true }
         return secureView.text.count < secureView.capacity
     }
     
@@ -74,6 +74,8 @@ extension PasscordViewController: MNNumberKeyboardDelegate {
     func numberKeyboard(_ keyboard: MNSwiftKit.MNNumberKeyboard, didInput key: MNSwiftKit.MNNumberKeyboard.Key) {
         
         secureView.text = keyboard.text
+        
+        print(keyboard.text)
     }
 }
 

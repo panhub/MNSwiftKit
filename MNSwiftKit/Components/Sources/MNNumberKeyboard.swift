@@ -225,20 +225,17 @@ extension MNNumberKeyboard {
     public func setFont(_ font: UIFont, for key: MNNumberKeyboard.Key) {
         let stackViews = stackView.arrangedSubviews.compactMap { $0 as? UIStackView }
         let buttons = stackViews.flatMap { $0.arrangedSubviews.compactMap { $0 as? UIButton }}
-        for button in buttons {
-            guard let k: MNNumberKeyboard.Key = MNNumberKeyboard.Key(rawValue: button.tag) else { continue }
-            guard k == key else { continue }
-            if #available(iOS 15.0, *) {
-                guard let configuration = button.configuration, var attributedTitle = configuration.attributedTitle else { break }
-                attributedTitle.font = font
-                button.configuration?.attributedTitle = attributedTitle
-                button.updateConfiguration()
-            } else {
-                guard let attributedString = button.attributedTitle(for: .normal)  else { break }
-                let attributedTitle = NSMutableAttributedString(attributedString: attributedString)
-                attributedTitle.addAttribute(.font, value: font, range: NSRange(location: 0, length: attributedTitle.length))
-                button.setAttributedTitle(attributedTitle, for: .normal)
-            }
+        guard let button = buttons.first(where: { $0.tag == key.rawValue }) else { return }
+        if #available(iOS 15.0, *) {
+            guard let configuration = button.configuration, var attributedTitle = configuration.attributedTitle else { return }
+            attributedTitle.font = font
+            button.configuration?.attributedTitle = attributedTitle
+            button.updateConfiguration()
+        } else {
+            guard let attributedString = button.attributedTitle(for: .normal)  else { return }
+            let attributedTitle = NSMutableAttributedString(attributedString: attributedString)
+            attributedTitle.addAttribute(.font, value: font, range: NSRange(location: 0, length: attributedTitle.length))
+            button.setAttributedTitle(attributedTitle, for: .normal)
         }
     }
     
@@ -249,22 +246,19 @@ extension MNNumberKeyboard {
     public func setTitle(_ title: String, for key: MNNumberKeyboard.Key) {
         let stackViews = stackView.arrangedSubviews.compactMap { $0 as? UIStackView }
         let buttons = stackViews.flatMap { $0.arrangedSubviews.compactMap { $0 as? UIButton }}
-        for button in buttons {
-            guard let k: MNNumberKeyboard.Key = MNNumberKeyboard.Key(rawValue: button.tag) else { continue }
-            guard k == key else { continue }
-            if #available(iOS 15.0, *) {
-                guard let configuration = button.configuration, let attributedString = configuration.attributedTitle  else { break }
-                var attributedTitle = AttributedString(title)
-                attributedTitle.font = attributedString.font
-                attributedTitle.foregroundColor = attributedString.foregroundColor
-                button.configuration?.attributedTitle = attributedTitle
-                button.updateConfiguration()
-            } else {
-                guard let attributedString = button.attributedTitle(for: .normal)  else { break }
-                let attributes = attributedString.attributes(at: 0, effectiveRange: nil)
-                let attributedTitle = NSAttributedString(string: title, attributes: attributes)
-                button.setAttributedTitle(attributedTitle, for: .normal)
-            }
+        guard let button = buttons.first(where: { $0.tag == key.rawValue }) else { return }
+        if #available(iOS 15.0, *) {
+            guard let configuration = button.configuration, let attributedString = configuration.attributedTitle  else { return }
+            var attributedTitle = AttributedString(title)
+            attributedTitle.font = attributedString.font
+            attributedTitle.foregroundColor = attributedString.foregroundColor
+            button.configuration?.attributedTitle = attributedTitle
+            button.updateConfiguration()
+        } else {
+            guard let attributedString = button.attributedTitle(for: .normal)  else { return }
+            let attributes = attributedString.attributes(at: 0, effectiveRange: nil)
+            let attributedTitle = NSAttributedString(string: title, attributes: attributes)
+            button.setAttributedTitle(attributedTitle, for: .normal)
         }
     }
 }
