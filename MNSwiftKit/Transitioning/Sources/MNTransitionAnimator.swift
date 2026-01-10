@@ -10,23 +10,35 @@ import Foundation
 
 open class MNTransitionAnimator: NSObject {
     /// 转场样式
-    public enum Animation: Int {
-        case normal, drawer, modal, flip
+    public enum Style: String {
+        /// 默认样式
+        case normal = "MNNormalAnimator"
+        /// 开关门
+        case drawer = "MNDrawerAnimator"
+        /// 模态
+        case modal = "MNModalAnimator"
+        /// 翻转
+        case flip = "MNFlipAnimator"
     }
-    /// 标签栏转场类型
-    public enum BottomBarAnimation {
-        case none, adsorb, move
+    /// 动画类型
+    public enum AnimationType {
+        /// 无动画
+        case none
+        /// 吸附在视图上
+        case adsorb
+        /// 上下移动
+        case move
     }
     /// 转场时间
     open var duration: TimeInterval { 0.3 }
     /// 转场方向
     open var operation: UINavigationController.Operation = .push
     /// 标签栏转场类型
-    open var bottomBarAnimation: BottomBarAnimation = .adsorb
+    open var bottomBarAnimation: AnimationType = .adsorb
     /// 是否交互转场
     private var isInteractive: Bool = false
     /// 标签栏
-    open weak var bottomBar: UIView?
+    public weak var bottomBar: UIView?
     /// 起始控制器视图
     public private(set) var fromView: UIView!
     /// 起始控制器
@@ -39,19 +51,17 @@ open class MNTransitionAnimator: NSObject {
     public private(set) var containerView: UIView!
     /// 转场上下文
     public private(set) var context: UIViewControllerContextTransitioning!
-    /// 转场类
-    private static let Animations: [String] = ["MNNormalAnimator", "MNDrawerAnimator", "MNModalAnimator", "MNFlipAnimator"]
     
     required public override init() {
         super.init()
     }
     
     /// 获取转场实例
-    public class func animator(animation: Animation = .normal) -> MNTransitionAnimator {
+    public class func animator(with style: MNTransitionAnimator.Style) -> MNTransitionAnimator {
         // 获取命名空间
         let nameSpace = NSStringFromClass(MNTransitionAnimator.self).components(separatedBy: ".").first!
         // 转换为类
-        let cls = NSClassFromString("\(nameSpace).\(MNTransitionAnimator.Animations[animation.rawValue])")! as! MNTransitionAnimator.Type
+        let cls = NSClassFromString("\(nameSpace).\(style.rawValue)")! as! MNTransitionAnimator.Type
         return cls.init()
     }
     
@@ -254,4 +264,20 @@ extension MNTransitionAnimator {
         default: break
         }
     }
+}
+
+// MARK: - 快速实例化
+extension MNTransitionAnimator {
+    
+    /// 翻转动画转场
+    public class var flip: MNTransitionAnimator { .animator(with: .flip) }
+    
+    /// 模态动画转场
+    public class var modal: MNTransitionAnimator { .animator(with: .modal) }
+    
+    /// 开关门动画转场
+    public class var drawer: MNTransitionAnimator { .animator(with: .drawer) }
+    
+    /// 进出栈动画转场
+    public class var normal: MNTransitionAnimator { .animator(with: .normal) }
 }

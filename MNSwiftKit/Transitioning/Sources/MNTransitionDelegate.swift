@@ -11,11 +11,10 @@ import ObjectiveC.runtime
 extension UINavigationController {
     
     fileprivate struct MNTransitionAssociated {
-        
+        // 转场代理
         nonisolated(unsafe) static var delegate: Void?
     }
 }
-
 
 extension MNNameSpaceWrapper where Base: UINavigationController {
     
@@ -59,9 +58,9 @@ public class MNTransitionDelegate: NSObject {
     /// 标签栏
     public weak var bottomBar: UIView?
     /// 转场动画
-    public var transitionAnimation: MNTransitionAnimator.Animation = .normal
+    public var transitionStyle: MNTransitionAnimator.Style = .normal
     /// 标签栏转场动画类型
-    public var bottomBarAnimation: MNTransitionAnimator.BottomBarAnimation = .adsorb
+    public var bottomBarAnimation: MNTransitionAnimator.AnimationType = .adsorb
     /// 转发代理事件
     fileprivate weak var delegate: UINavigationControllerDelegate?
     /// 导航控制器
@@ -112,7 +111,7 @@ extension MNTransitionDelegate: UINavigationControllerDelegate {
         var animator: MNTransitionAnimator! = operation == .push ? toVC.preferredEnterTransitionAnimator : fromVC.preferredLeaveTransitionAnimator
         if animator == nil {
             // 使用默认
-            animator = MNTransitionAnimator.animator(animation: transitionAnimation)
+            animator = .animator(with: transitionStyle)
             animator.bottomBarAnimation = bottomBarAnimation
         }
         if animator.bottomBar == nil {
