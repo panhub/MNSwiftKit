@@ -82,7 +82,38 @@ extension MNNameSpaceWrapper where Base: UIViewController {
         childController.didMove(toParent: base)
     }
     
+    /// 是否是加载在标签控制器或导航控制器中
+    public var isRootViewController: Bool {
+        if base is UITabBarController { return false }
+        if base is UINavigationController { return false }
+        guard let parent = base.parent else { return false }
+        if parent is UITabBarController {
+            let tabBarController = parent as! UITabBarController
+            guard let viewControllers = tabBarController.viewControllers else { return false }
+            return viewControllers.contains(base)
+        }
+        if parent is UINavigationController {
+            let navigationController = parent as! UINavigationController
+            return navigationController.viewControllers.contains(base)
+        }
+        return false
+    }
     
+    /// 是否以子控制器方式加载
+    public var isChildViewController: Bool {
+        guard let parent = base.parent else { return false }
+        return parent.children.contains(base)
+    }
     
-    
+    /// 获取主控制器
+    /// - 若自身加载在标签控制器或导航控制器中则返回自身
+    /// - 反之递归向上寻找
+    public var rootViewController: UIViewController? {
+        var viewController: UIViewController? = base
+        while let vc = viewController {
+            if vc.mn.isRootViewController { return vc }
+            viewController = vc.parent
+        }
+        return nil
+    }
 }

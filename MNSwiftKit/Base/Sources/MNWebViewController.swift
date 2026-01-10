@@ -227,7 +227,7 @@ extension MNWebViewController {
     
     /// 是否渲染返回按钮
     /// - Returns: 是否渲染返回按钮
-    open override func navigationBarShouldDrawBackBarItem() -> Bool { false }
+    open override func navigationBarShouldRenderBackBarItem() -> Bool { false }
     
     /// 创建导航左按钮
     /// - Returns: 导航左按钮

@@ -196,7 +196,7 @@ public class MNWebPayController: MNWebViewController {
 
 // MARK: - 导航控制
 extension MNWebPayController {
-    public override func navigationBarShouldDrawBackBarItem() -> Bool { true }
+    public override func navigationBarShouldRenderBackBarItem() -> Bool { true }
     public override func navigationBarShouldCreateLeftBarItem() -> UIView? { nil }
     public override func navigationBarShouldCreateRightBarItem() -> UIView? { nil }
 }

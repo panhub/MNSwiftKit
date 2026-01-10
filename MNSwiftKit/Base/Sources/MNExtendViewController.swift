@@ -11,79 +11,90 @@ import UIKit
 open class MNExtendViewController: MNBaseViewController {
     
     /// 导航栏
-    fileprivate var referenceNavigationBar: MNNavigationBar!
-    
-    /// 获取导航栏
-    public override var navigationBar: MNNavigationBar! { referenceNavigationBar }
+    fileprivate var navigationBar: MNNavigationBar!
     
     /// 标题
     open override var title: String? {
         get { super.title }
         set {
             super.title = newValue
-            referenceNavigationBar?.title = newValue
+            guard let navigationBar = navigationBar else { return }
+            navigationBar.title = newValue
         }
     }
     
     open override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        // 创建导航条
-        guard isChildViewController == false else { return }
-        let edges = preferredContentEdges
-        if edges.contains(.top) {
+        
+        // 调整内容视图尺寸以适配导航栏
+        guard preferredNavigationHeight > 0.0 else { return }
+        if preferredContentRectEdge.contains(.top) {
             contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: preferredNavigationHeight + MN_STATUS_BAR_HEIGHT, left: 0.0, bottom: 0.0, right: 0.0))
         }
-        referenceNavigationBar = MNNavigationBar(frame: CGRect(x: 0.0, y: 0.0, width: view.frame.width, height: preferredNavigationHeight + MN_STATUS_BAR_HEIGHT))
-        referenceNavigationBar.title = title
-        referenceNavigationBar.delegate = self
-        view.addSubview(referenceNavigationBar)
+        
+        // 创建导航栏
+        navigationBar = MNNavigationBar(frame: .init(origin: .zero, size: .init(width: view.frame.width, height: preferredNavigationHeight + (automaticallyAdjustsForStatusBar ? MN_STATUS_BAR_HEIGHT : 0.0))))
+        navigationBar.title = title
+        navigationBar.delegate = self
+        navigationBar.adjustsForStatusBar = automaticallyAdjustsForStatusBar
+        view.addSubview(navigationBar)
     }
     
     /// 定制内容约束
     /// - Returns: 内容约束
-    open override var preferredContentEdges: UIViewController.Edge {
-        let edges = super.preferredContentEdges
-        guard isChildViewController == false else { return edges }
-        return edges.union(.top)
+    open override var preferredContentRectEdge: UIRectEdge {
+        
+        preferredNavigationHeight > 0.0 ? super.preferredContentRectEdge.union(.top) : super.preferredContentRectEdge
     }
 }
 
 // MARK: - MNNavigationBarDelegate
 extension MNExtendViewController: MNNavigationBarDelegate {
+    
     open func navigationBarShouldCreateLeftBarItem() -> UIView? { nil }
+    
     open func navigationBarShouldCreateRightBarItem() -> UIView? { nil }
-    open func navigationBarShouldDrawBackBarItem() -> Bool { !isRootViewController }
+    
+    open func navigationBarShouldRenderBackBarItem() -> Bool { false }
+    
     open func navigationBarDidLayoutSubitems(_ navigationBar: MNNavigationBar) {}
+    
     open func navigationBarRightBarItemTouchUpInside(_ rightBarItem: UIView!) {}
+    
     open func navigationBarLeftBarItemTouchUpInside(_ leftBarItem: UIView!) {
         mn.pop()
     }
 }
-
-// MARK: - NavigationBarWrapper
-public protocol NavigationBarWrapper {
+ 
+// MARK: - MNNavigationBarSupported
+public protocol MNNavigationBarSupported {
     
-    /// 导航条
-    var navigationBar: MNNavigationBar! { get }
-    
-    /// 定制导航条高度
+    /// 定制导航栏高度
     var preferredNavigationHeight: CGFloat { get }
+    
+    /// 导航栏高度是否应适配状态栏高度
+    var automaticallyAdjustsForStatusBar: Bool { get }
 }
 
-extension UIViewController: NavigationBarWrapper {
+extension UIViewController: MNNavigationBarSupported {
     
-    @objc public var navigationBar: MNNavigationBar! {
-        var viewController: UIViewController? = self
+    @objc public var preferredNavigationHeight: CGFloat { MN_NAV_BAR_HEIGHT }
+    
+    @objc public var automaticallyAdjustsForStatusBar: Bool { true }
+}
+
+extension MNNameSpaceWrapper where Base: UIViewController {
+    
+    /// 获取导航栏
+    public var navigationBar: MNNavigationBar! {
+        var viewController: UIViewController? = base
         while let vc = viewController {
-            if vc.isChildViewController {
-                viewController = vc.parent
-            } else if vc is MNExtendViewController {
-                return (vc as! MNExtendViewController).referenceNavigationBar
-            } else { break }
+            if let extendViewController = vc as? MNExtendViewController, extendViewController.preferredNavigationHeight > 0.0 {
+                return extendViewController.navigationBar
+            }
+            viewController = vc.parent
         }
         return nil
     }
-    
-    @objc public var preferredNavigationHeight: CGFloat { MN_NAV_BAR_HEIGHT }
 }

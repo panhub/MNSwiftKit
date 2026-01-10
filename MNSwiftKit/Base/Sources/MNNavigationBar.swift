@@ -22,7 +22,7 @@ import CoreFoundation
     
     /// 是否创建戴航返回按钮
     /// - Returns: 是否创建返回按钮
-    @objc optional func navigationBarShouldDrawBackBarItem() -> Bool
+    @objc optional func navigationBarShouldRenderBackBarItem() -> Bool
     
     /// 左按钮点击事件
     /// - Parameter leftBarItem: 导航左按钮
@@ -40,120 +40,112 @@ import CoreFoundation
 public class MNNavigationBar: UIView {
     
     /// 按钮大小
-    static let itemSize: CGFloat = 20.0
+    public static let itemSize: CGFloat = 20.0
     
     /// 前边距
-    static let leading: CGFloat = 18.0
+    public static let leading: CGFloat = 18.0
     
     /// 后边距
-    static let trailing: CGFloat = 18.0
+    public static let trailing: CGFloat = 18.0
     
     /// 事件代理
-    weak var delegate: MNNavigationBarDelegate?
+    public weak var delegate: MNNavigationBarDelegate?
+    
+    /// 为状态栏自动适配高度
+    public var adjustsForStatusBar: Bool = true
     
     /// 毛玻璃视图
-    private lazy var visualView: UIVisualEffectView = {
-        let visualView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
-        visualView.frame = bounds
-        visualView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        return visualView
-    }()
+    private let visualView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
     
     /// 导航左按钮
-    public private(set) lazy var leftBarItem: UIView = {
-        var leftBarItem: UIView
+    public private(set) var leftBarItem: UIView!
+    
+    /// 导航右按钮
+    public private(set) var rightBarItem: UIView!
+    
+    /// 导航标题
+    public let titleLabel = UILabel()
+    
+    /// 底部分割线
+    private let separatorView = UIView()
+    
+    
+    public override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        
+        guard subviews.isEmpty else { return }
+        
+        // 毛玻璃
+        visualView.frame = bounds
+        visualView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(visualView)
+        NSLayoutConstraint.activate([
+            visualView.topAnchor.constraint(equalTo: topAnchor),
+            visualView.leftAnchor.constraint(equalTo: leftAnchor),
+            visualView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            visualView.rightAnchor.constraint(equalTo: rightAnchor)
+        ])
+        
+        // 顶部调整的高度
+        let adjustsHeight = adjustsForStatusBar ? MN_STATUS_BAR_HEIGHT : 0.0
+        
+        // 左按钮
         if let delegate = delegate, let barItem = delegate.navigationBarShouldCreateLeftBarItem?() {
             leftBarItem = barItem
         } else {
-            leftBarItem = UIControl()
-            leftBarItem.mn.size = CGSize(width: MNNavigationBar.itemSize, height: MNNavigationBar.itemSize)
-            if let delegate = delegate, (delegate.navigationBarShouldDrawBackBarItem?() ?? false) == true {
+            leftBarItem = UIControl(frame: .init(origin: .zero, size: .init(width: MNNavigationBar.itemSize, height: MNNavigationBar.itemSize)))
+            if let delegate = delegate, let renderBackBarItem = delegate.navigationBarShouldRenderBackBarItem?(), renderBackBarItem {
                 // 返回按钮
                 leftBarItem.layer.contents = BaseResource.image(named: "back")?.cgImage
                 (leftBarItem as! UIControl).addTarget(self, action: #selector(leftBarItemTouchUpInside(_:)), for: UIControl.Event.touchUpInside)
             }
         }
-        leftBarItem.mn.minX = MNNavigationBar.leading
-        var y = (frame.height - MN_STATUS_BAR_HEIGHT - leftBarItem.frame.height)/2.0
-        y = max(0.0, y)
-        y += MN_STATUS_BAR_HEIGHT
-        leftBarItem.mn.minY = y
-        leftBarItem.autoresizingMask = .flexibleTopMargin
-        return leftBarItem
-    }()
-    
-    /// 导航右按钮
-    public private(set) lazy var rightBarItem: UIView = {
-        var rightBarItem: UIView
+        leftBarItem.frame.origin.x = MNNavigationBar.leading
+        leftBarItem.frame.origin.y = max(0.0, (frame.height - adjustsHeight - leftBarItem.frame.height)/2.0 + adjustsHeight)
+        addSubview(leftBarItem)
+        
+        // 右按钮
         if let delegate = delegate, let barItem = delegate.navigationBarShouldCreateRightBarItem?() {
             rightBarItem = barItem
         } else {
-            rightBarItem = UIControl()
-            rightBarItem.mn.size = CGSize(width: MNNavigationBar.itemSize, height: MNNavigationBar.itemSize)
+            rightBarItem = UIControl(frame: .init(origin: .zero, size: .init(width: MNNavigationBar.itemSize, height: MNNavigationBar.itemSize)))
             (rightBarItem as! UIControl).addTarget(self, action: #selector(rightBarItemTouchUpInside(_:)), for: UIControl.Event.touchUpInside)
         }
-        var y = (frame.height - MN_STATUS_BAR_HEIGHT - rightBarItem.frame.height)/2.0
-        y = max(0.0, y)
-        y += MN_STATUS_BAR_HEIGHT
-        rightBarItem.mn.minY = y
-        rightBarItem.mn.maxX = frame.width - MNNavigationBar.trailing
-        rightBarItem.autoresizingMask = .flexibleTopMargin
-        return rightBarItem
-    }()
-    
-    /// 导航底部分割线
-    private lazy var separatorView: UIView = {
-        let separatorView = UIView(frame: CGRect(x: 0.0, y: bounds.height - 0.7, width: bounds.width, height: 0.7))
-        separatorView.autoresizingMask = .flexibleTopMargin
+        rightBarItem.frame.origin.x = frame.width - MNNavigationBar.trailing - rightBarItem.frame.width
+        rightBarItem.frame.origin.y = leftBarItem.frame.midY - rightBarItem.frame.height/2.0
+        addSubview(rightBarItem)
+        
+        // 标题
+        titleLabel.textColor = .black
+        titleLabel.numberOfLines = 0
+        titleLabel.textAlignment = .center
+        titleLabel.font = .systemFont(ofSize: 18.0, weight: .medium)
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(titleLabel)
+        NSLayoutConstraint.activate([
+            titleLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            titleLabel.centerYAnchor.constraint(equalTo: leftBarItem.centerYAnchor)
+        ])
+        
+        // 分割线
         if #available(iOS 13.0, *) {
             separatorView.backgroundColor = .opaqueSeparator
         } else {
             separatorView.backgroundColor = .gray.withAlphaComponent(0.15)
         }
-        return separatorView
-    }()
-    
-    /// 导航标题
-    public private(set) lazy var titleLabel: UILabel = {
-        let titleLabel = UILabel()
-        titleLabel.center = CGPoint(x: frame.width/2.0, y: (frame.height - MN_STATUS_BAR_HEIGHT)/2.0 + MN_STATUS_BAR_HEIGHT)
-        titleLabel.numberOfLines = 0
-        titleLabel.textAlignment = .center
-        titleLabel.textColor = UIColor.black
-        titleLabel.isUserInteractionEnabled = true
-        titleLabel.lineBreakMode = .byTruncatingMiddle
-        titleLabel.font = .systemFont(ofSize: 18.0, weight: .medium)
-        return titleLabel
-    }()
-    
-    public override func didMoveToSuperview() {
-        super.didMoveToSuperview()
-        guard subviews.isEmpty else { return }
-        // 毛玻璃
-        addSubview(visualView)
-        // 导航左按钮
-        addSubview(leftBarItem)
-        // 导航右按钮
-        addSubview(rightBarItem)
-        // 标题视图
-        addSubview(titleLabel)
-        layoutTitleLabel()
-        // 阴影线
+        separatorView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(separatorView)
+        NSLayoutConstraint.activate([
+            separatorView.heightAnchor.constraint(equalToConstant: 0.7),
+            separatorView.leftAnchor.constraint(equalTo: leftAnchor),
+            separatorView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            separatorView.rightAnchor.constraint(equalTo: rightAnchor)
+        ])
+        
         // 回调代理
         if let delegate = delegate {
             delegate.navigationBarDidLayoutSubitems?(self)
         }
-    }
-    
-    /// 更新标题
-    private func layoutTitleLabel() {
-        let center: CGPoint = titleLabel.center
-        let spacing: CGFloat = ceil(max(leftBarItem.frame.maxX, frame.width - rightBarItem.frame.minX)) + MNNavigationBar.trailing
-        titleLabel.sizeToFit()
-        titleLabel.frame.size.width = min(ceil(titleLabel.frame.width), frame.width - spacing*2.0)
-        titleLabel.frame.size.height = min(ceil(titleLabel.frame.height), frame.height - MN_STATUS_BAR_HEIGHT)
-        titleLabel.center = center
     }
 }
 
@@ -171,9 +163,6 @@ extension MNNavigationBar {
         get { titleLabel.text }
         set {
             titleLabel.text = newValue
-            if let _ = superview {
-                layoutTitleLabel()
-            }
         }
     }
     
@@ -182,8 +171,6 @@ extension MNNavigationBar {
         get { titleLabel.attributedText }
         set {
             titleLabel.attributedText = newValue
-            guard let _ = superview else { return }
-            layoutTitleLabel()
         }
     }
     
@@ -192,8 +179,6 @@ extension MNNavigationBar {
         get { titleLabel.font }
         set {
             titleLabel.font = newValue
-            guard let _ = superview else { return }
-            layoutTitleLabel()
         }
     }
     
@@ -232,14 +217,36 @@ extension MNNavigationBar {
     }
     
     /// 导航栏阴影线位置
-    public var shadowInset: UIEdgeInsets {
-        get { UIEdgeInsets(top: separatorView.frame.minY, left: separatorView.frame.minX, bottom: 0.0, right: frame.width - separatorView.frame.maxX) }
+    public var separatorInset: UIEdgeInsets {
+        get {
+            var insets: UIEdgeInsets = .zero
+            for constraint in constraints {
+                guard let firstItem = constraint.firstItem as? UIView, firstItem == separatorView else { continue }
+                switch constraint.firstAttribute {
+                case .left:
+                    insets.left = constraint.constant
+                case .bottom:
+                    insets.bottom = constraint.constant
+                case .right:
+                    insets.right = constraint.constant
+                default: break
+                }
+            }
+            return insets
+        }
         set {
-            let mask = separatorView.autoresizingMask
-            separatorView.autoresizingMask = []
-            separatorView.mn.minX = newValue.left
-            separatorView.mn.width = frame.width - newValue.left - newValue.right
-            separatorView.autoresizingMask = mask
+            for constraint in constraints {
+                guard let firstItem = constraint.firstItem as? UIView, firstItem == separatorView else { continue }
+                switch constraint.firstAttribute {
+                case .left:
+                    constraint.constant = newValue.left
+                case .bottom:
+                    constraint.constant = newValue.bottom
+                case .right:
+                    constraint.constant = newValue.right
+                default: break
+                }
+            }
         }
     }
 }
@@ -247,11 +254,15 @@ extension MNNavigationBar {
 // MARK: - Event
 extension MNNavigationBar {
     
+    /// 导航左按钮点击
+    /// - Parameter leftBarItem: 左按钮
     @objc private func leftBarItemTouchUpInside(_ leftBarItem: UIView) {
         guard let delegate = delegate else { return }
         delegate.navigationBarLeftBarItemTouchUpInside?(leftBarItem)
     }
     
+    /// 导航右按钮点击
+    /// - Parameter rightBarItem: 右按钮
     @objc private func rightBarItemTouchUpInside(_ rightBarItem: UIView) {
         guard let delegate = delegate else { return }
         delegate.navigationBarRightBarItemTouchUpInside?(rightBarItem)

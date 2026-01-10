@@ -459,7 +459,7 @@ class ViewController: MNBaseViewController {
 class ViewController: MNBaseViewController {
     
     // 定制内容约束（是否预留顶部/底部空间）
-    override var preferredContentEdges: UIViewController.Edge {
+    override var preferredContentRectEdge: UIViewController.Edge {
         var edges: UIViewController.Edge = []
         // 预留顶部空间（状态栏+导航栏）
         edges.insert(.top)
@@ -614,8 +614,8 @@ class ViewController: MNExtendViewController {
     }
     
     // 是否绘制返回按钮
-    override func navigationBarShouldDrawBackBarItem() -> Bool {
-        return !isRootViewController
+    override func navigationBarShouldRenderBackBarItem() -> Bool {
+        return false
     }
 }
 ```

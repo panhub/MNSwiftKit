@@ -14,6 +14,9 @@ open class MNBaseViewController: UIViewController {
     /// 位置
     private var frame: CGRect = UIScreen.main.bounds
     
+    /// 内容视图
+    public let contentView = UIView()
+    
     /// 是否在显示中
     public private(set) var isAppear: Bool = true
     
@@ -26,20 +29,14 @@ open class MNBaseViewController: UIViewController {
     /// 标记需要刷新数据
     private var executeReloadData: Bool = false
     
+    /// 数据请求体
+    open var httpRequest: MNPagingRequestSupported?
+    
     /// 状态栏相关
     open var isStatusBarHidden: Bool = false
     open var statusBarStyle: UIStatusBarStyle = .default
     open var statusBarAnimation: UIStatusBarAnimation = .fade
     
-    /// 数据请求体
-    open var httpRequest: MNPagingRequestSupported?
-    
-    /// 内容视图
-    open private(set) lazy var contentView: UIView = {
-        let contentView = UIView(frame: view.bounds.inset(by: UIEdgeInsets(top: 0.0, left: 0.0, bottom: preferredContentEdges.contains(.bottom) ? MN_BOTTOM_BAR_HEIGHT : 0.0, right: 0.0)))
-        contentView.backgroundColor = .white
-        return contentView
-    }()
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -74,6 +71,7 @@ open class MNBaseViewController: UIViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        
         // view的边缘允许额外布局的情况，默认为UIRectEdgeAll，意味着全屏布局(带穿透效果)
         edgesForExtendedLayout = .all
         // 额外布局是否包括不透明的Bar，默认为false
@@ -85,12 +83,16 @@ open class MNBaseViewController: UIViewController {
             // 是否自动调整滚动视图的内边距,默认true 系统将会根据导航条和TabBar的情况自动增加上下内边距以防止被Bar遮挡
             automaticallyAdjustsScrollViewInsets = false
         }
+        
+        // 内容视图
+        contentView.frame = view.bounds.inset(by: UIEdgeInsets(top: 0.0, left: 0.0, bottom: preferredContentRectEdge.contains(.bottom) ? MN_BOTTOM_BAR_HEIGHT : 0.0, right: 0.0))
+        contentView.backgroundColor = .white
         view.addSubview(contentView)
     }
     
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if isChildViewController == false {
+        if mn.isRootViewController == false {
             setNeedsUpdateStatusBar(animated ? .fade : .none)
         }
     }
@@ -99,7 +101,7 @@ open class MNBaseViewController: UIViewController {
         super.viewDidAppear(animated)
         isAppear = true
         reloadDataIfNeeded()
-        if isChildViewController == false {
+        if mn.isRootViewController == false {
             setNeedsUpdateStatusBar(animated ? .fade : .none)
         }
     }
@@ -116,10 +118,8 @@ open class MNBaseViewController: UIViewController {
     
     /// 默认内容约束
     /// - Returns: 内容约束
-    open var preferredContentEdges: UIViewController.Edge {
-        let edges: UIViewController.Edge = []
-        guard isChildViewController == false, isRootViewController else { return edges }
-        return edges.union(.bottom)
+    open var preferredContentRectEdge: UIRectEdge {
+        []
     }
     
     /// 自动加载请求

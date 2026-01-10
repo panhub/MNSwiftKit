@@ -20,8 +20,7 @@ public protocol MNTabBarItemRepeatSelection {
 open class MNTabBarController: UITabBarController {
     
     /// 标签栏
-    private let referenceBottomBar = MNTabBar()
-    public override var bottomBar: MNTabBar! { referenceBottomBar }
+    public let bottomBar = MNTabBar()
     
     /// 设置子控制器
     public var controllers: [Any]? {
@@ -201,12 +200,12 @@ extension MNTabBarController {
 }
 
 // MARK: - BottomBarWrapper
-public protocol BottomBarWrapper {
+extension MNNameSpaceWrapper where Base: UITabBarController {
     
-    var bottomBar: MNTabBar! { get }
-}
-
-extension UITabBarController: BottomBarWrapper {
-    
-    @objc public var bottomBar: MNTabBar! { nil }
+    /// 底部标签栏
+    var bottomBar: MNTabBar! {
+        guard base is MNTabBarController else { return nil }
+        let tabBarController = base as! MNTabBarController
+        return tabBarController.bottomBar
+    }
 }

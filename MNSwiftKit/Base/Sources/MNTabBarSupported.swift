@@ -1,5 +1,5 @@
 //
-//  UIViewControllerSupported.swift
+//  MNTabBarSupported.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2021/7/18.
@@ -7,64 +7,6 @@
 
 import UIKit
 import Foundation
-
-// MARK: - 控制器快捷处理
-extension UIViewController {
-    /// 内容约束
-    public struct Edge: OptionSet {
-        // 预留顶部
-        public static let top = Edge(rawValue: 1 << 0)
-        // 预留底部
-        public static let bottom = Edge(rawValue: 1 << 1)
-        
-        public let rawValue: UInt
-        public init(rawValue: UInt) {
-            self.rawValue = rawValue
-        }
-    }
-}
-
-/// 定义控制器
-public protocol UIViewControllerInterface {
-    
-    /// 是否是加载在标签控制器或导航控制器中
-    var isRootViewController: Bool { get }
-    
-    /// 是否以子控制器方式加载
-    var isChildViewController: Bool { get }
-}
-
-extension UIViewControllerInterface where Self: UIViewController {
-    
-    /// 获取主控制器
-    /// - 若自身加载在标签控制器或导航控制器中则返回自身
-    /// - 反之递归向上寻找
-    public var rootViewController: UIViewController? {
-        var viewController: UIViewController? = self
-        while let vc = viewController {
-            if vc.isRootViewController { return vc }
-            viewController = vc.parent
-        }
-        return nil
-    }
-}
-
-extension UIViewController: UIViewControllerInterface {
-    
-    @objc open var isRootViewController: Bool {
-        if self is UITabBarController { return false }
-        if self is UINavigationController { return false }
-        guard let parent = parent else { return false }
-        if parent is UITabBarController { return true }
-        if parent is UINavigationController { return true }
-        return false
-    }
-    
-    @objc open var isChildViewController: Bool {
-        guard let parent = parent else { return false }
-        return parent.children.contains(self)
-    }
-}
 
 /// 定制标签栏
 public protocol MNTabBarSupported {
@@ -125,13 +67,13 @@ extension UIViewController: MNTabBarSupported {
     @objc open var bottomBarItemBadgeContentInset: UIEdgeInsets { .init(top: 4.0, left: 7.0, bottom: 3.0, right: 7.0) }
 }
 
-extension MNTabBarSupported where Self: UIViewController {
+extension MNNameSpaceWrapper where Base: UIViewController {
     
     /// 获取标签按钮
-    public var bottomBarItem: MNTabBarItem? {
-        let vc = self.presentingViewController ?? self
+    public var tabBarItem: MNTabBarItem? {
+        let vc = base.presentingViewController ?? base
         guard let tabBarController = vc.tabBarController else { return nil }
-        guard let bottomBar = tabBarController.bottomBar else { return nil }
+        guard let bottomBar = tabBarController.mn.bottomBar else { return nil }
         guard let viewControllers = tabBarController.viewControllers else { return nil }
         if let index = viewControllers.firstIndex(of: vc) {
             return bottomBar.item(for: index)
@@ -145,9 +87,9 @@ extension MNTabBarSupported where Self: UIViewController {
     /// 角标
     public var badge: Any? {
         set {
-            let vc = presentingViewController ?? self
+            let vc = base.presentingViewController ?? base
             guard let tabBarController = vc.tabBarController else { return }
-            guard let bottomBar = tabBarController.bottomBar else { return }
+            guard let bottomBar = tabBarController.mn.bottomBar else { return }
             guard let viewControllers = tabBarController.viewControllers else { return }
             if let index = viewControllers.firstIndex(of: vc) {
                 bottomBar.setBadge(newValue, for: index)
@@ -156,9 +98,9 @@ extension MNTabBarSupported where Self: UIViewController {
             }
         }
         get {
-            let vc = presentingViewController ?? self
+            let vc = base.presentingViewController ?? base
             guard let tabBarController = vc.tabBarController else { return nil }
-            guard let bottomBar = tabBarController.bottomBar else { return nil }
+            guard let bottomBar = tabBarController.mn.bottomBar else { return nil }
             guard let viewControllers = tabBarController.viewControllers else { return nil }
             if let index = viewControllers.firstIndex(of: vc) {
                 return bottomBar.badge(for: index)

@@ -48,7 +48,7 @@ let package = Package(
         .target(
             name: "MNBase",
             dependencies: [
-                "MNToast", "MNLayout", "MNRefresh", "MNRequest", "MNDefinition", "MNExtension", "MNEmptyView", "MNTransitioning", "MNCollectionLayout"
+                "MNToast", "MNLayout", "MNRefresh", "MNRequest", "MNDefinition", "MNExtension", "MNEmptyView", "MNNameSpace", "MNCollectionLayout"
             ],
             path: "MNSwiftKit/Base",
             resources: [
