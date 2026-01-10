@@ -125,13 +125,21 @@
                         <constraint firstAttribute="width" constant="250" id="pBZ-c1-WyQ"/>
                     </constraints>
                 </stackView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="动画样式" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ypp-LC-kaP">
+                    <rect key="frame" x="71.666666666666671" y="335.33333333333331" width="51.666666666666671" height="15.666666666666686"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <color key="textColor" systemColor="systemGray3Color"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="OgT-Uy-jXM" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="63" id="9xM-xr-qzz"/>
                 <constraint firstItem="cAZ-ZL-9US" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="Mkq-G8-Zh3"/>
+                <constraint firstItem="UzD-Ph-rV1" firstAttribute="top" secondItem="Ypp-LC-kaP" secondAttribute="bottom" constant="15" id="fey-14-tE3"/>
                 <constraint firstItem="OgT-Uy-jXM" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="15" id="fwn-pE-qKY"/>
                 <constraint firstItem="UzD-Ph-rV1" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="igA-bc-YUS"/>
+                <constraint firstItem="Ypp-LC-kaP" firstAttribute="leading" secondItem="UzD-Ph-rV1" secondAttribute="leading" id="pdW-kd-Afj"/>
                 <constraint firstItem="UzD-Ph-rV1" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="tzh-BY-Esg"/>
                 <constraint firstItem="cAZ-ZL-9US" firstAttribute="centerY" secondItem="OgT-Uy-jXM" secondAttribute="centerY" id="z3G-7G-qpb"/>
             </constraints>
@@ -142,6 +150,9 @@
     </objects>
     <resources>
         <image name="back" width="50" height="50"/>
+        <systemColor name="systemGray3Color">
+            <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
         <systemColor name="systemMintColor">
             <color red="0.0" green="0.78039215689999997" blue="0.74509803919999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
