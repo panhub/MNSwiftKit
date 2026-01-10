@@ -26,6 +26,6 @@ public class MNEmoticonAttachment: NSTextAttachment {
     
     public override func attachmentBounds(for textContainer: NSTextContainer?, proposedLineFragment lineFrag: CGRect, glyphPosition position: CGPoint, characterIndex charIndex: Int) -> CGRect {
         
-        return bounds == .zero ? CGRect(x: 0.0, y: position.y - lineFrag.height, width: lineFrag.height, height: lineFrag.height) : bounds
+        return bounds.isEmpty ? CGRect(x: 0.0, y: position.y - lineFrag.height, width: lineFrag.height, height: lineFrag.height) : bounds
     }
 }

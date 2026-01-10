@@ -8,7 +8,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PasswordViewController" customModule="MNSwiftKit_Example" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PasscordViewController" customModule="MNSwiftKit_Example" customModuleProvider="target">
             <connections>
                 <outlet property="backHeight" destination="REh-xo-ekn" id="AW3-HP-d5Y"/>
                 <outlet property="backTop" destination="Ljb-3S-CQO" id="UFN-Zl-ge0"/>
@@ -41,7 +41,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4dI-Nt-bj2" customClass="MNSecureView" customModule="MNSwiftKit">
-                    <rect key="frame" x="30" y="123" width="333" height="60"/>
+                    <rect key="frame" x="30" y="138" width="333" height="60"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="60" id="7sE-ne-5fx"/>
@@ -52,8 +52,14 @@
                         </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                 </view>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="点击输入密码" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dxD-pu-xXU">
+                    <rect key="frame" x="157.66666666666666" y="213" width="78" height="16"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <color key="textColor" red="0.82352941176470584" green="0.83137254901960778" blue="0.85098039215686272" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
                 <textField opaque="NO" alpha="0.0" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="2Pb-Je-EVW">
-                    <rect key="frame" x="30" y="193" width="100" height="40"/>
+                    <rect key="frame" x="146.66666666666666" y="244" width="100" height="40"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="100" id="G3k-4J-eey"/>
                         <constraint firstAttribute="height" constant="40" id="HTJ-ve-04q"/>
@@ -64,15 +70,17 @@
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
-                <constraint firstItem="2Pb-Je-EVW" firstAttribute="leading" secondItem="4dI-Nt-bj2" secondAttribute="leading" id="6sm-Ea-eYG"/>
-                <constraint firstItem="4dI-Nt-bj2" firstAttribute="top" secondItem="5Zw-S1-zHu" secondAttribute="bottom" constant="40" id="FFh-qU-2Vx"/>
+                <constraint firstItem="2Pb-Je-EVW" firstAttribute="top" secondItem="dxD-pu-xXU" secondAttribute="bottom" constant="15" id="5MA-OM-6l1"/>
+                <constraint firstItem="2Pb-Je-EVW" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="D6e-Jy-y4T"/>
+                <constraint firstItem="4dI-Nt-bj2" firstAttribute="top" secondItem="5Zw-S1-zHu" secondAttribute="bottom" constant="55" id="FFh-qU-2Vx"/>
                 <constraint firstItem="4dI-Nt-bj2" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="30" id="Frl-qG-y6M"/>
                 <constraint firstItem="5Zw-S1-zHu" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="63" id="Ljb-3S-CQO"/>
-                <constraint firstItem="2Pb-Je-EVW" firstAttribute="top" secondItem="4dI-Nt-bj2" secondAttribute="bottom" constant="10" id="Rhk-yR-CP5"/>
                 <constraint firstItem="5Zw-S1-zHu" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="20" id="Ry2-zU-hSw"/>
                 <constraint firstItem="G0K-lf-8WQ" firstAttribute="centerY" secondItem="5Zw-S1-zHu" secondAttribute="centerY" id="Utr-1s-tiC"/>
+                <constraint firstItem="dxD-pu-xXU" firstAttribute="top" secondItem="4dI-Nt-bj2" secondAttribute="bottom" constant="15" id="b8D-ym-fgs"/>
                 <constraint firstAttribute="trailing" secondItem="4dI-Nt-bj2" secondAttribute="trailing" constant="30" id="v87-05-Ad6"/>
                 <constraint firstItem="G0K-lf-8WQ" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="ynX-m1-z5S"/>
+                <constraint firstItem="dxD-pu-xXU" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="zFT-w1-VX8"/>
             </constraints>
             <nil key="simulatedTopBarMetrics"/>
             <nil key="simulatedBottomBarMetrics"/>

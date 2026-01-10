@@ -29,8 +29,8 @@ public class MNSecureConfiguration: NSObject {
         case bottomLine
     }
     
-    /// 密码样式
-    public var borderStyle: BorderStyle = .none
+    /// 密码框样式
+    public var borderStyle: BorderStyle = .grid
     /// 明文/密文颜色
     public var textColor: UIColor? = .black
     /// 明文字体 密文大小
@@ -40,11 +40,11 @@ public class MNSecureConfiguration: NSObject {
     /// 自定义密文密码大小
     public var cipherSize: CGSize = .init(width: 10.0, height: 10.0)
     /// 自定义密文密码颜色
-    public var cipherColor: UIColor?
+    public var cipherColor: UIColor = .black
     /// 自定义密文密码图片
     public var cipherImage: UIImage?
     /// 自定义密文密码圆角大小
-    public var cipherRadius: CGFloat = 0.0
+    public var cipherRadius: CGFloat = 5.0
     /// 自定义密码图片的缩放模式
     public var cipherMode: UIView.ContentMode = .scaleAspectFill
     /// 密码位视图背景颜色
@@ -54,13 +54,13 @@ public class MNSecureConfiguration: NSObject {
     /// 密码位视图背景图片缩放模式
     public var backgroundMode: UIView.ContentMode = .scaleAspectFill
     /// 密码位视图圆角大小
-    public var cornerRadius: CGFloat = 0.0
+    public var cornerRadius: CGFloat = 8.0
     /// 密码位视图边框颜色
-    public var borderColor: UIColor?
+    public var borderColor: UIColor? = UIColor(red: 210.0/255.0, green: 212.0/255.0, blue: 217.0/255.0, alpha: 1.0)
     /// 密码位视图高亮边框颜色
-    public var highlightBorderColor: UIColor?
+    public var highlightBorderColor: UIColor? = UIColor(red: 210.0/255.0, green: 212.0/255.0, blue: 217.0/255.0, alpha: 1.0)
     /// 密码位视图边框宽度
-    public var borderWidth: CGFloat = 1.0
+    public var borderWidth: CGFloat = 1.4
 }
 
 /// 密码视图
@@ -79,7 +79,9 @@ fileprivate class MNSecureItemView: UIImageView {
     var text: String {
         set {
             cipherLabel.text = newValue
-            updateSubviews()
+            cipherLabel.isHidden = configuration.isSecureEntry ? true : newValue.isEmpty
+            cipherView.isHidden = configuration.isSecureEntry ? newValue.isEmpty : true
+            highlightBorderLayer.isHidden = newValue.isEmpty
         }
         get {
             guard let text = cipherLabel.text else { return "" }
@@ -94,7 +96,9 @@ fileprivate class MNSecureItemView: UIImageView {
         super.init(frame: .zero)
         
         clipsToBounds = true
+        isUserInteractionEnabled = true
         
+        cipherLabel.isHidden = true
         cipherLabel.numberOfLines = 1
         cipherLabel.textAlignment = .center
         cipherLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -106,8 +110,10 @@ fileprivate class MNSecureItemView: UIImageView {
             cipherLabel.rightAnchor.constraint(equalTo: rightAnchor)
         ])
         
+        cipherView.isHidden = true
         cipherView.clipsToBounds = true
         cipherView.isUserInteractionEnabled = false
+        cipherView.layer.cornerRadius = configuration.cipherRadius
         cipherView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(cipherView)
         NSLayoutConstraint.activate([
@@ -118,6 +124,8 @@ fileprivate class MNSecureItemView: UIImageView {
         ])
         
         layer.addSublayer(borderLayer)
+        
+        highlightBorderLayer.isHidden = true
         layer.addSublayer(highlightBorderLayer)
     }
     
@@ -163,14 +171,6 @@ fileprivate class MNSecureItemView: UIImageView {
             layer.fillColor = UIColor.clear.cgColor
             layer.strokeColor = layer == borderLayer ? configuration.borderColor?.cgColor : configuration.highlightBorderColor?.cgColor
         }
-        updateSubviews()
-    }
-    
-    /// 状态更新, 隐藏部分视图
-    private func updateSubviews() {
-        cipherLabel.isHidden = configuration.isSecureEntry
-        cipherView.isHidden = configuration.isSecureEntry == false
-        highlightBorderLayer.isHidden = text.isEmpty
     }
 }
 

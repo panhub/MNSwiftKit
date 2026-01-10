@@ -42,11 +42,11 @@ public class MNNumberKeyboard: UIView {
         /// 列数
         public let columns: Int = 3
         /// 按键间隔
-        public var spacing: CGFloat = 1.5
+        public var spacing: CGFloat = 1.0
         /// 是否可以输入小数点
         public var decimalCapable: Bool = true
         /// 按键标题字体
-        public var textFont: UIFont?
+        public var textFont: UIFont = .systemFont(ofSize: 20.0, weight: .medium)
         /// 是否乱序排列数字
         public var isScramble: Bool = false
         /// 左键类型
@@ -54,11 +54,11 @@ public class MNNumberKeyboard: UIView {
         /// 右键类型
         public var rightKeyName: Key.Name = .none
         /// 按键标题颜色
-        public var textColor: UIColor?
+        public var textColor: UIColor = .black
         /// 按键背景颜色
-        public var keyBackgroundColor: UIColor?
+        public var keyBackgroundColor: UIColor = .white
         /// 按键高亮颜色
-        public var keyHighlightedColor: UIColor?
+        public var keyHighlightedColor: UIColor = UIColor(red: 169.0/255.0, green: 169.0/255.0, blue: 169.0/255.0, alpha: 1.0)
         
         public init() {}
     }
@@ -89,13 +89,12 @@ public class MNNumberKeyboard: UIView {
                 }
             }
         }
-        keys.insertKey(configuration.leftKeyName, at: keys.count - 2)
+        keys.insertKey(configuration.leftKeyName, at: keys.count - 1)
         keys.appendKey(configuration.rightKeyName)
         
         let elements: [[MNNumberKeyboard.Key]] = stride(from: 0, to: keys.count, by: 3).map {
             Array(keys[$0..<Swift.min($0 + 3, keys.count)])
         }
-        
         
         stackView.axis = .vertical
         stackView.alignment = .fill
@@ -110,10 +109,8 @@ public class MNNumberKeyboard: UIView {
             stackView.rightAnchor.constraint(equalTo: rightAnchor, constant: -configuration.spacing)
         ])
         
-        let textFont = configuration.textFont ?? .systemFont(ofSize: 20.0, weight: .medium)
-        let textColor = configuration.textColor ?? .black
-        let backgroundImage = UIImage(color: configuration.keyBackgroundColor ?? .white)
-        let highlightedImage = UIImage(color: configuration.keyHighlightedColor ?? UIColor(red: 169.0/255.0, green: 169.0/255.0, blue: 169.0/255.0, alpha: 1.0))
+        let backgroundImage = UIImage(color: configuration.keyBackgroundColor)
+        let highlightedImage = UIImage(color: configuration.keyHighlightedColor)
         
         for element in elements {
             
@@ -129,8 +126,8 @@ public class MNNumberKeyboard: UIView {
                 let button: UIButton = UIButton(type: .custom)
                 if #available(iOS 15.0, *) {
                     var attributedTitle = AttributedString(key.text)
-                    attributedTitle.font = textFont
-                    attributedTitle.foregroundColor = textColor
+                    attributedTitle.font = configuration.textFont
+                    attributedTitle.foregroundColor = configuration.textColor
                     var configuration = UIButton.Configuration.plain()
                     configuration.titleAlignment = .center
                     configuration.attributedTitle = attributedTitle
@@ -146,7 +143,7 @@ public class MNNumberKeyboard: UIView {
                         }
                     }
                 } else {
-                    let attributedTitle = NSAttributedString(string: key.text, attributes: [.font : textFont, .foregroundColor : textColor])
+                    let attributedTitle = NSAttributedString(string: key.text, attributes: [.font : configuration.textFont, .foregroundColor : configuration.textColor])
                     button.contentVerticalAlignment = .center
                     button.contentHorizontalAlignment = .center
                     button.setAttributedTitle(attributedTitle, for: .normal)
@@ -165,6 +162,17 @@ public class MNNumberKeyboard: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    public override func willMove(toWindow newWindow: UIWindow?) {
+        super.willMove(toWindow: newWindow)
+        guard #available(iOS 11.0, *), let newWindow = newWindow else { return }
+        guard let constraint = constraints.first(where: { constraint in
+            guard let firstItem = constraint.firstItem as? UIStackView, firstItem == stackView else { return false }
+            guard constraint.firstAttribute == .bottom else { return false }
+            return true
+        }) else { return }
+        constraint.constant = -newWindow.safeAreaInsets.bottom
+    }
+    
     /// 按键点击事件
     /// - Parameter sender: 按键
     @objc private func keyButtonTouchUpInside(_ sender: UIButton) {
@@ -174,6 +182,8 @@ public class MNNumberKeyboard: UIView {
         var inputed = false
         // 按键分析
         switch key {
+        case .done:
+            inputed = true
         case .delete:
             // 删除
             guard text.isEmpty == false else { break }
@@ -194,7 +204,7 @@ public class MNNumberKeyboard: UIView {
                 text.append(string)
                 inputed = true
             }
-        case .done, .none: break
+        case .none: break
         default:
             inputed = true
             text.append(key.text)
@@ -279,9 +289,9 @@ extension MNNumberKeyboard.Key {
         case .eight: return "8"
         case .nine: return "9"
         case .decimal: return "."
-        case .done: return "done"
-        case .delete: return "delete"
-        case .clear: return "clear"
+        case .done: return "✓"
+        case .delete: return "⌫"
+        case .clear: return "×"
         case .none: return ""
         }
     }
