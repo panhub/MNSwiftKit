@@ -9,12 +9,13 @@ import UIKit
 
 /// 密码视图代理
 public protocol MNSecureViewDelegate: NSObjectProtocol {
+    
     /// 密码位触摸告知
     func secureViewTouchUpInside(_ secureView: MNSecureView) -> Void
 }
 
 /// 密码选项
-public class MNSecureOptions: NSObject {
+public class MNSecureConfiguration: NSObject {
     
     /// 文本样式
     public enum TextMode {
@@ -47,7 +48,7 @@ public class MNSecureOptions: NSObject {
     /// 明文/密文颜色
     public var textColor: UIColor? = .black
     /// 明文字体 密文大小
-    public var font: UIFont? = .systemFont(ofSize: 17.0, weight: .medium)
+    public var textFont: UIFont? = .systemFont(ofSize: 17.0, weight: .medium)
     /// 是否以密文显示
     public var isSecureEntry: Bool = true
     /// 自定义内容
@@ -56,7 +57,7 @@ public class MNSecureOptions: NSObject {
     public var contentMode: UIView.ContentMode = .scaleAspectFill
     /// 背景图片
     public var backgroundImage: UIImage?
-    /// 背景缩放模式
+    /// 背景图片缩放模式
     public var backgroundMode: UIView.ContentMode = .scaleAspectFill
     /// 边框颜色
     public var borderColor: UIColor?
@@ -69,7 +70,7 @@ public class MNSecureOptions: NSObject {
 /// 密码视图
 fileprivate class MNSecureLabel: UIControl {
     /// 绑定的配置
-    let options: MNSecureOptions
+    private let configuration: MNSecureConfiguration
     /// 明文密码
     private let textLabel: UILabel = UILabel()
     /// 密文密码(圆点)
@@ -92,9 +93,9 @@ fileprivate class MNSecureLabel: UIControl {
     }
     
     /// 构造密码位视图
-    /// - Parameter options: 配置选项
-    init(options: MNSecureOptions) {
-        self.options = options
+    /// - Parameter configuration: 配置选项
+    init(configuration: MNSecureConfiguration) {
+        self.configuration = configuration
         super.init(frame: .zero)
         
         clipsToBounds = true
@@ -135,33 +136,33 @@ fileprivate class MNSecureLabel: UIControl {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        let fontSize = options.font?.pointSize ?? 10.0
+        let fontSize = configuration.textFont?.pointSize ?? 10.0
         let autoresizingMask = ciphertext.autoresizingMask
         ciphertext.autoresizingMask = []
         ciphertext.frame = CGRect(x: 0.0, y: 0.0, width: fontSize, height: fontSize)
         ciphertext.center = CGPoint(x: bounds.midX, y: bounds.midY)
         ciphertext.layer.cornerRadius = fontSize/2.0
         ciphertext.autoresizingMask = autoresizingMask
-        ciphertext.backgroundColor = options.textColor ?? .black
-        textLabel.font = options.font
-        textLabel.textColor = options.textColor
-        textView.image = options.contentImage
-        textView.contentMode = options.contentMode
-        backgroundView.image = options.backgroundImage
-        backgroundView.contentMode = options.backgroundMode
-        layer.cornerRadius = options.cornerRadius
-        backgroundColor = options.backgroundColor
-        let margin = options.borderWidth/2.0
+        ciphertext.backgroundColor = configuration.textColor ?? .black
+        textLabel.font = configuration.textFont
+        textLabel.textColor = configuration.textColor
+        textView.image = configuration.contentImage
+        textView.contentMode = configuration.contentMode
+        backgroundView.image = configuration.backgroundImage
+        backgroundView.contentMode = configuration.backgroundMode
+        layer.cornerRadius = configuration.cornerRadius
+        backgroundColor = configuration.backgroundColor
+        let margin = configuration.borderWidth/2.0
         let roundedRect: CGRect = bounds.inset(by: UIEdgeInsets(top: margin, left: margin, bottom: margin, right: margin))
         for layer in [borderLayer, highlightBorderLayer] {
             var path: UIBezierPath!
-            switch options.borderStyle {
+            switch configuration.borderStyle {
             case .grid:
                 // 网格
                 path = UIBezierPath(roundedRect: roundedRect, edges: tag == 0 ? .all : [.top, .right, .bottom])
             case .square:
                 // 方格
-                path = UIBezierPath(roundedRect: roundedRect, cornerRadius: options.cornerRadius)
+                path = UIBezierPath(roundedRect: roundedRect, cornerRadius: configuration.cornerRadius)
             case .bottomLine:
                 // 阴影线
                 path = UIBezierPath(roundedRect: roundedRect, edges: .bottom)
@@ -169,9 +170,9 @@ fileprivate class MNSecureLabel: UIControl {
             }
             layer.path = path?.cgPath
             layer.lineCap = .square
-            layer.lineWidth = options.borderWidth
+            layer.lineWidth = configuration.borderWidth
             layer.fillColor = UIColor.clear.cgColor
-            layer.strokeColor = layer == borderLayer ? options.borderColor?.cgColor : options.highlightBorderColor?.cgColor
+            layer.strokeColor = layer == borderLayer ? configuration.borderColor?.cgColor : configuration.highlightBorderColor?.cgColor
         }
         updateSubviews()
     }
@@ -179,12 +180,12 @@ fileprivate class MNSecureLabel: UIControl {
     /// 更新状态, 隐藏部分视图
     private func updateSubviews() {
         let isEmpty = text.isEmpty
-        switch options.textMode {
+        switch configuration.textMode {
         case .normal:
             // 文字
             textView.isHidden = true
-            textLabel.isHidden = options.isSecureEntry ? true : isEmpty
-            ciphertext.isHidden = options.isSecureEntry ? isEmpty : true
+            textLabel.isHidden = configuration.isSecureEntry ? true : isEmpty
+            ciphertext.isHidden = configuration.isSecureEntry ? isEmpty : true
         case .custom:
             // 自定义图片
             textLabel.isHidden = true
@@ -196,14 +197,14 @@ fileprivate class MNSecureLabel: UIControl {
 }
 
 /// 密码视图
-public class MNSecureView: UIView {
+@IBDesignable public class MNSecureView: UIView {
     /// 方向
-    public var axis: NSLayoutConstraint.Axis {
+    @IBInspectable public var axis: NSLayoutConstraint.Axis {
         get { stackView.axis }
         set { stackView.axis = newValue }
     }
     /// 间隔
-    public var spacing: CGFloat {
+    @IBInspectable public var spacing: CGFloat {
         get { stackView.spacing }
         set { stackView.spacing = newValue }
     }
@@ -215,12 +216,13 @@ public class MNSecureView: UIView {
     /// 文字
     public var text: String {
         get {
-            var characters = (stackView.arrangedSubviews as! [MNSecureLabel]).compactMap({ $0.text })
+            let arrangedSubviews = stackView.arrangedSubviews.compactMap { $0 as? MNSecureLabel }
+            var characters = arrangedSubviews.compactMap({ $0.text })
             characters.removeAll { $0 == "" }
             return characters.joined()
         }
         set {
-            for label in stackView.arrangedSubviews as! [MNSecureLabel] {
+            for label in stackView.arrangedSubviews.compactMap({ $0 as? MNSecureLabel }) {
                 if label.tag < newValue.count {
                     let character = newValue[newValue.index(newValue.startIndex, offsetBy: label.tag)]
                     let substring = String(character)
@@ -231,7 +233,7 @@ public class MNSecureView: UIView {
             }
         }
     }
-    /// 位数
+    /// 密码位数
     public var capacity: Int = 0 {
         didSet {
             // 删除多余的
@@ -243,7 +245,7 @@ public class MNSecureView: UIView {
             // 添加新的
             if stackView.arrangedSubviews.count < capacity {
                 for tag in stackView.arrangedSubviews.count..<capacity {
-                    let label = MNSecureLabel(options: options)
+                    let label = MNSecureLabel(configuration: configuration)
                     label.tag = tag
                     label.addTarget(self, action: #selector(textLabelTouchUpInside), for: .touchUpInside)
                     stackView.addArrangedSubview(label)
@@ -252,26 +254,42 @@ public class MNSecureView: UIView {
         }
     }
     /// 内部约束视图
-    private let stackView: UIStackView = UIStackView()
+    private let stackView = UIStackView()
     /// 事件代理
     public weak var delegate: MNSecureViewDelegate?
     /// 配置信息
-    public let options: MNSecureOptions = MNSecureOptions()
+    public lazy var configuration = MNSecureConfiguration()
     
-    override init(frame: CGRect) {
+    
+    /// 构造密码输入视图
+    /// - Parameters:
+    ///   - frame: 位置
+    public override init(frame: CGRect) {
         super.init(frame: frame)
+        // 构造内部密码位视图
+        commonInit()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        // 构造内部密码位视图
+        commonInit()
+    }
+    
+    private func commonInit() {
         
-        stackView.frame = bounds
         stackView.spacing = 5.0
         stackView.axis = .horizontal
         stackView.alignment = .fill
         stackView.distribution = .fillEqually
-        stackView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        stackView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(stackView)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: topAnchor),
+            stackView.leftAnchor.constraint(equalTo: leftAnchor),
+            stackView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            stackView.rightAnchor.constraint(equalTo: rightAnchor)
+        ])
     }
 }
 
@@ -283,7 +301,7 @@ extension MNSecureView {
     @discardableResult
     public func append(_ aString: String) -> String? {
         var string = text
-        guard aString.count > 0, (string.count + aString.count) <= capacity else { return nil }
+        guard aString.isEmpty == false, (string.count + aString.count) <= capacity else { return nil }
         string.append(aString)
         text = string
         return string
@@ -292,7 +310,7 @@ extension MNSecureView {
     /// 向前删除一位
     public func deleteBackward() {
         var string = text
-        if string.isEmpty { return }
+        guard string.isEmpty == false else { return }
         string.removeLast()
         text = string
     }
@@ -307,6 +325,7 @@ extension MNSecureView {
 // MARK: - Event
 extension MNSecureView {
     
+    /// 文字点击
     @objc private func textLabelTouchUpInside() {
         guard let delegate = delegate else { return }
         delegate.secureViewTouchUpInside(self)
