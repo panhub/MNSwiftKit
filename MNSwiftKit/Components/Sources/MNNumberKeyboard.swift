@@ -129,7 +129,7 @@ public class MNNumberKeyboard: UIView {
                 let button: UIButton = UIButton(type: .custom)
                 if #available(iOS 15.0, *) {
                     var attributedTitle = AttributedString(key.text)
-                    attributedTitle.font = key == .decimal ? textFont.withSize(30.0) : textFont
+                    attributedTitle.font = textFont
                     attributedTitle.foregroundColor = textColor
                     var configuration = UIButton.Configuration.plain()
                     configuration.titleAlignment = .center
@@ -146,15 +146,15 @@ public class MNNumberKeyboard: UIView {
                         }
                     }
                 } else {
-                    let attributedTitle = NSAttributedString(string: key.text, attributes: [.foregroundColor : textColor, .font : key == .decimal ? textFont.withSize(30.0) : textFont])
+                    let attributedTitle = NSAttributedString(string: key.text, attributes: [.font : textFont, .foregroundColor : textColor])
                     button.contentVerticalAlignment = .center
                     button.contentHorizontalAlignment = .center
                     button.setAttributedTitle(attributedTitle, for: .normal)
                     button.setBackgroundImage(backgroundImage, for: .normal)
                     button.setBackgroundImage(highlightedImage, for: .highlighted)
                 }
-                button.alpha = key == .none ? 0.0 : 1.0
                 button.tag = key.rawValue
+                button.alpha = key == .none ? 0.0 : 1.0
                 button.addTarget(self, action: #selector(keyButtonTouchUpInside(_:)), for: .touchUpInside)
                 arrangedStackView.addArrangedSubview(button)
             }
