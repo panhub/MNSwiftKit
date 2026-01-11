@@ -299,18 +299,15 @@ extension MNEmoticonView: UIScrollViewDelegate {
         }
     }
     
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        guard decelerate == false else { return }
-        scrollViewDidEndDecelerating(scrollView)
-    }
-    
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
         guard style == .paging else { return }
         let width = scrollView.frame.width
         guard width > 0.0 else { return }
-        currentPageIndex = Int(round(scrollView.contentOffset.x/width))
+        let contentOffset = targetContentOffset.pointee
+        let index = Int(round(contentOffset.x/width))
+        currentPageIndex = index
         guard let delegate = delegate else { return }
-        delegate.emoticonViewDidScrollPage(to: currentPageIndex)
+        delegate.emoticonViewDidScrollPage(to: index)
     }
 }
 
