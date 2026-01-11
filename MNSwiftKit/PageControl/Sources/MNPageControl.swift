@@ -37,7 +37,7 @@ import UIKit
 }
 
 /// 页码指示器
-public class MNPageControl: UIControl {
+@IBDesignable public class MNPageControl: UIControl {
     
     /// 指示器缓存
     private var indicators: [UIView] = []
@@ -52,7 +52,7 @@ public class MNPageControl: UIControl {
     public weak var dataSource: MNPageControlDataSource?
     
     /// 指示器触摸区域
-    public var pageIndicatorTouchInset: UIEdgeInsets = .zero
+    @IBInspectable public var pageIndicatorTouchInset: UIEdgeInsets = .zero
     
     /// 布局方向
     public var axis: NSLayoutConstraint.Axis {
@@ -65,7 +65,7 @@ public class MNPageControl: UIControl {
     }
     
     /// 页码间隔
-    public var spacing: CGFloat {
+    @IBInspectable public var spacing: CGFloat {
         get { stackView.spacing }
         set {
             stackView.spacing = newValue
@@ -75,7 +75,7 @@ public class MNPageControl: UIControl {
     }
     
     /// 页码数量 代理优先
-    public var numberOfPages: Int = 0 {
+    @IBInspectable public var numberOfPages: Int = 0 {
         didSet {
             guard let _ = superview else { return }
             reloadPageIndicators()
@@ -83,7 +83,7 @@ public class MNPageControl: UIControl {
     }
     
     /// 当前选中的页码索引
-    public var currentPageIndex: Int = 0 {
+    @IBInspectable public var currentPageIndex: Int = 0 {
         didSet {
             let arrangedSubviews = stackView.arrangedSubviews
             if oldValue < arrangedSubviews.count {
@@ -102,14 +102,14 @@ public class MNPageControl: UIControl {
     }
     
     /// 当只有一页时是否隐藏
-    public var hidesForSinglePage: Bool = false {
+    @IBInspectable public var hidesForSinglePage: Bool = false {
         didSet {
             updateStackView()
         }
     }
     
     ///页码指示器大小
-    public var pageIndicatorSize: CGSize = .init(width: 8.0, height: 8.0) {
+    @IBInspectable public var pageIndicatorSize: CGSize = .init(width: 8.0, height: 8.0) {
         didSet {
             for arrangedSubview in stackView.arrangedSubviews {
                 arrangedSubview.layer.cornerRadius = axis == .horizontal ? pageIndicatorSize.height/2.0 : pageIndicatorSize.width/2.0
@@ -120,7 +120,7 @@ public class MNPageControl: UIControl {
     }
     
     /// 指示器颜色
-    public var pageIndicatorTintColor: UIColor? = UIColor(red: 215.0/255.0, green: 215.0/255.0, blue: 215.0/255.0, alpha: 1.0) {
+    @IBInspectable public var pageIndicatorTintColor: UIColor? = UIColor(red: 215.0/255.0, green: 215.0/255.0, blue: 215.0/255.0, alpha: 1.0) {
         didSet {
             let arrangedSubviews = stackView.arrangedSubviews
             for (index, arrangedSubview) in arrangedSubviews.enumerated() {
@@ -131,7 +131,7 @@ public class MNPageControl: UIControl {
     }
     
     /// 当前指示器颜色
-    public var currentPageIndicatorTintColor: UIColor? = UIColor(red: 125.0/255.0, green: 125.0/255.0, blue: 125.0/255.0, alpha: 1.0) {
+    @IBInspectable public var currentPageIndicatorTintColor: UIColor? = UIColor(red: 125.0/255.0, green: 125.0/255.0, blue: 125.0/255.0, alpha: 1.0) {
         didSet {
             let arrangedSubviews = stackView.arrangedSubviews
             guard currentPageIndex < arrangedSubviews.count else { return }
@@ -141,7 +141,7 @@ public class MNPageControl: UIControl {
     }
     
     /// 指示器边框宽度
-    public var pageIndicatorBorderWidth: CGFloat = 0.0 {
+    @IBInspectable public var pageIndicatorBorderWidth: CGFloat = 0.0 {
         didSet {
             let arrangedSubviews = stackView.arrangedSubviews
             for (index, arrangedSubview) in arrangedSubviews.enumerated() {
@@ -152,7 +152,7 @@ public class MNPageControl: UIControl {
     }
     
     /// 当前指示器边框宽度
-    public var currentPageIndicatorBorderWidth: CGFloat = 0.0 {
+    @IBInspectable public var currentPageIndicatorBorderWidth: CGFloat = 0.0 {
         didSet {
             let arrangedSubviews = stackView.arrangedSubviews
             guard currentPageIndex < arrangedSubviews.count else { return }
@@ -162,7 +162,7 @@ public class MNPageControl: UIControl {
     }
     
     /// 指示器边框颜色
-    public var pageIndicatorBorderColor: UIColor? {
+    @IBInspectable public var pageIndicatorBorderColor: UIColor? {
         didSet {
             let arrangedSubviews = stackView.arrangedSubviews
             for (index, arrangedSubview) in arrangedSubviews.enumerated() {
@@ -173,7 +173,7 @@ public class MNPageControl: UIControl {
     }
     
     /// 当前指示器边框颜色
-    public var currentPageIndicatorBorderColor: UIColor? {
+    @IBInspectable public var currentPageIndicatorBorderColor: UIColor? {
         didSet {
             let arrangedSubviews = stackView.arrangedSubviews
             guard currentPageIndex < arrangedSubviews.count else { return }
@@ -203,6 +203,17 @@ public class MNPageControl: UIControl {
     public override init(frame: CGRect) {
         super.init(frame: frame)
         
+        commonInit()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        
+        commonInit()
+    }
+    
+    private func commonInit() {
+        
         stackView.isHidden = true
         stackView.axis = .horizontal
         stackView.alignment = .center
@@ -210,10 +221,6 @@ public class MNPageControl: UIControl {
         stackView.isUserInteractionEnabled = false
         stackView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(stackView)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
     
     public override func didMoveToSuperview() {

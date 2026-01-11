@@ -85,7 +85,7 @@
                             <subviews>
                                 <button opaque="NO" clipsSubviews="YES" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Tm-e4-1B2">
                                     <rect key="frame" x="0.0" y="0.0" width="120" height="55"/>
-                                    <color key="backgroundColor" systemColor="systemMintColor"/>
+                                    <color key="backgroundColor" systemColor="systemCyanColor"/>
                                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
                                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                     <state key="normal" title="Modal">
@@ -102,7 +102,7 @@
                                 </button>
                                 <button opaque="NO" clipsSubviews="YES" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2vq-9H-hH1">
                                     <rect key="frame" x="130" y="0.0" width="120" height="55"/>
-                                    <color key="backgroundColor" systemColor="systemTealColor"/>
+                                    <color key="backgroundColor" systemColor="systemMintColor"/>
                                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
                                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                     <state key="normal" title="Flip">
@@ -150,6 +150,9 @@
     </objects>
     <resources>
         <image name="back" width="50" height="50"/>
+        <systemColor name="systemCyanColor">
+            <color red="0.1960784314" green="0.67843137249999996" blue="0.90196078430000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
         <systemColor name="systemGray3Color">
             <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

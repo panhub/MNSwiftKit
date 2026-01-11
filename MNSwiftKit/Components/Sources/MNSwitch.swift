@@ -52,7 +52,7 @@ import UIKit
         }
     }
     /// 是否处于开启状态
-    @IBInspectable public var isOn: Bool {
+    public var isOn: Bool {
         set {
             setOn(newValue, animated: false)
         }
@@ -82,7 +82,6 @@ import UIKit
         
         contentView.clipsToBounds = true
         contentView.isUserInteractionEnabled = false
-        contentView.backgroundColor = contentColor
         contentView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(contentView)
         NSLayoutConstraint.activate([
@@ -103,6 +102,8 @@ import UIKit
             thumb.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -spacing),
             thumb.widthAnchor.constraint(equalTo: thumb.heightAnchor, multiplier: 1.0)
         ])
+        
+        updateContentColor()
     }
     
     public override func layoutSubviews() {
