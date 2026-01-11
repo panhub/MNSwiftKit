@@ -9,95 +9,108 @@ import UIKit
 
 /// 开关代理
 @objc public protocol MNSwitchDelegate: NSObjectProtocol {
+    
     /// 是否允许改变
     /// - Parameter switch: 开关
     /// - Returns: 是否允许改变
     @objc optional func switchShouldChangeValue(_ switch: MNSwitch) -> Bool
+    
     /// 开关值变化告知
     /// - Parameter switch: 开关
     @objc optional func switchValueChanged(_ switch: MNSwitch)
 }
 
 /// 开关
-public class MNSwitch: UIView {
+@IBDesignable public class MNSwitch: UIControl {
     /// 内部使用
     private let spacing: CGFloat = 2.0
-    /// 默认颜色
-    private let color: UIColor = UIColor(red: 230.0/255.0, green: 230.0/255.0, blue: 230.0/255.0, alpha: 1.0)
     /// 滑块
     private let thumb = UIView()
+    /// 内容视图
+    private let contentView = UIView()
     /// 标记动画期间 拒绝交互
     private var isAnimating: Bool = false
     /// 事件代理
-    weak var delegate: MNSwitchDelegate?
+    public weak var delegate: MNSwitchDelegate?
+    /// 默认颜色
+    private let contentColor: UIColor = UIColor(red: 233.0/255.0, green: 233.0/255.0, blue: 235.0/255.0, alpha: 1.0)
     /// 打开时的颜色
-    @objc var onTintColor: UIColor = UIColor(red: 0.0/255.0, green: 122.0/255.0, blue: 254.0/255.0, alpha: 1.0) {
+    @IBInspectable public var onTintColor: UIColor = UIColor(red: 103.0/255.0, green: 196.0/255.0, blue: 98.0/255.0, alpha: 1.0) {
         didSet {
-            updateColor()
+            updateContentColor()
         }
     }
     /// 滑块颜色
-    @objc var thumbTintColor: UIColor? {
+    @IBInspectable public var thumbTintColor: UIColor? {
         get { thumb.backgroundColor }
         set { thumb.backgroundColor = newValue ?? .white }
     }
     /// 正常状态下颜色
     public override var tintColor: UIColor! {
         didSet {
-            updateColor()
+            updateContentColor()
         }
     }
-    /// 拒绝设置背景颜色
-    public override var backgroundColor: UIColor? {
-        set {}
-        get { super.backgroundColor }
-    }
     /// 是否处于开启状态
-    @objc var isOn: Bool {
-        get { thumb.center.x > bounds.midX }
+    @IBInspectable public var isOn: Bool {
         set {
             setOn(newValue, animated: false)
         }
-    }
-    /// 拒绝直接修改尺寸
-    public override var frame: CGRect {
-        get { super.frame }
-        set {
-            var rect: CGRect = newValue
-            let frame: CGRect = super.frame
-            if frame.size != .zero {
-                rect.size = frame.size
-            }
-            super.frame = newValue
+        get {
+            guard let constraint = contentView.constraints.first(where: { constraint in
+                guard let firstItem = constraint.firstItem as? UIView, firstItem == thumb else { return false }
+                guard constraint.firstAttribute == .left else { return false }
+                return true
+            }) else { return false }
+            return constraint.constant > spacing
         }
     }
     
-    /// 构造Switch
-    /// - Parameter frame: 位置
     override init(frame: CGRect) {
-        var rect: CGRect = frame
-        if max(frame.width, frame.height) <= 0.0 {
-            rect.size = CGSize(width: 45.0, height: 26.0)
-        }
-        rect.size.height = max(rect.height, spacing*2.0 + 15.0)
-        rect.size.width = max(rect.width, rect.height + 15.0)
-        super.init(frame: rect)
+        super.init(frame: frame)
         
-        clipsToBounds = true
-        layer.cornerRadius = rect.height/2.0
-        super.tintColor = color
-        super.backgroundColor = color
-        
-        thumb.frame = CGRect(x: spacing, y: spacing, width: rect.height - spacing*2.0, height: rect.height - spacing*2.0)
-        thumb.clipsToBounds = true
-        thumb.layer.cornerRadius = thumb.frame.height/2.0
-        thumb.backgroundColor = .white
-        thumb.isUserInteractionEnabled = false
-        addSubview(thumb)
+        commonInit()
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: coder)
+        
+        commonInit()
+    }
+    
+    private func commonInit() {
+        
+        contentView.clipsToBounds = true
+        contentView.isUserInteractionEnabled = false
+        contentView.backgroundColor = contentColor
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(contentView)
+        NSLayoutConstraint.activate([
+            contentView.topAnchor.constraint(equalTo: topAnchor),
+            contentView.leftAnchor.constraint(equalTo: leftAnchor),
+            contentView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            contentView.rightAnchor.constraint(equalTo: rightAnchor)
+        ])
+        
+        thumb.clipsToBounds = true
+        thumb.backgroundColor = .white
+        thumb.isUserInteractionEnabled = false
+        thumb.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(thumb)
+        NSLayoutConstraint.activate([
+            thumb.topAnchor.constraint(equalTo: contentView.topAnchor, constant: spacing),
+            thumb.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: spacing),
+            thumb.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -spacing),
+            thumb.widthAnchor.constraint(equalTo: thumb.heightAnchor, multiplier: 1.0)
+        ])
+    }
+    
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        contentView.layoutIfNeeded()
+        thumb.layer.cornerRadius = min(thumb.bounds.width, thumb.bounds.height)/2.0
+        contentView.layer.cornerRadius = min(contentView.bounds.width, contentView.bounds.height)/2.0
     }
     
     public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -108,24 +121,35 @@ public class MNSwitch: UIView {
     /// - Parameters:
     ///   - on: 是否开启
     ///   - isAnimated: 是否动画
+    public func setOn(_ on: Bool, animated isAnimated: Bool) {
+        
+        setOn(on, animated: isAnimated, interactive: false)
+    }
+    
+    /// 修改Switch的状态
+    /// - Parameters:
+    ///   - on: 是否开启
+    ///   - isAnimated: 是否动画
     ///   - isInteractive: 是否是由交互触发
-    @objc public func setOn(_ on: Bool, animated isAnimated: Bool, interactive isInteractive: Bool = false) {
+    private func setOn(_ on: Bool, animated isAnimated: Bool, interactive isInteractive: Bool) {
         guard isAnimating == false, isOn != on else { return }
         var isAllowChangeValue: Bool = true
-        if isInteractive, (delegate?.switchShouldChangeValue?(self) ?? true) == false {
+        if isInteractive, let delegate = delegate, let shouldChangeValue = delegate.switchShouldChangeValue?(self), shouldChangeValue == false {
             isAllowChangeValue = false
         }
         guard isAllowChangeValue else { return }
         if isAnimated {
             isAnimating = true
-            UIView.animate(withDuration: 0.17, delay: 0.0, options: [.beginFromCurrentState, .curveEaseOut]) { [weak self] in
+            UIView.animate(withDuration: 0.15, delay: 0.0, options: [.curveEaseOut]) { [weak self] in
                 guard let self = self else { return }
                 self.update(on: on)
             } completion: { [weak self] _ in
                 guard let self = self else { return }
                 self.isAnimating = false
                 guard isInteractive else { return }
-                self.delegate?.switchValueChanged?(self)
+                self.sendActions(for: .valueChanged)
+                guard let delegate = self.delegate else { return }
+                delegate.switchValueChanged?(self)
             }
         } else {
             update(on: on)
@@ -135,14 +159,19 @@ public class MNSwitch: UIView {
     /// 更新UI
     /// - Parameter isOn: 是否开启状态
     private func update(on isOn: Bool) {
-        var rect: CGRect = thumb.frame
-        rect.origin.x = isOn ? (frame.width - rect.width - spacing) : spacing
-        thumb.frame = rect
-        updateColor()
+        guard let constraint = contentView.constraints.first(where: { constraint in
+            guard let firstItem = constraint.firstItem as? UIView, firstItem == thumb else { return false }
+            guard constraint.firstAttribute == .left else { return false }
+            return true
+        }) else { return }
+        constraint.constant = isOn ? (bounds.width - spacing - thumb.bounds.width) : spacing
+        contentView.layoutIfNeeded()
+        updateContentColor()
     }
     
     /// 更新背景颜色
-    private func updateColor() {
-        super.backgroundColor = isOn ? onTintColor : (tintColor ?? color)
+    private func updateContentColor() {
+        
+        contentView.backgroundColor = isOn ? onTintColor : (tintColor ?? contentColor)
     }
 }
