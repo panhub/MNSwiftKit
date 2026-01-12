@@ -11,15 +11,15 @@ import Foundation
 
 class HomeListRow {
     
-    let cls: String
-    
     let index: Int
+    
+    let subtitle: String
     
     let module: String
     
     let title: NSAttributedString!
     
-    init(index: Int, title: String, cls: String, module: String) {
+    init(index: Int, title: String, subtitle: String, module: String) {
         
         let prefix = String(format: "%02ld.", index + 1)
         
@@ -29,7 +29,7 @@ class HomeListRow {
         attributedText.addAttribute(.font, value: UIFont(name: "GillSans-Italic", size: 16.0)!, range: (fullTitle as NSString).range(of: prefix))
         attributedText.addAttribute(.foregroundColor, value: UIColor.systemRed.withAlphaComponent(0.65), range: (fullTitle as NSString).range(of: prefix))
         self.title = attributedText
-        self.cls = cls
+        self.subtitle = subtitle
         self.index = index
         self.module = module
     }

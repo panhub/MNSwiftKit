@@ -10,9 +10,7 @@ import UIKit
 import MNSwiftKit
 
 class SegmentedViewController: UIViewController {
-    
-    var segmentedViewController: MNSegmentedViewController!
-    
+    // 布局方向
     @IBOutlet weak var axisSegment: UISegmentedControl!
     // 返回按钮顶部约束
     @IBOutlet weak var backTop: NSLayoutConstraint!
@@ -20,6 +18,8 @@ class SegmentedViewController: UIViewController {
     @IBOutlet weak var navHeight: NSLayoutConstraint!
     // 返回按钮高度约束
     @IBOutlet weak var backHeight: NSLayoutConstraint!
+    // 分页控制器
+    private var segmentedViewController: MNSegmentedViewController!
     
     override func viewDidLoad() {
         super.viewDidLoad()

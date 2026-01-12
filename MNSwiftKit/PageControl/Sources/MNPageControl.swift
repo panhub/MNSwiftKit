@@ -9,10 +9,12 @@ import UIKit
 
 /// 页码指示器数据源
 @objc public protocol MNPageControlDataSource: NSObjectProtocol {
+    
     /// 询问页码总数
     /// - Parameter pageControl: 指示器
     /// - Returns: 页码总数
     @objc optional func numberOfPageIndicator(in pageControl: MNPageControl) -> Int
+    
     /// 定制指示器
     /// - Parameters:
     ///   - pageControl: 指示器
@@ -23,11 +25,20 @@ import UIKit
 
 /// 页码指示器交互代理
 @objc public protocol MNPageControlDelegate: NSObjectProtocol {
+    
     /// 交互式修改页码指示器
     /// - Parameters:
     ///   - pageControl: 指示器
     ///   - index: 页码索引
     @objc optional func pageControl(_ pageControl: MNPageControl, didSelectPageAt index: Int)
+    
+    /// 指示器更新告知
+    /// - Parameters:
+    ///   - pageControl: 指示器
+    ///   - indicator: 指示器视图
+    ///   - index: 页码索引
+    @objc optional func pageControl(_ pageControl: MNPageControl, didUpdate indicator: UIView, forPageAt index: Int)
+    
     /// 告知即将展示指示器
     /// - Parameters:
     ///   - pageControl: 指示器
@@ -91,12 +102,18 @@ import UIKit
                 indicator.backgroundColor = pageIndicatorTintColor
                 indicator.layer.borderWidth = pageIndicatorBorderWidth
                 indicator.layer.borderColor = pageIndicatorBorderColor?.cgColor
+                if let delegate = delegate {
+                    delegate.pageControl?(self, didUpdate: indicator, forPageAt: oldValue)
+                }
             }
             if currentPageIndex < arrangedSubviews.count {
                 let indicator = arrangedSubviews[currentPageIndex]
                 indicator.backgroundColor = currentPageIndicatorTintColor
                 indicator.layer.borderWidth = currentPageIndicatorBorderWidth
                 indicator.layer.borderColor = currentPageIndicatorBorderColor?.cgColor
+                if let delegate = delegate {
+                    delegate.pageControl?(self, didUpdate: indicator, forPageAt: currentPageIndex)
+                }
             }
         }
     }
@@ -122,11 +139,11 @@ import UIKit
     /// 指示器颜色
     @IBInspectable public var pageIndicatorTintColor: UIColor? = UIColor(red: 215.0/255.0, green: 215.0/255.0, blue: 215.0/255.0, alpha: 1.0) {
         didSet {
-            let arrangedSubviews = stackView.arrangedSubviews
-            for (index, arrangedSubview) in arrangedSubviews.enumerated() {
-                if index == currentPageIndex { continue }
-                arrangedSubview.backgroundColor = pageIndicatorTintColor
+            var arrangedSubviews = stackView.arrangedSubviews
+            if currentPageIndex < arrangedSubviews.count {
+                arrangedSubviews.remove(at: currentPageIndex)
             }
+            arrangedSubviews.forEach { $0.backgroundColor = pageIndicatorTintColor }
         }
     }
     
@@ -257,14 +274,14 @@ import UIKit
         let numberOfPages = stackView.arrangedSubviews.count
         if axis == .horizontal {
             // 横向布局
-            let width = pageIndicatorSize.width*CGFloat(numberOfPages) + spacing*CGFloat(max(0, numberOfPages - 1))
-            constraints.append(stackView.widthAnchor.constraint(equalToConstant: width))
+            //let width = pageIndicatorSize.width*CGFloat(numberOfPages) + spacing*CGFloat(max(0, numberOfPages - 1))
+            //constraints.append(stackView.widthAnchor.constraint(equalToConstant: width))
             constraints.append(stackView.heightAnchor.constraint(equalToConstant: pageIndicatorSize.height))
         } else {
             // 纵向布局
+            //let height = pageIndicatorSize.height*CGFloat(numberOfPages) + spacing*CGFloat(max(0, numberOfPages - 1))
+            //constraints.append(stackView.heightAnchor.constraint(equalToConstant: height))
             constraints.append(stackView.widthAnchor.constraint(equalToConstant: pageIndicatorSize.width))
-            let height = pageIndicatorSize.height*CGFloat(numberOfPages) + spacing*CGFloat(max(0, numberOfPages - 1))
-            constraints.append(stackView.heightAnchor.constraint(equalToConstant: height))
         }
         switch contentHorizontalAlignment {
         case .left:
@@ -316,6 +333,7 @@ extension MNPageControl {
                 var indicator: UIView!
                 if let dataSource = dataSource, let view = dataSource.pageControl?(self, viewForPageIndicator: index) {
                     indicator = view
+                    // 防止是从缓存中获取， 这里删除对应缓存
                     indicators.removeAll { $0 == view }
                 } else {
                     indicator = UIView()
@@ -323,16 +341,12 @@ extension MNPageControl {
                 if let delegate = delegate {
                     delegate.pageControl?(self, willDisplay: indicator, forPageAt: index)
                 }
-                if axis == .horizontal {
-                    indicator.layer.cornerRadius = pageIndicatorSize.height/2.0
-                } else {
-                    indicator.layer.cornerRadius = pageIndicatorSize.width/2.0
-                }
-                indicator.clipsToBounds = true
-                indicator.translatesAutoresizingMaskIntoConstraints = false
+                indicator.layer.cornerRadius = min(pageIndicatorSize.width, pageIndicatorSize.height)/2.0
                 indicator.backgroundColor = index == currentPageIndex ? currentPageIndicatorTintColor : pageIndicatorTintColor
                 indicator.layer.borderWidth = index == currentPageIndex ? currentPageIndicatorBorderWidth : pageIndicatorBorderWidth
                 indicator.layer.borderColor = index == currentPageIndex ? currentPageIndicatorBorderColor?.cgColor : pageIndicatorBorderColor?.cgColor
+                indicator.clipsToBounds = true
+                indicator.translatesAutoresizingMaskIntoConstraints = false
                 stackView.addArrangedSubview(indicator)
             }
         }

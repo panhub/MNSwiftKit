@@ -10,17 +10,17 @@ import UIKit
 import MNSwiftKit
 
 class ViewController: UIViewController {
-    
-    private var isAppear: Bool = false
-    
+    // 标记是否已加载数据
+    private var isLoaded: Bool = false
+    // 数据模型数组
     private var rows: [HomeListRow] = []
-    
+    // 列表
     @IBOutlet weak var tableView: UITableView!
-    
+    // 标题顶部约束
     @IBOutlet weak var titleTop: NSLayoutConstraint!
-    
+    // 标题高度
     @IBOutlet weak var titleHeight: NSLayoutConstraint!
-    
+    // 导航高度
     @IBOutlet weak var navHeight: NSLayoutConstraint!
     
     
@@ -31,11 +31,11 @@ class ViewController: UIViewController {
         navHeight.constant = MN_TOP_BAR_HEIGHT
         titleTop.constant = (MN_NAV_BAR_HEIGHT - titleHeight.constant)/2.0 + MN_STATUS_BAR_HEIGHT
         
-        let clss: [String] = ["ToastViewController", "AssetBrowserController", "AssetPickerController", "EmoticonKeyboardController", "EditingViewController", "SegmentedViewController", "AlertViewController", "PopoverViewController", "PasscordViewController", "RequestViewController", "TransitionViewController", "PageControlController"]
-        let modules: [String] = ["Toast", "AssetBrowser", "AssetPicker", "EmoticonKeyboard", "EditingView", "SegmentedViewController", "Components", "Components", "Components", "Request", "Transitioning", "PageControl"]
-        let names: [String] = ["提示弹窗", "资源浏览器", "资源选择器", "表情键盘", "表格编辑", "分段控制器", "提示弹框与操作表单", "弹出视图", "数字键盘与密码输入框", "网络请求", "导航转场动画", "页码指示器"]
-        for (index, name) in names.enumerated() {
-            let row = HomeListRow(index: index, title: name, cls: clss[index], module: modules[index])
+        let titles: [String] = ["提示弹窗", "资源浏览器", "资源选择器", "表情键盘", "表格编辑", "分段控制器", "提示弹框与操作表单", "弹出视图", "数字键盘与密码输入框", "网络请求", "导航转场动画", "页码指示器-常规", "页码指示器-自定义"]
+        let subtitles: [String] = ["ToastViewController", "AssetBrowserController", "AssetPickerController", "EmoticonKeyboardController", "EditingViewController", "SegmentedViewController", "AlertViewController", "PopoverViewController", "PasscordViewController", "RequestViewController", "TransitionViewController", "PageControlController", "FontViewController"]
+        let modules: [String] = ["Toast", "AssetBrowser", "AssetPicker", "EmoticonKeyboard", "EditingView", "SegmentedViewController", "Components", "Components", "Components", "Request", "Transitioning", "PageControl", "PageControl"]
+        for (index, title) in titles.enumerated() {
+            let row = HomeListRow(index: index, title: title, subtitle: subtitles[index], module: modules[index])
             rows.append(row)
         }
         
@@ -46,8 +46,8 @@ class ViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        guard isAppear == false else { return }
-        isAppear = true
+        guard isLoaded == false else { return }
+        isLoaded = true
         let indexPaths: [IndexPath] = (0..<rows.count).compactMap { IndexPath(row: $0, section: 0) }
         tableView.insertRows(at: indexPaths, with: .fade)
     }
@@ -57,7 +57,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        isAppear ? rows.count : 0
+        isLoaded ? rows.count : 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -87,7 +87,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         let row = rows[indexPath.row]
         guard var nameSpace = Bundle.main.infoDictionary?["CFBundleExecutable"] as? String else { return }
         nameSpace = nameSpace.replacingOccurrences(of: " ", with: "_")
-        let cls: AnyClass? = NSClassFromString("\(nameSpace).\(row.cls)")
+        let cls: AnyClass? = NSClassFromString("\(nameSpace).\(row.subtitle)")
         guard let type = cls as? UIViewController.Type else { return }
         let vc = type.init()
         navigationController?.pushViewController(vc, animated: true)

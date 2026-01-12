@@ -10,13 +10,13 @@ import UIKit
 
 class HomeTableCell: UITableViewCell {
     
-    @IBOutlet weak var clsLabel: UILabel!
-    
-    @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet weak var titleLabel: UILabel!
     
     @IBOutlet weak var podLabel: UILabel!
     
     @IBOutlet weak var spmLabel: UILabel!
+    
+    @IBOutlet weak var subtitleLabel: UILabel!
     
     
     override func awakeFromNib() {
@@ -26,8 +26,8 @@ class HomeTableCell: UITableViewCell {
     
     func update(row: HomeListRow) {
         
-        nameLabel.attributedText = row.title
-        clsLabel.text = row.cls
+        titleLabel.attributedText = row.title
+        subtitleLabel.text = row.subtitle
         podLabel.text = "'\(row.module)'"
         spmLabel.text = "MN\(row.module)"
         contentView.backgroundColor = row.index%2 == 0 ? .white : .gray.withAlphaComponent(0.04)
