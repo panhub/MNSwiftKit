@@ -12,12 +12,6 @@ fileprivate let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type
 
 /// 网络数据缓存
 public class MNRequestDatabase {
-    /// 定义存储项
-    fileprivate struct CacheEntry {
-        var key: String!
-        var data: Data!
-        var time: TimeInterval = 0.0
-    }
     /// 默认表名
     public static let Table: String = "t_request_result"
     /// 默认数据库路径
@@ -73,10 +67,6 @@ public class MNRequestDatabase {
 #endif
             return false
         }
-        var entry = CacheEntry()
-        entry.key = key
-        entry.data = data
-        entry.time = Date().timeIntervalSince1970
         var result: Bool = false
         semaphore.wait()
         if let count = count(for: key) {
@@ -110,12 +100,12 @@ public class MNRequestDatabase {
     /// - Returns: 缓存数据
     public func cache(forKey key: String, ttl: TimeInterval = 0.0) -> Any? {
         semaphore.wait()
-        let entry = entry(for: key)
+        let row = fetch(for: key)
         semaphore.signal()
-        guard let entry = entry, let data = entry.data else { return nil }
+        guard let row = row, let data = row.data else { return nil }
         if ttl > 0.0  {
             let time =  TimeInterval(time(nil))
-            guard time <= (entry.time + ttl) else { return nil }
+            guard time <= (row.time + ttl) else { return nil }
         }
         var object: Any?
         do {
@@ -166,7 +156,7 @@ public class MNRequestDatabase {
     /// - Returns: 是否删除成功
     public func removeCache(forKey key: String) -> Bool {
         semaphore.wait()
-        let result = deleteRow(for: key)
+        let result = delete(for: key)
         semaphore.signal()
         return result
     }
@@ -204,7 +194,7 @@ fileprivate extension MNRequestDatabase {
     // 打开数据库
     func open() -> Bool {
         if let _ = db { return true }
-        if sqlite3_open(path.cString(using: .utf8), &db) == SQLITE_OK, execute(sql: "create table if not exists '\(MNRequestDatabase.Table)' (id integer primary key autoincrement, time float, key text, value blob);") {
+        if sqlite3_open(path.cString(using: .utf8), &db) == SQLITE_OK, execute(sql: "create table if not exists '\(MNRequestDatabase.Table)' (id integer primary key autoincrement, key text, value blob, time float);") {
 #if DEBUG
             print("\n已打开网络缓存数据库")
 #endif
@@ -252,11 +242,11 @@ fileprivate extension MNRequestDatabase {
     ///   - key: 需要插入的数据
     /// - Returns: 是否插入缓存
     func insert(_ data: Data, key: String) -> Bool {
-        let sql: String = "insert into '\(MNRequestDatabase.Table)' (time, key, value) values (?1, ?2, ?3);"
+        let sql: String = "insert into '\(MNRequestDatabase.Table)' (key, value, time) values (?1, ?2, ?3);"
         guard let stmt = stmt(sql: sql) else { return false }
-        sqlite3_bind_double(stmt, 1, Double(time(nil)))
-        sqlite3_bind_text(stmt, 2, key.cString(using: .utf8), -1, SQLITE_TRANSIENT)
-        sqlite3_bind_blob(stmt, 3, [UInt8](data), Int32(data.count), SQLITE_TRANSIENT)
+        guard sqlite3_bind_text(stmt, 1, key.cString(using: .utf8), -1, SQLITE_TRANSIENT) == SQLITE_OK else { return false }
+        guard sqlite3_bind_blob(stmt, 2, [UInt8](data), Int32(data.count), SQLITE_TRANSIENT) == SQLITE_OK else { return false }
+        guard sqlite3_bind_double(stmt, 3, Double(time(nil))) == SQLITE_OK else { return false }
         return sqlite3_step(stmt) == SQLITE_DONE
     }
     
@@ -266,33 +256,30 @@ fileprivate extension MNRequestDatabase {
     ///   - key: 依据的数据
     /// - Returns: 是否更新成功
     func update(_ data: Data, for key: String) -> Bool {
-        let sql: String = "update '\(MNRequestDatabase.Table)' set time = ?1, value = ?2 where key = ?3;"
+        let sql: String = "update '\(MNRequestDatabase.Table)' set value = ?1, time = ?2 where key = ?3;"
         guard let stmt = stmt(sql: sql) else { return false }
-        sqlite3_bind_double(stmt, 1, Double(time(nil)))
-        sqlite3_bind_blob(stmt, 2, [UInt8](data), Int32(data.count), SQLITE_TRANSIENT)
-        sqlite3_bind_text(stmt, 3, key.cString(using: .utf8), -1, SQLITE_TRANSIENT)
+        guard sqlite3_bind_blob(stmt, 1, [UInt8](data), Int32(data.count), SQLITE_TRANSIENT) == SQLITE_OK else { return false }
+        guard sqlite3_bind_double(stmt, 2, Double(time(nil))) == SQLITE_OK else { return false }
+        guard sqlite3_bind_text(stmt, 3, key.cString(using: .utf8), -1, SQLITE_TRANSIENT) == SQLITE_OK else { return false }
         return sqlite3_step(stmt) == SQLITE_DONE
     }
     
-    
-    /// 获取数据并封装为模型
-    /// - Parameter key: 依据的数据
+    /// 获取数据
+    /// - Parameter key: 条件数据
     /// - Returns: 查询到的数据
-    func entry(for key: String) -> CacheEntry? {
-        let sql: String = "select time, value from '\(MNRequestDatabase.Table)' where key = ?1;"
+    func fetch(for key: String) -> (key: String, data: Data?, time: Double)? {
+        let sql: String = "select value, time from '\(MNRequestDatabase.Table)' where key = ?1;"
         guard let stmt = stmt(sql: sql) else { return nil }
         guard sqlite3_bind_text(stmt, 1, key.cString(using: .utf8), -1, SQLITE_TRANSIENT) == SQLITE_OK else { return nil }
         if sqlite3_step(stmt) == SQLITE_ROW {
-            let time = sqlite3_column_double(stmt, 0)
-            let bytes = sqlite3_column_blob(stmt, 1)
-            let count = sqlite3_column_bytes(stmt, 1)
-            var entry = CacheEntry()
-            entry.key = key
-            entry.time = time
+            var data: Data?
+            let bytes = sqlite3_column_blob(stmt, 0)
+            let count = sqlite3_column_bytes(stmt, 0)
             if let bytes = bytes {
-                entry.data = Data(bytes: bytes, count: Int(count))
+                data = Data(bytes: bytes, count: Int(count))
             }
-            return entry
+            let time = sqlite3_column_double(stmt, 1)
+            return (key, data, time)
         }
         return nil
     }
@@ -310,7 +297,7 @@ fileprivate extension MNRequestDatabase {
     }
     
     // 删除指定数据
-    func deleteRow(for key: String) -> Bool {
+    func delete(for key: String) -> Bool {
         guard open() else { return false }
         return execute(sql: "delete from '\(MNRequestDatabase.Table)' where key = '\(key)';")
     }
