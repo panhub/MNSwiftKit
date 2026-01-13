@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -48,9 +48,9 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="1JB-Na-mSz">
-                    <rect key="frame" x="15" y="123.66666666666669" width="358" height="33"/>
+                    <rect key="frame" x="15" y="123.66666666666669" width="358" height="36"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="32" id="9iH-Da-5gL"/>
+                        <constraint firstAttribute="height" constant="35" id="9iH-Da-5gL"/>
                     </constraints>
                     <segments>
                         <segment title="Fade"/>
@@ -62,13 +62,13 @@
                     </connections>
                 </segmentedControl>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="方向" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KhD-kj-LgX">
-                    <rect key="frame" x="15" y="175.66666666666666" width="26" height="15.666666666666657"/>
+                    <rect key="frame" x="15" y="178.66666666666666" width="26" height="15.666666666666657"/>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                     <color key="textColor" systemColor="systemGray2Color"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="ONU-TA-jXK">
-                    <rect key="frame" x="15" y="196.33333333333334" width="358" height="33"/>
+                    <rect key="frame" x="15" y="199.33333333333334" width="358" height="36"/>
                     <segments>
                         <segment title="Up"/>
                         <segment title="Left"/>
@@ -80,13 +80,13 @@
                     </connections>
                 </segmentedControl>
                 <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FwQ-cR-aPd">
-                    <rect key="frame" x="149" y="406" width="95" height="40"/>
+                    <rect key="frame" x="146.66666666666666" y="458.66666666666669" width="100" height="45"/>
                     <color key="backgroundColor" systemColor="systemMintColor"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="40" id="FBo-d7-UnJ"/>
-                        <constraint firstAttribute="width" constant="95" id="KOI-J9-ywY"/>
+                        <constraint firstAttribute="height" constant="45" id="FBo-d7-UnJ"/>
+                        <constraint firstAttribute="width" constant="100" id="KOI-J9-ywY"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="15"/>
+                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                     <state key="normal" title="点击弹出">
                         <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -108,7 +108,7 @@
                 <constraint firstItem="i8f-AE-2fc" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="63" id="CcI-DK-rl6"/>
                 <constraint firstItem="qFP-5p-Ti5" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="EDp-KP-MF0"/>
                 <constraint firstItem="ONU-TA-jXK" firstAttribute="trailing" secondItem="1JB-Na-mSz" secondAttribute="trailing" id="IAq-hE-AOD"/>
-                <constraint firstItem="FwQ-cR-aPd" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="JBn-66-r9m"/>
+                <constraint firstItem="FwQ-cR-aPd" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" constant="55" id="JBn-66-r9m"/>
                 <constraint firstItem="Kh3-bD-s2H" firstAttribute="leading" secondItem="i8f-AE-2fc" secondAttribute="leading" id="Jup-s5-T9P"/>
                 <constraint firstItem="Kh3-bD-s2H" firstAttribute="top" secondItem="i8f-AE-2fc" secondAttribute="bottom" constant="20" id="KLb-Sy-Zjj"/>
                 <constraint firstAttribute="trailing" secondItem="1JB-Na-mSz" secondAttribute="trailing" constant="20" id="O6h-VX-3NY"/>
@@ -130,10 +130,10 @@
     <resources>
         <image name="back" width="50" height="50"/>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemMintColor">
-            <color red="0.0" green="0.78039215689999997" blue="0.74509803919999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.7803921568627451" blue="0.74509803921568629" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

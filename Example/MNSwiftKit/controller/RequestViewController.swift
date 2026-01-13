@@ -31,6 +31,10 @@ class RequestViewController: UIViewController {
     /// 记录下载请求
     private let downloadRequest = MNDownloadRequest()
     
+    deinit {
+        downloadRequest.cancel()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -45,6 +49,12 @@ class RequestViewController: UIViewController {
         playView.isTouchEnabled = false
         playView.coverView.isHidden = true
         playView.player = player.player
+        
+        let p = MNRequestDatabase()
+        if p.setCache("字符串", forKey: "test") {
+            let t = p.cache(forKey: "test")
+            print(t)
+        }
     }
 
     @IBAction func back() {
@@ -58,6 +68,8 @@ class RequestViewController: UIViewController {
         resultView.isHidden = true
         let request = MNDataRequest(url: "https://jsonplaceholder.typicode.com/posts")
         request.method = .get
+        request.cachePolicy = .returnCacheDontLoad
+        request.cacheTTL = 10.0
         request.serializationType = .json
         request.start {
             MNToast.showActivity("请稍后...", style: .large, at: .center)
@@ -135,6 +147,7 @@ class RequestViewController: UIViewController {
         player.removeAll()
         playView.isHidden = true
         resultView.isHidden = true
+        progressWidth.constant = 0.0
         let url = "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
         downloadRequest.url = url
         downloadRequest.downloadOptions = [.createIntermediateDirectories, .removeExistsFile]

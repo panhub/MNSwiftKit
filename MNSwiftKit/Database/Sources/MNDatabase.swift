@@ -276,7 +276,7 @@ public class MNDatabase {
     /// 数据操作队列
     private let queue = DispatchQueue(label: "com.mn.database.queue", attributes: .concurrent)
     /// 打开数据库时查询存在的表
-    private var searchExistTable = true
+    private var reloadExistTable = true
     /// 数据库路径
     public let path: String
     /// 数据库
@@ -326,13 +326,11 @@ extension MNDatabase {
             semaphore.signal()
         }
         guard opendb() else { return false }
-        guard searchExistTable else { return true }
-        tables.removeAll()
+        guard reloadExistTable else { return true }
         // 加载表
         var stmt: OpaquePointer!
         let sql: String = "select name from sqlite_master where type = 'table';"
         if sqlite3_prepare_v2(db, sql.cString(using: .utf8), -1, &stmt, nil) == SQLITE_OK {
-            searchExistTable = false
             repeat {
                 let result = sqlite3_step(stmt)
                 if result == SQLITE_ROW {
@@ -340,9 +338,12 @@ extension MNDatabase {
                     let name: String = String(cString: value)
                     tables.append(name)
                 } else {
-                    if result != SQLITE_DONE {
+                    if result == SQLITE_DONE {
+                        reloadExistTable = false
+                    } else {
+                        // 加载表名时出错
                         tables.removeAll()
-                        searchExistTable = true
+                        reloadExistTable = true
 #if DEBUG
                         print("\n[\(#line)] sql <\(sql)> failed (\(result))")
                         if let errmsg = sqlite3_errmsg(db) {
@@ -355,7 +356,6 @@ extension MNDatabase {
                 }
             } while true
             sqlite3_finalize(stmt)
-            stmt = nil
         } else {
 #if DEBUG
             print("\n[\(#line)] load table name failed.")
@@ -368,11 +368,13 @@ extension MNDatabase {
     /// 关闭数据库
     public func close() {
         semaphore.wait()
+        defer {
+            semaphore.signal()
+        }
         closedb()
         stmts.removeAll()
         tables.removeAll()
-        searchExistTable = true
-        semaphore.signal()
+        reloadExistTable = true
     }
 }
 
@@ -1287,8 +1289,9 @@ extension MNDatabase {
     /// 关闭数据库
     fileprivate func closedb() {
         guard let db = db else { return }
+        sqlite3_interrupt(db)
         repeat {
-            let result = sqlite3_close(db)
+            let result = sqlite3_close_v2(db)
             if result == SQLITE_BUSY {
                 while let stmt = sqlite3_next_stmt(db, nil) {
                     sqlite3_finalize(stmt)
@@ -1393,9 +1396,10 @@ extension MNDatabase {
     public func exists(table tableName: String) -> Bool {
         guard open() else { return false }
         semaphore.wait()
-        let result: Bool = tables.contains(tableName)
-        semaphore.signal()
-        return result
+        defer {
+            semaphore.signal()
+        }
+        return tables.contains(tableName)
     }
     
     /// 获取表字段信息
