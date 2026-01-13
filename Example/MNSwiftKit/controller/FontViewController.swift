@@ -156,7 +156,27 @@ extension FontViewController: UIScrollViewDelegate {
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        
+        let contentOffset = scrollView.contentOffset
+        guard contentOffset.y > 0.0 else { return }
+        let point = CGPoint(x: tableView.frame.width/2.0, y: contentOffset.y)
+        guard let section = section(at: point) else { return }
+        let family = fontFamilys[section]
+        let title = String(family.name.prefix(1)).uppercased()
+        guard let index = familyCollations.firstIndex(where: { $0.title == title }) else { return }
+        pageControl.currentPageIndex = index
+    }
+    
+    private func section(at point: CGPoint) -> Int? {
+        if let indexPath = tableView.indexPathForRow(at: point) {
+            return indexPath.section
+        }
+        for section in 0..<fontFamilys.count {
+            let headerRect = tableView.rectForHeader(inSection: section)
+            if headerRect.contains(point) {
+                return section
+            }
+        }
+        return nil
     }
 }
 

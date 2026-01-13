@@ -68,7 +68,7 @@ public class MNRequestManager {
                 return
             }
             dataRequest.mn_retryEventCount = 0
-            dataRequest.source = .network
+            dataRequest.dataSource = .network
         }
         // 判断是否需要回调
         if request.ignoringErrorCodes.contains(code) { return }
@@ -84,8 +84,8 @@ extension MNRequestManager {
     /// - Parameter request: 数据请求
     public func load(_ request: MNDataRequest) {
         // 判断是否需要读取缓存
-        if request.method == .get, request.cachePolicy == .returnCacheDontLoad, request.mn_retryEventCount <= 0, let cache = MNRequestDatabase.default.cache(forKey: request.cacheForKey, timeInterval: request.cacheValidInterval) {
-            request.source = .cache
+        if request.method == .get, request.cachePolicy == .returnCacheDontLoad, request.mn_retryEventCount <= 0, let cache = MNRequestDatabase.default.cache(forKey: request.cacheForKey, ttl: request.cacheTTL) {
+            request.dataSource = .cache
             request.isFirstRunning = false
             request.loadFinish(result: .success(cache))
 #if DEBUG

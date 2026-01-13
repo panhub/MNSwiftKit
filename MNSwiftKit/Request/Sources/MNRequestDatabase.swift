@@ -13,10 +13,10 @@ fileprivate let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type
 /// 网络数据缓存
 public class MNRequestDatabase {
     /// 定义存储项
-    fileprivate struct Row {
-        var time: Int = 0
+    fileprivate struct CacheEntry {
         var key: String!
-        var value: Data!
+        var data: Data!
+        var time: TimeInterval = 0.0
     }
     /// 默认表名
     public static let Table: String = "t_request_result"
@@ -35,11 +35,14 @@ public class MNRequestDatabase {
     /// 数据库指针
     private var db: OpaquePointer!
     
-    /// 创建缓存数据库
+    /// 构造缓存工具
     /// - Parameters:
     ///   - path: 数据库路径
-    ///   - table: 表名
     public init(path: String = Path) {
+        self.path = path
+#if DEBUG
+        print("\n===============网络缓存路径===============\n\(path)\n======================================")
+#endif
         if FileManager.default.fileExists(atPath: path) == false {
             do {
                 try FileManager.default.createDirectory(atPath: (path as NSString).deletingLastPathComponent, withIntermediateDirectories: true, attributes: nil)
@@ -49,10 +52,6 @@ public class MNRequestDatabase {
 #endif
             }
         }
-        self.path = path
-#if DEBUG
-        print("\n===============网络缓存路径===============\n\(path)\n======================================")
-#endif
     }
     
     deinit {
@@ -74,16 +73,17 @@ public class MNRequestDatabase {
 #endif
             return false
         }
-        var row = Row()
-        row.key = key
-        row.value = data
+        var entry = CacheEntry()
+        entry.key = key
+        entry.data = data
+        entry.time = Date().timeIntervalSince1970
         var result: Bool = false
         semaphore.wait()
         if let count = count(for: key) {
-            if count == 0 {
-                result = insertRow(row)
+            if count <= 0 {
+                result = insert(data, key: key)
             } else {
-                result = updateRow(row)
+                result = update(data, for: key)
             }
         }
         semaphore.signal()
@@ -106,20 +106,20 @@ public class MNRequestDatabase {
     /// 读取缓存
     /// - Parameters:
     ///   - key: 缓存标识
-    ///   - timeInterval: 缓存有效期 单位秒
+    ///   - ttl: 缓存有效时长 单位秒
     /// - Returns: 缓存数据
-    public func cache(forKey key: String, timeInterval: Int = 0) -> Any? {
+    public func cache(forKey key: String, ttl: TimeInterval = 0.0) -> Any? {
         semaphore.wait()
-        let row = row(for: key)
+        let entry = entry(for: key)
         semaphore.signal()
-        guard let row = row, let value = row.value else { return nil }
-        if timeInterval > 0  {
-            let time =  Int(time(nil))
-            guard time <= (row.time + timeInterval) else { return nil }
+        guard let entry = entry, let data = entry.data else { return nil }
+        if ttl > 0.0  {
+            let time =  TimeInterval(time(nil))
+            guard time <= (entry.time + ttl) else { return nil }
         }
         var object: Any?
         do {
-            object = try JSONSerialization.jsonObject(with: value, options: .fragmentsAllowed)
+            object = try JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed)
         } catch {
 #if DEBUG
             print("\n解析缓存数据失败:\n\(error)")
@@ -131,12 +131,12 @@ public class MNRequestDatabase {
     /// 异步读取缓存
     /// - Parameters:
     ///   - key: 缓存标识
-    ///   - timeInterval: 缓存有效期 单位秒
+    ///   - ttl: 缓存有效时长 单位秒
     ///   - completionHandler: 缓存数据回调
-    public func cache(forKey key: String, timeInterval: Int = 0, completion completionHandler: @escaping ((Any?)->Void)) {
+    public func cache(forKey key: String, ttl: TimeInterval = 0.0, completion completionHandler: @escaping ((Any?)->Void)) {
         queue.async { [weak self] in
             guard let self = self else { return }
-            let object = self.cache(forKey:key, timeInterval: timeInterval)
+            let object = self.cache(forKey:key, ttl: ttl)
             completionHandler(object)
         }
     }
@@ -200,10 +200,11 @@ public class MNRequestDatabase {
 
 // MARK: - 数据库支持
 fileprivate extension MNRequestDatabase {
-    /**打开数据库*/
+    
+    // 打开数据库
     func open() -> Bool {
         if let _ = db { return true }
-        if sqlite3_open(path.cString(using: .utf8), &db) == SQLITE_OK, execute(sql: "create table if not exists '\(MNRequestDatabase.Table)' (id integer primary key autoincrement, time integer, key text, value blob);") {
+        if sqlite3_open(path.cString(using: .utf8), &db) == SQLITE_OK, execute(sql: "create table if not exists '\(MNRequestDatabase.Table)' (id integer primary key autoincrement, time float, key text, value blob);") {
 #if DEBUG
             print("\n已打开网络缓存数据库")
 #endif
@@ -216,7 +217,7 @@ fileprivate extension MNRequestDatabase {
         return false
     }
     
-    /**关闭数据库*/
+    // 关闭数据库
     private func close() {
         guard let db = db else { return }
         repeat {
@@ -245,51 +246,58 @@ fileprivate extension MNRequestDatabase {
         self.db = nil
     }
     
-    /**保存数据项*/
-    func insertRow(_ row: Row) -> Bool {
-        guard let key = row.key, let value = row.value else { return false }
+    /// 插入数据
+    /// - Parameters:
+    ///   - data: 需要插入的数据
+    ///   - key: 需要插入的数据
+    /// - Returns: 是否插入缓存
+    func insert(_ data: Data, key: String) -> Bool {
         let sql: String = "insert into '\(MNRequestDatabase.Table)' (time, key, value) values (?1, ?2, ?3);"
         guard let stmt = stmt(sql: sql) else { return false }
-        let time = Int32(time(nil))
-        sqlite3_bind_int(stmt, 1, time)
+        sqlite3_bind_double(stmt, 1, Double(time(nil)))
         sqlite3_bind_text(stmt, 2, key.cString(using: .utf8), -1, SQLITE_TRANSIENT)
-        sqlite3_bind_blob(stmt, 3, [UInt8](value), Int32(value.count), SQLITE_TRANSIENT)
+        sqlite3_bind_blob(stmt, 3, [UInt8](data), Int32(data.count), SQLITE_TRANSIENT)
         return sqlite3_step(stmt) == SQLITE_DONE
     }
     
-    /**更新数据*/
-    func updateRow(_ row: Row) -> Bool {
-        guard let key = row.key, let value = row.value else { return false }
-        let time = Int32(time(nil))
+    /// 更新数据
+    /// - Parameters:
+    ///   - data: 需要更新的数据
+    ///   - key: 依据的数据
+    /// - Returns: 是否更新成功
+    func update(_ data: Data, for key: String) -> Bool {
         let sql: String = "update '\(MNRequestDatabase.Table)' set time = ?1, value = ?2 where key = ?3;"
         guard let stmt = stmt(sql: sql) else { return false }
-        sqlite3_bind_int(stmt, 1, time)
-        sqlite3_bind_blob(stmt, 2, [UInt8](value), Int32(value.count), SQLITE_TRANSIENT)
+        sqlite3_bind_double(stmt, 1, Double(time(nil)))
+        sqlite3_bind_blob(stmt, 2, [UInt8](data), Int32(data.count), SQLITE_TRANSIENT)
         sqlite3_bind_text(stmt, 3, key.cString(using: .utf8), -1, SQLITE_TRANSIENT)
         return sqlite3_step(stmt) == SQLITE_DONE
     }
     
-    /**获取指定数据*/
-    func row(for key: String) -> Row? {
+    
+    /// 获取数据并封装为模型
+    /// - Parameter key: 依据的数据
+    /// - Returns: 查询到的数据
+    func entry(for key: String) -> CacheEntry? {
         let sql: String = "select time, value from '\(MNRequestDatabase.Table)' where key = ?1;"
         guard let stmt = stmt(sql: sql) else { return nil }
         guard sqlite3_bind_text(stmt, 1, key.cString(using: .utf8), -1, SQLITE_TRANSIENT) == SQLITE_OK else { return nil }
         if sqlite3_step(stmt) == SQLITE_ROW {
-            let time = sqlite3_column_int(stmt, 0)
+            let time = sqlite3_column_double(stmt, 0)
             let bytes = sqlite3_column_blob(stmt, 1)
             let count = sqlite3_column_bytes(stmt, 1)
-            var row = Row()
-            row.key = key
-            row.time = Int(time)
+            var entry = CacheEntry()
+            entry.key = key
+            entry.time = time
             if let bytes = bytes {
-                row.value = Data(bytes: bytes, count: Int(count))
+                entry.data = Data(bytes: bytes, count: Int(count))
             }
-            return row
+            return entry
         }
         return nil
     }
     
-    /**获取数据数量*/
+    /// 获取数据数量
     func count(for key: String) -> Int? {
         let sql = "select count(*) from '\(MNRequestDatabase.Table)' where key = ?1;"
         guard let stmt = stmt(sql: sql) else { return nil }
@@ -301,24 +309,24 @@ fileprivate extension MNRequestDatabase {
         return nil
     }
     
-    /**删除指定数据*/
+    // 删除指定数据
     func deleteRow(for key: String) -> Bool {
         guard open() else { return false }
         return execute(sql: "delete from '\(MNRequestDatabase.Table)' where key = '\(key)';")
     }
     
-    /**删除所有数据*/
+    // 删除所有数据
     func deleteAll() -> Bool {
         guard open() else { return false }
         return execute(sql: "delete from '\(MNRequestDatabase.Table)';")
     }
     
-    /**执行语句*/
+    // 执行语句
     func execute(sql: String) -> Bool {
         return sqlite3_exec(db, sql.cString(using: .utf8), nil, nil, nil) == SQLITE_OK
     }
     
-    /**获取句柄*/
+    // 获取句柄
     func stmt(sql: String) -> OpaquePointer? {
         guard open() else { return nil }
         var stmt: OpaquePointer! = stmts[sql]

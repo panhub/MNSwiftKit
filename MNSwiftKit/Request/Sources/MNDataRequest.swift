@@ -35,9 +35,9 @@ open class MNDataRequest: MNRequest {
     public enum CachePolicy {
         /// 不使用缓存
         case never
-        /// 优先请求, 失败后考虑使用缓存
+        /// 优先请求, 失败后考虑使用缓存, 请求成功更新缓存
         case returnCacheElseLoad
-        /// 优先使用缓存, 没有缓存或缓存过期则考虑加载
+        /// 优先使用缓存, 没有缓存或缓存过期则请求, 请求成功插入缓存
         case returnCacheDontLoad
     }
     /// POST数据体 非上传数据
@@ -45,19 +45,21 @@ open class MNDataRequest: MNRequest {
     /// 请求方式
     public var method: MNNetworkMethod = .get
     /// 重试次数 失败时重新请求 NSURLErrorCancelled 无效
-    public var retyCount: Int = 0
+    internal var retyCount: Int = 0
     /// 重试时间间隔 默认立即重试
     public var retryInterval: TimeInterval = 0.0
     /// 数据来源
-    public var source: DataSource = .network
+    public var dataSource: DataSource = .network
     /// 缓存策略
     public var cachePolicy: CachePolicy = .never
-    /// 缓存有效时长 单位秒 0则无限期 默认0
-    public var cacheValidInterval: Int = 0
-    /// 缓存的key 支持定制
-    open var cacheForKey: String { url }
+    /// 缓存有效时长
+    /// - 以秒为单位，0则无限期
+    public var cacheTTL: TimeInterval = 0.0
     /// 请求产生的Task
     public var dataTask: URLSessionDataTask? { task as? URLSessionDataTask }
+    
+    /// 缓存时的key
+    open var cacheForKey: String { url }
     
     /// 即将刷新数据
     open func prepareReload() {}
@@ -82,8 +84,8 @@ open class MNDataRequest: MNRequest {
         // 判断是否需要读取缓存
         let httpResult = MNRequestResult(result: result)
         httpResult.request = self
-        if result.isSuccess == false, method == .get, cachePolicy == .returnCacheElseLoad, let cache = MNRequestDatabase.default.cache(forKey: cacheForKey, timeInterval: cacheValidInterval) {
-            source = .cache
+        if result.isSuccess == false, method == .get, cachePolicy == .returnCacheElseLoad, let cache = MNRequestDatabase.default.cache(forKey: cacheForKey, ttl: cacheTTL) {
+            dataSource = .cache
             httpResult.data = cache
         }
         // 定制自己的结果
@@ -92,7 +94,7 @@ open class MNDataRequest: MNRequest {
             // 依据结果回调
             if let data = httpResult.data {
                 // 判断是否缓存结果
-                if method == .get, source == .network, cachePolicy != .never, MNRequestDatabase.default.setCache(data, forKey: cacheForKey) {
+                if method == .get, dataSource == .network, cachePolicy != .never, MNRequestDatabase.default.setCache(data, forKey: cacheForKey) {
 #if DEBUG
                     print("已缓存数据")
 #endif
