@@ -8,12 +8,13 @@
 import UIKit
 
 /// 重复选择回调
-public protocol MNTabBarItemRepeatSelection {
+public protocol MNTabBarItemRepeatedSelection {
+    
     /// 标签项重复选择
     /// - Parameters:
     ///   - tabBarController: 标签栏控制器
-    ///   - index: 索引
-    func tabBarController(_ tabBarController: MNTabBarController, repeatSelectItem index: Int) -> Void
+    ///   - index: 重复选中的索引
+    func tabBarController(_ tabBarController: MNTabBarController, repeatedSelectionItemAt index: Int)
 }
 
 /// 标签栏控制器
@@ -129,13 +130,14 @@ open class MNTabBarController: UITabBarController {
 // MARK: - 标签栏按钮点击事件
 extension MNTabBarController: MNTabBarDelegate {
     
-    public func tabBar(_ tabBar: MNTabBar, shouldSelectItem index: Int) -> Bool {
+    public func tabBar(_ tabBar: MNTabBar, shouldSelectItemAt index: Int) -> Bool {
         guard let viewControllers = viewControllers else { return false }
         guard index < viewControllers.count else { return false }
-        return (delegate?.tabBarController?(self, shouldSelect: viewControllers[index]) ?? true)
+        if let delegate = delegate, let shouldSelect = delegate.tabBarController?(self, shouldSelect: viewControllers[index]), shouldSelect == false { return false }
+        return true
     }
     
-    public func tabBar(_ tabBar: MNTabBar, selectedItem index: Int) {
+    public func tabBar(_ tabBar: MNTabBar, didSelectItemAt index: Int) {
         if selectedIndex == index {
             // 再次选中
             var viewController = selectedViewController
@@ -146,8 +148,8 @@ extension MNTabBarController: MNTabBarDelegate {
                     viewController = (vc as! UITabBarController).selectedViewController
                 } else { break }
             }
-            guard let delegate = viewController as? MNTabBarItemRepeatSelection else { return }
-            delegate.tabBarController(self, repeatSelectItem: index)
+            guard let delegate = viewController as? MNTabBarItemRepeatedSelection else { return }
+            delegate.tabBarController(self, repeatedSelectionItemAt: index)
         } else {
             // 修改当前选中状态
             selectedIndex = index

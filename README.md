@@ -597,7 +597,7 @@ class ViewController: MNExtendViewController {
     }
     
     // 创建自定义左按钮
-    override func navigationBarShouldCreateLeftBarItem() -> UIView? {
+    override var navigationBarLeftButtonItem: UIView? {
         let button = UIButton(type: .custom)
         button.setTitle("返回", for: .normal)
         button.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
@@ -605,7 +605,7 @@ class ViewController: MNExtendViewController {
     }
     
     // 创建自定义右按钮
-    override func navigationBarShouldCreateRightBarItem() -> UIView? {
+    override var navigationBarRightButtonItem: UIView? {
         let button = UIButton(type: .custom)
         button.setTitle("完成", for: .normal)
         button.addTarget(self, action: #selector(completeButtonTapped), for: .touchUpInside)
@@ -613,7 +613,7 @@ class ViewController: MNExtendViewController {
     }
     
     // 是否绘制返回按钮
-    override func navigationBarShouldRenderBackBarItem() -> Bool {
+    override func navigationBarShouldRenderBackItem() -> Bool {
         return false
     }
 }
@@ -714,9 +714,9 @@ tabBarController.bottomBar.setBadge(5, for: 0)
 标签栏重复选择
 
 ```swift
-class HomeViewController: UIViewController, MNTabBarItemRepeatSelection {
+class HomeViewController: UIViewController, MNTabBarItemRepeatedSelection {
     
-    func tabBarController(_ tabBarController: MNTabBarController, repeatSelectItem index: Int) {
+    func tabBarController(_ tabBarController: MNTabBarController, repeatedSelectionItemAt index: Int) {
         // 处理标签栏重复选择（点击已选中的标签）
         // 例如：滚动到顶部
         tableView.setContentOffset(.zero, animated: true)

@@ -13,24 +13,22 @@ import CoreFoundation
 @objc public protocol MNNavigationBarDelegate: NSObjectProtocol {
     
     /// 获取左按钮视图
-    /// - Returns: 导航左按钮
-    @objc optional func navigationBarShouldCreateLeftBarItem() -> UIView?
+    @objc optional var navigationBarLeftButtonItem: UIView? { get }
     
     /// 获取右按钮视图
-    /// - Returns: 导航右按钮
-    @objc optional func navigationBarShouldCreateRightBarItem() -> UIView?
+    @objc optional var navigationBarRightButtonItem: UIView? { get }
     
-    /// 是否创建戴航返回按钮
+    /// 是否创建返回按钮
     /// - Returns: 是否创建返回按钮
-    @objc optional func navigationBarShouldRenderBackBarItem() -> Bool
+    @objc optional func navigationBarShouldRenderBackItem() -> Bool
     
     /// 左按钮点击事件
     /// - Parameter leftBarItem: 导航左按钮
-    @objc optional func navigationBarLeftBarItemTouchUpInside(_ leftBarItem: UIView!)
+    @objc optional func navigationBarLeftItemTouchUpInside(_ leftBarItem: UIView!)
     
     /// 右按钮点击事件
     /// - Parameter rightBarItem: 导航右按钮
-    @objc optional func navigationBarRightBarItemTouchUpInside(_ rightBarItem: UIView!)
+    @objc optional func navigationBarRightItemTouchUpInside(_ rightBarItem: UIView!)
     
     /// 已经添加完子视图
     /// - Parameter navigationBar: 导航栏
@@ -38,37 +36,26 @@ import CoreFoundation
 }
 
 public class MNNavigationBar: UIView {
-    
-    /// 按钮大小
-    public static let itemSize: CGFloat = 20.0
-    
     /// 前边距
     public static let leading: CGFloat = 18.0
-    
     /// 后边距
     public static let trailing: CGFloat = 18.0
-    
+    /// 按钮大小
+    public static let itemSize: CGSize = .init(width: 20.0, height: 20.0)
     /// 事件代理
     public weak var delegate: MNNavigationBarDelegate?
-    
     /// 为状态栏自动适配高度
     public var adjustsForStatusBar: Bool = true
-    
     /// 毛玻璃视图
     private let visualView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
-    
     /// 导航左按钮
     public private(set) var leftBarItem: UIView!
-    
     /// 导航右按钮
     public private(set) var rightBarItem: UIView!
-    
     /// 导航标题
     public let titleLabel = UILabel()
-    
     /// 底部分割线
     private let separatorView = UIView()
-    
     
     public override func didMoveToSuperview() {
         super.didMoveToSuperview()
@@ -90,11 +77,11 @@ public class MNNavigationBar: UIView {
         let adjustsHeight = adjustsForStatusBar ? MN_STATUS_BAR_HEIGHT : 0.0
         
         // 左按钮
-        if let delegate = delegate, let barItem = delegate.navigationBarShouldCreateLeftBarItem?() {
+        if let delegate = delegate, let barItem = delegate.navigationBarLeftButtonItem {
             leftBarItem = barItem
         } else {
-            leftBarItem = UIControl(frame: .init(origin: .zero, size: .init(width: MNNavigationBar.itemSize, height: MNNavigationBar.itemSize)))
-            if let delegate = delegate, let renderBackBarItem = delegate.navigationBarShouldRenderBackBarItem?(), renderBackBarItem {
+            leftBarItem = UIControl(frame: .init(origin: .zero, size: MNNavigationBar.itemSize))
+            if let delegate = delegate, let renderBackBarItem = delegate.navigationBarShouldRenderBackItem?(), renderBackBarItem {
                 // 返回按钮
                 leftBarItem.layer.contents = BaseResource.image(named: "back")?.cgImage
                 (leftBarItem as! UIControl).addTarget(self, action: #selector(leftBarItemTouchUpInside(_:)), for: UIControl.Event.touchUpInside)
@@ -105,10 +92,10 @@ public class MNNavigationBar: UIView {
         addSubview(leftBarItem)
         
         // 右按钮
-        if let delegate = delegate, let barItem = delegate.navigationBarShouldCreateRightBarItem?() {
+        if let delegate = delegate, let barItem = delegate.navigationBarRightButtonItem {
             rightBarItem = barItem
         } else {
-            rightBarItem = UIControl(frame: .init(origin: .zero, size: .init(width: MNNavigationBar.itemSize, height: MNNavigationBar.itemSize)))
+            rightBarItem = UIControl(frame: .init(origin: .zero, size: MNNavigationBar.itemSize))
             (rightBarItem as! UIControl).addTarget(self, action: #selector(rightBarItemTouchUpInside(_:)), for: UIControl.Event.touchUpInside)
         }
         rightBarItem.frame.origin.x = frame.width - MNNavigationBar.trailing - rightBarItem.frame.width
@@ -141,11 +128,13 @@ public class MNNavigationBar: UIView {
             separatorView.bottomAnchor.constraint(equalTo: bottomAnchor),
             separatorView.rightAnchor.constraint(equalTo: rightAnchor)
         ])
-        
-        // 回调代理
-        if let delegate = delegate {
-            delegate.navigationBarDidLayoutSubitems?(self)
-        }
+    }
+    
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        guard mn.isFirstTime else { return }
+        guard let delegate = delegate else { return }
+        delegate.navigationBarDidLayoutSubitems?(self)
     }
 }
 
@@ -225,8 +214,6 @@ extension MNNavigationBar {
                 switch constraint.firstAttribute {
                 case .left:
                     insets.left = constraint.constant
-                case .bottom:
-                    insets.bottom = constraint.constant
                 case .right:
                     insets.right = constraint.constant
                 default: break
@@ -240,10 +227,8 @@ extension MNNavigationBar {
                 switch constraint.firstAttribute {
                 case .left:
                     constraint.constant = newValue.left
-                case .bottom:
-                    constraint.constant = newValue.bottom
                 case .right:
-                    constraint.constant = newValue.right
+                    constraint.constant = -newValue.right
                 default: break
                 }
             }
@@ -258,13 +243,13 @@ extension MNNavigationBar {
     /// - Parameter leftBarItem: 左按钮
     @objc private func leftBarItemTouchUpInside(_ leftBarItem: UIView) {
         guard let delegate = delegate else { return }
-        delegate.navigationBarLeftBarItemTouchUpInside?(leftBarItem)
+        delegate.navigationBarLeftItemTouchUpInside?(leftBarItem)
     }
     
     /// 导航右按钮点击
     /// - Parameter rightBarItem: 右按钮
     @objc private func rightBarItemTouchUpInside(_ rightBarItem: UIView) {
         guard let delegate = delegate else { return }
-        delegate.navigationBarRightBarItemTouchUpInside?(rightBarItem)
+        delegate.navigationBarRightItemTouchUpInside?(rightBarItem)
     }
 }

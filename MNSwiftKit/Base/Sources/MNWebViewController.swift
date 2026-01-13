@@ -218,7 +218,7 @@ extension MNWebViewController {
     }
     
     @objc open func close() {
-        super.navigationBarLeftBarItemTouchUpInside(nil)
+        super.navigationBarLeftItemTouchUpInside(nil)
     }
 }
 
@@ -227,11 +227,11 @@ extension MNWebViewController {
     
     /// 是否渲染返回按钮
     /// - Returns: 是否渲染返回按钮
-    open override func navigationBarShouldRenderBackBarItem() -> Bool { false }
+    open override func navigationBarShouldRenderBackItem() -> Bool { false }
     
     /// 创建导航左按钮
     /// - Returns: 导航左按钮
-    open override func navigationBarShouldCreateLeftBarItem() -> UIView? {
+    open override var navigationBarLeftButtonItem: UIView? {
         let leftItemView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 62.0, height: 22.0))
         let backButton = UIButton(type: .custom)
         backButton.frame.size = CGSize(width: leftItemView.frame.height, height: leftItemView.frame.height)
@@ -253,7 +253,7 @@ extension MNWebViewController {
     
     /// 创建导航右按钮
     /// - Returns: 导航右按钮
-    open override func navigationBarShouldCreateRightBarItem() -> UIView? {
+    open override var navigationBarRightButtonItem: UIView? {
         reloadButton = UIButton(type: .custom)
         reloadButton.frame = CGRect(x: 0.0, y: 0.0, width: 23.0, height: 23.0)
         reloadButton.setBackgroundImage(BaseResource.image(named: "refresh"), for: .normal)

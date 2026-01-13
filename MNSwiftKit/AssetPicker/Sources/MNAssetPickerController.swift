@@ -150,7 +150,7 @@ class MNAssetPickerController: UIViewController {
         super.viewWillAppear(animated)
         setNeedsStatusBarAppearanceUpdate()
         // 请求相册
-        if mn.isFirstAssociated {
+        if mn.isFirstTime {
             apply()
         }
     }

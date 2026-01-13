@@ -9,16 +9,19 @@ import UIKit
 
 /// 标签栏代理
 @objc public protocol MNTabBarDelegate: NSObjectProtocol {
+    
     /// 标签栏选择事件
     /// - Parameters:
     ///   - tabBar: 标签栏
     ///   - index: 选择索引
-    @objc func tabBar(_ tabBar: MNTabBar, selectedItem index: Int) -> Void
-    /// 标签栏即将选择告知
+    func tabBar(_ tabBar: MNTabBar, didSelectItemAt index: Int)
+    
+    /// 标签栏想要选中询问
     /// - Parameters:
     ///   - tabBar: 标签栏
-    ///   - index: 选择索引
-    @objc optional func tabBar(_ tabBar: MNTabBar, shouldSelectItem index: Int) -> Bool
+    ///   - index: 想要选中的索引
+    /// - Returns: 是否选中
+    @objc optional func tabBar(_ tabBar: MNTabBar, shouldSelectItemAt index: Int) -> Bool
 }
 
 /// 标签栏
@@ -28,23 +31,9 @@ public class MNTabBar: UIView {
     /// 按钮
     private var items: [MNTabBarItem] = [MNTabBarItem]()
     /// 阴影线
-    private lazy var separatorView: UIView = {
-        let separatorView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: bounds.width, height: 0.7))
-        separatorView.autoresizingMask = [.flexibleWidth, .flexibleBottomMargin]
-        if #available(iOS 13.0, *) {
-            separatorView.backgroundColor = .opaqueSeparator
-        } else {
-            separatorView.backgroundColor = .gray.withAlphaComponent(0.15)
-        }
-        return separatorView
-    }()
-    /// 毛玻璃视图
-    private lazy var visualView: UIVisualEffectView = {
-        let visualView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
-        visualView.frame = bounds
-        visualView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        return visualView
-    }()
+    private let separatorView = UIView()
+    /// 毛玻璃
+    private let visualView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
     /// 选择索引
     public var selectedIndex: Int = 0 {
         didSet {
@@ -62,9 +51,32 @@ public class MNTabBar: UIView {
     
     public override init(frame: CGRect) {
         super.init(frame: UIScreen.main.bounds.inset(by: UIEdgeInsets(top: UIScreen.main.bounds.height - MN_BOTTOM_BAR_HEIGHT, left: 0.0, bottom: 0.0, right: 0.0)))
-        backgroundColor = .clear
+        backgroundColor = .white
+        
+        // 毛玻璃
+        visualView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(visualView)
+        NSLayoutConstraint.activate([
+            visualView.topAnchor.constraint(equalTo: topAnchor),
+            visualView.leftAnchor.constraint(equalTo: leftAnchor),
+            visualView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            visualView.rightAnchor.constraint(equalTo: rightAnchor)
+        ])
+        
+        // 分割线
+        if #available(iOS 13.0, *) {
+            separatorView.backgroundColor = .opaqueSeparator
+        } else {
+            separatorView.backgroundColor = .gray.withAlphaComponent(0.15)
+        }
+        separatorView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(separatorView)
+        NSLayoutConstraint.activate([
+            separatorView.topAnchor.constraint(equalTo: topAnchor),
+            separatorView.leftAnchor.constraint(equalTo: leftAnchor),
+            separatorView.rightAnchor.constraint(equalTo: rightAnchor),
+            separatorView.heightAnchor.constraint(equalToConstant: 0.7)
+        ])
     }
     
     required init?(coder: NSCoder) {
@@ -130,8 +142,10 @@ public class MNTabBar: UIView {
     /// 按钮点击事件
     /// - Parameter item: 按钮
     @objc private func itemButtonTouchUpInside(_ item: MNTabBarItem) {
-        guard (delegate?.tabBar?(self, shouldSelectItem: item.tag) ?? true) else { return }
-        delegate?.tabBar(self, selectedItem: item.tag)
+        if let delegate = delegate, let shouldSelect = delegate.tabBar?(self, shouldSelectItemAt: item.tag), shouldSelect == false { return }
+        selectedIndex = item.tag
+        guard let delegate = delegate else { return }
+        delegate.tabBar(self, didSelectItemAt: item.tag)
     }
 }
 
@@ -152,14 +166,31 @@ extension MNTabBar {
     
     ///  阴影线位置
     public var separatorInset: UIEdgeInsets {
-        get { UIEdgeInsets(top: 0.0, left: separatorView.frame.minX, bottom: frame.height - separatorView.frame.maxY, right: frame.width - separatorView.frame.maxX) }
+        get {
+            var insets: UIEdgeInsets = .zero
+            for constraint in constraints {
+                guard let firstItem = constraint.firstItem as? UIView, firstItem == separatorView else { continue }
+                switch constraint.firstAttribute {
+                case .left:
+                    insets.left = constraint.constant
+                case .right:
+                    insets.right = constraint.constant
+                default: break
+                }
+            }
+            return insets
+        }
         set {
-            let autoresizingMask = separatorView.autoresizingMask
-            separatorView.autoresizingMask = []
-            let rect = bounds.inset(by: UIEdgeInsets(top: 0.0, left: max(newValue.left, 0.0), bottom: frame.height - separatorView.frame.maxY, right: max(newValue.right, 0.0)))
-            separatorView.frame.origin.x = rect.minX
-            separatorView.frame.size.width = rect.width
-            separatorView.autoresizingMask = autoresizingMask
+            for constraint in constraints {
+                guard let firstItem = constraint.firstItem as? UIView, firstItem == separatorView else { continue }
+                switch constraint.firstAttribute {
+                case .left:
+                    constraint.constant = newValue.left
+                case .right:
+                    constraint.constant = -newValue.right
+                default: break
+                }
+            }
         }
     }
 }

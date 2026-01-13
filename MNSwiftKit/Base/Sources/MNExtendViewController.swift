@@ -52,17 +52,17 @@ open class MNExtendViewController: MNBaseViewController {
 // MARK: - MNNavigationBarDelegate
 extension MNExtendViewController: MNNavigationBarDelegate {
     
-    open func navigationBarShouldCreateLeftBarItem() -> UIView? { nil }
+    open var navigationBarLeftButtonItem: UIView? { nil }
     
-    open func navigationBarShouldCreateRightBarItem() -> UIView? { nil }
+    open var navigationBarRightButtonItem: UIView? { nil }
     
-    open func navigationBarShouldRenderBackBarItem() -> Bool { false }
+    open func navigationBarShouldRenderBackItem() -> Bool { false }
     
     open func navigationBarDidLayoutSubitems(_ navigationBar: MNNavigationBar) {}
     
-    open func navigationBarRightBarItemTouchUpInside(_ rightBarItem: UIView!) {}
+    open func navigationBarRightItemTouchUpInside(_ rightBarItem: UIView!) {}
     
-    open func navigationBarLeftBarItemTouchUpInside(_ leftBarItem: UIView!) {
+    open func navigationBarLeftItemTouchUpInside(_ leftBarItem: UIView!) {
         mn.pop()
     }
 }

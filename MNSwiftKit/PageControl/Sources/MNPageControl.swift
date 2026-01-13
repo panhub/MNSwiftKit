@@ -271,7 +271,7 @@ import UIKit
             ])
         }
         var constraints: [NSLayoutConstraint] = []
-        let numberOfPages = stackView.arrangedSubviews.count
+        //let numberOfPages = stackView.arrangedSubviews.count
         if axis == .horizontal {
             // 横向布局
             //let width = pageIndicatorSize.width*CGFloat(numberOfPages) + spacing*CGFloat(max(0, numberOfPages - 1))
