@@ -14,10 +14,10 @@ class EmoticonKeyboardController: UIViewController {
     @IBOutlet weak var textView: UITextView!
     // 显示选中的图片表情
     @IBOutlet weak var imageView: UIImageView!
-    // 控制表情键盘样式
-    @IBOutlet weak var styleSwitch: UISwitch!
-    // 控制是否启用表情键盘
-    @IBOutlet weak var keyboardSwitch: UISwitch!
+    // 表情键盘样式控制
+    @IBOutlet weak var styleControl: UISegmentedControl!
+    // 键盘类型控制
+    @IBOutlet weak var typeControl: UISegmentedControl!
     // 候选文字
     @IBOutlet weak var placeholderLabel: UILabel!
     // 返回按钮顶部约束
@@ -43,7 +43,7 @@ class EmoticonKeyboardController: UIViewController {
         textView.textContainerInset = .init(top: 8.0, left: 8.0, bottom: 8.0, right: 8.0)
         textView.textContainer.lineFragmentPadding = 0.0
         
-        keyboardValueChanged(keyboardSwitch)
+        typeValueChanged(typeControl)
         
         NotificationCenter.default.addObserver(self, selector: #selector(textDidChangeNotification(_:)), name: UITextView.textDidChangeNotification, object: nil)
     }
@@ -65,31 +65,31 @@ class EmoticonKeyboardController: UIViewController {
         navigationController?.popViewController(animated: true)
     }
     
-    @IBAction func styleValueChanged(_ sender: UISwitch) {
-        guard keyboardSwitch.isOn else { return }
+    @IBAction func styleValueChanged(_ sender: UISegmentedControl) {
+        guard typeControl.selectedSegmentIndex == 1 else { return }
         let isFirstResponder = textView.isFirstResponder
         textView.resignFirstResponder()
-        keyboardValueChanged(keyboardSwitch)
+        typeValueChanged(typeControl)
         if isFirstResponder {
             textView.becomeFirstResponder()
         }
     }
     
-    @IBAction func keyboardValueChanged(_ sender: UISwitch) {
+    @IBAction func typeValueChanged(_ sender: UISegmentedControl) {
         let isFirstResponder = textView.isFirstResponder
         textView.resignFirstResponder()
-        if sender.isOn {
+        if sender.selectedSegmentIndex == 0 {
+            // 系统键盘
+            textView.inputView = nil
+        } else {
             // 表情键盘
             let options = MNEmoticonKeyboard.Options()
             options.hidesForSingle = true
             options.packets = [.wechat, .favorites, .face, .animal, .food, .favorites, .object, .travel, .exercise]
             options.enableFeedbackWhenInputClicks = true
-            let emoticonKeyboard = MNEmoticonKeyboard(frame: .init(origin: .zero, size: .init(width: MN_SCREEN_WIDTH, height: 310.0)), style: styleSwitch.isOn ? .compact : .paging, options: options)
+            let emoticonKeyboard = MNEmoticonKeyboard(frame: .init(origin: .zero, size: .init(width: MN_SCREEN_WIDTH, height: 310.0)), style: styleControl.selectedSegmentIndex == 1 ? .compact : .paging, options: options)
             emoticonKeyboard.delegate = self
             textView.inputView = emoticonKeyboard
-        } else {
-            // 系统键盘
-            textView.inputView = nil
         }
         if isFirstResponder {
             textView.becomeFirstResponder()

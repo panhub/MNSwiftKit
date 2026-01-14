@@ -16,32 +16,17 @@ import MNNameSpace
 @objc public protocol MNDataEmptyDelegate: NSObjectProtocol {
     
     /// 空数据视图生命周期 -已经出现
-    @objc optional func dataEmptyViewDidAppear() -> Void
+    @objc optional func dataEmptyViewDidAppear()
     
     /// 空数据视图生命周期 -已经消失
-    @objc optional func dataEmptyViewDidDisappear() -> Void
-    
-    /// 空数据视图图片点击事件
-    /// - Parameter image: 图片
-    @objc optional func dataEmptyViewImageTouchUpInside(_ image: UIImage?) -> Void
-    
-    /// 空数据视图文字点击事件
-    /// - Parameter description: 文字
-    @objc optional func dataEmptyViewDescriptionTouchUpInside(_ description: String?) -> Void
-    
-    /// 空数据视图按钮点击事件
-    @objc optional func dataEmptyViewButtonTouchUpInside() -> Void
-}
-
-/// 空数据视图数据源代理
-@objc public protocol MNDataEmptySource: NSObjectProtocol {
+    @objc optional func dataEmptyViewDidDisappear()
     
     /// 是否支持展示空数据视图
     /// - Parameter superview: 父视图
     /// - Returns: 是否展示
     @objc optional func dataEmptyViewShouldDisplay(_ superview: UIView) -> Bool
     
-    /// 是否支持滚动<添加到UIScrollView有效>
+    /// 显示时是否允许ScrollView滚动<添加到UIScrollView有效>
     /// - Parameter superview: 父视图
     /// - Returns: 是否可以滚动
     @objc optional func dataEmptyViewShouldScroll(_ superview: UIView) -> Bool
@@ -51,15 +36,30 @@ import MNNameSpace
     /// - Returns: 是否相应点击事件
     @objc optional func dataEmptyViewShouldTouchImage(_ superview: UIView) -> Bool
     
+    /// 默认渐现动画时长('>0.0'则加载动画)
+    /// - Parameter superview: 父视图
+    /// - Returns: 动画时长
+    @objc optional func fadeInDurationForDataEmptyView(_ superview: UIView) -> TimeInterval
+    
     /// 文字是否响应点击事件
     /// - Parameter superview: 父视图
     /// - Returns: 是否相应点击事件
     @objc optional func dataEmptyViewShouldTouchDescription(_ superview: UIView) -> Bool
     
-    /// 位置约束
-    /// - Parameter superview: 父视图
-    /// - Returns: 周围约束
-    @objc optional func edgeInsetForDataEmptyView(_ superview: UIView) -> UIEdgeInsets
+    /// 空数据视图图片点击事件
+    /// - Parameter image: 图片
+    @objc optional func dataEmptyViewImageTouchUpInside(_ image: UIImage?)
+    
+    /// 空数据视图文字点击事件
+    /// - Parameter description: 文字
+    @objc optional func dataEmptyViewDescriptionTouchUpInside(_ description: String?)
+    
+    /// 空数据视图按钮点击事件
+    @objc optional func dataEmptyViewButtonTouchUpInside()
+}
+
+/// 空数据视图数据源代理
+@objc public protocol MNDataEmptySource: NSObjectProtocol {
     
     /// 背景颜色
     /// - Parameter superview: 父视图
@@ -164,29 +164,21 @@ import MNNameSpace
     ///   - state: 按钮状态
     /// - Returns: 按钮标题富文本
     @objc optional func buttonAttributedTitleForDataEmptyView(_ superview: UIView, with state: UIControl.State) -> NSAttributedString?
-    
-    /// 自定义展示动画(优先于`fadeInDurationForDataEmptyView`渐现动画)
-    /// - Parameter superview: 父视图
-    /// - Returns: 动画
-    @objc optional func displayAnimationForDataEmptyView(_ superview: UIView) -> CAAnimation?
-    
-    /// 默认渐现动画时长('0.0'则不加载动画)
-    /// - Parameter superview: 父视图
-    /// - Returns: 动画时长
-    @objc optional func fadeInDurationForDataEmptyView(_ superview: UIView) -> TimeInterval
-}
-
-/// 空数据视图构成元素 component
-@objc public enum MNDataEmptyComponent: Int {
-    case image, text, button, custom
 }
 
 /// 空数据视图
 public class MNDataEmptyView: UIView {
+    
+    /// 空数据视图构成元素 component
+    @objc(MNDataEmptyComponent)
+    public enum Component: Int {
+        case image, text, button, custom
+    }
+    
     /// 记录父视图是否可滑动
     fileprivate var isScrollEnabled: Bool?
     /// 记录上一次的父视图
-    private weak var referenceView: UIView?
+    private weak var parentView: UIView?
     /// 文字显示
     private let textLabel: UILabel = UILabel()
     /// 图片显示
@@ -196,18 +188,18 @@ public class MNDataEmptyView: UIView {
     /// 内容显示
     private let stackView: UIStackView = UIStackView()
     /// 记录用户信息
-    @objc public var userInfo: Any?
+    public var userInfo: Any?
     /// 交互代理
-    @objc public weak var delegate: MNDataEmptyDelegate?
+    public weak var delegate: MNDataEmptyDelegate?
     /// 数据源
-    @objc public weak var dataSource: MNDataEmptySource?
+    public weak var dataSource: MNDataEmptySource?
     /// 构成元素
-    private var elements: [MNDataEmptyComponent] = [.image, .text, .button]
+    private var elements: [MNDataEmptyView.Component] = [.image, .text, .button]
     /// 构成元素对外接口
-    public var components: [MNDataEmptyComponent] {
+    public var components: [MNDataEmptyView.Component] {
         get { elements }
         set {
-            var seen = Set<MNDataEmptyComponent>()
+            var seen = Set<MNDataEmptyView.Component>()
             let components = newValue.filter { seen.insert($0).inserted }
             if components == elements { return }
             elements = components
@@ -235,7 +227,7 @@ public class MNDataEmptyView: UIView {
         }
     }
     
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         
         stackView.axis = .vertical
@@ -243,7 +235,10 @@ public class MNDataEmptyView: UIView {
         stackView.distribution = .equalSpacing
         stackView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(stackView)
-        addConstraints([NSLayoutConstraint(item: stackView, attribute: .centerX, relatedBy: .equal, toItem: self, attribute: .centerX, multiplier: 1.0, constant: 0.0), NSLayoutConstraint(item: stackView, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1.0, constant: 0.0)])
+        addConstraints([
+            NSLayoutConstraint(item: stackView, attribute: .centerX, relatedBy: .equal, toItem: self, attribute: .centerX, multiplier: 1.0, constant: 0.0),
+            NSLayoutConstraint(item: stackView, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1.0, constant: 0.0)
+        ])
         
         imageView.tag = .min
         imageView.isHidden = true
@@ -252,7 +247,10 @@ public class MNDataEmptyView: UIView {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.imageTouchUpInside)))
         stackView.addArrangedSubview(imageView)
-        imageView.addConstraints([NSLayoutConstraint(item: imageView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 0.0), NSLayoutConstraint(item: imageView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 0.0)])
+        imageView.addConstraints([
+            NSLayoutConstraint(item: imageView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 0.0),
+            NSLayoutConstraint(item: imageView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 0.0)
+        ])
         
         textLabel.tag = .min
         textLabel.isHidden = true
@@ -261,7 +259,9 @@ public class MNDataEmptyView: UIView {
         textLabel.translatesAutoresizingMaskIntoConstraints = false
         textLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.descriptionTouchUpInside)))
         stackView.addArrangedSubview(textLabel)
-        textLabel.addConstraint(NSLayoutConstraint(item: textLabel, attribute: .width, relatedBy: .lessThanOrEqual, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: .greatestFiniteMagnitude))
+        textLabel.addConstraint(
+            NSLayoutConstraint(item: textLabel, attribute: .width, relatedBy: .lessThanOrEqual, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: .greatestFiniteMagnitude)
+        )
         
         button.tag = .min
         button.isHidden = true
@@ -271,12 +271,15 @@ public class MNDataEmptyView: UIView {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(self.buttonTouchUpInside), for: .touchUpInside)
         stackView.addArrangedSubview(button)
-        button.addConstraints([NSLayoutConstraint(item: button, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 0.0), NSLayoutConstraint(item: button, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 0.0)])
+        button.addConstraints([
+            NSLayoutConstraint(item: button, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 0.0),
+            NSLayoutConstraint(item: button, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 0.0)
+        ])
     }
     
-    convenience init(referenceView: UIView) {
+    public convenience init(parentView: UIView) {
         self.init(frame: .zero)
-        self.referenceView = referenceView
+        self.parentView = parentView
     }
     
     required init?(coder: NSCoder) {
@@ -285,8 +288,8 @@ public class MNDataEmptyView: UIView {
     
     public override func willMove(toSuperview newSuperview: UIView?) {
         super.willMove(toSuperview: newSuperview)
-        if referenceView == nil, let newSuperview = newSuperview {
-            referenceView = newSuperview
+        if let newSuperview = newSuperview {
+            parentView = newSuperview
         }
     }
 }
@@ -295,25 +298,25 @@ public class MNDataEmptyView: UIView {
 extension MNDataEmptyView {
     
     /// 布局方向 (默认`vertical`)
-    @objc public var axis: NSLayoutConstraint.Axis {
+    public var axis: NSLayoutConstraint.Axis {
         get { stackView.axis }
         set { stackView.axis = newValue }
     }
     
     /// 布局间隔 (默认20`pt`)
-    @objc public var spacing: CGFloat {
+    public var spacing: CGFloat {
         get { stackView.spacing }
         set { stackView.spacing = newValue }
     }
     
     /// 对齐方式
-    @objc public var alignment: UIStackView.Alignment {
+    public var alignment: UIStackView.Alignment {
         get { stackView.alignment }
         set { stackView.alignment = newValue }
     }
     
     /// 内容偏移 (参照中心点)
-    @objc public var offset: UIOffset {
+    public var offset: UIOffset {
         set {
             for constraint in constraints {
                 switch constraint.firstAttribute {
@@ -342,7 +345,7 @@ extension MNDataEmptyView {
     }
     
     /// 自定义视图
-    @objc public var customView: UIView? {
+    public var customView: UIView? {
         get {
             stackView.arrangedSubviews.first { $0.tag > .min }
         }
@@ -363,7 +366,7 @@ extension MNDataEmptyView {
     }
     
     /// 图片
-    @objc public var image: UIImage? {
+    public var image: UIImage? {
         get { imageView.image }
         set {
             imageView.image = newValue
@@ -372,7 +375,7 @@ extension MNDataEmptyView {
     }
     
     /// 图片尺寸 (默认`zero`)
-    @objc public var imageSize: CGSize {
+    public var imageSize: CGSize {
         set {
             for constraint in imageView.constraints {
                 switch constraint.firstAttribute {
@@ -401,31 +404,31 @@ extension MNDataEmptyView {
     }
     
     /// 图片圆角 (默认0`pt`)
-    @objc public var imageRadius: CGFloat {
+    public var imageRadius: CGFloat {
         get { imageView.layer.cornerRadius }
         set { imageView.layer.cornerRadius = newValue }
     }
     
     /// 图片填充模式 (默认`scaleAspectFit`)
-    @objc public var imageMode: UIView.ContentMode {
+    public var imageMode: UIView.ContentMode {
         get { imageView.contentMode }
         set { imageView.contentMode = newValue }
     }
     
     /// 图片是否响应事件 `default is false`
-    @objc public var imageTouchEnabled: Bool {
+    public var imageTouchEnabled: Bool {
         get { imageView.isUserInteractionEnabled }
         set { imageView.isUserInteractionEnabled = newValue }
     }
     
     /// 文字是否响应事件 `default is false`
-    @objc public var descriptionTouchEnabled: Bool {
+    public var descriptionTouchEnabled: Bool {
         get { textLabel.isUserInteractionEnabled }
         set { textLabel.isUserInteractionEnabled = newValue }
     }
     
     /// 描述富文本
-    @objc public var attributedDescription: NSAttributedString? {
+    public var attributedDescription: NSAttributedString? {
         get { textLabel.attributedText }
         set {
             textLabel.attributedText = newValue
@@ -438,7 +441,7 @@ extension MNDataEmptyView {
     }
     
     /// 富文本最大宽度
-    @objc public var descriptionFiniteMagnitude: CGFloat {
+    public var descriptionFiniteMagnitude: CGFloat {
         set {
             for constraint in textLabel.constraints {
                 switch constraint.firstAttribute {
@@ -462,7 +465,7 @@ extension MNDataEmptyView {
     }
 
     /// 按钮大小 (默认zero)
-    @objc public var buttonSize: CGSize {
+    public var buttonSize: CGSize {
         set {
             for constraint in button.constraints {
                 switch constraint.firstAttribute {
@@ -491,19 +494,19 @@ extension MNDataEmptyView {
     }
     
     /// 按钮圆角
-    @objc public var buttonRadius: CGFloat {
+    public var buttonRadius: CGFloat {
         get { button.layer.cornerRadius }
         set { button.layer.cornerRadius = newValue }
     }
     
     /// 按钮边框宽度
-    @objc public var buttonBorderWidth: CGFloat {
+    public var buttonBorderWidth: CGFloat {
         get { button.layer.borderWidth }
         set { button.layer.borderWidth = newValue }
     }
     
     /// 按钮边框颜色
-    @objc public var buttonBorderColor: UIColor? {
+    public var buttonBorderColor: UIColor? {
         get {
             if let borderColor = button.layer.borderColor {
                 return UIColor(cgColor: borderColor)
@@ -514,7 +517,7 @@ extension MNDataEmptyView {
     }
     
     /// 按钮背景颜色
-    @objc public var buttonBackgroundColor: UIColor? {
+    public var buttonBackgroundColor: UIColor? {
         get { button.backgroundColor }
         set { button.backgroundColor = newValue }
     }
@@ -523,7 +526,7 @@ extension MNDataEmptyView {
     /// - Parameters:
     ///   - attributedTitle: 按钮标题
     ///   - state: 状态
-    @objc public func setButtonAttributedTitle(_ attributedTitle: NSAttributedString?, for state: UIControl.State) {
+    public func setButtonAttributedTitle(_ attributedTitle: NSAttributedString?, for state: UIControl.State) {
         button.setAttributedTitle(attributedTitle, for: state)
         hideButtonIfNeeded()
     }
@@ -531,7 +534,7 @@ extension MNDataEmptyView {
     /// 按钮富文本标题
     /// - Parameter state: 状态
     /// - Returns: 状态下富文本标题
-    @objc public func buttonAttributedTitle(for state: UIControl.State) -> NSAttributedString? {
+    public func buttonAttributedTitle(for state: UIControl.State) -> NSAttributedString? {
         button.attributedTitle(for: state)
     }
     
@@ -539,7 +542,7 @@ extension MNDataEmptyView {
     /// - Parameters:
     ///   - image: 背景图片
     ///   - state: 状态
-    @objc public func setButtonBackgroundImage(_ image: UIImage?, for state: UIControl.State) {
+    public func setButtonBackgroundImage(_ image: UIImage?, for state: UIControl.State) {
         button.setBackgroundImage(image, for: state)
         hideButtonIfNeeded()
     }
@@ -547,7 +550,7 @@ extension MNDataEmptyView {
     /// 按钮背景图片
     /// - Parameter state: 状态
     /// - Returns: 状态下背景图片
-    @objc public func buttonBackgroundImage(for state: UIControl.State) -> UIImage? {
+    public func buttonBackgroundImage(for state: UIControl.State) -> UIImage? {
         button.backgroundImage(for: state)
     }
     
@@ -597,9 +600,8 @@ extension MNDataEmptyView {
     /// 询问代理 是则显示 否则删除
     @MainActor
     @objc public func showIfNeeded() {
-        guard let dataSource = dataSource else { return }
-        guard let referenceView = referenceView else { return }
-        if (dataSource.dataEmptyViewShouldDisplay?(referenceView) ?? false) == true {
+        guard let parentView = parentView else { return }
+        if let delegate = delegate, let display = delegate.dataEmptyViewShouldDisplay?(parentView), display {
             show()
         } else {
             dismiss()
@@ -610,73 +612,77 @@ extension MNDataEmptyView {
     @MainActor
     @objc public func show() {
         guard let dataSource = dataSource else { return }
-        guard let referenceView = referenceView else { return }
         var view: UIView!
-        var isDisplay: Bool = false
+        var displaying: Bool = false
         if let superview = superview {
-            isDisplay = true
+            displaying = alpha == 1.0
             view = superview
             superview.sendSubviewToBack(self)
         } else {
-            view = referenceView
-            referenceView.insertSubview(self, at: 0)
+            guard let parentView = parentView else { return }
+            view = parentView
+            translatesAutoresizingMaskIntoConstraints = false
+            parentView.insertSubview(self, at: 0)
+            NSLayoutConstraint.activate([
+                topAnchor.constraint(equalTo: parentView.topAnchor),
+                leftAnchor.constraint(equalTo: parentView.leftAnchor),
+                bottomAnchor.constraint(equalTo: parentView.bottomAnchor),
+                rightAnchor.constraint(equalTo: parentView.rightAnchor)
+            ])
         }
-        autoresizingMask = []
-        let edgeInset = dataSource.edgeInsetForDataEmptyView?(referenceView) ?? .zero
-        frame = CGRect(x: 0.0, y: 0.0, width: referenceView.frame.width, height: referenceView.frame.height).inset(by: edgeInset)
-        autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        UIView.performWithoutAnimation {
-            userInfo = dataSource.userInfoForDataEmptyView?(view)
-            backgroundColor = dataSource.backgroundColorForDataEmptyView?(view)
-            offset = dataSource.offsetForDataEmptyView?(view) ?? .zero
-            axis = dataSource.axisForDataEmptyView?((view)) ?? .vertical
-            spacing = dataSource.spacingForDataEmptyView?(view) ?? 20.0
-            alignment = dataSource.alignmentForDataEmptyView?(view) ?? .center
-            customView = dataSource.customViewForDataEmptyView?(view)
-            image = dataSource.imageForDataEmptyView?(view)
-            imageSize = dataSource.imageSizeForDataEmptyView?(view) ?? .zero
-            imageRadius = dataSource.imageRadiusForDataEmptyView?(view) ?? 0.0
-            imageMode = dataSource.imageModeForDataEmptyView?(view) ?? .scaleAspectFit
-            imageTouchEnabled = dataSource.dataEmptyViewShouldTouchImage?(view) ?? false
-            descriptionTouchEnabled = dataSource.dataEmptyViewShouldTouchDescription?(view) ?? false
-            attributedDescription = dataSource.descriptionForDataEmptyView?(view)
-            descriptionFiniteMagnitude = min(dataSource.descriptionFiniteMagnitudeForDataEmptyView?(view) ?? .greatestFiniteMagnitude, frame.width)
-            buttonSize = dataSource.buttonSizeForDataEmptyView?(view) ?? .zero
-            buttonRadius = dataSource.buttonRadiusForDataEmptyView?(view) ?? 0.0
-            buttonBorderColor = dataSource.buttonBorderColorForDataEmptyView?(view)
-            buttonBorderWidth = dataSource.buttonBorderWidthForDataEmptyView?(view) ?? 0.0
-            buttonBackgroundColor = dataSource.buttonBackgroundColorForDataEmptyView?(view)
-            setButtonAttributedTitle(dataSource.buttonAttributedTitleForDataEmptyView?(view, with: .normal), for: .normal)
-            setButtonAttributedTitle(dataSource.buttonAttributedTitleForDataEmptyView?(view, with: .highlighted), for: .highlighted)
-            setButtonBackgroundImage(dataSource.buttonBackgroundImageForDataEmptyView?(view, with: .normal), for: .normal)
-            setButtonBackgroundImage(dataSource.buttonBackgroundImageForDataEmptyView?(view, with: .highlighted), for: .highlighted)
-            layoutIfNeeded()
-        }
-        if view is UIScrollView, let isScrollEnabled = dataSource.dataEmptyViewShouldScroll?(view) {
-            let scrollView = view as! UIScrollView
-            self.isScrollEnabled = scrollView.isScrollEnabled
-            scrollView.isScrollEnabled = isScrollEnabled
-        }
-        guard isDisplay == false else { return }
-        // 动画处理
-        if let animation = dataSource.displayAnimationForDataEmptyView?(view) {
-            animation.delegate = self
-            layer.removeAllAnimations()
-            layer.add(animation, forKey: "com.mn.empty.view.display")
-        } else if let duration = dataSource.fadeInDurationForDataEmptyView?(view), duration > 0.0 {
-            alpha = 0.0
-            UIView.animate(withDuration: duration, delay: 0.0, options: [.curveEaseInOut]) { [weak self] in
-                guard let self = self else { return }
-                self.alpha = 1.0
-            } completion: { [weak self] _ in
-                guard let self = self else { return }
-                guard let _ = superview else { return }
-                if let delegate = self.delegate {
-                    delegate.dataEmptyViewDidDisappear?()
-                }
+        let areAnimationsEnabled = UIView.areAnimationsEnabled
+        UIView.setAnimationsEnabled(false)
+        userInfo = dataSource.userInfoForDataEmptyView?(view)
+        backgroundColor = dataSource.backgroundColorForDataEmptyView?(view)
+        offset = dataSource.offsetForDataEmptyView?(view) ?? .zero
+        axis = dataSource.axisForDataEmptyView?((view)) ?? .vertical
+        spacing = dataSource.spacingForDataEmptyView?(view) ?? 20.0
+        alignment = dataSource.alignmentForDataEmptyView?(view) ?? .center
+        customView = dataSource.customViewForDataEmptyView?(view)
+        image = dataSource.imageForDataEmptyView?(view)
+        imageSize = dataSource.imageSizeForDataEmptyView?(view) ?? .zero
+        imageRadius = dataSource.imageRadiusForDataEmptyView?(view) ?? 0.0
+        imageMode = dataSource.imageModeForDataEmptyView?(view) ?? .scaleAspectFit
+        attributedDescription = dataSource.descriptionForDataEmptyView?(view)
+        descriptionFiniteMagnitude = min(dataSource.descriptionFiniteMagnitudeForDataEmptyView?(view) ?? .greatestFiniteMagnitude, frame.width)
+        buttonSize = dataSource.buttonSizeForDataEmptyView?(view) ?? .zero
+        buttonRadius = dataSource.buttonRadiusForDataEmptyView?(view) ?? 0.0
+        buttonBorderColor = dataSource.buttonBorderColorForDataEmptyView?(view)
+        buttonBorderWidth = dataSource.buttonBorderWidthForDataEmptyView?(view) ?? 0.0
+        buttonBackgroundColor = dataSource.buttonBackgroundColorForDataEmptyView?(view)
+        setButtonAttributedTitle(dataSource.buttonAttributedTitleForDataEmptyView?(view, with: .normal), for: .normal)
+        setButtonAttributedTitle(dataSource.buttonAttributedTitleForDataEmptyView?(view, with: .highlighted), for: .highlighted)
+        setButtonBackgroundImage(dataSource.buttonBackgroundImageForDataEmptyView?(view, with: .normal), for: .normal)
+        setButtonBackgroundImage(dataSource.buttonBackgroundImageForDataEmptyView?(view, with: .highlighted), for: .highlighted)
+        layoutIfNeeded()
+        UIView.setAnimationsEnabled(areAnimationsEnabled)
+        if let delegate = delegate {
+            if let touchEnabled = delegate.dataEmptyViewShouldTouchImage?(view) {
+                imageTouchEnabled = touchEnabled
             }
-        } else if let delegate = delegate {
-            delegate.dataEmptyViewDidAppear?()
+            if let touchEnabled = delegate.dataEmptyViewShouldTouchDescription?(view) {
+                descriptionTouchEnabled = touchEnabled
+            }
+            if view is UIScrollView, let scrollEnabled = delegate.dataEmptyViewShouldScroll?(view) {
+                let scrollView = view as! UIScrollView
+                isScrollEnabled = scrollView.isScrollEnabled
+                scrollView.isScrollEnabled = scrollEnabled
+            }
+        }
+        guard displaying == false else { return }
+        var animationDuration: TimeInterval = 0.0
+        if let delegate = delegate, let duration = delegate.fadeInDurationForDataEmptyView?(view) {
+            alpha = 0.0
+            animationDuration = duration
+        }
+        UIView.animate(withDuration: animationDuration, delay: 0.0, options: .curveEaseInOut) { [weak self] in
+            guard let self = self else { return }
+            self.alpha = 1.0
+        } completion: { [weak self] _ in
+            guard let self = self else { return }
+            if let delegate = self.delegate {
+                delegate.dataEmptyViewDidDisappear?()
+            }
         }
     }
     
@@ -684,31 +690,18 @@ extension MNDataEmptyView {
     @MainActor
     @objc public func dismiss() {
         guard let superview = superview else { return }
-        if let isScrollEnabled = isScrollEnabled {
-            self.isScrollEnabled = nil
+        userInfo = nil
+        if let scrollEnabled = isScrollEnabled {
+            isScrollEnabled = nil
             if superview is UIScrollView {
                 let scrollView = superview as! UIScrollView
-                scrollView.isScrollEnabled = isScrollEnabled
+                scrollView.isScrollEnabled = scrollEnabled
             }
         }
-        userInfo = nil
-        autoresizingMask = []
-        removeFromSuperview()
         if let delegate = delegate {
             delegate.dataEmptyViewDidDisappear?()
         }
    }
-}
-
-// MARK: - CAAnimationDelegate
-extension MNDataEmptyView: CAAnimationDelegate {
-    
-    public func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
-        guard flag else { return }
-        guard let _ = superview else { return }
-        guard let delegate = delegate else { return }
-        delegate.dataEmptyViewDidAppear?()
-    }
 }
 
 // MARK: - Observer
@@ -783,14 +776,14 @@ extension UIView {
         guard let emptyView = mn.emptyView else { return }
         guard let dataSource = emptyView.dataSource else { return }
         var visible: Bool = false
-        if let display = dataSource.dataEmptyViewShouldDisplay?(self) {
+        if let delegate = emptyView.delegate, let display = delegate.dataEmptyViewShouldDisplay?(self) {
             visible = display
-        } else if let itemCount = empty_item_count {
+        } else if let itemCount = mn.dataItemCount {
             visible = itemCount <= 0
         } else if self is UIScrollView {
             let scrollView = self as! UIScrollView
-            let contentSize = scrollView.contentSize
-            visible = (contentSize.width.isNaN || contentSize.height.isNaN || contentSize.width <= 0.0 || contentSize.height <= 0.0)
+            let contentRect = CGRect(origin: .zero, size: scrollView.contentSize)
+            visible = contentRect.isNull || contentRect.isEmpty
         }
         if visible {
             // 显示
@@ -800,33 +793,6 @@ extension UIView {
             emptyView.dismiss()
         }
     }
-    
-    /// 表格数量
-    private var empty_item_count: Int? {
-        if self is UITableView {
-            var itemCount: Int = 0
-            let tableView = self as! UITableView
-            guard let dataSource = tableView.dataSource else { return 0 }
-            let sections = dataSource.numberOfSections?(in: tableView) ?? 1
-            guard sections > 0 else { return 0 }
-            for section in 0..<sections {
-                itemCount += dataSource.tableView(tableView, numberOfRowsInSection: section)
-            }
-            return itemCount
-        }
-        if self is UICollectionView {
-            var itemCount: Int = 0
-            let collectionView = self as! UICollectionView
-            guard let dataSource = collectionView.dataSource else { return 0 }
-            let sections = dataSource.numberOfSections?(in: collectionView) ?? 1
-            guard sections > 0 else { return 0 }
-            for section in 0..<sections {
-                itemCount += dataSource.collectionView(collectionView, numberOfItemsInSection: section)
-            }
-            return itemCount
-        }
-        return nil
-    }
 }
 
 // MARK: - 构造命名空间/包装器
@@ -835,8 +801,8 @@ extension UIView {
     fileprivate struct MNDataEmptyAssociated {
         
         nonisolated(unsafe) static var view: Void?
-        nonisolated(unsafe) static var display: Void?
         nonisolated(unsafe) static var observer: Void?
+        nonisolated(unsafe) static var autoDisplay: Void?
         nonisolated(unsafe) static var components: Void?
     }
 }
@@ -845,18 +811,18 @@ extension MNNameSpaceWrapper where Base: UIView {
     
     /// 空数据视图数据源
     @MainActor
-    public var emptySource: MNDataEmptySource? {
+    public var emptyViewSource: MNDataEmptySource? {
         set {
             if let newValue = newValue {
                 let emptyView = viewForDataEmpty()
                 emptyView.dataSource = newValue
                 if base is UIScrollView {
-                    observer.beginObserve(base as! UIScrollView)
+                    dataEmptyObserver.beginObserve(base as! UIScrollView)
                 }
             } else if let emptyView = emptyView {
                 emptyView.dataSource = nil
                 if base is UIScrollView {
-                    observer.endObserve()
+                    dataEmptyObserver.endObserve()
                 }
             }
         }
@@ -868,7 +834,7 @@ extension MNNameSpaceWrapper where Base: UIView {
     
     /// 空数据视图代理
     @MainActor
-    public var emptyDelegate: MNDataEmptyDelegate? {
+    public var emptyViewDelegate: MNDataEmptyDelegate? {
         set {
             if let newValue = newValue {
                 let emptyView = viewForDataEmpty()
@@ -884,25 +850,25 @@ extension MNNameSpaceWrapper where Base: UIView {
     }
     
     /// 自动根据数据源刷新空数据视图
-    public var autoDisplayEmpty: Bool {
+    public var autoDisplayEmptyView: Bool {
         set {
             if newValue {
                 if base is UIScrollView {
-                    observer.beginObserve(base as! UIScrollView)
+                    dataEmptyObserver.beginObserve(base as! UIScrollView)
                 }
             } else {
-                observer.endObserve()
+                dataEmptyObserver.endObserve()
             }
-            objc_setAssociatedObject(base, &UIView.MNDataEmptyAssociated.display, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(base, &UIView.MNDataEmptyAssociated.autoDisplay, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
         get {
-            objc_getAssociatedObject(base, &UIView.MNDataEmptyAssociated.display) as? Bool ?? true
+            objc_getAssociatedObject(base, &UIView.MNDataEmptyAssociated.autoDisplay) as? Bool ?? true
         }
     }
     
     
     /// 空数据元素集合
-    public var emptyComponents: [MNDataEmptyComponent] {
+    public var emptyViewComponents: [MNDataEmptyView.Component] {
         set {
             if let emptyView = emptyView {
                 emptyView.components = newValue
@@ -913,7 +879,7 @@ extension MNNameSpaceWrapper where Base: UIView {
             if let emptyView = emptyView {
                 return emptyView.components
             }
-            return objc_getAssociatedObject(base, &UIView.MNDataEmptyAssociated.components) as? [MNDataEmptyComponent] ?? []
+            return objc_getAssociatedObject(base, &UIView.MNDataEmptyAssociated.components) as? [MNDataEmptyView.Component] ?? []
         }
     }
     
@@ -928,7 +894,7 @@ extension MNNameSpaceWrapper where Base: UIView {
     }
     
     /// 空数据监听
-    fileprivate var observer: MNDataEmptyObserver {
+    fileprivate var dataEmptyObserver: MNDataEmptyObserver {
         if let observer = objc_getAssociatedObject(base, &UIView.MNDataEmptyAssociated.observer) as? MNDataEmptyObserver {
             return observer
         }
@@ -941,12 +907,39 @@ extension MNNameSpaceWrapper where Base: UIView {
     /// - Returns: 空数据视图
     private func viewForDataEmpty() -> MNDataEmptyView {
         if let emptyView = emptyView { return emptyView }
-        let emptyView = MNDataEmptyView(referenceView: base)
-        let components = emptyComponents
+        let emptyView = MNDataEmptyView(parentView: base)
+        let components = emptyViewComponents
         if components.isEmpty == false {
             emptyView.components = components
         }
         self.emptyView = emptyView
         return emptyView
+    }
+    
+    /// 表格数量
+    fileprivate var dataItemCount: Int? {
+        if base is UITableView {
+            var itemCount: Int = 0
+            let tableView = base as! UITableView
+            guard let dataSource = tableView.dataSource else { return 0 }
+            let sections = dataSource.numberOfSections?(in: tableView) ?? 1
+            guard sections > 0 else { return 0 }
+            for section in 0..<sections {
+                itemCount += dataSource.tableView(tableView, numberOfRowsInSection: section)
+            }
+            return itemCount
+        }
+        if base is UICollectionView {
+            var itemCount: Int = 0
+            let collectionView = base as! UICollectionView
+            guard let dataSource = collectionView.dataSource else { return 0 }
+            let sections = dataSource.numberOfSections?(in: collectionView) ?? 1
+            guard sections > 0 else { return 0 }
+            for section in 0..<sections {
+                itemCount += dataSource.collectionView(collectionView, numberOfItemsInSection: section)
+            }
+            return itemCount
+        }
+        return nil
     }
 }
