@@ -330,9 +330,9 @@ extension MNDataEmptyView {
     public var customView: UIView? {
         get { rawCustomView }
         set {
-            if let rawCustomView = rawCustomView {
-                self.rawCustomView = nil
-                rawCustomView.removeFromSuperview()
+            if let subview = rawCustomView {
+                rawCustomView = nil
+                subview.removeFromSuperview()
             }
             guard let newValue = newValue else { return }
             guard let index = components.firstIndex(where: { $0 == .image }) else { return }
