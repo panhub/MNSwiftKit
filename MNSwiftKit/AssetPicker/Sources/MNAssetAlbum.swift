@@ -64,9 +64,6 @@ public class MNAssetAlbum: NSObject {
         self.options.sortDescriptors = [NSSortDescriptor(key: #keyPath(PHAsset.creationDate), ascending: options.sortAscending)]
         let result = PHAsset.fetchAssets(in: collection, options: self.options)
         self.count = result.count
-        if let first = result.firstObject {
-            updateCover(using: first, size: options.renderSize)
-        }
     }
     
     /// 更新封面

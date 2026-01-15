@@ -72,9 +72,8 @@ class MNAssetPickerController: UIViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.scrollsToTop = false
-        collectionView.mn.emptySource = self
-        collectionView.mn.emptyDelegate = self
         collectionView.alwaysBounceVertical = true
+        collectionView.mn.emptyViewDelegate = self
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.backgroundColor = options.backgroundColor
@@ -532,21 +531,17 @@ extension MNAssetPickerController: MNAssetBrowseDelegate {
 }
 
 // MARK: - MNDataEmptySource
-extension MNAssetPickerController: MNDataEmptySource {
+extension MNAssetPickerController: MNDataEmptyDelegate {
     
-    func dataEmptyViewShouldDisplay(_ superview: UIView) -> Bool {
-        isEnteredLibrary && assets.isEmpty
-    }
-    
-    func imageForDataEmptyView(_ superview: UIView) -> UIImage? {
+    func imageForDataEmptyView() -> UIImage? {
         AssetPickerResource.image(named: "picker_empty")
     }
     
-    func imageSizeForDataEmptyView(_ superview: UIView) -> CGSize {
+    func imageSizeForDataEmptyView() -> CGSize {
         CGSize(width: 125.0, height: 125.0)
     }
     
-    func descriptionForDataEmptyView(_ superview: UIView) -> NSAttributedString? {
+    func descriptionForDataEmptyView() -> NSAttributedString? {
         var status: PHAuthorizationStatus = .notDetermined
         if #available(iOS 14, *) {
             status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
@@ -567,7 +562,7 @@ extension MNAssetPickerController: MNDataEmptySource {
         return NSAttributedString(string: text, attributes: [.font:UIFont.systemFont(ofSize: 16.0, weight: .regular), .foregroundColor:UIColor(red: 103.0/255.0, green: 105.0/255.0, blue: 107.0/255.0, alpha: 1.0)])
     }
     
-    func buttonSizeForDataEmptyView(_ superview: UIView) -> CGSize {
+    func buttonSizeForDataEmptyView() -> CGSize {
         var status: PHAuthorizationStatus = .notDetermined
         if #available(iOS 14, *) {
             status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
@@ -577,21 +572,21 @@ extension MNAssetPickerController: MNDataEmptySource {
         return status == .denied ? CGSize(width: 85.0, height: 35.0) : .zero
     }
     
-    func buttonRadiusForDataEmptyView(_ superview: UIView) -> CGFloat {
+    func buttonRadiusForDataEmptyView() -> CGFloat {
         5.0
     }
     
-    func buttonAttributedTitleForDataEmptyView(_ superview: UIView, with state: UIControl.State) -> NSAttributedString? {
+    func buttonAttributedTitleForDataEmptyView(for state: UIControl.State) -> NSAttributedString? {
         NSAttributedString(string: "授权访问", attributes: [.font:UIFont.systemFont(ofSize: 15.0, weight: .medium), .foregroundColor:UIColor.lightGray])
     }
     
-    func buttonBackgroundColorForDataEmptyView(_ superview: UIView) -> UIColor? {
+    func buttonBackgroundColorForDataEmptyView() -> UIColor? {
         options.mode == .dark ? UIColor(red: 103.0/255.0, green: 105.0/255.0, blue: 107.0/255.0, alpha: 1.0) : UIColor(red: 221.0/255.0, green: 223.0/255.0, blue: 225.0/255.0, alpha: 1.0)
     }
-}
-
-// MARK: - MNDataEmptySource
-extension MNAssetPickerController: MNDataEmptyDelegate {
+    
+    func dataEmptyViewShouldDisplay() -> Bool {
+        isEnteredLibrary && assets.isEmpty
+    }
     
     func dataEmptyViewButtonTouchUpInside() {
         guard let url = URL(string: UIApplication.openSettingsURLString) else {

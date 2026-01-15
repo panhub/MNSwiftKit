@@ -3037,7 +3037,7 @@ extension ViewController: MNDataEmptySource {
     }
     
     // 或使用渐现动画
-    func fadeInDurationForDataEmptyView(_ superview: UIView) -> TimeInterval {
+    func fadeAnimationDurationForDataEmptyView(_ superview: UIView) -> TimeInterval {
         return 0.25  // 0.0 表示不使用渐现动画
     }
 }
@@ -3160,7 +3160,7 @@ tableView.mn.autoDisplayEmpty = false
   - `backgroundColorForDataEmptyView`: 背景颜色
   - `userInfoForDataEmptyView`: 用户信息
   - `displayAnimationForDataEmptyView`: 自定义动画
-  - `fadeInDurationForDataEmptyView`: 渐现动画时长
+  - `fadeAnimationDurationForDataEmptyView`: 渐现动画时长
 
 #### 📝 注意事项
 
@@ -3170,7 +3170,7 @@ tableView.mn.autoDisplayEmpty = false
 - **内存管理**：空视图使用弱引用关联到父视图，无需担心循环引用。
 - **元素顺序**：通过 `emptyComponents` 可以控制元素的显示顺序，例如 [.text, .image, .button]。
 - **自定义视图**：使用自定义视图时，需要设置正确的 frame 或使用 Auto Layout。
-- **动画优先级**：如果同时实现了 `displayAnimationForDataEmptyView` 和 `fadeInDurationForDataEmptyView`，优先使用自定义动画。
+- **动画优先级**：如果同时实现了 `displayAnimationForDataEmptyView` 和 `fadeAnimationDurationForDataEmptyView`，优先使用自定义动画。
 - **滚动控制**：当空视图显示时，如果设置了 `dataEmptyViewShouldScroll` 为 `false`，会自动禁用滚动视图的滚动，隐藏时会恢复。
 - **生命周期**：空视图的显示和隐藏会触发代理方法，可以在这些方法中执行相关操作。
 - **数据源更新**：当数据源发生变化时，如果启用了 `autoDisplayEmpty`，空视图会自动更新显示状态。
