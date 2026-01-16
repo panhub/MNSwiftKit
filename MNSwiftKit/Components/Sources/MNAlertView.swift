@@ -118,7 +118,7 @@ public class MNAlertView: UIView {
     /// 暂存弹窗
     fileprivate nonisolated(unsafe) static var alerts: [MNAlertView] = []
     /// 按钮高度
-    private var actionHeight: CGFloat { style == .alert ? 47.0 : 54.0 }
+    private var actionHeight: CGFloat { style == .alert ? 48.0 : 56.0 }
     /// 分割线颜色
     private var separatorColor: UIColor { style == .alert ? UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0) : UIColor(red: 244.0/255.0, green: 244.0/255.0, blue: 244.0/255.0, alpha: 1.0) }
     
