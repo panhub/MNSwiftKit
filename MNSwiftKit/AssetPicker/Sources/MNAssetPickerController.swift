@@ -73,7 +73,7 @@ class MNAssetPickerController: UIViewController {
         collectionView.dataSource = self
         collectionView.scrollsToTop = false
         collectionView.alwaysBounceVertical = true
-        collectionView.mn.emptyViewDelegate = self
+        collectionView.mn.dataEmptyDelegate = self
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.backgroundColor = options.backgroundColor
@@ -541,7 +541,7 @@ extension MNAssetPickerController: MNDataEmptyDelegate {
         CGSize(width: 125.0, height: 125.0)
     }
     
-    func descriptionForDataEmptyView() -> NSAttributedString? {
+    func attributedHintForDataEmptyView() -> NSAttributedString? {
         var status: PHAuthorizationStatus = .notDetermined
         if #available(iOS 14, *) {
             status = PHPhotoLibrary.authorizationStatus(for: .readWrite)

@@ -2860,7 +2860,7 @@ extension ViewController: MNDataEmptySource {
     }
     
     // 空视图描述文字
-    func descriptionForDataEmptyView(_ superview: UIView) -> NSAttributedString? {
+    func attributedHintForDataEmptyView(_ superview: UIView) -> NSAttributedString? {
         let attributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 16),
             .foregroundColor: UIColor.gray
@@ -2996,7 +2996,7 @@ extension ViewController: MNDataEmptySource {
     }
     
     // 文字最大宽度
-    func descriptionFiniteMagnitudeForDataEmptyView(_ superview: UIView) -> CGFloat {
+    func hintConstrainedMagnitudeForDataEmptyView(_ superview: UIView) -> CGFloat {
         return 250.0
     }
     
@@ -3144,8 +3144,8 @@ tableView.mn.autoDisplayEmpty = false
   - `imageRadiusForDataEmptyView`: 图片圆角
   - `dataEmptyViewShouldTouchImage`: 图片是否可点击
 - 文字配置：
-  - `descriptionForDataEmptyView`: 描述文字（富文本）
-  - `descriptionFiniteMagnitudeForDataEmptyView`: 文字最大宽度
+  - `attributedHintForDataEmptyView`: 描述文字（富文本）
+  - `hintConstrainedMagnitudeForDataEmptyView`: 文字最大宽度
   - `dataEmptyViewShouldTouchDescription`: 文字是否可点击
 - 按钮配置：
   - `buttonSizeForDataEmptyView`: 按钮尺寸
