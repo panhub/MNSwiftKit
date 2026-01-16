@@ -142,10 +142,10 @@
                         </subviews>
                     </stackView>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="enter" translatesAutoresizingMaskIntoConstraints="NO" id="rZg-Y9-mhv">
-                        <rect key="frame" x="421" y="86.666666666666671" width="13" height="13"/>
+                        <rect key="frame" x="419" y="85.666666666666671" width="15" height="15"/>
                         <color key="tintColor" systemColor="systemGray3Color"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="13" id="la8-FH-Tps"/>
+                            <constraint firstAttribute="height" constant="15" id="la8-FH-Tps"/>
                             <constraint firstAttribute="width" secondItem="rZg-Y9-mhv" secondAttribute="height" multiplier="1:1" id="trh-Rt-ZK2"/>
                         </constraints>
                     </imageView>
@@ -169,7 +169,7 @@
     <resources>
         <image name="enter" width="40" height="40"/>
         <systemColor name="systemGray3Color">
-            <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

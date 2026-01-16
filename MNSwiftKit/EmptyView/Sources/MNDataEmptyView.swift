@@ -97,15 +97,15 @@ import MNNameSpace
     /// - Returns: 按钮标题富文本
     @objc optional func buttonAttributedTitleForDataEmptyView(for state: UIControl.State) -> NSAttributedString?
     
+    /// 是否支持展示空数据视图
+    /// - Returns: 是否展示
+    @objc optional func dataEmptyViewShouldAppear() -> Bool
+    
     /// 空数据视图生命周期 -已经出现
     @objc optional func dataEmptyViewDidAppear()
     
     /// 空数据视图生命周期 -已经消失
     @objc optional func dataEmptyViewDidDisappear()
-    
-    /// 是否支持展示空数据视图
-    /// - Returns: 是否展示
-    @objc optional func dataEmptyViewShouldDisplay() -> Bool
     
     /// 默认渐现动画时长('>0.0'则加载动画)
     /// - Returns: 动画时长
@@ -405,7 +405,7 @@ extension MNDataEmptyView {
     }
     
     /// 描述富文本
-    fileprivate var attributedDescription: NSAttributedString? {
+    fileprivate var attributedHint: NSAttributedString? {
         get { textLabel.attributedText }
         set {
             textLabel.attributedText = newValue
@@ -418,7 +418,7 @@ extension MNDataEmptyView {
     }
     
     /// 富文本最大宽度
-    fileprivate var descriptionFiniteMagnitude: CGFloat {
+    fileprivate var hintConstrainedMagnitude: CGFloat {
         set {
             for constraint in textLabel.constraints {
                 switch constraint.firstAttribute {
@@ -614,8 +614,8 @@ extension MNDataEmptyView {
         imageSize = delegate.imageSizeForDataEmptyView?() ?? .zero
         imageRadius = delegate.imageRadiusForDataEmptyView?() ?? 0.0
         imageMode = delegate.imageModeForDataEmptyView?() ?? .scaleAspectFit
-        attributedDescription = delegate.attributedHintForDataEmptyView?()
-        descriptionFiniteMagnitude = delegate.hintConstrainedMagnitudeForDataEmptyView?() ?? .greatestFiniteMagnitude
+        attributedHint = delegate.attributedHintForDataEmptyView?()
+        hintConstrainedMagnitude = delegate.hintConstrainedMagnitudeForDataEmptyView?() ?? .greatestFiniteMagnitude
         buttonSize = delegate.buttonSizeForDataEmptyView?() ?? .zero
         buttonRadius = delegate.buttonRadiusForDataEmptyView?() ?? 0.0
         buttonBorderColor = delegate.buttonBorderColorForDataEmptyView?()
@@ -839,7 +839,7 @@ extension MNNameSpaceWrapper where Base: UIView {
         guard let emptyView = emptyView else { return }
         guard let delegate = emptyView.delegate else { return }
         var display: Bool = false
-        if let allow = delegate.dataEmptyViewShouldDisplay?() {
+        if let allow = delegate.dataEmptyViewShouldAppear?() {
             display = allow
         } else if let itemCount = dataItemCount {
             display = itemCount <= 0

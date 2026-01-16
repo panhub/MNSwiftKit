@@ -2849,7 +2849,7 @@ class ViewController: UIViewController {
 
 extension ViewController: MNDataEmptySource {
     // 是否显示空视图
-    func dataEmptyViewShouldDisplay(_ superview: UIView) -> Bool {
+    func dataEmptyViewShouldAppear(_ superview: UIView) -> Bool {
         // 返回 true 表示显示空视图
         return dataArray.isEmpty
     }
@@ -2900,7 +2900,7 @@ extension ViewController: MNDataEmptyDelegate {
 ```swift
 extension ViewController: MNDataEmptySource {
 
-    func dataEmptyViewShouldDisplay(_ superview: UIView) -> Bool {
+    func dataEmptyViewShouldAppear(_ superview: UIView) -> Bool {
         return dataArray.isEmpty
     }
     
@@ -3129,7 +3129,7 @@ tableView.mn.autoDisplayEmpty = false
 `MNDataEmptySource` 协议提供了丰富的配置方法，所有方法都是可选的：
 
 - 显示控制：
-  - `dataEmptyViewShouldDisplay`: 是否显示空视图
+  - `dataEmptyViewShouldAppear`: 是否显示空视图
   - `dataEmptyViewShouldScroll`: 是否允许滚动（`UIScrollView` 有效）
 - 布局配置：
   - `edgeInsetForDataEmptyView`: 边距
@@ -3164,7 +3164,7 @@ tableView.mn.autoDisplayEmpty = false
 
 #### 📝 注意事项
 
-- **自动检测**：对于 `UITableView` 和 `UICollectionView`，模块会自动检测数据源的数量，无需手动实现 `dataEmptyViewShouldDisplay`。
+- **自动检测**：对于 `UITableView` 和 `UICollectionView`，模块会自动检测数据源的数量，无需手动实现 `dataEmptyViewShouldAppear`。
 - **滚动视图**：对于 `UIScrollView`，模块会监听 `contentSize` 的变化，自动判断是否显示空视图。
 - **线程安全**：所有显示/隐藏操作都应在主线程执行，模块已使用 `@MainActor` 标记。
 - **内存管理**：空视图使用弱引用关联到父视图，无需担心循环引用。

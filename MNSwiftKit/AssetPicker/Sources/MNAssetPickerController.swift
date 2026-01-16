@@ -584,7 +584,7 @@ extension MNAssetPickerController: MNDataEmptyDelegate {
         options.mode == .dark ? UIColor(red: 103.0/255.0, green: 105.0/255.0, blue: 107.0/255.0, alpha: 1.0) : UIColor(red: 221.0/255.0, green: 223.0/255.0, blue: 225.0/255.0, alpha: 1.0)
     }
     
-    func dataEmptyViewShouldDisplay() -> Bool {
+    func dataEmptyViewShouldAppear() -> Bool {
         isEnteredLibrary && assets.isEmpty
     }
     
