@@ -7,11 +7,15 @@
 
 import UIKit
 
-/// 箭头指向
+/// 箭头方向
 public enum MNPopoverArrowDirection {
+    /// 箭头向上指向目标视图
     case up
+    /// 箭头向下指向目标视图
     case down
+    /// 箭头向左指向目标视图
     case left
+    /// 箭头向右指向目标视图
     case right
 }
 

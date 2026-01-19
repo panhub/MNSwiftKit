@@ -53,7 +53,7 @@ class PopoverViewController: UIViewController {
         configuration.titleFont = .systemFont(ofSize: 13.0, weight: .medium)
         configuration.titleColor = .white
         configuration.cornerRadius = 8.0
-        configuration.borderWidth = 2.0
+        configuration.borderWidth = 1.4
         configuration.borderColor = UIColor(red: 50.0/255.0, green: 50.0/255.0, blue: 50.0/255.0, alpha: 1.0)
         configuration.arrowSize = .init(width: 10.0, height: 8.0)
         switch directionSegmentedControl.selectedSegmentIndex {
@@ -81,14 +81,14 @@ class PopoverViewController: UIViewController {
         switch configuration.arrowDirection {
         case .up, .down:
             configuration.axis = .vertical
-            configuration.itemWidth = .fixed(80.0)
-            configuration.itemHeight = .fixed(35.0)
-            configuration.dividerSize = .init(width: 70.0, height: 1.0)
+            configuration.itemWidth = .fixed(95.0)
+            configuration.itemHeight = .fixed(37.0)
+            configuration.dividerSize = .init(width: 83.0, height: 1.4)
         case .left, .right:
             configuration.axis = .horizontal
-            configuration.itemWidth = .fixed(68.0)
-            configuration.itemHeight = .fixed(34.0)
-            configuration.dividerSize = .init(width: 1.0, height: 16.0)
+            configuration.itemWidth = .fixed(64.0)
+            configuration.itemHeight = .fixed(37.0)
+            configuration.dividerSize = .init(width: 1.4, height: 20.0)
         }
         let popoverView = MNPopoverView(titles: "选项一", "选项二", "选项三", configuration: configuration)
         popoverView.allowUserInteraction = true
