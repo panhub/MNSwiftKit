@@ -50,36 +50,36 @@ extension Dictionary where Key == String, Value == Any? {
 }
 
 /// 实例化支持
-public protocol Initializable {
+public protocol MNEntityInitializable {
     
     init()
 }
 
-protocol Wrappedable {
+private protocol MNTableColumnWrappedable {
     
     static var wrappedType: Any.Type { get }
 }
 
-extension Optional: Wrappedable {
+extension Optional: MNTableColumnWrappedable {
     
     static var wrappedType: any Any.Type { Wrapped.self }
 }
 
 /// 表结构支持
-public protocol TableColumnSupported {
+public protocol MNTableColumnSupported {
     
     /// 自定义表字段
     static var supportedTableColumns: [String:MNTableColumn.FieldType] { get }
 }
 
 /// 绑定值时校验
-public protocol TableColumnAssignment {
+public protocol MNTableColumnAssignment {
     
     /// 回调外界绑定值
     /// - Parameters:
-    ///   - value: 属性值
-    ///   - property: 属性名
-    func setValue(_ value: Any, for property: String)
+    ///   - value: 列值
+    ///   - name: 列名
+    func setValue(_ value: Any, forColumn name: String)
 }
 
 fileprivate let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
@@ -388,7 +388,7 @@ extension MNDatabase {
     ///   - ordered: 字段排序类型 自增键固定第一列 其它默认升序排列
     /// - Returns: 是否创建成功
     @discardableResult
-    public func create<T>(table tableName: String, using type: T.Type, ordered: Foundation.ComparisonResult = .orderedAscending) -> Bool where T: Initializable {
+    public func create<T>(table tableName: String, using type: T.Type, ordered: Foundation.ComparisonResult = .orderedAscending) -> Bool where T: MNEntityInitializable {
         create(table: tableName, using: columns(for: type), ordered: ordered)
     }
     
@@ -399,7 +399,7 @@ extension MNDatabase {
     ///   - ordered: 字段排序类型 自增键固定第一列 其它默认升序排列
     ///   - queue: 使用的队列
     ///   - completionHandler: 结束回调
-    public func create<T>(table tableName: String, using type: T.Type, ordered: Foundation.ComparisonResult = .orderedAscending, queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) where T: Initializable {
+    public func create<T>(table tableName: String, using type: T.Type, ordered: Foundation.ComparisonResult = .orderedAscending, queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) where T: MNEntityInitializable {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.create(table: tableName, using: type, ordered: ordered)
@@ -557,7 +557,7 @@ extension MNDatabase {
     ///   - model: 数据模型
     /// - Returns: 是否插入成功
     @discardableResult
-    public func insert<T>(into tableName: String, using model: T) -> Bool where T: Initializable {
+    public func insert<T>(into tableName: String, using model: T) -> Bool where T: MNEntityInitializable {
         return insert(into: tableName, using: field(for: model))
     }
     
@@ -567,7 +567,7 @@ extension MNDatabase {
     ///   - model: 数据模型
     ///   - queue: 使用队列
     ///   - completionHandler: 结束回调
-    public func insert<T>(into tableName: String, using model: T, queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) where T: Initializable {
+    public func insert<T>(into tableName: String, using model: T, queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) where T: MNEntityInitializable {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.insert(into: tableName, using: model)
@@ -648,7 +648,7 @@ extension MNDatabase {
     ///   - models: 数据模型集合
     /// - Returns: 是否插入成功
     @discardableResult
-    public func insert<T>(into tableName: String, using models: [T]) -> Bool where T: Initializable {
+    public func insert<T>(into tableName: String, using models: [T]) -> Bool where T: MNEntityInitializable {
         insert(into: tableName, using: models.compactMap({ field(for: $0) }))
     }
     
@@ -658,7 +658,7 @@ extension MNDatabase {
     ///   - models: 数据模型集合
     ///   - queue: 使用队列
     ///   - completionHandler: 结束回调
-    public func insert<T>(into tableName: String, using models: [T], queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) where T: Initializable {
+    public func insert<T>(into tableName: String, using models: [T], queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) where T: MNEntityInitializable {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.insert(into: tableName, using: models)
@@ -859,7 +859,7 @@ extension MNDatabase {
     ///   - model: 数据模型
     /// - Returns: 是否更新成功
     @discardableResult
-    public func update<T>(_ tableName: String, where condition: String? = nil, using model: T) -> Bool where T: Initializable {
+    public func update<T>(_ tableName: String, where condition: String? = nil, using model: T) -> Bool where T: MNEntityInitializable {
         return update(tableName, where: condition, using: field(for: model))
     }
     
@@ -870,7 +870,7 @@ extension MNDatabase {
     ///   - model: 数据模型
     ///   - queue: 使用队列
     ///   - completionHandler: 结果回调
-    public func update<T>(_ tableName: String, where condition: String? = nil, using model: T, queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) where T: Initializable {
+    public func update<T>(_ tableName: String, where condition: String? = nil, using model: T, queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) where T: MNEntityInitializable {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.update(tableName, where: condition, using: model)
@@ -918,7 +918,7 @@ extension MNDatabase {
     ///   - type: 模型类
     /// - Returns: 是否更新成功
     @discardableResult
-    public func update<T>(_ tableName: String, using type: T.Type) -> Bool where T: Initializable {
+    public func update<T>(_ tableName: String, using type: T.Type) -> Bool where T: MNEntityInitializable {
         guard exists(table: tableName) else { return false }
         // 类支持的字段
         let clsColumns = columns(for: type)
@@ -968,7 +968,7 @@ extension MNDatabase {
     ///   - type: 表参照类
     ///   - queue: 使用的队列
     ///   - completionHandler: 回调
-    public func update<T>(_ tableName: String, using type: T.Type, queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) where T: Initializable {
+    public func update<T>(_ tableName: String, using type: T.Type, queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) where T: MNEntityInitializable {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.update(tableName, using: type)
@@ -1036,16 +1036,16 @@ extension MNDatabase {
     ///   - range: 数量限制
     ///   - type: 数据模型的类型
     /// - Returns: 数据模型集合
-    public func selectRows<T>(from tableName: String, where condition: String? = nil, regular: MNTableColumn.MatchType? = nil, ordered: MNTableColumn.ComparisonResult? = nil, limit range: NSRange? = nil, type: T.Type) -> [T]? where T: Initializable {
+    public func selectRows<T>(from tableName: String, where condition: String? = nil, regular: MNTableColumn.MatchType? = nil, ordered: MNTableColumn.ComparisonResult? = nil, limit range: NSRange? = nil, type: T.Type) -> [T]? where T: MNEntityInitializable {
         let columns = columns(for: type)
         guard columns.isEmpty == false else { return nil }
         guard let rows = selectRows(tableName, where: condition, regular: regular, ordered: ordered, limit: range) else { return nil }
         return rows.compactMap { row in
-            let model = T.init()
-            if model is TableColumnAssignment {
-                let delegate = model as! TableColumnAssignment
+            let model = T()
+            if model is MNTableColumnAssignment {
+                let delegate = model as! MNTableColumnAssignment
                 for (field, value) in row {
-                    delegate.setValue(value, for: field)
+                    delegate.setValue(value, forColumn: field)
                 }
                 return model
             }
@@ -1069,7 +1069,7 @@ extension MNDatabase {
     ///   - type: 数据模型的类型
     ///   - queue: 使用队列
     ///   - completionHandler: 结果回调
-    public func selectRows<T>(from tableName: String, where condition: String? = nil, regular: MNTableColumn.MatchType? = nil, ordered: MNTableColumn.ComparisonResult? = nil, limit range: NSRange? = nil, type: T.Type, queue: DispatchQueue? = nil, completion completionHandler: ((_ rows: [T]?)->Void)?) where T: Initializable {
+    public func selectRows<T>(from tableName: String, where condition: String? = nil, regular: MNTableColumn.MatchType? = nil, ordered: MNTableColumn.ComparisonResult? = nil, limit range: NSRange? = nil, type: T.Type, queue: DispatchQueue? = nil, completion completionHandler: ((_ rows: [T]?)->Void)?) where T: MNEntityInitializable {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.selectRows(from: tableName, where: condition, regular: regular, ordered: ordered, limit: range, type: type)
@@ -1451,7 +1451,7 @@ extension MNDatabase {
     /// 映射数据模型在数据库中的字段
     /// - Parameter model: 模型对象
     /// - Returns: [字段:值]
-    fileprivate func field<T>(for model: T) -> [String:Any] where T: Initializable {
+    fileprivate func field<T>(for model: T) -> [String:Any] where T: MNEntityInitializable {
         var result = [String:Any]()
         let columns = columns(for: Swift.type(of: model))
         let mirror = Mirror(reflecting: model)
@@ -1462,7 +1462,7 @@ extension MNDatabase {
             case Optional<Any>.none:
                 // nil, 先获取真实类型
                 let propertyType = Swift.type(of: value)
-                if let optionalType = propertyType as? Wrappedable.Type {
+                if let optionalType = propertyType as? MNTableColumnWrappedable.Type {
                     let wrappedType = optionalType.wrappedType
                     if let caseType = wrappedType as? any CaseIterable.Type {
                         // 枚举
@@ -1487,7 +1487,7 @@ extension MNDatabase {
     /// 映射类型在数据库中的字段
     /// - Parameter model: 模型对象
     /// - Returns: [字段:值]
-    private func columns<T>(for type: T.Type) -> [MNTableColumn] where T: Initializable {
+    private func columns<T>(for type: T.Type) -> [MNTableColumn] where T: MNEntityInitializable {
         semaphore.wait()
         defer {
             semaphore.signal()
@@ -1496,7 +1496,7 @@ extension MNDatabase {
         // 先取缓存
         if let columns = classColumns[key] { return columns }
         // 查询协议
-        if let convertible = type as? TableColumnSupported.Type {
+        if let convertible = type as? MNTableColumnSupported.Type {
             var columns: [MNTableColumn] = convertible.supportedTableColumns.compactMap {
                 MNTableColumn(name: $0.key, type: $0.value)
             }
@@ -1505,7 +1505,7 @@ extension MNDatabase {
             return columns
         }
         // 分析属性
-        let instance = T.init()
+        let instance = T()
         let mirror = Mirror(reflecting: instance)
         var columns = [MNTableColumn]()
         for (label, value) in mirror.children {
@@ -1533,7 +1533,7 @@ extension MNDatabase {
                     // integer
                     columns.append(MNTableColumn(name: label, type: .integer))
                 }
-            } else if let optionalType = propertyType as? Wrappedable.Type, let caseType = optionalType.wrappedType as? any CaseIterable.Type, let firstCase = caseType.allCases.first, let rawValueProvider = firstCase as? any RawRepresentable {
+            } else if let optionalType = propertyType as? MNTableColumnWrappedable.Type, let caseType = optionalType.wrappedType as? any CaseIterable.Type, let firstCase = caseType.allCases.first, let rawValueProvider = firstCase as? any RawRepresentable {
                 let rawValue = rawValueProvider.rawValue
                 if rawValue is String {
                     // text
@@ -1592,7 +1592,7 @@ extension MNDatabase {
         // 先取缓存
         if let columns = classColumns[clsString] { return columns }
         // 查找协议
-        if let convertible = `class` as? TableColumnSupported.Type {
+        if let convertible = `class` as? MNTableColumnSupported.Type {
             let columns: [MNTableColumn] = convertible.supportedTableColumns.compactMap {
                 MNTableColumn(name: $0.key, type: $0.value)
             }

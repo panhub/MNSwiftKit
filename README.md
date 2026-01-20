@@ -4906,7 +4906,7 @@ class PagingRequest: MNDataRequest, MNPagingRequestSupported {
 - 🔒 **线程安全**：使用信号量机制保证多线程环境下的数据安全
 - 🚀 **异步支持**：所有操作都支持同步和异步两种方式
 - 🎯 **自动映射**：自动将 `Swift` 模型映射到数据库表结构，无需手动编写 SQL
-- 📝 **协议支持**：支持 `TableColumnSupported` 协议自定义表字段
+- 📝 **协议支持**：支持 `MNTableColumnSupported` 协议自定义表字段
 - 🔍 **灵活查询**：支持条件查询、模糊查询（前缀/后缀/包含）、排序、分页
 - 📊 **聚合函数**：支持 SUM、AVG、MIN、MAX 等聚合函数
 - 💾 **事务支持**：支持事务操作，保证数据一致性
@@ -4954,7 +4954,7 @@ let database = MNDatabase(path: "/path/to/your/database.sqlite")
 
 ```swift
 // 方式1：使用自动映射（推荐）
-class User: Initializable {
+class User: MNEntityInitializable {
     var name: String = ""
     var age: Int = 0
     var email: String = ""
@@ -4963,7 +4963,7 @@ class User: Initializable {
 }
 
 // 方式2：使用协议自定义字段
-class User: Initializable, TableColumnSupported {
+class User: MNEntityInitializable, MNTableColumnSupported {
     var name: String = ""
     var age: Int = 0
     
@@ -5266,8 +5266,8 @@ let customEscape = MNTableColumn.MatchType.contains("name", "张%", escape: "\\"
 协议支持
 
 ```swift
-// TableColumnAssignment：自定义赋值逻辑
-class CustomUser: Initializable, TableColumnAssignment {
+// MNTableColumnAssignment：自定义赋值逻辑
+class CustomUser: MNEntityInitializable, MNTableColumnAssignment {
     var name: String = ""
     var age: Int = 0
     
@@ -5291,7 +5291,7 @@ class CustomUser: Initializable, TableColumnAssignment {
 #### 📝 注意事项
 
 - **线程安全**：所有数据库操作都是线程安全的，可以在任意线程调用。
-- **模型要求**：数据模型必须实现 `Initializable` 协议（提供 init() 方法）。
+- **模型要求**：数据模型必须实现 `MNEntityInitializable` 协议（提供 init() 方法）。
 - **自动映射规则**：
   - `Int`、`Int64`、`Bool` → `.integer`
   - `Double`、`Float`、`CGFloat` → `.float`

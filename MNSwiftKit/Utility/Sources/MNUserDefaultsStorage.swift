@@ -8,7 +8,6 @@
 import Foundation
 
 @propertyWrapper
-/// 属性包装器
 public struct MNUserDefaultsStorage<T> {
     /// 存取的key
     private let key: String
@@ -80,7 +79,7 @@ extension Optional: MNUserDefaultsOptional {
         }
     }
     
-    static func create(from value: Any?) -> Wrapped? {
+    static func create(from value: Any?) -> Optional<Wrapped> {
         if let value = value as? Wrapped {
             return value
         }
