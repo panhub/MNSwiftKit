@@ -69,7 +69,7 @@ extension Optional: MNTableColumnWrappedable {
 public protocol MNTableColumnSupported {
     
     /// 自定义表字段
-    static var supportedTableColumns: [String:MNTableColumn.FieldType] { get }
+    static var supportedTableColumns: [MNTableColumn] { get }
 }
 
 /// 绑定值时校验
@@ -79,7 +79,7 @@ public protocol MNTableColumnAssignment {
     /// - Parameters:
     ///   - value: 列值
     ///   - name: 列名
-    func setValue(_ value: Any, forColumn name: String)
+    func setValue(_ value: Any?, forColumn name: String)
 }
 
 fileprivate let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
@@ -208,23 +208,30 @@ public struct MNTableColumn {
         }
     }
     
-    /// 自增主键
-    fileprivate static let PrimaryKey: String = "id"
     /// 字段名
     public let name: String
     /// 类型
     public let type: FieldType
+    /// 是否可为空
+    public var isNullable: Bool = false
+    /// 是否是主键
+    public var isPrimary: Bool = false
     /// 建表语句
     fileprivate var sql: String {
         var sql: String = name + " " + type.rawValue.uppercased()
-        switch type {
-        case .integer:
-            sql.append(" NOT NULL DEFAULT 0")
-        case .float:
-            sql.append(" NOT NULL DEFAULT 0.0")
-        case .text:
-            sql.append(" NOT NULL DEFAULT ''")
-        default: break
+        if isPrimary {
+            sql.append(" PRIMARY KEY AUTOINCREMENT")
+        } else if isNullable == false {
+            switch type {
+            case .integer:
+                sql.append(" NOT NULL DEFAULT 0")
+            case .float:
+                sql.append(" NOT NULL DEFAULT 0.0")
+            case .text:
+                sql.append(" NOT NULL DEFAULT ''")
+            case .blob:
+                sql.append(" NOT NULL DEFAULT x''")
+            }
         }
         return sql
     }
@@ -246,9 +253,13 @@ public struct MNTableColumn {
     /// - Parameters:
     ///   - name: 字段名
     ///   - type: 字段类型
-    public init(name: String, type: FieldType) {
+    ///   - primary: 是否是主键
+    ///   - nullable: 是否可为空
+    public init(name: String, type: FieldType, primary: Bool = false, nullable: Bool = false) {
         self.type = type
         self.name = name
+        self.isPrimary = primary
+        self.isNullable = nullable
     }
 }
 
@@ -284,7 +295,7 @@ public class MNDatabase {
     /// 表名
     private var tables = [String]()
     /// 句柄
-    private var stmts = [String:OpaquePointer]()
+    private var statements = [String:OpaquePointer]()
     /// 表字段
     private var tableColumns = [String:[MNTableColumn]]()
     /// 类字段缓存
@@ -399,7 +410,7 @@ extension MNDatabase {
     ///   - ordered: 字段排序类型 自增键固定第一列 其它默认升序排列
     ///   - queue: 使用的队列
     ///   - completionHandler: 结束回调
-    public func create<T>(table tableName: String, using type: T.Type, ordered: Foundation.ComparisonResult = .orderedAscending, queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) where T: MNEntityInitializable {
+    public func create<T>(table tableName: String, using type: T.Type, ordered: Foundation.ComparisonResult = .orderedAscending, on queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) where T: MNEntityInitializable {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.create(table: tableName, using: type, ordered: ordered)
@@ -425,7 +436,7 @@ extension MNDatabase {
     ///   - ordered: 字段排序类型 自增键固定第一列 其它默认升序排列
     ///   - queue: 使用的队列
     ///   - completionHandler: 结果回调
-    public func create(table tableName: String, using columns: [String:MNTableColumn.FieldType], ordered: Foundation.ComparisonResult = .orderedAscending, queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) {
+    public func create(table tableName: String, using columns: [String:MNTableColumn.FieldType], ordered: Foundation.ComparisonResult = .orderedAscending, on queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.create(table: tableName, using: columns, ordered: ordered)
@@ -445,16 +456,27 @@ extension MNDatabase {
         guard open() else { return false }
         guard exists(table:tableName) == false else { return true }
         // 去重
-        var columns = columns.reduce([MNTableColumn]()) { $0.contains($1) ? $0 : $0 + [$1] }
-        // 去除自增键
-        columns.removeAll { $0.name.lowercased() == MNTableColumn.PrimaryKey }
-        guard columns.isEmpty == false else { return false }
+        var columns = columns.reduce(into: [MNTableColumn]()) { partialResult, column in
+            if partialResult.contains(column) == false {
+                partialResult.append(column)
+            }
+        }
         // 排序
-        if ordered == .orderedAscending || ordered == .orderedDescending {
+        if ordered != .orderedSame {
             columns.sort { $0.name.localizedCompare($1.name) == ordered }
         }
-        var elements: [String] = columns.compactMap { $0.sql }
-        elements.insert("\(MNTableColumn.PrimaryKey) \(MNTableColumn.FieldType.integer.rawValue) PRIMARY KEY AUTOINCREMENT NOT NULL DEFAULT 0", at: 0)
+        // 处理主键
+        if let index = columns.firstIndex(where: { $0.isPrimary }) {
+            let column = columns.remove(at: index)
+            // 删除其它主键
+            columns.removeAll { $0.isPrimary }
+            // 插入主键
+            columns.insert(column, at: 0)
+        } else {
+            columns.insert(.init(name: "mn_id", type: .integer, primary: true), at: 0)
+        }
+        guard columns.count > 1 else { return false }
+        let elements: [String] = columns.compactMap { $0.sql }
         let sql: String = "CREATE TABLE IF NOT EXISTS '\(tableName)' (\(elements.joined(separator: ", ")));"
         semaphore.wait()
         let result: Bool = execute(sql)
@@ -472,7 +494,7 @@ extension MNDatabase {
     ///   - ordered: 字段排序类型 自增键固定第一列 其它默认升序排列
     ///   - queue: 使用的队列
     ///   - completionHandler: 结束回调
-    public func createTable(table tableName: String, using columns: [MNTableColumn], ordered: Foundation.ComparisonResult = .orderedAscending, queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) {
+    public func createTable(table tableName: String, using columns: [MNTableColumn], ordered: Foundation.ComparisonResult = .orderedAscending, on queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.create(table: tableName, using: columns, ordered: ordered)
@@ -506,7 +528,7 @@ extension MNDatabase {
     ///   - tableName: 表名
     ///   - queue: 使用的队列
     ///   - completionHandler: 结束回调
-    public func delete(table tableName: String, queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) {
+    public func delete(table tableName: String, on queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.delete(table: tableName)
@@ -539,7 +561,7 @@ extension MNDatabase {
     ///   - condition: 条件
     ///   - queue: 使用队列
     ///   - completionHandler: 结果回调
-    public func delete(from tableName: String, where condition: String? = nil, queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) {
+    public func delete(from tableName: String, where condition: String? = nil, on queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.delete(from: tableName, where: condition)
@@ -567,7 +589,7 @@ extension MNDatabase {
     ///   - model: 数据模型
     ///   - queue: 使用队列
     ///   - completionHandler: 结束回调
-    public func insert<T>(into tableName: String, using model: T, queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) where T: MNEntityInitializable {
+    public func insert<T>(into tableName: String, using model: T, on queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) where T: MNEntityInitializable {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.insert(into: tableName, using: model)
@@ -584,14 +606,18 @@ extension MNDatabase {
     public func insert(into tableName: String, using fields: [String:Any]) -> Bool {
         guard fields.isEmpty == false else { return false }
         guard exists(table:tableName) else { return false }
-        let tableColumns = columns(in: tableName)
-        var contents: [(MNTableColumn, Any)] = [(MNTableColumn, Any)]()
+        var tableColumns = columns(in: tableName)
+        tableColumns.removeAll { $0.isPrimary }
+        var contents: [(MNTableColumn, Any?)] = []
         for (key, value) in fields {
-            if key.lowercased() == MNTableColumn.PrimaryKey { continue }
             guard let first = tableColumns.first(where: { $0.name == key }) else { continue }
             switch value {
             case Optional<Any>.none:
-                contents.append((first, first.defaultValue))
+                if first.isNullable {
+                    contents.append((first, nil))
+                } else {
+                    contents.append((first, first.defaultValue))
+                }
             default:
                 contents.append((first, value))
             }
@@ -607,14 +633,14 @@ extension MNDatabase {
         defer {
             semaphore.signal()
         }
-        guard let stmt = stmt(sql) else { return false }
-        guard bind(stmt, contents: contents) else {
+        guard let statement = statement(sql) else { return false }
+        guard bind(statement, contents: contents) else {
 #if DEBUG
             print("\n[\(#line)] sql <\(sql)> bind data failed.")
 #endif
             return false
         }
-        let result = sqlite3_step(stmt)
+        let result = sqlite3_step(statement)
         guard result == SQLITE_DONE else {
 #if DEBUG
             print("\n[\(#line)] sql <\(sql)> failed (\(result))")
@@ -634,7 +660,7 @@ extension MNDatabase {
     ///   - fields: 字段数据集合
     ///   - queue: 使用队列
     ///   - completionHandler: 结束回调
-    public func insert(into tableName: String, using fields: [String:Any], queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) {
+    public func insert(into tableName: String, using fields: [String:Any], on queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.insert(into: tableName, using: fields)
@@ -658,7 +684,7 @@ extension MNDatabase {
     ///   - models: 数据模型集合
     ///   - queue: 使用队列
     ///   - completionHandler: 结束回调
-    public func insert<T>(into tableName: String, using models: [T], queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) where T: MNEntityInitializable {
+    public func insert<T>(into tableName: String, using models: [T], on queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) where T: MNEntityInitializable {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.insert(into: tableName, using: models)
@@ -675,20 +701,24 @@ extension MNDatabase {
     public func insert(into tableName: String, using array: [[String:Any]]) -> Bool {
         guard array.isEmpty == false else { return false }
         guard exists(table:tableName) else { return false }
-        let tableColumns = columns(in: tableName)
+        var tableColumns = columns(in: tableName)
+        tableColumns.removeAll { $0.isPrimary }
         semaphore.wait()
         defer {
             semaphore.signal()
         }
         guard begin() else { return false }
-        var contents: [(MNTableColumn, Any)] = [(MNTableColumn, Any)]()
+        var contents: [(MNTableColumn, Any?)] = []
         for fields in array {
             for (key, value) in fields {
-                if key.lowercased() == MNTableColumn.PrimaryKey { continue }
                 guard let first = tableColumns.first(where: { $0.name == key }) else { continue }
                 switch value {
                 case Optional<Any>.none:
-                    contents.append((first, first.defaultValue))
+                    if first.isNullable {
+                        contents.append((first, nil))
+                    } else {
+                        contents.append((first, first.defaultValue))
+                    }
                 default:
                     contents.append((first, value))
                 }
@@ -703,18 +733,18 @@ extension MNDatabase {
             }
             let params = contents.compactMap { $0.0.name }
             let sql = "INSERT INTO '\(tableName)' (\(params.joined(separator: ","))) VALUES (\(values.joined(separator: ",")));"
-            guard let stmt = stmt(sql) else {
+            guard let statement = statement(sql) else {
                 rollback()
                 return false
             }
-            guard bind(stmt, contents: contents) else {
+            guard bind(statement, contents: contents) else {
 #if DEBUG
                 print("\n[\(#line)] sql <\(sql)> bind data failed.")
 #endif
                 rollback()
                 return false
             }
-            let result = sqlite3_step(stmt)
+            let result = sqlite3_step(statement)
             guard result == SQLITE_DONE else {
 #if DEBUG
                 print("\n[\(#line)] sql <\(sql)> failed (\(result))")
@@ -739,7 +769,7 @@ extension MNDatabase {
     ///   - array: 字段数据集合
     ///   - queue: 使用队列
     ///   - completionHandler: 结束回调
-    public func insert(into tableName: String, using array: [[String:Any]], queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) {
+    public func insert(into tableName: String, using array: [[String:Any]], on queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.insert(into: tableName, using: array)
@@ -768,7 +798,7 @@ extension MNDatabase {
     ///   - fromTableName: 指定表
     ///   - queue: 使用队列
     ///   - completionHandler: 结束回调
-    public func insert(into tableName: String, from fromTableName: String, queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) {
+    public func insert(into tableName: String, from fromTableName: String, on queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.insert(into: tableName, from: fromTableName)
@@ -790,14 +820,18 @@ extension MNDatabase {
     public func update(_ tableName: String, where condition: String? = nil, using fields: [String:Any]) -> Bool {
         guard fields.isEmpty == false else { return false }
         guard exists(table:tableName) else { return false }
-        let tableColumns = columns(in: tableName)
-        var contents: [(MNTableColumn, Any)] = [(MNTableColumn, Any)]()
+        var tableColumns = columns(in: tableName)
+        tableColumns.removeAll { $0.isPrimary }
+        var contents: [(MNTableColumn, Any?)] = []
         for (key, value) in fields {
-            if key.lowercased() == MNTableColumn.PrimaryKey { continue }
             guard let first = tableColumns.first(where: { $0.name == key }) else { continue }
             switch value {
             case Optional<Any>.none:
-                contents.append((first, first.defaultValue))
+                if first.isNullable {
+                    contents.append((first, nil))
+                } else {
+                    contents.append((first, first.defaultValue))
+                }
             default:
                 contents.append((first, value))
             }
@@ -816,14 +850,14 @@ extension MNDatabase {
         defer {
             semaphore.signal()
         }
-        guard let stmt = stmt(sql) else { return false }
-        guard bind(stmt, contents: contents) else {
+        guard let statement = statement(sql) else { return false }
+        guard bind(statement, contents: contents) else {
 #if DEBUG
             print("\n[\(#line)] sql <\(sql)> bind data faild.")
 #endif
             return false
         }
-        let result = sqlite3_step(stmt)
+        let result = sqlite3_step(statement)
         guard result == SQLITE_DONE else {
 #if DEBUG
             print("\n[\(#line)] sql <\(sql)> faild (\(result))")
@@ -844,7 +878,7 @@ extension MNDatabase {
     ///   - fields: 更新内容[字段:值]
     ///   - queue: 使用队列
     ///   - completionHandler: 结果回调
-    public func update(_ tableName: String, where condition: String? = nil, using fields: [String:Any], queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) {
+    public func update(_ tableName: String, where condition: String? = nil, using fields: [String:Any], on queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.update(tableName, where: condition, using: fields)
@@ -870,7 +904,7 @@ extension MNDatabase {
     ///   - model: 数据模型
     ///   - queue: 使用队列
     ///   - completionHandler: 结果回调
-    public func update<T>(_ tableName: String, where condition: String? = nil, using model: T, queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) where T: MNEntityInitializable {
+    public func update<T>(_ tableName: String, where condition: String? = nil, using model: T, on queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) where T: MNEntityInitializable {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.update(tableName, where: condition, using: model)
@@ -904,7 +938,7 @@ extension MNDatabase {
     ///   - name: 新表名
     ///   - queue: 使用的队列
     ///   - completionHandler: 结果回调
-    public func update(_ tableName: String, name: String, queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) {
+    public func update(_ tableName: String, name: String, on queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.update(tableName, name: name)
@@ -968,7 +1002,7 @@ extension MNDatabase {
     ///   - type: 表参照类
     ///   - queue: 使用的队列
     ///   - completionHandler: 回调
-    public func update<T>(_ tableName: String, using type: T.Type, queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) where T: MNEntityInitializable {
+    public func update<T>(_ tableName: String, using type: T.Type, on queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) where T: MNEntityInitializable {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.update(tableName, using: type)
@@ -1020,7 +1054,7 @@ extension MNDatabase {
     ///   - condition: 条件
     ///   - queue: 使用队列
     ///   - completionHandler: 结果回调
-    public func selectCount(from tableName: String, where condition: String? = nil, queue: DispatchQueue? = nil, completion completionHandler: ((_ count: Int?)->Void)?) {
+    public func selectCount(from tableName: String, where condition: String? = nil, on queue: DispatchQueue? = nil, completion completionHandler: ((_ count: Int?)->Void)?) {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.selectCount(from: tableName, where: condition)
@@ -1069,7 +1103,7 @@ extension MNDatabase {
     ///   - type: 数据模型的类型
     ///   - queue: 使用队列
     ///   - completionHandler: 结果回调
-    public func selectRows<T>(from tableName: String, where condition: String? = nil, regular: MNTableColumn.MatchType? = nil, ordered: MNTableColumn.ComparisonResult? = nil, limit range: NSRange? = nil, type: T.Type, queue: DispatchQueue? = nil, completion completionHandler: ((_ rows: [T]?)->Void)?) where T: MNEntityInitializable {
+    public func selectRows<T>(from tableName: String, where condition: String? = nil, regular: MNTableColumn.MatchType? = nil, ordered: MNTableColumn.ComparisonResult? = nil, limit range: NSRange? = nil, type: T.Type, on queue: DispatchQueue? = nil, completion completionHandler: ((_ rows: [T]?)->Void)?) where T: MNEntityInitializable {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.selectRows(from: tableName, where: condition, regular: regular, ordered: ordered, limit: range, type: type)
@@ -1256,7 +1290,7 @@ extension MNDatabase {
     ///   - type: 返回类型
     ///   - queue: 执行队列
     ///   - completionHandler: 回调结果
-    public func calculate<T>(from tableName: String, field: String, where condition: String? = nil, math: MNTableColumn.Math, default defaultValue: T, queue: DispatchQueue? = nil, completion completionHandler: ((_ result: T?)->Void)?) where T: Comparable {
+    public func calculate<T>(from tableName: String, field: String, where condition: String? = nil, math: MNTableColumn.Math, default defaultValue: T, on queue: DispatchQueue? = nil, completion completionHandler: ((_ result: T?)->Void)?) where T: Comparable {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.calculate(from: tableName, field: field, where: condition, math: math, default: defaultValue)
@@ -1356,14 +1390,14 @@ extension MNDatabase {
     /// 获取缓存句柄没有就创建并缓存
     /// - Parameter sql: 数据库语句
     /// - Returns: 句柄
-    fileprivate func stmt(_ sql: String) -> OpaquePointer? {
-        if let stmt = stmts[sql] {
-            sqlite3_reset(stmt)
-            return stmt
+    fileprivate func statement(_ sql: String) -> OpaquePointer? {
+        if let statement = statements[sql] {
+            sqlite3_reset(statement)
+            return statement
         }
-        if let stmt = stmt(sql: sql) {
-            stmts[sql] = stmt
-            return stmt
+        if let statement = statement(sql: sql) {
+            statements[sql] = statement
+            return statement
         }
         return nil
     }
@@ -1371,9 +1405,9 @@ extension MNDatabase {
     /// 创建句柄
     /// - Parameter sql: 数据库语句
     /// - Returns: 句柄
-    fileprivate func stmt(sql: String) -> OpaquePointer? {
-        var stmt: OpaquePointer?
-        let result = sqlite3_prepare_v2(db, sql.cString(using: .utf8), -1, &stmt, nil)
+    fileprivate func statement(sql: String) -> OpaquePointer? {
+        var statement: OpaquePointer?
+        let result = sqlite3_prepare_v2(db, sql.cString(using: .utf8), -1, &statement, nil)
         if result != SQLITE_OK {
 #if DEBUG
             print("\n[\(#line)] prepare '\(sql)' failed (\(result))")
@@ -1383,7 +1417,7 @@ extension MNDatabase {
             }
 #endif
         }
-        return stmt
+        return statement
     }
 }
 
@@ -1414,17 +1448,21 @@ extension MNDatabase {
         if let columns = tableColumns[tableName] { return columns }
         // 查找数据库字段
         var stmt: OpaquePointer?
-        var columns = [MNTableColumn]()
+        var columns: [MNTableColumn] = []
         let sql: String = "pragma table_info ('\(tableName)');"
         if sqlite3_prepare_v2(db, sql.cString(using: .utf8), -1, &stmt, nil) == SQLITE_OK {
             repeat {
                 let result = sqlite3_step(stmt)
                 if result == SQLITE_ROW {
+                    // let cid = sqlite3_column_int(statement, 0) // 列ID
                     guard let cName = sqlite3_column_text(stmt, 1), let cType = sqlite3_column_text(stmt, 2) else { continue }
                     guard let type = MNTableColumn.FieldType(rawValue: String(cString: cType).lowercased()) else { continue }
                     let name = String(cString: cName)
-                    if name.lowercased() == MNTableColumn.PrimaryKey { continue }
-                    columns.append(MNTableColumn(name: name, type: type))
+                    let nullable = sqlite3_column_int(stmt, 3) // 是否可为空
+                    let defaultValue = sqlite3_column_text(stmt, 4) // 默认值
+                    let primary = sqlite3_column_int(stmt, 5) // 是否主键
+                    let column = MNTableColumn(name: name, type: type, primary: primary == 1, nullable: nullable == 0)
+                    columns.append(column)
                 } else {
                     // 结束
                     if result != SQLITE_DONE {
@@ -1452,7 +1490,7 @@ extension MNDatabase {
     /// - Parameter model: 模型对象
     /// - Returns: [字段:值]
     fileprivate func field<T>(for model: T) -> [String:Any] where T: MNEntityInitializable {
-        var result = [String:Any]()
+        var result: [String:Any] = [:]
         let columns = columns(for: Swift.type(of: model))
         let mirror = Mirror(reflecting: model)
         for (label, value) in mirror.children {
@@ -1497,12 +1535,11 @@ extension MNDatabase {
         if let columns = classColumns[key] { return columns }
         // 查询协议
         if let convertible = type as? MNTableColumnSupported.Type {
-            var columns: [MNTableColumn] = convertible.supportedTableColumns.compactMap {
-                MNTableColumn(name: $0.key, type: $0.value)
+            let columns = convertible.supportedTableColumns
+            if columns.isEmpty == false {
+                classColumns[key] = columns
+                return columns
             }
-            columns.removeAll { $0.name.lowercased() == MNTableColumn.PrimaryKey }
-            classColumns[key] = columns
-            return columns
         }
         // 分析属性
         let instance = T()
@@ -1510,20 +1547,19 @@ extension MNDatabase {
         var columns = [MNTableColumn]()
         for (label, value) in mirror.children {
             guard let label = label else { continue }
-            if label.lowercased() == MNTableColumn.PrimaryKey { continue }
             let propertyType = Swift.type(of: value)
             if propertyType == Int.self || propertyType == Int64.self || propertyType == Bool.self || propertyType == Int32.self || propertyType == UInt.self || propertyType is Optional<Int>.Type || propertyType is Optional<Int64>.Type || propertyType is Optional<Bool>.Type || propertyType is Optional<Int32>.Type || propertyType is Optional<UInt>.Type {
                 // integer
-                columns.append(MNTableColumn(name: label, type: .integer))
+                columns.append(MNTableColumn(name: label, type: .integer, nullable: propertyType is Optional<Any>.Type))
             } else if propertyType == Double.self || propertyType == CGFloat.self || propertyType == Float.self || propertyType is Optional<Double>.Type || propertyType is Optional<CGFloat>.Type || propertyType is Optional<Float>.Type {
                 // float
-                columns.append(MNTableColumn(name: label, type: .float))
+                columns.append(MNTableColumn(name: label, type: .float, nullable: propertyType is Optional<Any>.Type))
             } else if propertyType == String.self || propertyType == NSString.self || propertyType is Optional<String>.Type || propertyType is Optional<NSString>.Type {
                 // text
-                columns.append(MNTableColumn(name: label, type: .text))
+                columns.append(MNTableColumn(name: label, type: .text, nullable: propertyType is Optional<Any>.Type))
             } else if propertyType == Data.self || propertyType == NSData.self || propertyType is Optional<Data>.Type || propertyType is Optional<NSData>.Type {
                 // blob
-                columns.append(MNTableColumn(name: label, type: .blob))
+                columns.append(MNTableColumn(name: label, type: .blob, nullable: propertyType is Optional<Any>.Type))
             } else if let rawValueProvider = value as? any RawRepresentable {
                 let rawValue = rawValueProvider.rawValue
                 if rawValue is String {
@@ -1537,10 +1573,10 @@ extension MNDatabase {
                 let rawValue = rawValueProvider.rawValue
                 if rawValue is String {
                     // text
-                    columns.append(MNTableColumn(name: label, type: .text))
+                    columns.append(MNTableColumn(name: label, type: .text, nullable: true))
                 } else if rawValue is Int || rawValue is Int64 {
                     // integer
-                    columns.append(MNTableColumn(name: label, type: .integer))
+                    columns.append(MNTableColumn(name: label, type: .integer, nullable: true))
                 }
             }
         }
@@ -1642,67 +1678,70 @@ extension MNDatabase {
     */
     /// 绑定句柄
     /// - Parameters:
-    ///   - stmt: 句柄
+    ///   - statement: 句柄
     ///   - contents: (字段, 绑定的值)
-    fileprivate func bind(_ stmt: OpaquePointer, contents: [(MNTableColumn, Any)]) -> Bool {
-        for (i, element) in contents.enumerated() {
-            var result: Int32 = SQLITE_ERROR
-            let column = element.0
-            let value = element.1
+    fileprivate func bind(_ statement: OpaquePointer, contents: [(MNTableColumn, Any?)]) -> Bool {
+        for (i, tuple) in contents.enumerated() {
             let index = Int32(i + 1)
-            switch column.type {
-            case .text:
-                if value is String {
-                   result = sqlite3_bind_text(stmt, index, ((value as! String) as NSString).utf8String, -1, SQLITE_TRANSIENT)
-                } else if value is NSString {
-                    result = sqlite3_bind_text(stmt, index, (value as! NSString).utf8String, -1, SQLITE_TRANSIENT)
+            let column = tuple.0
+            var result: Int32 = SQLITE_ERROR
+            if let value = tuple.1 {
+                switch column.type {
+                case .text:
+                    if value is String {
+                       result = sqlite3_bind_text(statement, index, ((value as! String) as NSString).utf8String, -1, SQLITE_TRANSIENT)
+                    } else if value is NSString {
+                        result = sqlite3_bind_text(statement, index, (value as! NSString).utf8String, -1, SQLITE_TRANSIENT)
+                    }
+                case .integer:
+                    if value is Int {
+                        result = sqlite3_bind_int64(statement, index, sqlite3_int64(sqlite_int64(value as! Int)))
+                    } else if value is Int64 {
+                        result = sqlite3_bind_int64(statement, index, value as! sqlite3_int64)
+                    } else if value is Bool {
+                        result = sqlite3_bind_int64(statement, index, (value as! Bool) ? 1 : 0)
+                    } else if value is ObjCBool {
+                        result = sqlite3_bind_int64(statement, index, (value as! ObjCBool).boolValue ? 1 : 0)
+                    } else if value is Int32 {
+                        result = sqlite3_bind_int64(statement, index, sqlite3_int64(sqlite_int64(value as! Int32)))
+                    } else if value is Int16 {
+                        result = sqlite3_bind_int64(statement, index, sqlite3_int64(sqlite_int64(value as! Int16)))
+                    } else if value is Int8 {
+                        result = sqlite3_bind_int64(statement, index, sqlite3_int64(sqlite_int64(value as! Int8)))
+                    } else if value is NSNumber {
+                        result = sqlite3_bind_int64(statement, index, (value as! NSNumber).int64Value)
+                    } else if value is Date {
+                        result = sqlite3_bind_int64(statement, index, sqlite3_int64((value as! Date).timeIntervalSince1970))
+                    }
+                case .float:
+                    if value is Double {
+                        result = sqlite3_bind_double(statement, index, value as! Double)
+                    } else if value is CGFloat {
+                        result = sqlite3_bind_double(statement, index, Double(value as! CGFloat))
+                    } else if value is Float {
+                        result = sqlite3_bind_double(statement, index, Double(value as! Float))
+                    } else if value is Bool {
+                        result = sqlite3_bind_double(statement, index, (value as! Bool) ? 1.0 : 0.0)
+                    } else if value is ObjCBool {
+                        result = sqlite3_bind_double(statement, index, (value as! ObjCBool).boolValue ? 1.0 : 0.0)
+                    } else if #available(iOS 14.0, *), value is Float16 {
+                        result = sqlite3_bind_double(statement, index, Double(value as! Float16))
+                    } else if value is NSNumber {
+                        result = sqlite3_bind_double(statement, index, (value as! NSNumber).doubleValue)
+                    } else if value is Date {
+                        result = sqlite3_bind_double(statement, index, (value as! Date).timeIntervalSince1970)
+                    }
+                case .blob:
+                    if value is Data {
+                        var bytes = [UInt8](value as! Data)
+                        result = sqlite3_bind_blob(statement, index, &bytes, Int32(bytes.count), SQLITE_TRANSIENT)
+                    } else if value is NSData {
+                        let data = value as! NSData
+                        result = sqlite3_bind_blob(statement, index, data.bytes, Int32(data.length), SQLITE_TRANSIENT)
+                    }
                 }
-            case .integer:
-                if value is Int {
-                    result = sqlite3_bind_int64(stmt, index, sqlite3_int64(sqlite_int64(value as! Int)))
-                } else if value is Int64 {
-                    result = sqlite3_bind_int64(stmt, index, value as! sqlite3_int64)
-                } else if value is Bool {
-                    result = sqlite3_bind_int64(stmt, index, (value as! Bool) ? 1 : 0)
-                } else if value is ObjCBool {
-                    result = sqlite3_bind_int64(stmt, index, (value as! ObjCBool).boolValue ? 1 : 0)
-                } else if value is Int32 {
-                    result = sqlite3_bind_int64(stmt, index, sqlite3_int64(sqlite_int64(value as! Int32)))
-                } else if value is Int16 {
-                    result = sqlite3_bind_int64(stmt, index, sqlite3_int64(sqlite_int64(value as! Int16)))
-                } else if value is Int8 {
-                    result = sqlite3_bind_int64(stmt, index, sqlite3_int64(sqlite_int64(value as! Int8)))
-                } else if value is NSNumber {
-                    result = sqlite3_bind_int64(stmt, index, (value as! NSNumber).int64Value)
-                } else if value is Date {
-                    result = sqlite3_bind_int64(stmt, index, sqlite3_int64((value as! Date).timeIntervalSince1970))
-                }
-            case .float:
-                if value is Double {
-                    result = sqlite3_bind_double(stmt, index, value as! Double)
-                } else if value is CGFloat {
-                    result = sqlite3_bind_double(stmt, index, Double(value as! CGFloat))
-                } else if value is Float {
-                    result = sqlite3_bind_double(stmt, index, Double(value as! Float))
-                } else if value is Bool {
-                    result = sqlite3_bind_double(stmt, index, (value as! Bool) ? 1.0 : 0.0)
-                } else if value is ObjCBool {
-                    result = sqlite3_bind_double(stmt, index, (value as! ObjCBool).boolValue ? 1.0 : 0.0)
-                } else if #available(iOS 14.0, *), value is Float16 {
-                    result = sqlite3_bind_double(stmt, index, Double(value as! Float16))
-                } else if value is NSNumber {
-                    result = sqlite3_bind_double(stmt, index, (value as! NSNumber).doubleValue)
-                } else if value is Date {
-                    result = sqlite3_bind_double(stmt, index, (value as! Date).timeIntervalSince1970)
-                }
-            case .blob:
-                if value is Data {
-                    var bytes = [UInt8](value as! Data)
-                    result = sqlite3_bind_blob(stmt, index, &bytes, Int32(bytes.count), SQLITE_TRANSIENT)
-                } else if value is NSData {
-                    let data = value as! NSData
-                    result = sqlite3_bind_blob(stmt, index, data.bytes, Int32(data.length), SQLITE_TRANSIENT)
-                }
+            } else {
+                result = sqlite3_bind_null(statement, index)
             }
             guard result == SQLITE_OK else { return false }
         }
