@@ -16,15 +16,26 @@ extension UIImage {
     /// - Parameters:
     ///   - color: 渲染颜色
     ///   - size: 渲染尺寸
-    public convenience init?(color: UIColor, size: CGSize = CGSize(width: 1.0, height: 1.0)) {
+    public convenience init?(mn_color color: UIColor, size: CGSize = CGSize(width: 1.0, height: 1.0)) {
         UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
         guard let context = UIGraphicsGetCurrentContext() else { return nil }
         context.setFillColor(color.cgColor)
-        context.fill(CGRect(x: 0, y: 0, width: size.width, height: size.height))
+        context.fill(.init(origin: .zero, size: size))
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         guard let cgImage = image?.cgImage else { return nil }
         self.init(cgImage: cgImage)
+    }
+    
+    /// 解码base64编码的图片
+    /// - Parameter string: base64编码的字符串
+    public convenience init?(mn_base64Encoded string: String) {
+        var base64String = string
+        if let range = string.range(of: "base64,") {
+            base64String = String(string[range.upperBound...])
+        }
+        guard let imageData = Data(base64Encoded: base64String, options: .ignoreUnknownCharacters) else { return nil }
+        self.init(data: imageData)
     }
 }
 
@@ -233,6 +244,20 @@ extension MNNameSpaceWrapper where Base: UIImage {
         }
         return UIImage(data: compressedData, scale: base.scale)
     }
+    
+    var base64String: String? {
+        
+        nil
+    }
+    
+    func toBase64String(f: ) -> String? {
+        
+    }
+}
+
+extension UIImage {
+    
+    
 }
 
 extension MNNameSpaceWrapper where Base: UIImage {

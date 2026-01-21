@@ -8,8 +8,8 @@
 import UIKit
 import Foundation
 
-@objc
-public enum MNImageFormat: Int {
+/// 定义图片格式
+public enum MNImageFormat {
     case undefined, jpeg, png, gif, tiff, webp, heic
 }
 
