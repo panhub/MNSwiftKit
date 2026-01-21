@@ -27,7 +27,7 @@ class FontSectionHeaderView: UITableViewHeaderFooterView {
         
         familyLabel.numberOfLines = 1
         familyLabel.font = UIFont(name: "AlNile", size: 16.0)
-        familyLabel.textColor = UIColor(hex: 0x4699D9)
+        familyLabel.textColor = UIColor(mn_hex: 0x4699D9)
         familyLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(familyLabel)
         NSLayoutConstraint.activate([

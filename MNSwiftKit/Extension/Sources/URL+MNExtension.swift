@@ -11,7 +11,7 @@ extension URL {
     
     /// 初始化本地路径引用
     /// - Parameter filePath: 本地绝对路径
-    public init(fileAtPath filePath: String) {
+    public init(mn_filePath filePath: String) {
         if #available(iOS 16.0, *) {
             self.init(filePath: filePath)
         } else {
@@ -19,7 +19,6 @@ extension URL {
         }
     }
 }
-
 
 extension MNNameSpaceWrapper where Base == URL {
     

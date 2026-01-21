@@ -156,7 +156,7 @@ class RequestViewController: UIViewController {
             guard let self = self else { return }
             self.downloadLabel.text = "正在下载"
         } location: { response, url in
-            return URL(fileAtPath: downloadPath)
+            return URL(mn_filePath: downloadPath)
         } progress: { [weak self] progress in
             guard let self = self else { return }
             self.progressWidth.constant = self.trackView.frame.width*progress.fractionCompleted
@@ -165,7 +165,7 @@ class RequestViewController: UIViewController {
             if result.code == .succeed {
                 self.downloadLabel.text = "下载完成"
                 self.playView.isHidden = false
-                self.player.append(URL(fileAtPath: downloadPath))
+                self.player.append(URL(mn_filePath: downloadPath))
                 self.player.play()
             } else {
                 self.downloadLabel.text = result.msg

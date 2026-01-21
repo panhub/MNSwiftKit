@@ -393,8 +393,8 @@ extension MNTailorViewController {
             guard (delegate?.tailorControllerShouldCopyVideo?(self) ?? true) == true else { return }
             // 原视频 拷贝视频即可
             MNToast.showActivity("视频导出中")
-            DispatchQueue.global().async { [weak self] in
-                let url: URL = URL(fileAtPath: outputPath)
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                let url: URL = URL(mn_filePath: outputPath)
                 do {
                     try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
                 } catch {

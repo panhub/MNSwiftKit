@@ -108,8 +108,8 @@ class MNAssetPickerToolBar: UIView {
         doneButton.titleLabel?.font = .systemFont(ofSize: 15.0, weight: .medium)
         doneButton.setTitleColor(UIColor(red:251.0/255.0, green:251.0/255.0, blue:251.0/255.0, alpha:1.0), for: .normal)
         doneButton.setTitleColor(options.mode == .light ? UIColor(red:251.0/255.0, green:251.0/255.0, blue:251.0/255.0, alpha:1.0) : .white.withAlphaComponent(0.5), for: .disabled)
-        doneButton.setBackgroundImage(UIImage(color: options.themeColor), for: .normal)
-        doneButton.setBackgroundImage(UIImage(color: disabledColor), for: .disabled)
+        doneButton.setBackgroundImage(UIImage(mn_color: options.themeColor), for: .normal)
+        doneButton.setBackgroundImage(UIImage(mn_color: disabledColor), for: .disabled)
         doneButton.contentVerticalAlignment = .center
         doneButton.contentHorizontalAlignment = .center
         doneButton.translatesAutoresizingMaskIntoConstraints = false

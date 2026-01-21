@@ -9,17 +9,6 @@ import Foundation
 
 extension MNNameSpaceWrapper where Base == Array<Any> {
     
-    /// 遍历元素
-    /// - Parameter block: 回调外界使用
-    public func enumElement(_ block: (Base.Element, Int, UnsafeMutablePointer<Bool>) -> Void) {
-        guard base.count > 0 else { return }
-        var stop: Bool = false
-        for idx in 0..<base.count {
-            block(base[idx], idx, &stop)
-            guard stop == false else { break }
-        }
-    }
-    
     /// 按元素个数分组
     /// - Parameter capacity: 容量
     /// - Returns: 分组后的数组

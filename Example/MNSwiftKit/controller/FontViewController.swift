@@ -39,7 +39,7 @@ class FontViewController: UIViewController {
         pageControl.axis = .vertical
         pageControl.contentVerticalAlignment = .center
         pageControl.contentHorizontalAlignment = .left
-        pageControl.currentPageIndicatorTintColor = UIColor(hex: 0x4699D9)
+        pageControl.currentPageIndicatorTintColor = UIColor(mn_hex: 0x4699D9)
         
         tableView.register(UINib(nibName: "FontTableCell", bundle: .main), forCellReuseIdentifier: "FontTableCell")
         tableView.register(FontSectionHeaderView.self, forHeaderFooterViewReuseIdentifier: "FontSectionHeaderView")

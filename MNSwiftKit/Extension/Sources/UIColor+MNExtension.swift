@@ -16,7 +16,7 @@ extension UIColor {
     ///   - hex: 16进制颜色值
     ///   - alpha: 透明度
     @objc(mn_initWithHexString:alpha:)
-    public convenience init(hex: String, alpha: CGFloat = 1.0) {
+    public convenience init(mn_hex hex: String, alpha: CGFloat = 1.0) {
         var alpha = alpha
         var string = hex.replacingOccurrences(of: " ", with: "")
         // 存储转换后的数值
@@ -50,7 +50,7 @@ extension UIColor {
     ///   - hex: 6进制颜色值
     ///   - alpha: 透明度
     @objc(mn_initWithHex:alpha:)
-    public convenience init(hex: Int, alpha: CGFloat = 1.0) {
+    public convenience init(mn_hex hex: Int, alpha: CGFloat = 1.0) {
         if (0x000000 ... 0xFFFFFF) ~= hex {
             self.init(red: CGFloat((hex & 0xFF0000) >> 16)/255.0, green: CGFloat((hex & 0x00FF00) >> 8)/255.0, blue: CGFloat((hex & 0x0000FF) >> 0)/255.0, alpha: alpha)
         } else {
@@ -64,16 +64,20 @@ extension UIColor {
     ///   - g: 绿色值 (0.0-255.0)
     ///   - b: 蓝色值 (0.0-255.0)
     ///   - a: 透明度 (0.0-1.0)
-    @objc public convenience init(r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat = 1.0) {
+    public convenience init(mn_red red: any BinaryFloatingPoint, green: any BinaryFloatingPoint, blue: any BinaryFloatingPoint, alpha: any BinaryFloatingPoint = 1.0) {
+        let r = CGFloat(red)
+        let g = CGFloat(green)
+        let b = CGFloat(blue)
+        let a = CGFloat(alpha)
         self.init(red: r/255.0, green: g/255.0, blue: b/255.0, alpha: a)
     }
     
     /// 实例化颜色
     /// - Parameters:
-    ///   - all: 红绿蓝色值 (0.0-255.0)
+    ///   - value: 红绿蓝色值 (0.0-255.0)
     ///   - alpha: 透明度 (0.0-1.0)
-    @objc public convenience init(all value: CGFloat, alpha: CGFloat = 1.0) {
-        self.init(red: value/255.0, green: value/255.0, blue: value/255.0, alpha: alpha)
+    public convenience init(mn_rgb value: any BinaryFloatingPoint, alpha: any BinaryFloatingPoint = 1.0) {
+        self.init(mn_red: value, green: value, blue: value, alpha: alpha)
     }
 }
 

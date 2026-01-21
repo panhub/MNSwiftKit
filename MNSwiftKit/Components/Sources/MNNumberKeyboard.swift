@@ -109,8 +109,8 @@ public class MNNumberKeyboard: UIView {
             stackView.rightAnchor.constraint(equalTo: rightAnchor, constant: -configuration.spacing)
         ])
         
-        let backgroundImage = UIImage(color: configuration.keyBackgroundColor)
-        let highlightedImage = UIImage(color: configuration.keyHighlightedColor)
+        let backgroundImage = UIImage(mn_color: configuration.keyBackgroundColor)
+        let highlightedImage = UIImage(mn_color: configuration.keyHighlightedColor)
         
         for element in elements {
             

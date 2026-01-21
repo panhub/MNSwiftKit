@@ -349,7 +349,7 @@ extension MNAssetBrowserCell {
         case .video:
             // 视频
             guard let videoPath = contents as? String else { break }
-            player.append(urls: [URL(fileAtPath: videoPath)])
+            player.append(urls: [URL(mn_filePath: videoPath)])
             if autoPlay {
                 player.play()
             }

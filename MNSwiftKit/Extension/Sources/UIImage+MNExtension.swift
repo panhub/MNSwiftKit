@@ -16,7 +16,7 @@ extension UIImage {
     /// - Parameters:
     ///   - color: 渲染颜色
     ///   - size: 渲染尺寸
-    public convenience init?(mn_color color: UIColor, size: CGSize = CGSize(width: 1.0, height: 1.0)) {
+    public convenience init?(mn_color color: UIColor, size: CGSize = .init(width: 1.0, height: 1.0)) {
         UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
         guard let context = UIGraphicsGetCurrentContext() else { return nil }
         context.setFillColor(color.cgColor)
@@ -245,19 +245,46 @@ extension MNNameSpaceWrapper where Base: UIImage {
         return UIImage(data: compressedData, scale: base.scale)
     }
     
-    var base64String: String? {
-        
-        nil
+    /// 转换为Base64字符串
+    /// - 首选png格式，若失败则转换为jpeg格式，以0.8为压缩比
+    public var base64String: String? {
+        if let base64EncodedString = toBase64String(format: .png) {
+            return base64EncodedString
+        }
+        return toBase64String(format: .jpeg(compressionQuality: 0.8))
     }
     
-    func toBase64String(f: ) -> String? {
-        
+    /// 转换为Base64字符串
+    /// - Parameter format: 解码格式
+    /// - Returns: Base64字符串
+    public func toBase64String(format: UIImage.MNDecodeFormat) -> String? {
+        var imageData: Data?
+        var prefixString: String
+        switch format {
+        case .png:
+            imageData = base.pngData()
+            prefixString = "data:image/png;base64,"
+        case .jpeg(let compressionQuality):
+            imageData = base.jpegData(compressionQuality: compressionQuality)
+            prefixString = "data:image/jpeg;base64,"
+        }
+        guard let imageData = imageData else { return nil }
+        var base64String = imageData.base64EncodedString()
+        base64String.insert(contentsOf: prefixString, at: base64String.startIndex)
+        return base64String
     }
 }
 
 extension UIImage {
     
-    
+    /// 解码格式
+    public enum MNDecodeFormat {
+        /// 解码为png格式再进行Base64编码
+        case png
+        /// 解码为jpeg格式再进行Base64编码
+        /// - compressionQuality: 压缩比
+        case jpeg(compressionQuality: CGFloat)
+    }
 }
 
 extension MNNameSpaceWrapper where Base: UIImage {

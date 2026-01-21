@@ -713,7 +713,7 @@ extension MNAssetHelper {
             }
             return url
         }
-        return URL(fileAtPath: exportDirectory).appendingPathComponent(UUID().uuidString).appendingPathExtension(ext)
+        return URL(mn_filePath: exportDirectory).appendingPathComponent(UUID().uuidString).appendingPathExtension(ext)
     }
 }
 
@@ -829,7 +829,7 @@ extension MNAssetHelper {
                     // 转换资源
                     if asset is String {
                         guard let path = asset as? String, FileManager.default.fileExists(atPath: path) else { continue }
-                        asset = URL(fileAtPath: path) as AnyObject
+                        asset = URL(mn_filePath: path) as AnyObject
                     } else if asset is Data {
                         guard let image = UIImage(data: asset as! Data) else { continue }
                         asset = image
@@ -861,7 +861,7 @@ extension MNAssetHelper {
                             var videoURL: URL?, imageURL: URL?
                             if let path = dictionary[MNLivePhotoImageUrlKey] as? String, FileManager.default.fileExists(atPath: path) {
                                 if (path as NSString).pathExtension.lowercased() == "jpg" || (path as NSString).pathExtension.lowercased() == "jpeg" {
-                                    imageURL = URL(fileAtPath: path)
+                                    imageURL = URL(mn_filePath: path)
                                 }
                             } else if let url = dictionary[MNLivePhotoImageUrlKey] as? URL, FileManager.default.fileExists(atPath: url.mn.path) {
                                 if url.pathExtension.lowercased() == "jpg" || url.pathExtension.lowercased() == "jpeg" {
@@ -869,7 +869,7 @@ extension MNAssetHelper {
                                 }
                             }
                             if let path = dictionary[MNLivePhotoVideoUrlKey] as? String, FileManager.default.fileExists(atPath: path), (path as NSString).pathExtension.lowercased() == "mov" {
-                                videoURL = URL(fileAtPath: path)
+                                videoURL = URL(mn_filePath: path)
                             } else if let url = dictionary[MNLivePhotoVideoUrlKey] as? URL, FileManager.default.fileExists(atPath: url.mn.path), url.pathExtension.lowercased() == "mov" {
                                 videoURL = url
                             }
@@ -885,9 +885,9 @@ extension MNAssetHelper {
                                 if item is String {
                                     guard let path = item as? String, FileManager.default.fileExists(atPath: path) else { continue }
                                     if (path as NSString).pathExtension.lowercased() == "mov" {
-                                        videoURL = URL(fileAtPath: path)
+                                        videoURL = URL(mn_filePath: path)
                                     } else if (path as NSString).pathExtension.lowercased() == "jpg" || (path as NSString).pathExtension.lowercased() == "jpeg" {
-                                        imageURL = URL(fileAtPath: path)
+                                        imageURL = URL(mn_filePath: path)
                                     }
                                 } else if item is URL {
                                     guard let url = item as? URL, FileManager.default.fileExists(atPath: url.mn.path) else { continue }

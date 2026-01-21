@@ -180,7 +180,7 @@ class AssetPickerController: UIViewController {
         case .video:
             playView.isHidden = false
             player.removeAll()
-            player.append(urls: [URL(fileAtPath: contents as! String)])
+            player.append(urls: [URL(mn_filePath: contents as! String)])
             player.play()
             imageView.image = nil
             imageView.isHidden = true

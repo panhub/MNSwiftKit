@@ -15,14 +15,14 @@ import UIKit
     private let foregroundLabel = UILabel()
     
     /// 文本颜色
-    @IBInspectable var backgroundTextColor: UIColor = UIColor(hex: 0x545454) {
+    @IBInspectable var backgroundTextColor: UIColor = UIColor(mn_hex: 0x545454) {
         didSet {
             updateBackgroundText()
         }
     }
     
     /// 前置颜色（高亮色）
-    @IBInspectable var foregroundTextColor: UIColor = UIColor(hex: 0x4699D9) {
+    @IBInspectable var foregroundTextColor: UIColor = UIColor(mn_hex: 0x4699D9) {
         didSet {
             updateForegroundText()
         }
