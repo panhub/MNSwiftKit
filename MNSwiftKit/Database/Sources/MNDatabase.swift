@@ -383,8 +383,8 @@ extension MNDatabase {
             semaphore.signal()
         }
         closedb()
-        stmts.removeAll()
         tables.removeAll()
+        statements.removeAll()
         reloadExistTable = true
     }
 }
@@ -473,7 +473,7 @@ extension MNDatabase {
             // 插入主键
             columns.insert(column, at: 0)
         } else {
-            columns.insert(.init(name: "mn_id", type: .integer, primary: true), at: 0)
+            columns.insert(.init(name: "mn_primary_id", type: .integer, primary: true), at: 0)
         }
         guard columns.count > 1 else { return false }
         let elements: [String] = columns.compactMap { $0.sql }
@@ -1489,8 +1489,8 @@ extension MNDatabase {
     /// 映射数据模型在数据库中的字段
     /// - Parameter model: 模型对象
     /// - Returns: [字段:值]
-    fileprivate func field<T>(for model: T) -> [String:Any] where T: MNEntityInitializable {
-        var result: [String:Any] = [:]
+    fileprivate func field<T>(for model: T) -> [String:Any?] where T: MNEntityInitializable {
+        var result: [String:Any?] = [:]
         let columns = columns(for: Swift.type(of: model))
         let mirror = Mirror(reflecting: model)
         for (label, value) in mirror.children {
