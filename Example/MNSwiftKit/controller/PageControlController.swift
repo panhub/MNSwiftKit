@@ -18,17 +18,31 @@ class PageControlController: UIViewController {
     @IBOutlet weak var backTop: NSLayoutConstraint!
     /// 返回按钮高度约束
     @IBOutlet weak var backHeight: NSLayoutConstraint!
+    
+    let titleView = TitleView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
         backTop.constant = (MN_NAV_BAR_HEIGHT - backHeight.constant)/2.0 + MN_STATUS_BAR_HEIGHT
+        
+        
+        titleView.font = UIFont(name: "Avenir-Heavy", size: 60.0)!
+        titleView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(titleView)
+        let size = titleView.text.mn.size(with: titleView.font)
+        NSLayoutConstraint.activate([
+            titleView.widthAnchor.constraint(equalToConstant: ceil(size.width)),
+            titleView.heightAnchor.constraint(equalToConstant: ceil(size.height)),
+            titleView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            titleView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
     }
-
 
     @IBAction func back() {
         
+        let image = titleView.layer.mn.snapshotImage
         navigationController?.popViewController(animated: true)
     }
     

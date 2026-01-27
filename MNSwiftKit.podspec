@@ -263,7 +263,7 @@ Pod::Spec.new do |s|
     full.dependency 'MNSwiftKit/Refresh'
     full.dependency 'MNSwiftKit/Request'
     full.dependency 'MNSwiftKit/Purchase'
-    full.dependency 'MNSwiftKit/Database'
+    #full.dependency 'MNSwiftKit/Database'
     full.dependency 'MNSwiftKit/Definition'
     full.dependency 'MNSwiftKit/Extension'
     full.dependency 'MNSwiftKit/EmptyView'
