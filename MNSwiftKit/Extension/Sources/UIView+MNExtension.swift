@@ -63,12 +63,19 @@ extension MNNameSpaceWrapper where Base: UIView {
         }
     }
     
-    /// 截图
+    /// 获取渲染图像
     public var snapshotImage: UIImage? {
+        snapshotImage(afterScreenUpdates: false)
+    }
+    
+    /// 获取渲染图像
+    /// - Parameter afterScreenUpdates: 会强制布局更新
+    /// - Returns: 当前画面图像
+    public func snapshotImage(afterScreenUpdates: Bool) -> UIImage? {
         if #available(iOS 10.0, *) {
-            let renderer = UIGraphicsImageRenderer(size: base.frame.size)
+            let renderer = UIGraphicsImageRenderer(size: base.bounds.size)
             return renderer.image { context in
-                base.drawHierarchy(in: base.bounds, afterScreenUpdates: true)
+                base.drawHierarchy(in: base.bounds, afterScreenUpdates: afterScreenUpdates)
             }
         }
         return base.layer.mn.snapshotImage

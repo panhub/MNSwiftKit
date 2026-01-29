@@ -27,7 +27,7 @@ class PageControlController: UIViewController {
         
         backTop.constant = (MN_NAV_BAR_HEIGHT - backHeight.constant)/2.0 + MN_STATUS_BAR_HEIGHT
         
-        
+        titleView.backgroundColor = .clear
         titleView.font = UIFont(name: "Avenir-Heavy", size: 60.0)!
         titleView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(titleView)

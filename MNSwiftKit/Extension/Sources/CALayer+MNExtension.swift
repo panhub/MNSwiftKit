@@ -46,15 +46,24 @@ extension MNNameSpaceWrapper where Base: CALayer {
         base.beginTime = 0.0
     }
     
-    /// 截图
+    /// 获取渲染图像
     public var snapshotImage: UIImage? {
+        snapshotImage(opaque: false)
+    }
+    
+    /// 获取渲染图像
+    /// - Parameter opaque: 是否不透明
+    /// - true: 没有 alpha 通道, 内存结构：RGB（每个像素 3 字节）, 背景初始为黑色或随机值（不是透明）, 绘制时忽略透明度，渲染更快
+    /// - false: 包含 alpha 通道, 内存结构：RGBA（每个像素 4 字节）, 背景初始为透明, 支持透明和半透明效果
+    /// - Returns: 当前画面图像
+    public func snapshotImage(opaque: Bool) -> UIImage? {
         if #available(iOS 10.0, *) {
-            let renderer = UIGraphicsImageRenderer(size: base.frame.size)
+            let renderer = UIGraphicsImageRenderer(size: base.bounds.size)
             return renderer.image { context in
                 base.render(in: context.cgContext)
             }
         }
-        UIGraphicsBeginImageContextWithOptions(base.bounds.size, false, base.contentsScale)
+        UIGraphicsBeginImageContextWithOptions(base.bounds.size, opaque, base.contentsScale)
         defer {
             UIGraphicsEndImageContext()
         }
