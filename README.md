@@ -4954,7 +4954,7 @@ let database = MNDatabase(path: "/path/to/your/database.sqlite")
 
 ```swift
 // 方式1：使用自动映射（推荐）
-class User: MNEntityInitializable {
+class User: MNTableRowInitializable {
     var name: String = ""
     var age: Int = 0
     var email: String = ""
@@ -4963,7 +4963,7 @@ class User: MNEntityInitializable {
 }
 
 // 方式2：使用协议自定义字段
-class User: MNEntityInitializable, MNTableColumnSupported {
+class User: MNTableRowInitializable, MNTableColumnSupported {
     var name: String = ""
     var age: Int = 0
     
@@ -5267,7 +5267,7 @@ let customEscape = MNTableColumn.MatchType.contains("name", "张%", escape: "\\"
 
 ```swift
 // MNTableColumnAssignment：自定义赋值逻辑
-class CustomUser: MNEntityInitializable, MNTableColumnAssignment {
+class CustomUser: MNTableRowInitializable, MNTableColumnAssignment {
     var name: String = ""
     var age: Int = 0
     
@@ -5291,7 +5291,7 @@ class CustomUser: MNEntityInitializable, MNTableColumnAssignment {
 #### 📝 注意事项
 
 - **线程安全**：所有数据库操作都是线程安全的，可以在任意线程调用。
-- **模型要求**：数据模型必须实现 `MNEntityInitializable` 协议（提供 init() 方法）。
+- **模型要求**：数据模型必须实现 `MNTableRowInitializable` 协议（提供 init() 方法）。
 - **自动映射规则**：
   - `Int`、`Int64`、`Bool` → `.integer`
   - `Double`、`Float`、`CGFloat` → `.float`
