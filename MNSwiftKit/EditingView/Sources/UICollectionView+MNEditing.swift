@@ -164,6 +164,12 @@ extension MNNameSpaceWrapper where Base: UICollectionViewCell {
         updateEditing(false, animated: animated)
     }
     
+    /// 重用时调用，恢复内容视图
+    public func reuseContentView() {
+        layoutEditingView(false)
+        layoutContentView()
+    }
+    
     /// 约束内容视图
     public func layoutContentView() {
         guard let editingView = editingView else { return }

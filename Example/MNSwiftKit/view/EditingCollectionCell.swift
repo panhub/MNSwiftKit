@@ -21,4 +21,10 @@ class EditingCollectionCell: UICollectionViewCell {
         
         mn.layoutContentView()
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        mn.reuseContentView()
+    }
 }
