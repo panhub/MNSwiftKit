@@ -315,7 +315,7 @@ extension MNNameSpaceWrapper where Base: UIImage {
 #endif
             return false
         }
-        guard let imageData = data else { return false }
+        guard let imageData = data() else { return false }
         do {
             try imageData.write(to: url)
         } catch {
