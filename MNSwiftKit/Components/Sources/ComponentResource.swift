@@ -8,10 +8,6 @@
 
 import UIKit
 import Foundation
-#if SWIFT_PACKAGE
-@_exported import MNExtension
-@_exported import MNNameSpace
-#endif
 
 /// 资源加载器
 public class ComponentResource {

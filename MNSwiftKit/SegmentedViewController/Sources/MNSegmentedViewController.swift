@@ -8,9 +8,6 @@
 import UIKit
 import Foundation
 import CoreFoundation
-#if SWIFT_PACKAGE
-@_exported import MNNameSpace
-#endif
 
 /// 分段视图控制器数据源
 @objc public protocol MNSegmentedViewControllerDataSource: MNSegmentedNavigationDataSource {

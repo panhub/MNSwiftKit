@@ -11,9 +11,6 @@ import Foundation
 import CoreServices
 import CoreFoundation
 import UniformTypeIdentifiers
-#if SWIFT_PACKAGE
-import MNNameSpace
-#endif
 
 extension MNNameSpaceWrapper where Base: UIImage {
     
