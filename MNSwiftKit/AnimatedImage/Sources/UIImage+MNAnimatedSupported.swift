@@ -33,8 +33,6 @@ extension MNNameSpaceWrapper where Base: UIImage {
             // GIF
             format = "gif"
             let count = images.count
-            let delay: TimeInterval = base.duration/TimeInterval(count)
-            let frameProperties: [CFString:[CFString:Any]] = [kCGImagePropertyGIFDictionary:[kCGImagePropertyGIFDelayTime :delay]]
             var identifier: CFString
             if #available(iOS 15.0, *) {
                 identifier = UTType.gif.identifier as CFString
@@ -45,6 +43,8 @@ extension MNNameSpaceWrapper where Base: UIImage {
             guard let destination = CGImageDestinationCreateWithData(frameData, identifier, count, nil) else { return nil }
             let gifProperties: [CFString:[CFString:Any]] = [kCGImagePropertyGIFDictionary:[kCGImagePropertyGIFLoopCount:0]]
             CGImageDestinationSetProperties(destination, gifProperties as CFDictionary)
+            let delayTime: TimeInterval = base.duration/TimeInterval(count)
+            let frameProperties: [CFString:[CFString:Any]] = [kCGImagePropertyGIFDictionary:[kCGImagePropertyGIFDelayTime :delayTime]]
             for image in images {
                 guard let cgImage = image.cgImage else { continue }
                 CGImageDestinationAddImage(destination, cgImage, frameProperties as CFDictionary)
