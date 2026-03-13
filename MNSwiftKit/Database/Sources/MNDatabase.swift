@@ -65,6 +65,16 @@ extension Optional: MNTableColumnWrappedable {
     static var wrappedType: any Any.Type { Wrapped.self }
 }
 
+private protocol MNTableColumnRepresentable {
+    
+    static var wrappedRawType: Any.Type { get }
+}
+
+extension Optional: MNTableColumnRepresentable where Wrapped: RawRepresentable {
+    
+    static var wrappedRawType: any Any.Type { Wrapped.RawValue.self }
+}
+
 /// 表结构支持
 public protocol MNTableColumnSupported {
     
@@ -1542,36 +1552,30 @@ extension MNDatabase {
         for (label, value) in mirror.children {
             guard let label = label else { continue }
             let propertyType = Swift.type(of: value)
-            if propertyType == Int.self || propertyType == Int64.self || propertyType == Bool.self || propertyType == Int32.self || propertyType == UInt.self || propertyType is Optional<Int>.Type || propertyType is Optional<Int64>.Type || propertyType is Optional<Bool>.Type || propertyType is Optional<Int32>.Type || propertyType is Optional<UInt>.Type {
-                // integer
-                columns.append(MNTableColumn(name: label, type: .integer, nullable: propertyType is Optional<Any>.Type))
-            } else if propertyType == Double.self || propertyType == CGFloat.self || propertyType == Float.self || propertyType is Optional<Double>.Type || propertyType is Optional<CGFloat>.Type || propertyType is Optional<Float>.Type {
-                // float
-                columns.append(MNTableColumn(name: label, type: .float, nullable: propertyType is Optional<Any>.Type))
-            } else if propertyType == String.self || propertyType == NSString.self || propertyType is Optional<String>.Type || propertyType is Optional<NSString>.Type {
-                // text
-                columns.append(MNTableColumn(name: label, type: .text, nullable: propertyType is Optional<Any>.Type))
-            } else if propertyType == Data.self || propertyType == NSData.self || propertyType is Optional<Data>.Type || propertyType is Optional<NSData>.Type {
-                // blob
-                columns.append(MNTableColumn(name: label, type: .blob, nullable: propertyType is Optional<Any>.Type))
+            let isNullable = propertyType is MNTableColumnWrappedable.Type
+            var rawType = propertyType
+            if let optionalType = propertyType as? MNTableColumnRepresentable.Type {
+                rawType = optionalType.wrappedRawType
+            } else if let optionalType = propertyType as? MNTableColumnWrappedable.Type {
+                rawType = optionalType.wrappedType
             } else if let rawValueProvider = value as? any RawRepresentable {
                 let rawValue = rawValueProvider.rawValue
-                if rawValue is String {
-                    // text
-                    columns.append(MNTableColumn(name: label, type: .text))
-                } else if rawValue is Int || rawValue is Int64 {
-                    // integer
-                    columns.append(MNTableColumn(name: label, type: .integer))
-                }
-            } else if let optionalType = propertyType as? MNTableColumnWrappedable.Type, let caseType = optionalType.wrappedType as? any CaseIterable.Type, let firstCase = caseType.allCases.first, let rawValueProvider = firstCase as? any RawRepresentable {
-                let rawValue = rawValueProvider.rawValue
-                if rawValue is String {
-                    // text
-                    columns.append(MNTableColumn(name: label, type: .text, nullable: true))
-                } else if rawValue is Int || rawValue is Int64 {
-                    // integer
-                    columns.append(MNTableColumn(name: label, type: .integer, nullable: true))
-                }
+                rawType = Swift.type(of: rawValue)
+            }
+            switch rawType {
+            case is any BinaryInteger.Type, is Bool.Type:
+                // integer
+                columns.append(MNTableColumn(name: label, type: .integer, nullable: isNullable))
+            case is any BinaryFloatingPoint.Type, is CGFloat.Type:
+                // float
+                columns.append(MNTableColumn(name: label, type: .float, nullable: isNullable))
+            case is String.Type, is NSString.Type:
+                // text
+                columns.append(MNTableColumn(name: label, type: .text, nullable: isNullable))
+            case is Data.Type, is NSData.Type:
+                // blob
+                columns.append(MNTableColumn(name: label, type: .blob, nullable: isNullable))
+            default: break
             }
         }
         classColumns[key] = columns
