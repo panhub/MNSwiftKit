@@ -47,12 +47,12 @@ extension UIColor {
     
     /// 实例化颜色
     /// - Parameters:
-    ///   - hex: 6进制颜色值
+    ///   - value: 6进制颜色值
     ///   - alpha: 透明度
-    @objc(mn_initWithHex:alpha:)
-    public convenience init(mn_hex hex: Int, alpha: CGFloat = 1.0) {
-        if (0x000000 ... 0xFFFFFF) ~= hex {
-            self.init(red: CGFloat((hex & 0xFF0000) >> 16)/255.0, green: CGFloat((hex & 0x00FF00) >> 8)/255.0, blue: CGFloat((hex & 0x0000FF) >> 0)/255.0, alpha: alpha)
+    @objc(mn_initWithHexValue:alpha:)
+    public convenience init(mn_hex value: Int, alpha: CGFloat = 1.0) {
+        if (0x000000 ... 0xFFFFFF) ~= value {
+            self.init(red: CGFloat((value & 0xFF0000) >> 16)/255.0, green: CGFloat((value & 0x00FF00) >> 8)/255.0, blue: CGFloat((value & 0x0000FF) >> 0)/255.0, alpha: alpha)
         } else {
             self.init(red: 0.0, green: 0.0, blue: 0.0, alpha: alpha)
         }
@@ -60,10 +60,10 @@ extension UIColor {
     
     /// 实例化颜色
     /// - Parameters:
-    ///   - r: 红色值 (0.0-255.0)
-    ///   - g: 绿色值 (0.0-255.0)
-    ///   - b: 蓝色值 (0.0-255.0)
-    ///   - a: 透明度 (0.0-1.0)
+    ///   - red: 红色值 (0.0-255.0)
+    ///   - green: 绿色值 (0.0-255.0)
+    ///   - blue: 蓝色值 (0.0-255.0)
+    ///   - alpha: 透明度 (0.0-1.0)
     public convenience init(mn_red red: any BinaryFloatingPoint, green: any BinaryFloatingPoint, blue: any BinaryFloatingPoint, alpha: any BinaryFloatingPoint = 1.0) {
         let r = CGFloat(red)
         let g = CGFloat(green)
@@ -109,3 +109,43 @@ extension MNNameSpaceWrapper where Base: UIColor {
         return String(format: "#%02lX%02lX%02lX%.2f", Int(red*multiplier), Int(green*multiplier), Int(blue*multiplier), alpha)
     }
 }
+
+#if canImport(SwiftUI)
+import SwiftUI
+
+@available(iOS 13.0, *)
+extension Color {
+    
+    /// 实例化颜色
+    /// - Parameters:
+    ///   - red: 红色值 (0.0-255.0)
+    ///   - green: 绿色值 (0.0-255.0)
+    ///   - blue: 蓝色值 (0.0-255.0)
+    ///   - opacity: 透明度 (0.0-1.0)
+    public init(mn_red red: any BinaryFloatingPoint, green: any BinaryFloatingPoint, blue: any BinaryFloatingPoint, opacity: any BinaryFloatingPoint = 1.0) {
+        
+        self.init(.sRGB, red: Double(red) / 255.0, green: Double(green) / 255.0, blue: Double(blue) / 255.0, opacity: Double(opacity))
+    }
+    
+    /// 实例化颜色
+    /// - Parameters:
+    ///   - hex: 16进制颜色值
+    public init(mn_hex string: String) {
+        let hex = string.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+        let a, r, g, b: UInt64
+        switch hex.count {
+        case 3:
+            (r, g, b, a) = ((int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17, 255)
+        case 6:
+            (r, g, b, a) = (int >> 16, int >> 8 & 0xFF, int & 0xFF, 255)
+        case 8:
+            (r, g, b, a) = (int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF, int >> 24)
+        default:
+            (r, g, b, a) = (0, 0, 0, 255)
+        }
+        self.init(.sRGB, red: Double(r) / 255.0, green: Double(g) / 255.0, blue: Double(b) / 255.0, opacity: Double(a) / 255.0)
+    }
+}
+#endif

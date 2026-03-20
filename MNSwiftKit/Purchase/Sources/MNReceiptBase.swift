@@ -397,7 +397,7 @@ extension MNReceiptBase {
     private func close() {
         guard let db = db else { return }
         repeat {
-            let result = sqlite3_close(db)
+            let result = sqlite3_close_v2(db)
             if result == SQLITE_BUSY {
                 while let stmt = sqlite3_next_stmt(db, nil) {
                     sqlite3_finalize(stmt)
