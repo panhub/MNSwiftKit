@@ -17,10 +17,8 @@ extension MNNameSpaceWrapper where Base: UIApplication {
     public class var statusBarHeight: CGFloat {
         if let height = MNApplicationStatusBarHeight { return height }
         var height: CGFloat = 0.0
-        if #available(iOS 13.0, *) {
-            if let statusBarManager = Base.shared.delegate?.window??.windowScene?.statusBarManager {
-                height = statusBarManager.statusBarFrame.height
-            }
+        if #available(iOS 13.0, *), let windowScene = Base.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first(where: { $0.activationState == .foregroundActive }), let statusBarManager = windowScene.statusBarManager {
+            height = statusBarManager.statusBarFrame.height
         } else {
             height = Base.shared.statusBarFrame.height
         }

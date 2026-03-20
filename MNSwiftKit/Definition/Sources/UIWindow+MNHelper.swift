@@ -18,14 +18,14 @@ extension MNNameSpaceWrapper where Base: UIWindow {
     public class var safeAreaInsets: UIEdgeInsets {
         if let areaInsets = MNWindowSafeAreaInsets { return areaInsets }
         var areaInsets: UIEdgeInsets = .zero
-        if #available(iOS 11.0, *) {
-            if Thread.isMainThread {
-                areaInsets = UIWindow().safeAreaInsets
-            } else {
-                DispatchQueue.main.sync {
-                    areaInsets = UIWindow().safeAreaInsets
-                }
+        if #available(iOS 13.0, *), let windowScene = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first(where: { $0.activationState == .foregroundActive }) {
+            if #available(iOS 15.0, *), let keyWindow = windowScene.keyWindow {
+                areaInsets = keyWindow.safeAreaInsets
+            } else if let keyWindow = windowScene.windows.first(where: { $0.isKeyWindow }) {
+                areaInsets = keyWindow.safeAreaInsets
             }
+        } else if #available(iOS 11.0, *) {
+            areaInsets = UIWindow().safeAreaInsets
         }
         MNWindowSafeAreaInsets = areaInsets
         return areaInsets
