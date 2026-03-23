@@ -1,4 +1,4 @@
-name: CI
+name: build
 
 defaults:
   run:
@@ -51,7 +51,7 @@ jobs:
           xcodebuild build-for-testing \
             -workspace Example/MNSwiftKit.xcworkspace \
             -scheme MNSwiftKit-Example \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro Max,OS=18.5,arch=arm64' \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5,arch=arm64' \
             -configuration Debug \
             CODE_SIGNING_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
@@ -62,7 +62,7 @@ jobs:
           xcodebuild test-without-building \
             -workspace Example/MNSwiftKit.xcworkspace \
             -scheme MNSwiftKit-Example \
-            -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.2' \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5,arch=arm64' \
             -configuration Debug \
             -only-testing:MNSwiftKit_Tests \
             CODE_SIGNING_IDENTITY="" \
