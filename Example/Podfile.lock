@@ -30,6 +30,7 @@ PODS:
     - MNSwiftKit/Refresh
     - MNSwiftKit/Request
     - MNSwiftKit/Toast
+    - MNSwiftKit/Transitioning
   - MNSwiftKit/CollectionLayout (0.1.4)
   - MNSwiftKit/Components (0.1.4):
     - MNSwiftKit/Extension
@@ -104,7 +105,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: 4ac9495b6e7295cab13118ce013e7fd643b8a08d
+  MNSwiftKit: f00471870889532fde30b5810f15abdb3362484d
 
 PODFILE CHECKSUM: b5b3f07c62b9037f61d7b7620397651c6f3e24ef
 
