@@ -48,6 +48,7 @@ Pod::Spec.new do |s|
     b.dependency 'MNSwiftKit/Extension'
     b.dependency 'MNSwiftKit/EmptyView'
     b.dependency 'MNSwiftKit/NameSpace'
+    b.dependency 'MNSwiftKit/Transitioning'
     b.dependency 'MNSwiftKit/CollectionLayout'
   end
   
