@@ -6,7 +6,7 @@
 [![Platform](https://img.shields.io/cocoapods/p/MNSwiftKit.svg?style=flat)](https://cocoapods.org/pods/MNSwiftKit)
 [![SPM](https://img.shields.io/badge/SPM-compatible-green.svg?style=flat)](https://swift.org/package-manager)
 
-一个 Swift 组件集合，支持 CocoaPods 和 Swift Package Manager，可按需安装任一模块。。
+一个 Swift 组件集合，支持 CocoaPods 和 Swift Package Manager，可按需安装任一模块。
 
 - [要求](#要求)
 - [安装](#安装)
@@ -17,7 +17,7 @@
     - [Toast](#Toast)
     - [AssetBrowser](#AssetBrowser)
     - [AssetPicker](#AssetPicker)
-    - [SplitController](#SplitController)
+    - [SegmentedViewController](#SegmentedViewController)
     - [EmoticonKeyboard](#EmoticonKeyboard)
     - [Slider](#Slider)
     - [Refresh](#Refresh)
@@ -1415,7 +1415,7 @@ class ViewController: UIViewController, MNAssetPickerDelegate {
 - **内存管理**：大量资源选择时，建议及时处理 contents 并释放内存。
 - **线程安全**：所有回调都在主线程执行，可以直接更新 UI。
 
-### SplitController
+### SegmentedViewController
 
 一个功能强大的分段视图控制器组件，支持顶部公共视图和内容页面的联动滑动，支持自定义导航项，提供丰富的自定义选项和流畅的交互体验。
 
