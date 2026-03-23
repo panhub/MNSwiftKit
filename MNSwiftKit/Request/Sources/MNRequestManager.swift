@@ -55,7 +55,7 @@ public class MNRequestManager {
         let code = result.code
         if request is MNDataRequest {
             let dataRequest = request as! MNDataRequest
-            if let error = result.error, error.isCancelled == false, error.isSerializationError == false, error.isParseError == false, dataRequest.mn_retryEventCount < dataRequest.retyCount {
+            if let error = result.error, error.isCancelled == false, error.isSerializationError == false, error.isParseError == false, dataRequest.mn_retryEventCount < dataRequest.retryCount {
                 // 重试
                 DispatchQueue.main.asyncAfter(deadline: .now() + max(dataRequest.retryInterval, 0.1)) { [weak self] in
                     guard let self = self else { return }

@@ -45,7 +45,7 @@ open class MNDataRequest: MNRequest {
     /// 请求方式
     public var method: MNNetworkMethod = .get
     /// 重试次数 失败时重新请求 NSURLErrorCancelled 无效
-    internal var retyCount: Int = 0
+    internal var retryCount: Int = 0
     /// 重试时间间隔 默认立即重试
     public var retryInterval: TimeInterval = 0.0
     /// 数据来源
