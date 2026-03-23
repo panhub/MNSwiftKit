@@ -1,4 +1,4 @@
-name: CI
+name: build
 
 on:
   push:
@@ -54,4 +54,4 @@ jobs:
             CODE_SIGNING_REQUIRED=NO
 
       - name: Pod Lib Lint
-      run: pod lib lint MNSwiftKit.podspec --allow-warnings
+        run: pod lib lint MNSwiftKit.podspec --allow-warnings
