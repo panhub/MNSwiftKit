@@ -1,4 +1,4 @@
-![Logo](https://github.com/panhub/MNSwiftKit/blob/master/images/logo.png?raw=true)
+[![Logo](https://github.com/panhub/MNSwiftKit/blob/master/images/logo-degraded.png?raw=true)](https://github.com/panhub/MNSwiftKit)
 [![CI Status](https://github.com/panhub/MNSwiftKit/actions/workflows/build.yml/badge.svg)](https://github.com/panhub/MNSwiftKit/actions)
 [![Version](https://img.shields.io/cocoapods/v/MNSwiftKit.svg?style=flat)](https://cocoapods.org/pods/MNSwiftKit)
 [![Platform](https://img.shields.io/cocoapods/p/MNSwiftKit.svg?style=flat)](https://cocoapods.org/pods/MNSwiftKit)
