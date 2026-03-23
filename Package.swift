@@ -34,7 +34,7 @@ let package = Package(
         .library(name: "MNAnimatedImage", targets: ["MNAnimatedImage"]),
         .library(name: "MNCollectionLayout", targets: ["MNCollectionLayout"]),
         .library(name: "MNEmoticonKeyboard", targets: ["MNEmoticonKeyboard"]),
-        .library(name: "MNSplitController", targets: ["MNSegmentedViewController"]),
+        .library(name: "MNSegmentedViewController", targets: ["MNSegmentedViewController"]),
     ],
     targets: [
         .target(
@@ -47,7 +47,7 @@ let package = Package(
         .target(
             name: "MNBase",
             dependencies: [
-                "MNToast", "MNRefresh", "MNRequest", "MNDefinition", "MNExtension", "MNEmptyView", "MNNameSpace", "MNCollectionLayout"
+                "MNToast", "MNRefresh", "MNRequest", "MNDefinition", "MNExtension", "MNEmptyView", "MNNameSpace", "MNTransitioning", "MNCollectionLayout"
             ],
             path: "MNSwiftKit/Base",
             resources: [

@@ -13,5 +13,6 @@
 @_exported import MNExtension
 @_exported import MNEmptyView
 @_exported import MNNameSpace
+@_exported import MNTransitioning
 @_exported import MNCollectionLayout
 #endif

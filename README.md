@@ -458,8 +458,8 @@ class ViewController: MNBaseViewController {
 class ViewController: MNBaseViewController {
     
     // 定制内容约束（是否预留顶部/底部空间）
-    override var preferredContentRectEdge: UIViewController.Edge {
-        var edges: UIViewController.Edge = []
+    override var preferredContentRectEdge: UIRectEdge {
+        var edges: UIRectEdge = []
         // 预留顶部空间（状态栏+导航栏）
         edges.insert(.top)
         // 预留底部空间（标签栏+安全区域）
@@ -481,16 +481,10 @@ class DetailViewController: MNExtendViewController {
         title = "详情"
         navigationBar.titleColor = .black
         navigationBar.backColor = .black
-        
-        // 添加自定义右按钮
-        let rightButton = UIButton(type: .custom)
-        rightButton.setTitle("完成", for: .normal)
-        rightButton.addTarget(self, action: #selector(rightButtonTapped), for: .touchUpInside)
-        // 通过代理方法返回
     }
     
     // 创建导航右按钮
-    override func navigationBarShouldCreateRightBarItem() -> UIView? {
+    override var navigationBarRightButtonItem: UIView? {
         let button = UIButton(type: .custom)
         button.setTitle("完成", for: .normal)
         button.addTarget(self, action: #selector(rightButtonTapped), for: .touchUpInside)
@@ -1402,20 +1396,20 @@ class ViewController: UIViewController, MNAssetPickerDelegate {
 
 ### SplitController
 
-一个功能强大的分页控制器组件，支持顶部公共视图和内容页面的联动滑动，支持自定义导航项，提供丰富的自定义选项和流畅的交互体验。
+一个功能强大的分段视图控制器组件，支持顶部公共视图和内容页面的联动滑动，支持自定义导航项，提供丰富的自定义选项和流畅的交互体验。
 
 #### ✨ 特性
 
 - 📑 **分页展示**：支持多个子页面横向或纵向滑动切换
-- 🎨 **丰富配置**：提供丰富的配置选项，支持自定义导航项样式、标记线动画、角标等
-- 🔄 **布局方向**：支持横向和纵向两种布局方向
-- 📊 **头部视图**：支持公共头部视图，支持头部视图与内容页面联动滚动
-- 🎭 **标记线动画**：支持多种标记线动画效果（正常移动、吸附动画）
+- 🎨 **丰富配置**：提供 `MNSegmentedConfiguration` 配置，支持自定义导航项样式、指示器动画、角标等
+- 🔄 **布局方向**：支持横向和纵向两种布局方向（`UIPageViewController.NavigationOrientation`）
+- 📊 **头部视图**：支持公共头部视图（`preferredSegmentedNavigationHeaderView`），支持头部视图与内容页面联动滚动
+- 🎭 **指示器动画**：支持多种指示器动画效果（`.move` 平滑移动、`.stretch` 拉伸）
 - 🏷️ **角标支持**：支持在导航项上显示角标（数字、文字、布尔值）
-- 🔧 **动态管理**：支持动态插入、删除、替换页面
+- 🔧 **动态管理**：支持替换标题、替换子页面、重载子页面
 - 🎬 **生命周期**：完善的子页面生命周期管理
-- 💪 **手势处理**：智能处理手势冲突，支持自定义手势优先级
-- 🚀 **高性能**：基于 UICollectionView 和 UIScrollView，性能优异
+- 💪 **手势处理**：智能处理手势冲突
+- 🚀 **高性能**：基于 UIPageViewController 和 UICollectionView，性能优异
 
 #### 🚀 快速开始
 
@@ -1423,7 +1417,7 @@ Cocoapods 安装：
 
 ```ruby
 // Podfile 文件
-pod 'MNSwiftKit/SplitController'
+pod 'MNSwiftKit/SegmentedViewController'
 ```
 
 SPM 安装：
@@ -1435,9 +1429,9 @@ dependencies: [
 ],
 targets: [
     .target(
-        name: "MNSplitController",
+        name: "MNSegmentedViewController",
         dependencies: [
-            .product(name: "MNSplitController", package: "MNSwiftKit")
+            .product(name: "MNSegmentedViewController", package: "MNSwiftKit")
         ]
     )
 ]
@@ -1448,56 +1442,60 @@ targets: [
 ```swift
 class ViewController: UIViewController {
     
-    var splitController: MNSplitViewController!
+    var segmentedController: MNSegmentedViewController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // 创建分页控制器
-        splitController = MNSplitViewController(frame: view.bounds, axis: .horizontal)
-        splitController.dataSource = self
-        splitController.delegate = self
+        // 创建配置
+        var configuration = MNSegmentedConfiguration()
+        configuration.orientation = .horizontal
+        
+        // 创建分段视图控制器
+        segmentedController = MNSegmentedViewController(frame: view.bounds, configuration: configuration)
+        segmentedController.dataSource = self
+        segmentedController.delegate = self
         
         // 添加到视图
-        addChild(splitController)
-        view.addSubview(splitController.view)
-        splitController.didMove(toParent: self)
+        addChild(segmentedController)
+        view.addSubview(segmentedController.view)
+        segmentedController.didMove(toParent: self)
     }
 }
 
-extension ViewController: MNSplitViewControllerDataSource {
+extension ViewController: MNSegmentedViewControllerDataSource {
 
     // 页面标题
-    var preferredPageTitles: [String] {
+    var preferredSegmentedNavigationTitles: [String] {
         return ["推荐", "关注", "热门", "最新"]
     }
     
     // 初始页面索引
-    var preferredPageIndex: Int {
+    var preferredSegmentedNavigationPresentationIndex: Int {
         return 0
     }
     
     // 获取子页面
-    func splitViewController(_ viewController: MNSplitViewController, contentForPageAt index: Int) -> MNSplitPageConvertible {
+    func segmentedViewController(_ viewController: MNSegmentedViewController, subpageAt index: Int) -> MNSegmentedSubpageConvertible {
         let pageVC = PageViewController()
-        pageVC.title = preferredPageTitles[index]
+        pageVC.title = preferredSegmentedNavigationTitles[index]
         return pageVC
     }
 }
 
-extension ViewController: MNSplitViewControllerDelegate {
+extension ViewController: MNSegmentedViewControllerDelegate {
     // 页面切换回调
-    func splitViewController(_ splitController: MNSplitViewController, didChangePageAt index: Int) {
+    func segmentedViewController(_ viewController: MNSegmentedViewController, subpageDidChangeAt index: Int) {
         print("切换到页面：\(index)")
     }
 }
 
-// 子页面需要遵循 MNSplitPageConvertible 协议
-class PageViewController: UIViewController, MNSplitPageConvertible {
+// 子页面需要遵循 MNSegmentedSubpageConvertible 协议
+class PageViewController: UIViewController, MNSegmentedSubpageConvertible {
 
     @IBOutlet weak var tableView: UITableView!
     
-    var preferredPageScrollView: UIScrollView {
+    var preferredSubpageScrollView: UIScrollView? {
         return tableView
     }
 }
@@ -1506,30 +1504,36 @@ class PageViewController: UIViewController, MNSplitPageConvertible {
 自定义配置
 
 ```swift
-// 配置导航栏样式
-splitController.options.titleColor = .gray
-splitController.options.highlightedTitleColor = .black
-splitController.options.titleFont = .systemFont(ofSize: 16, weight: .medium)
+// 创建时传入配置
+var configuration = MNSegmentedConfiguration()
+configuration.orientation = .horizontal
 
-// 配置标记线
-splitController.options.shadowColor = .systemBlue
-splitController.options.shadowSize = CGSize(width: 20, height: 3)
-splitController.options.shadowAnimation = .adsorb  // 吸附动画
+// 配置导航栏样式
+configuration.item.normal.titleColor = .gray
+configuration.item.selected.titleColor = .black
+configuration.item.titleFont = .systemFont(ofSize: 16, weight: .medium)
+
+// 配置指示器
+configuration.indicator.backgroundColor = .systemBlue
+configuration.indicator.constraint = .matchTitle(dimension: 2.5)
+configuration.indicator.animationType = .move  // 平滑移动
 
 // 配置选中缩放
-splitController.options.highlightedScale = 1.2
+configuration.item.selected.titleScale = 1.2
 
 // 配置分割线
-splitController.options.separatorStyle = .all
-splitController.options.separatorColor = .lightGray
+configuration.separator.style = .all
+configuration.separator.backgroundColor = .lightGray
+
+segmentedController = MNSegmentedViewController(frame: view.bounds, configuration: configuration)
 ```
 
 添加头部视图
 
 ```swift
-extension ViewController: MNSplitViewControllerDataSource {
+extension ViewController: MNSegmentedViewControllerDataSource {
     // 页头视图
-    var pageHeaderView: UIView? {
+    var preferredSegmentedNavigationHeaderView: UIView? {
         let headerView = UIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 200))
         headerView.backgroundColor = .systemBlue
         
@@ -1548,61 +1552,49 @@ extension ViewController: MNSplitViewControllerDataSource {
 
 ```swift
 // 设置数字角标
-splitController.setBadge(5, for: 0)
+segmentedController.setBadge(5, for: 0)
 
 // 设置文字角标
-splitController.setBadge("New", for: 1)
+segmentedController.setBadge("New", for: 1)
 
 // 设置布尔角标（红点）
-splitController.setBadge(true, for: 2)
+segmentedController.setBadge(true, for: 2)
 
 // 删除角标
-splitController.setBadge(nil, for: 0)
+segmentedController.setBadge(nil, for: 0)
 
 // 删除所有角标
-splitController.removeAllBadges()
+segmentedController.removeAllBadge()
 ```
 
 动态管理页面
 
 ```swift
-// 插入页面
-splitController.insertSplitters(with: ["新页面1", "新页面2"], at: 1)
-
-// 删除页面
-splitController.removeSplitter(at: 2)
-
 // 替换页面标题
-splitController.replaceSplitter(at: 0, with: "新标题")
+segmentedController.replaceTitle("新标题", at: 0)
 
-// 替换页面内容
+// 替换子页面内容
 let newPage = NewPageViewController()
-splitController.replacePage(newPage, at: 0)
+segmentedController.replaceSubpage(newPage, at: 0)
 
-// 重载页面
-splitController.reloadPage(at: 0)
-
-// 重载所有页面
-splitController.reloadSubpage()
+// 重载所有子页面
+segmentedController.reloadSubpage()
 ```
 
 切换页面
 
 ```swift
 // 切换到指定页面（带动画）
-splitController.setCurrentPage(at: 2, animated: true)
+segmentedController.setSubpage(at: 2, animated: true)
 
 // 切换到指定页面（无动画）
-splitController.setCurrentPage(at: 2, animated: false)
+segmentedController.setSubpage(at: 2, animated: false)
 
 // 获取当前页面索引
-let currentIndex = splitController.currentPageIndex
+let currentIndex = segmentedController.subpageIndex
 
-// 获取当前页面
-let currentPage = splitController.currentPage
-
-// 获取指定页面
-if let page = splitController.page(for: 1) {
+// 获取指定子页面
+if let page = segmentedController.subpage(for: 1, access: true) {
     // 使用页面
 }
 ```
@@ -1610,26 +1602,29 @@ if let page = splitController.page(for: 1) {
 纵向布局
 
 ```swift
-// 创建纵向布局的分页控制器
-let splitController = MNSplitViewController(frame: view.bounds, axis: .vertical)
-splitController.dataSource = self
-splitController.delegate = self
+// 创建纵向布局的配置
+var configuration = MNSegmentedConfiguration()
+configuration.orientation = .vertical
+
+segmentedController = MNSegmentedViewController(frame: view.bounds, configuration: configuration)
+segmentedController.dataSource = self
+segmentedController.delegate = self
 ```
 
 自定义导航项
 
 ```swift
 // 注册自定义导航项 Cell
-splitController.register(CustomSplitCell.self, forSplitterWithReuseIdentifier: "CustomCell")
+segmentedController.register(CustomSegmentedCell.self, forSegmentedCellWithReuseIdentifier: "CustomCell")
 
 // 或从 Nib 注册
-let nib = UINib(nibName: "CustomSplitCell", bundle: nil)
-splitController.register(nib, forSplitterWithReuseIdentifier: "CustomCell")
+let nib = UINib(nibName: "CustomSegmentedCell", bundle: nil)
+segmentedController.register(nib, forSegmentedCellWithReuseIdentifier: "CustomCell")
 
-// 自定义 Cell 需要遵循 MNSplitCellConvertible 协议
-class CustomSplitCell: UICollectionViewCell, MNSplitCellConvertible {
+// 自定义 Cell 需要遵循 MNSegmentedNavigationCellConvertible 协议
+class CustomSegmentedCell: UICollectionViewCell, MNSegmentedNavigationCellConvertible {
 
-    func update(spliter: MNSpliter, at index: Int, axis: NSLayoutConstraint.Axis) {
+    func update(item: MNSegmentedNavigationItem, at index: Int, orientation: UIPageViewController.NavigationOrientation) {
         // 更新 Cell 内容
     }
     
@@ -1647,70 +1642,36 @@ class CustomSplitCell: UICollectionViewCell, MNSplitCellConvertible {
 
 配置选项说明
 
-`MNSplitOptions` 提供了丰富的配置选项：
+`MNSegmentedConfiguration` 提供了丰富的配置选项：
 
-- 基础配置：
-  - `spliterSize`: 导航项尺寸（横向：追加宽度和高度；纵向：宽度和每一项高度）
-  - `contentMode`: 内容补全方案（`.normal`、`.fit` 居中、`.fill`充满）
-  - `interSpliterSpacing`: 导航项间隔
-  - `splitInset`: 导航栏边距
-- 标记线配置：
-  - `shadowMask`: 标记线补充方案（.fit 与标题同宽、.fill 与项同宽、.constant 使用指定宽度）
-  - `shadowSize`: 标记线尺寸
-  - `shadowColor`: 标记线颜色
-  - `shadowImage`: 标记线图片
-  - `shadowOffset`: 标记线偏移
-  - `shadowRadius`: 标记线圆角
-  - `shadowAlignment`: 标记线对齐方式（`.head`、`.center`、`.tail`）
-  - `shadowAnimation`: 标记线动画类型（`.normal` 正常移动、`.adsorb` 吸附动画）
-  - `sendShadowToBack`: 是否将标记线放到背景视图
-- 标题配置：
-  - `titleColor`: 标题颜色
+- **Navigation**（`configuration.navigation`）：
+  - `dimension`: 分段视图尺寸（横向为高度，纵向为宽度）
+  - `contentInset`: 内容边距
+  - `scrollPosition`: 滑动位置（`.unspecified`、`.leading`、`.center`、`.trailing`）
+  - `adjustmentBehavior`: 布局调整行为（`.standard`、`.centered`、`.expanded`）
+- **Item**（`configuration.item`）：
+  - `dimension`: 导航项尺寸
+  - `spacing`: 相邻项间隔
   - `titleFont`: 标题字体
-  - `highlightedTitleColor`: 选中标题颜色
-  - `highlightedScale`: 选中时缩放因数
-导航项样式：
-  - `spliterBackgroundColor`: 导航项背景颜色
-  - `spliterHighlightedBackgroundColor`: 选中时背景颜色
-  - `spliterBackgroundImage`: 导航项背景图片
-  - `spliterHighlightedBackgroundImage`: 选中时背景图片
-  - `spliterBorderWidth`: 边框宽度
-  - `spliterBorderRadius`: 边框圆角
-  - `spliterBorderColor`: 边框颜色
-  - `spliterHighlightedBorderColor`: 选中时边框颜色
-- 分割线配置：
-  - `separatorStyle`: 分割线样式（`.none`、`.head`、`.tail`、`.all`）
-  - `separatorColor`: 分割线颜色
-  - `separatorInset`: 分割线约束
-  - `dividerColor`: 导航项之间分割线颜色
-  - `dividerInset`: 导航项分割线约束
-- 角标配置：
-  - `badgeFont`: 角标字体
-  - `badgeColor`: 角标背景颜色
-  - `badgeTextColor`: 角标文字颜色
-  - `badgeImage`: 角标背景图片
-  - `badgeInset`: 角标内边距
-  - `badgeOffset`: 角标偏移
-- 其他配置：
-  - `scrollPosition`: 导航滑动时选中位置（`.none`、`.head`、`.center`、`.tail`）
-  - `transitionDuration`: 转场动画时长
-  - `backgroundColor`: 背景颜色
-  - `splitColor`: 导航视图颜色
+  - `normal`/`selected`: 正常/选中时外观（`titleColor`、`titleScale`、`backgroundColor` 等）
+- **Indicator**（`configuration.indicator`）：
+  - `constraint`: 指示器尺寸（`.matchTitle`、`.matchItem`、`.fixed`）
+  - `alignment`: 对齐方式（`.leading`、`.center`、`.trailing`）
+  - `animationType`: 动画类型（`.move`、`.stretch`）
+  - `position`: 放置位置（`.above`、`.below`）
+- **Badge**（`configuration.badge`）：角标样式配置
+- **Separator**（`configuration.separator`）：分割线配置
 
 #### 📝 注意事项
 
-- **子页面协议**：子页面必须遵循 `MNSplitPageConvertible` 协议，并提供 `preferredPageScrollView` 属性。
-- **头部视图联动**：当子页面的 `preferredPageScrollView` 内容高度达到最小要求时，头部视图会与内容页面联动滚动。
-- **生命周期管理**：分页控制器会自动管理子页面的生命周期，子页面无需手动处理 `viewWillAppear` 等方法。
-- **页面缓存**：分页控制器会缓存已创建的页面，避免重复创建。
-- **布局方向**：支持横向（`.horizontal`）和纵向（`.vertical`）两种布局方向，创建时指定。
-- **标记线动画**：支持 `.normal`（正常移动）和 `.adsorb`（吸附动画）两种动画效果。
-- **角标类型**：角标支持 `String`、`Int`、`Bool` 三种类型，`Bool` 类型显示为红点。
-- **动态管理**：支持动态插入、删除、替换页面，操作后会自动更新导航栏和内容页面。
-- **手势冲突**：如果与其他手势冲突，可以使用 `requireFailTo(_:)` 方法设置手势优先级。
-- **自定义导航项**：可以通过注册自定义 Cell 来完全自定义导航项的外观和行为。
-- **头部视图保留高度**：通过 `reservedHeaderHeight` 属性可以设置头部视图的保留高度，超过此高度后头部视图会完全隐藏。
-- **内容尺寸要求**：子页面的滚动视图需要达到最小内容尺寸要求，才能触发头部视图联动滚动。
+- **子页面协议**：子页面必须遵循 `MNSegmentedSubpageConvertible` 协议，并提供 `preferredSubpageScrollView` 属性（可选返回 `UIScrollView?`）。
+- **头部视图联动**：当子页面的 `preferredSubpageScrollView` 内容高度达到最小要求时，头部视图会与内容页面联动滚动。
+- **生命周期管理**：分段控制器会自动管理子页面的生命周期。
+- **页面缓存**：分段控制器会缓存已创建的页面，避免重复创建。
+- **布局方向**：通过 `configuration.orientation` 设置横向（`.horizontal`）或纵向（`.vertical`）。
+- **角标类型**：角标支持 `String`、`Int`、`Bool` 等类型，`Bool` 类型显示为红点。
+- **自定义导航项**：可以通过 `register(_:forSegmentedCellWithReuseIdentifier:)` 注册自定义 Cell，需遵循 `MNSegmentedNavigationCellConvertible` 协议。
+- **头部视图最小高度**：通过 `configuration.headerMinimumVisibleHeight` 设置头部视图至少在屏幕上显示的高度。
 
 ### EmoticonKeyboard
 
@@ -1771,7 +1732,7 @@ class ViewController: UIViewController {
         
         // 创建表情键盘
         let options = MNEmoticonKeyboard.Options()
-        options.packets = ["wechat", "收藏夹"]  // 表情包列表
+        options.packets = [.wechat, .favorites]  // 表情包列表（MNEmoticon.Packet.Name）
         
         emoticonKeyboard = MNEmoticonKeyboard(
             frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 300),
@@ -1811,9 +1772,9 @@ extension ViewController: MNEmoticonKeyboardDelegate {
 
 ```swift
 let options = MNEmoticonKeyboard.Options()
-options.packets = ["wechat", "收藏夹", "animal", "emotion"]
+options.packets = [.wechat, .favorites, .animal, .face]
 
-let = emoticonKeyboard = MNEmoticonKeyboard(
+let emoticonKeyboard = MNEmoticonKeyboard(
     frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 300),
     style: .paging,  // 分页样式
     options: options
@@ -1826,7 +1787,7 @@ emoticonKeyboard.delegate = self
 ```swift
 let options = MNEmoticonKeyboard.Options()
 
-// 表情包列表
+// 表情包列表（MNEmoticon.Packet.Name 类型）
 options.packets = [.wechat, .animal]
 
 // Return 键类型
@@ -1906,7 +1867,7 @@ let plainText = attributedString.mn.plainString  // "今天很开心[微笑][呲
 
 ```swift
 // 获取表情包
-MNEmoticonManager.fetchEmoticonPacket(["wechat", "收藏夹"]) { packets in
+MNEmoticonManager.fetchEmoticonPacket([.wechat, .favorites]) { packets in
     print("获取到 \(packets.count) 个表情包")
 }
 
@@ -1992,7 +1953,7 @@ for attachment in attachments {
 
 ```swift
 // 切换到指定表情包
-emoticonKeyboard.setCurrentEmoticonPacket("收藏夹", animated: true)
+emoticonKeyboard.setCurrentEmoticonPacket(.favorites, animated: true)
 
 // 切换到指定索引的表情包
 emoticonKeyboard.setEmoticonPacket(at: 1, animated: true)
