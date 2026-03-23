@@ -4,8 +4,9 @@
 [![Version](https://img.shields.io/cocoapods/v/MNSwiftKit.svg?style=flat)](https://cocoapods.org/pods/MNSwiftKit)
 [![License](https://img.shields.io/cocoapods/l/MNSwiftKit.svg?style=flat)](https://cocoapods.org/pods/MNSwiftKit)
 [![Platform](https://img.shields.io/cocoapods/p/MNSwiftKit.svg?style=flat)](https://cocoapods.org/pods/MNSwiftKit)
+[![SPM](https://img.shields.io/badge/SPM-compatible-green.svg?style=flat)](https://swift.org/package-manager)
 
-一个Swift组件集合，可以安装任一模块。
+一个 Swift 组件集合，支持 CocoaPods 和 Swift Package Manager，可按需安装任一模块。。
 
 - [要求](#要求)
 - [安装](#安装)
@@ -83,7 +84,7 @@ pod 'MNSwiftKit/SegmentedViewController'
 ```
 ### Swift软件包管理器 (iOS 12+, Swift 5+)
 
-`MNSwiftKit` 可以通过 [Swift 软件包管理器](https://docs.swift.org/swiftpm/documentation/packagemanagerdocs/) 安装。
+`MNSwiftKit` 可以通过 [Swift 软件包管理器](https://docs.swift.org/swiftpm/documentation/packagemanagerdocs/) 安装，支持完整库和按模块引入。
 
 **Xcode 项目**：菜单栏选择 `File` → `Add Package Dependencies...`，输入仓库地址 `https://github.com/panhub/MNSwiftKit`，选择版本后添加所需的 Product（如 `MNSwiftKit` 完整库或单个模块 `MNBase`、`MNToast` 等）。
 
