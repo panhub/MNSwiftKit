@@ -83,7 +83,11 @@ pod 'MNSwiftKit/SegmentedViewController'
 ```
 ### Swift软件包管理器 (iOS 12+, Swift 5+)
 
-`MNSwiftKit` 也可以通过在您的`Package.swift`文件中添加适当的描述使用[Swift软件包管理器](https://docs.swift.org/swiftpm/documentation/packagemanagerdocs/)来安装：
+`MNSwiftKit` 可以通过 [Swift 软件包管理器](https://docs.swift.org/swiftpm/documentation/packagemanagerdocs/) 安装。
+
+**Xcode 项目**：菜单栏选择 `File` → `Add Package Dependencies...`，输入仓库地址 `https://github.com/panhub/MNSwiftKit`，选择版本后添加所需的 Product（如 `MNSwiftKit` 完整库或单个模块 `MNBase`、`MNToast` 等）。
+
+**Swift Package 项目**：在 `Package.swift` 中添加依赖：
 
 ```swift
 // swift-tools-version:5.4
@@ -91,11 +95,27 @@ import PackageDescription
 
 let package = Package(
     name: "您的项目名称",
+    platforms: [
+        .iOS(.v12)
+    ],
     dependencies: [
-        .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "版本号")
+        .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.3")
+    ],
+    targets: [
+        .target(
+            name: "您的Target名称",
+            dependencies: [
+                .product(name: "MNSwiftKit", package: "MNSwiftKit")
+                // 或按需选择单个模块，例如：
+                // .product(name: "MNBase", package: "MNSwiftKit"),
+                // .product(name: "MNToast", package: "MNSwiftKit")
+            ]
+        )
     ]
 )
 ```
+
+可用 Product 名称：`MNSwiftKit`（完整）、`MNBase`、`MNToast`、`MNRefresh`、`MNDefinition`、`MNExtension`、`MNNameSpace`、`MNAssetPicker`、`MNAssetBrowser`、`MNSegmentedViewController`、`MNEmoticonKeyboard`、`MNSlider`、`MNEmptyView`、`MNEditingView`、`MNPageControl`、`MNTransitioning`、`MNCollectionLayout`、`MNNetworking`、`MNRequest`、`MNDatabase`、`MNPlayer`、`MNMediaExport`、`MNPurchase`、`MNUtility`、`MNComponents`、`MNAnimatedImage`。
 ### 手动导入 (iOS 12+, Swift 5+)
 
 要在项目中手动安装 `MNSwiftKit`，您可以：
