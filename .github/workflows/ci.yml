@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+        run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer/Applications
         # 或使用最新：Xcode_16.0、Xcode_15.2 等，取决于 GitHub 提供的版本
 
       - name: Build Swift Package
