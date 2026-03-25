@@ -43,12 +43,12 @@
 
 ## 要求
 
-- iOS 12.0+ | Swift 5.0
+- iOS 12.0+ | Swift 5.0+
 - Xcode 10.2+
 
 ## 安装
 
-### CocoaPods (iOS 12+, Swift 5+)
+### CocoaPods (iOS 12.0+, Swift 5.0+)
 
 `MNSwiftKit` 可以通过[CocoaPods](https://cocoapods.org)安装，只需添加以下行到您的Podfile:
 
@@ -84,7 +84,7 @@ pod 'MNSwiftKit/CollectionLayout'
 pod 'MNSwiftKit/EmoticonKeyboard'
 pod 'MNSwiftKit/SegmentedViewController'
 ```
-### Swift软件包管理器 (iOS 12+, Swift 5+)
+### Swift软件包管理器 (iOS 12.0+, Swift 5.0+)
 
 `MNSwiftKit` 可以通过 [Swift 软件包管理器](https://docs.swift.org/swiftpm/documentation/packagemanagerdocs/) 安装，支持完整库和按模块引入。
 
