@@ -31,9 +31,9 @@ class ViewController: UIViewController {
         navHeight.constant = MN_TOP_BAR_HEIGHT
         titleTop.constant = (MN_NAV_BAR_HEIGHT - titleHeight.constant)/2.0 + MN_STATUS_BAR_HEIGHT
         
-        let titles: [String] = ["提示弹窗", "资源浏览器", "资源选择器", "表情键盘", "表格编辑", "分段控制器", "提示弹框与操作表单", "弹出视图", "数字键盘与密码输入框", "网络请求", "导航转场动画", "页码指示器-常规", "页码指示器-自定义", "空数据视图"]
-        let subtitles: [String] = ["ToastViewController", "AssetBrowserController", "AssetPickerController", "EmoticonKeyboardController", "EditingViewController", "SegmentedViewController", "AlertViewController", "PopoverViewController", "PasscordViewController", "RequestViewController", "TransitionViewController", "PageControlController", "FontViewController", "EmptyViewController"]
-        let modules: [String] = ["Toast", "AssetBrowser", "AssetPicker", "EmoticonKeyboard", "EditingView", "SegmentedViewController", "Components", "Components", "Components", "Request", "Transitioning", "PageControl", "PageControl", "EmptyView"]
+        let titles: [String] = ["提示弹窗", "资源浏览器", "资源选择器", "表情键盘", "表格编辑", "分段控制器", "数据库", "提示弹框与操作表单", "弹出视图", "数字键盘与密码输入框", "网络请求", "导航转场动画", "页码指示器-常规", "页码指示器-自定义", "空数据视图"]
+        let subtitles: [String] = ["ToastViewController", "AssetBrowserController", "AssetPickerController", "EmoticonKeyboardController", "EditingViewController", "SegmentedViewController", "DatabaseViewController", "AlertViewController", "PopoverViewController", "PasscordViewController", "RequestViewController", "TransitionViewController", "PageControlController", "FontViewController", "EmptyViewController"]
+        let modules: [String] = ["Toast", "AssetBrowser", "AssetPicker", "EmoticonKeyboard", "EditingView", "SegmentedViewController", "Database", "Components", "Components", "Components", "Request", "Transitioning", "PageControl", "PageControl", "EmptyView"]
         for (index, title) in titles.enumerated() {
             let row = HomeListRow(index: index, title: title, subtitle: subtitles[index], module: modules[index])
             rows.append(row)

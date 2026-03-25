@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="DatabaseCollectionCell" customModule="MNSwiftKit_Example" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="922" height="250"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="922" height="250"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eJG-Y0-4vM" userLabel="Content View">
+                        <rect key="frame" x="0.0" y="0.0" width="922" height="250"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="1" translatesAutoresizingMaskIntoConstraints="NO" id="C7L-7B-fhU">
+                                <rect key="frame" x="0.0" y="0.0" width="922" height="250"/>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="C7L-7B-fhU" secondAttribute="trailing" id="ROf-O0-p6j"/>
+                            <constraint firstItem="C7L-7B-fhU" firstAttribute="leading" secondItem="eJG-Y0-4vM" secondAttribute="leading" id="S2w-2Z-X0e"/>
+                            <constraint firstAttribute="bottom" secondItem="C7L-7B-fhU" secondAttribute="bottom" id="bwK-20-Haf"/>
+                            <constraint firstItem="C7L-7B-fhU" firstAttribute="top" secondItem="eJG-Y0-4vM" secondAttribute="top" id="xTW-FP-nMH"/>
+                        </constraints>
+                    </view>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="eJG-Y0-4vM" secondAttribute="trailing" id="4Qw-DH-qBD"/>
+                <constraint firstAttribute="bottom" secondItem="eJG-Y0-4vM" secondAttribute="bottom" id="7Oy-rF-I5Z"/>
+                <constraint firstItem="eJG-Y0-4vM" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="JYF-h5-5b8"/>
+                <constraint firstItem="eJG-Y0-4vM" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="tl1-QK-EDT"/>
+            </constraints>
+            <size key="customSize" width="922" height="250"/>
+            <connections>
+                <outlet property="stackView" destination="C7L-7B-fhU" id="dwj-yO-IPV"/>
+            </connections>
+            <point key="canvasLocation" x="345" y="-219"/>
+        </collectionViewCell>
+    </objects>
+</document>

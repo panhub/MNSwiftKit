@@ -11,7 +11,7 @@ import MNSwiftKit
 
 class DatabaseEditingController: UIViewController {
     // 类型
-    let type: TableType
+    let table: Table
     // 返回按钮顶部约束
     @IBOutlet weak var backTop: NSLayoutConstraint!
     // 导航高度约束
@@ -31,8 +31,8 @@ class DatabaseEditingController: UIViewController {
     // 集合视图约束
     @IBOutlet weak var collectionLayout: UICollectionViewFlowLayout!
     
-    init(type: TableType) {
-        self.type = type
+    init(table: Table) {
+        self.table = table
         super.init(nibName: "DatabaseEditingController", bundle: .main)
     }
     

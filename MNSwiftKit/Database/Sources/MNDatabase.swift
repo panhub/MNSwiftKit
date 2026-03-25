@@ -476,14 +476,17 @@ extension MNDatabase {
             columns.sort { $0.name.localizedCompare($1.name) == ordered }
         }
         // 处理主键
-        if let index = columns.firstIndex(where: { $0.isPrimary }) {
-            let column = columns.remove(at: index)
-            // 删除其它主键
+        if let column = columns.first(where: { $0.isPrimary }), column.type == .integer, column.isNullable == false {
+            // 先删除所有主键，避免有其它主键
             columns.removeAll { $0.isPrimary }
             // 插入主键
             columns.insert(column, at: 0)
         } else {
-            columns.insert(.init(name: "mn_primary_id", type: .integer, primary: true), at: 0)
+            // 先删除所有主键，避免有其它主键
+            columns.removeAll { $0.isPrimary }
+            // 插入主键
+            let column = MNTableColumn(name: "mn_primary_id", type: .integer, primary: true)
+            columns.insert(column, at: 0)
         }
         guard columns.count > 1 else { return false }
         let elements: [String] = columns.compactMap { $0.sql }
@@ -1529,7 +1532,7 @@ extension MNDatabase {
     /// 映射类型在数据库中的字段
     /// - Parameter model: 模型对象
     /// - Returns: [字段:值]
-    private func columns<T>(for type: T.Type) -> [MNTableColumn] where T: MNTableRowInitializable {
+    public func columns<T>(for type: T.Type) -> [MNTableColumn] where T: MNTableRowInitializable {
         semaphore.wait()
         defer {
             semaphore.signal()

@@ -14,11 +14,18 @@ extension MNNameSpaceWrapper where Base: UIView {
     /// 从xib加载类
     /// - Parameters:
     ///   - bundle: 资源束实例
-    ///   - nibName: nib文件名
+    ///   - name: nib文件名
     ///   - owner: 所属
     /// - Returns: 类实例
-    public static func loadFromNib(_ bundle: Bundle = Bundle(for: Base.self as AnyClass), named nibName: String? = nil, owner: Any? = nil) -> Base! {
-        guard let result = bundle.loadNibNamed(nibName ?? "\(self)", owner: owner) else { return nil }
+    public static func loadFromNib(_ bundle: Bundle = Bundle(for: Base.self as AnyClass), named name: String? = nil, owner: Any? = nil) -> Base! {
+        var nibName: String?
+        if let name = name, name.isEmpty == false {
+            nibName = name
+        } else {
+            nibName = NSStringFromClass(Base.self).components(separatedBy: ".").last
+        }
+        guard let nibName = nibName else { return nil }
+        guard let result = bundle.loadNibNamed(nibName, owner: owner) else { return nil }
         return result.first { $0 is Base } as? Base
     }
 }

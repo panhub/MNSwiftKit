@@ -7,19 +7,6 @@
 
 import UIKit
 
-extension UICollectionView {
-    
-    /// 自定义标识符
-    public struct Identifier {
-        /// Cell 标识符
-        static let cell: String = "com.mn.collection.cell.reuseIdentifier"
-        /// 头视图标识符
-        static let header: String = "com.mn.collection.section.header.reuseIdentifier"
-        /// 尾视图标识符
-        static let footer: String = "com.mn.collection.section.footer.reuseIdentifier"
-    }
-}
-
 /// 布局对象定制代理
 @MainActor public protocol MNCollectionViewDelegateFlowLayout: UICollectionViewDelegateFlowLayout {
     
