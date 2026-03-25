@@ -9,6 +9,12 @@
 import UIKit
 import MNSwiftKit
 
+enum TableType: Int {
+    case user
+    case order
+    case comment
+}
+
 class DatabaseViewController: UIViewController {
     // 返回按钮顶部约束
     @IBOutlet weak var backTop: NSLayoutConstraint!
