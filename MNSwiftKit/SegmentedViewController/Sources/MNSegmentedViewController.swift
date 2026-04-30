@@ -84,14 +84,23 @@ public class MNSegmentedViewController: UIViewController {
     public weak var dataSource: MNSegmentedViewControllerDataSource?
     
     /// 页面协调器
-    private lazy var subpageCoordinator = MNSegmentedSubpageCoordinator(pageViewController: pageViewController, configuration: configuration)
+    private lazy var subpageCoordinator = MNSegmentedSubpageCoordinator(
+        pageViewController: pageViewController,
+        configuration: configuration
+    )
     
     /// 分页控制器
-    private lazy var pageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: configuration.orientation, options: [.interPageSpacing:0.0])
+    private lazy var pageViewController = UIPageViewController(
+        transitionStyle: .scroll,
+        navigationOrientation: configuration.navigation.orientation,
+        options: [.interPageSpacing:0.0]
+    )
     
     /// 导航视图
-    private lazy var navigationView = MNSegmentedNavigationView(configuration: configuration, headerView: dataSource?.preferredSegmentedNavigationHeaderView ?? nil)
-    
+    private lazy var navigationView = MNSegmentedNavigationView(
+        configuration: configuration,
+        headerView: dataSource?.preferredSegmentedNavigationHeaderView ?? nil
+    )
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -149,7 +158,7 @@ public class MNSegmentedViewController: UIViewController {
         navigationView.dataSource = self
         navigationView.translatesAutoresizingMaskIntoConstraints = false
         
-        switch configuration.orientation {
+        switch configuration.navigation.orientation {
         case .horizontal:
             // 横向
             var navigationHeight: CGFloat = configuration.navigation.dimension
@@ -245,7 +254,7 @@ extension MNSegmentedViewController {
         guard isViewLoaded else { return }
         guard navigationView.isItemLoaded else { return }
         var oldY: CGFloat?
-        if configuration.orientation == .horizontal, navigationView.frame.minY != 0.0 {
+        if configuration.navigation.orientation == .horizontal, navigationView.frame.minY != 0.0 {
             oldY = navigationView.frame.minY
             navigationView.frame.origin.y = 0.0
         }
@@ -469,7 +478,7 @@ extension MNSegmentedViewController: MNSegmentedSubpageDataSource {
     public func contentOffset(for subpage: any MNSegmentedSubpageConvertible, direction: UIPageViewController.NavigationDirection) -> CGPoint {
         guard let scrollView = subpage.preferredSubpageScrollView else { return .zero }
         var contentOffset = scrollView.contentOffset
-        switch configuration.orientation {
+        switch configuration.navigation.orientation {
         case .horizontal:
             guard scrollView.mn.isReachedMinimumSize else { break }
             let greatestFiniteOffset = subpageHeaderGreatestFiniteOffset

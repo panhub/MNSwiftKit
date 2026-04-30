@@ -123,7 +123,7 @@ import ObjectiveC.runtime
 }
 
 /// 空数据视图
-fileprivate class MNDataEmptyView: UIView {
+public class MNDataEmptyView: UIView {
     /// 记录上一次的父视图
     private weak var parentView: UIView?
     /// 自定义视图
@@ -141,7 +141,7 @@ fileprivate class MNDataEmptyView: UIView {
     /// 构成元素
     private var rawComponents: [MNDataEmptyComponent] = [.image, .text, .button]
     /// 构成元素对外接口
-    var components: [MNDataEmptyComponent] {
+    public var components: [MNDataEmptyComponent] {
         get { rawComponents }
         set {
             var seen = Set<MNDataEmptyComponent>()
@@ -159,7 +159,6 @@ fileprivate class MNDataEmptyView: UIView {
                     arrangedSubviews.append(button)
                 }
             }
-            rawCustomView = nil
             stackView.arrangedSubviews.forEach {
                 $0.removeFromSuperview()
             }
@@ -169,8 +168,10 @@ fileprivate class MNDataEmptyView: UIView {
         }
     }
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    public init(parentView: UIView) {
+        super.init(frame: .zero)
+        
+        self.parentView = parentView
         
         stackView.axis = .vertical
         stackView.alignment = .center
@@ -217,13 +218,19 @@ fileprivate class MNDataEmptyView: UIView {
         ])
     }
     
-    convenience init(parentView: UIView) {
-        self.init(frame: .zero)
-        self.parentView = parentView
+    @available(*, unavailable, message: "Use init(parentView:) instead")
+    public override init(frame: CGRect) {
+        super.init(frame: .zero)
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    @available(*, unavailable, message: "Use init(parentView:) instead")
+    public init() {
+        super.init(frame: .zero)
+    }
+    
+    @available(*, unavailable, message: "Use init(parentView:) instead")
+    public required init?(coder: NSCoder) {
+        fatalError("init(coder:) is unavailable, use init(parentView:) instead")
     }
 }
 
@@ -287,45 +294,13 @@ extension MNDataEmptyView {
     fileprivate var edgeInset: UIEdgeInsets {
         get {
             guard let superview = superview else { return .zero }
-            var edgeInset: UIEdgeInsets = .zero
-            for constraint in superview.constraints.filter({ constraint in
-                guard let firstItem = constraint.firstItem, firstItem is MNDataEmptyView else { return false }
-                return true
-            }) {
-                switch constraint.firstAttribute {
-                case .top:
-                    edgeInset.top = constraint.constant
-                case .left, .leading:
-                    edgeInset.left = constraint.constant
-                case .bottom:
-                    edgeInset.bottom = -constraint.constant
-                case .right, .trailing:
-                    edgeInset.right = -constraint.constant
-                default:
-                    break
-                }
-            }
-            return edgeInset
+            return .init(top: frame.minY, left: frame.minX, bottom: superview.frame.height - frame.maxY, right: superview.frame.width - frame.maxX)
         }
         set {
             guard let superview = superview else { return }
-            for constraint in superview.constraints.filter({ constraint in
-                guard let firstItem = constraint.firstItem, firstItem is MNDataEmptyView else { return false }
-                return true
-            }) {
-                switch constraint.firstAttribute {
-                case .top:
-                    constraint.constant = newValue.top
-                case .left, .leading:
-                    constraint.constant = newValue.left
-                case .bottom:
-                    constraint.constant = -newValue.bottom
-                case .right, .trailing:
-                    constraint.constant = -newValue.right
-                default:
-                    break
-                }
-            }
+            autoresizingMask = []
+            frame = CGRect(origin: .zero, size: superview.frame.size).inset(by: newValue)
+            autoresizingMask = [.flexibleWidth, .flexibleHeight]
         }
     }
     
@@ -334,7 +309,6 @@ extension MNDataEmptyView {
         get { rawCustomView }
         set {
             if let subview = rawCustomView {
-                rawCustomView = nil
                 subview.removeFromSuperview()
             }
             guard let newValue = newValue else { return }
@@ -559,44 +533,16 @@ extension MNDataEmptyView {
 // MARK: - Show&Dismiss
 extension MNDataEmptyView {
     /// 显示
-    fileprivate func show() {
+    public func show() {
         guard let delegate = delegate else { return }
         var displaying: Bool = false
         if let superview = superview {
             displaying = alpha == 1.0
-            superview.bringSubviewToFront(self)
+            superview.sendSubviewToBack(self)
         } else {
             guard let parentView = parentView else { return }
-            var superview: UIView!
-            if parentView is UICollectionView {
-                let collectionView = parentView as! UICollectionView
-                if let backgroundView = collectionView.backgroundView {
-                    superview = backgroundView
-                } else {
-                    let backgroundView = UIView()
-                    collectionView.backgroundView = backgroundView
-                    superview = backgroundView
-                }
-            } else if parentView is UITableView {
-                let tableView = parentView as! UITableView
-                if let backgroundView = tableView.backgroundView {
-                    superview = backgroundView
-                } else {
-                    let backgroundView = UIView()
-                    tableView.backgroundView = backgroundView
-                    superview = backgroundView
-                }
-            } else {
-                superview = parentView
-            }
-            translatesAutoresizingMaskIntoConstraints = false
-            superview.addSubview(self)
-            NSLayoutConstraint.activate([
-                topAnchor.constraint(equalTo: superview.topAnchor),
-                leftAnchor.constraint(equalTo: superview.leftAnchor),
-                bottomAnchor.constraint(equalTo: superview.bottomAnchor),
-                rightAnchor.constraint(equalTo: superview.rightAnchor)
-            ])
+            translatesAutoresizingMaskIntoConstraints = true
+            parentView.addSubview(self)
         }
         let areAnimationsEnabled = UIView.areAnimationsEnabled
         UIView.setAnimationsEnabled(false)
@@ -641,7 +587,7 @@ extension MNDataEmptyView {
     }
     
     /// 隐藏
-    fileprivate func dismiss() {
+    public func dismiss() {
         guard let _ = superview, alpha == 1.0 else { return }
         var animationDuration: TimeInterval = 0.0
         if let delegate = delegate, let duration = delegate.fadeAnimationDurationForDataEmptyView?(), duration > 0.0 {
@@ -737,7 +683,7 @@ extension MNNameSpaceWrapper where Base: UIView {
             if let newValue = newValue {
                 let emptyView = viewForDataEmpty()
                 emptyView.delegate = newValue
-                if base is UIScrollView, automaticallyShowsEmptyView {
+                if base is UIScrollView, automaticallyShowEmptyView {
                     dataEmptyObserver.beginObserve(base as! UIScrollView)
                 }
             } else if let emptyView = emptyView {
@@ -757,7 +703,7 @@ extension MNNameSpaceWrapper where Base: UIView {
     }
     
     /// 自动根据数据源刷新空数据视图
-    public var automaticallyShowsEmptyView: Bool {
+    public var automaticallyShowEmptyView: Bool {
         set {
             if newValue {
                 if base is UIScrollView, let _ = dataEmptyDelegate {

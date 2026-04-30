@@ -45,12 +45,12 @@ class SegmentedViewController: UIViewController {
         configuration.separator.backgroundColor = .gray.withAlphaComponent(0.15)
         if axisSegment.selectedSegmentIndex == 1 {
             // 纵向
-            configuration.orientation = .vertical
+            configuration.navigation.orientation = .vertical
             configuration.navigation.dimension = 90.0
             configuration.navigation.adjustmentBehavior = .centered
-            configuration.item.dimension = 45.0
-            configuration.item.dividerConstraint = .init(inset: 5.0, dimension: 0.7)
-            configuration.item.dividerColor = .gray.withAlphaComponent(0.15)
+            configuration.segment.dimension = 45.0
+            configuration.segment.dividerConstraint = .init(inset: 5.0, dimension: 0.7)
+            configuration.segment.dividerColor = .gray.withAlphaComponent(0.15)
             configuration.indicator.constraint = .matchTitle(dimension: 2.5)
         }
         segmentedViewController = MNSegmentedViewController(configuration: configuration)

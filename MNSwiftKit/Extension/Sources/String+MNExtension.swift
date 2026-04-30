@@ -99,7 +99,7 @@ extension MNNameSpaceWrapper where Base == String {
     }
     
     /// 判断字符串是否全是数字
-    public var isAllDigits: Bool {
+    public var isDigits: Bool {
         guard base.isEmpty == false else { return false }
         let digitCharacterSet: CharacterSet = .decimalDigits
         return base.unicodeScalars.allSatisfy { digitCharacterSet.contains($0) }

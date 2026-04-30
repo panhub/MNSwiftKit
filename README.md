@@ -6772,7 +6772,7 @@ class ViewController: UIViewController {
         
         // 创建配置
         var configuration = MNSegmentedConfiguration()
-        configuration.orientation = .horizontal
+        configuration.navigation.orientation = .horizontal
         
         // 创建分段视图控制器
         segmentedController = MNSegmentedViewController(frame: view.bounds, configuration: configuration)
@@ -6829,12 +6829,12 @@ class PageViewController: UIViewController, MNSegmentedSubpageConvertible {
 ```swift
 // 创建时传入配置
 var configuration = MNSegmentedConfiguration()
-configuration.orientation = .horizontal
+configuration.navigation.orientation = .horizontal
 
 // 配置导航栏样式
-configuration.item.normal.titleColor = .gray
-configuration.item.selected.titleColor = .black
-configuration.item.titleFont = .systemFont(ofSize: 16, weight: .medium)
+configuration.segment.normal.titleColor = .gray
+configuration.segment.selected.titleColor = .black
+configuration.segment.titleFont = .systemFont(ofSize: 16, weight: .medium)
 
 // 配置指示器
 configuration.indicator.backgroundColor = .systemBlue
@@ -6842,7 +6842,7 @@ configuration.indicator.constraint = .matchTitle(dimension: 2.5)
 configuration.indicator.animationType = .move  // 平滑移动
 
 // 配置选中缩放
-configuration.item.selected.titleScale = 1.2
+configuration.segment.selected.titleScale = 1.2
 
 // 配置分割线
 configuration.separator.style = .all
@@ -6927,7 +6927,7 @@ if let page = segmentedController.subpage(for: 1, access: true) {
 ```swift
 // 创建纵向布局的配置
 var configuration = MNSegmentedConfiguration()
-configuration.orientation = .vertical
+configuration.navigation.orientation = .vertical
 
 segmentedController = MNSegmentedViewController(frame: view.bounds, configuration: configuration)
 segmentedController.dataSource = self
@@ -6972,7 +6972,7 @@ class CustomSegmentedCell: UICollectionViewCell, MNSegmentedNavigationCellConver
   - `contentInset`: 内容边距
   - `scrollPosition`: 滑动位置（`.unspecified`、`.leading`、`.center`、`.trailing`）
   - `adjustmentBehavior`: 布局调整行为（`.standard`、`.centered`、`.expanded`）
-- **Item**（`configuration.item`）：
+- **Item**（`configuration.segment`）：
   - `dimension`: 导航项尺寸
   - `spacing`: 相邻项间隔
   - `titleFont`: 标题字体
@@ -6991,7 +6991,7 @@ class CustomSegmentedCell: UICollectionViewCell, MNSegmentedNavigationCellConver
 - **头部视图联动**：当子页面的 `preferredSubpageScrollView` 内容高度达到最小要求时，头部视图会与内容页面联动滚动。
 - **生命周期管理**：分段控制器会自动管理子页面的生命周期。
 - **页面缓存**：分段控制器会缓存已创建的页面，避免重复创建。
-- **布局方向**：通过 `configuration.orientation` 设置横向（`.horizontal`）或纵向（`.vertical`）。
+- **布局方向**：通过 `configuration.navigation.orientation` 设置横向（`.horizontal`）或纵向（`.vertical`）。
 - **角标类型**：角标支持 `String`、`Int`、`Bool` 等类型，`Bool` 类型显示为红点。
 - **自定义导航项**：可以通过 `register(_:forSegmentedCellWithReuseIdentifier:)` 注册自定义 Cell，需遵循 `MNSegmentedNavigationCellConvertible` 协议。
 - **头部视图最小高度**：通过 `configuration.headerMinimumVisibleHeight` 设置头部视图至少在屏幕上显示的高度。

@@ -116,8 +116,8 @@ extension MNNameSpaceWrapper where Base == String {
         if components.count > 1 {
             let last = components.removeLast()
             let digitCharacterSet: CharacterSet = .decimalDigits
-            let isAllDigits = last.unicodeScalars.allSatisfy { digitCharacterSet.contains($0) }
-            if isAllDigits {
+            let isDigits = last.unicodeScalars.allSatisfy { digitCharacterSet.contains($0) }
+            if isDigits {
                 let number = NSDecimalNumber(string: last).intValue + 1
                 let string = NSNumber(value: number).stringValue
                 components.append(string)

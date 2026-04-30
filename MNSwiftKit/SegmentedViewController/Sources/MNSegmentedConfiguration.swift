@@ -12,20 +12,17 @@ import CoreFoundation
 /// 分段视图控制器配置信息
 public struct MNSegmentedConfiguration {
     
-    /// 滑动方向
-    public var orientation: UIPageViewController.NavigationOrientation = .horizontal
+    /// 背景颜色
+    public var backgroundColor: UIColor = .white
     
     /// 若存在公共头视图，头视图至少在屏幕上显示的高度
     public var headerMinimumVisibleHeight: CGFloat = 0.0
     
-    /// 背景颜色
-    public var backgroundColor: UIColor = .white
-    
-    /// 导航item配置
-    public var item: MNSegmentedConfiguration.Item = .init()
-    
     /// 角标配置
     public var badge: MNSegmentedConfiguration.Badge = .init()
+    
+    /// 导航item配置
+    public var segment: MNSegmentedConfiguration.Segment = .init()
     
     /// 指示器配置
     public var indicator: MNSegmentedConfiguration.Indicator = .init()
@@ -76,8 +73,11 @@ extension MNSegmentedConfiguration {
         /// 内部四周约束 会依据`contentMode`调整
         public var contentInset: UIEdgeInsets = .zero
         
-        /// 分割线颜色
+        /// 背景颜色
         public var backgroundColor: UIColor = .gray.withAlphaComponent(0.15)
+        
+        /// 滑动方向
+        public var orientation: UIPageViewController.NavigationOrientation = .horizontal
         
         /// 滑动位置
         public var scrollPosition: MNSegmentedConfiguration.Navigation.ScrollPosition = .unspecified
@@ -188,7 +188,7 @@ extension MNSegmentedConfiguration {
 extension MNSegmentedConfiguration {
     
     /// 分段导航视图Item配置
-    public struct Item {
+    public struct Segment {
 
         /// 外观配置
         public struct Appearance {
@@ -233,10 +233,10 @@ extension MNSegmentedConfiguration {
         public var dividerConstraint: MNSegmentedConfiguration.Constraint = .zero
         
         /// 正常外观配置
-        public var normal = MNSegmentedConfiguration.Item.Appearance()
+        public var normal = MNSegmentedConfiguration.Segment.Appearance()
         
         /// 选中时外观配置
-        public var selected = MNSegmentedConfiguration.Item.Appearance(titleColor: .darkText)
+        public var selected = MNSegmentedConfiguration.Segment.Appearance(titleColor: .darkText)
     }
 }
 

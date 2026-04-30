@@ -296,7 +296,7 @@ extension MNSegmentedSubpageCoordinator {
         guard let scrollView = subpage.preferredSubpageScrollView else { return }
         scrollView.mn.subpageIndex = index
         scrollView.mn.isReachedMinimumSize = false
-        switch configuration.orientation {
+        switch configuration.navigation.orientation {
         case .horizontal:
             // 横向
             guard scrollView.mn.isObserved == false else { break }
@@ -344,11 +344,11 @@ extension MNSegmentedSubpageCoordinator {
 extension MNSegmentedSubpageCoordinator: UIScrollViewDelegate {
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        let startOffsetKey = configuration.orientation == .horizontal ? "startOffsetX" : "startOffsetY"
+        let startOffsetKey = configuration.navigation.orientation == .horizontal ? "startOffsetX" : "startOffsetY"
         if let value = scrollView.value(forKey: startOffsetKey) as? CGFloat {
             startOffset = value
         } else {
-            startOffset = configuration.orientation == .horizontal ? scrollView.contentOffset.x : scrollView.contentOffset.y
+            startOffset = configuration.navigation.orientation == .horizontal ? scrollView.contentOffset.x : scrollView.contentOffset.y
         }
         if let dataSource = dataSource {
             presentationIndex = dataSource.subpageIndex
@@ -362,8 +362,8 @@ extension MNSegmentedSubpageCoordinator: UIScrollViewDelegate {
         guard presentationCount > 1, shouldRespondToScroll else { return }
         var progress = 0.0
         let lastTargetIndex = targetIndex
-        let currentOffset = configuration.orientation == .horizontal ? scrollView.contentOffset.x : scrollView.contentOffset.y
-        let pageDimension = configuration.orientation == .horizontal ? scrollView.frame.width : scrollView.frame.height
+        let currentOffset = configuration.navigation.orientation == .horizontal ? scrollView.contentOffset.x : scrollView.contentOffset.y
+        let pageDimension = configuration.navigation.orientation == .horizontal ? scrollView.frame.width : scrollView.frame.height
         if currentOffset > startOffset {
             let guessToIndex = presentationIndex + 1
             guard guessToIndex < presentationCount else { return }
@@ -397,7 +397,7 @@ extension MNSegmentedSubpageCoordinator: UIScrollViewDelegate {
         guard presentationCount > 1 else { return }
         shouldRespondToScroll = false
         let contentOffset = targetContentOffset.pointee
-        let targetOffset = configuration.orientation == .horizontal ? contentOffset.x : contentOffset.y
+        let targetOffset = configuration.navigation.orientation == .horizontal ? contentOffset.x : contentOffset.y
         var targetPageIndex = presentationIndex
         if targetOffset > startOffset {
             targetPageIndex += 1

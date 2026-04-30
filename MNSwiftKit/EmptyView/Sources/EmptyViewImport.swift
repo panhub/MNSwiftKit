@@ -1,5 +1,5 @@
 //
-//  AnimatedImageImport.swift
+//  EmptyViewImport.swift
 //  MNSwiftKit
 //
 //  Created by panhub on 2026/3/3.
