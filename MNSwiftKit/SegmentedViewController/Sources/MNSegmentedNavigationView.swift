@@ -382,9 +382,22 @@ extension MNSegmentedNavigationView {
         // 开始指示图动画
         collectionView.isUserInteractionEnabled = false
         switch configuration.indicator.animationType {
-        case .move:
+        case .none:
+            // 无动画
+            if let item = currentItem, let cell = currentItemCell {
+                cell.updateTitleScale?(item.titleScale)
+                cell.updateBackgroundColor?(item.backgroundColor)
+            }
+            if let item = targetItem {
+                if let cell = targetItemCell {
+                    cell.updateTitleScale?(item.titleScale)
+                    cell.updateBackgroundColor?(item.backgroundColor)
+                }
+                indicatorView.frame = item.indicatorFrame
+            }
+        case .move(let duration):
             // 滑动
-            UIView.animate(withDuration: animated ? configuration.indicator.animationDuration : 0.0, delay: 0.0, options: .curveEaseInOut, animations: { [weak self] in
+            let animations: ()->Void = { [weak self] in
                 guard let self = self else { return }
                 if let item = currentItem, let cell = currentItemCell {
                     cell.updateTitleScale?(item.titleScale)
@@ -397,10 +410,16 @@ extension MNSegmentedNavigationView {
                     }
                     self.indicatorView.frame = item.indicatorFrame
                 }
-            }, completion: completionHandler)
-        case .stretch:
+            }
+            if animated, duration > 0.0 {
+                UIView.animate(withDuration: duration, delay: 0.0, options: .curveEaseInOut, animations: animations, completion: completionHandler)
+            } else {
+                animations()
+                completionHandler(true)
+            }
+        case .stretch(let duration):
             // 拉伸
-            let animationDuration = animated ? configuration.indicator.animationDuration/2.0 : 0.0
+            let animationDuration = animated ? duration/2.0 : 0.0
             UIView.animate(withDuration: animationDuration) { [weak self] in
                 guard let self = self else { return }
                 guard let currentItem = currentItem else { return }
@@ -442,28 +461,6 @@ extension MNSegmentedNavigationView {
                 }, completion: completionHandler)
             }
         }
-        /*
-        UIView.animate(withDuration: animated ? configuration.indicator.animationDuration : 0.0, delay: 0.0, options: .curveEaseInOut) { [weak self] in
-            guard let self = self else { return }
-            if let item = currentItem, let cell = currentItemCell {
-                cell.updateTitleScale?(item.titleScale)
-                cell.updateBackgroundColor?(item.backgroundColor)
-            }
-            if let item = targetItem {
-                if let cell = targetItemCell {
-                    cell.updateTitleScale?(item.titleScale)
-                    cell.updateBackgroundColor?(item.backgroundColor)
-                }
-                self.indicatorView.frame = item.indicatorFrame
-            }
-        } completion: { [weak self] _ in
-            guard let self = self else { return }
-            self.collectionView.isUserInteractionEnabled = true
-            if let _ = targetItem {
-                self.scrollToItem(at: index, to: self.configuration.navigation.scrollPosition, animated: animated)
-            }
-        }
-        */
     }
 }
 
@@ -989,6 +986,9 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
         let currentItem = items[selectedIndex]
         var indicatorFrame: CGRect = currentItem.indicatorFrame
         switch configuration.indicator.animationType {
+        case .none:
+            // 无动画
+            indicatorFrame = progress <= 0.5 ? currentItem.indicatorFrame : targetItem.indicatorFrame
         case .move:
             // 移动
             if configuration.navigation.orientation == .horizontal {
@@ -1046,7 +1046,7 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
             } else {
                 // 右/下滑动
                 if progress <= 0.5 {
-                    // 修改标记线位置
+                    // 未超过一半进度
                     if configuration.navigation.orientation == .horizontal {
                         indicatorFrame.size.width = progress/0.5*(currentItem.indicatorFrame.minX - targetItem.indicatorFrame.minX) + currentItem.indicatorFrame.width
                         indicatorFrame.origin.x = currentItem.indicatorFrame.maxX - indicatorFrame.width
@@ -1143,7 +1143,15 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
         targetItemCell?.updateCell?(selected: true, at: targetIndexPath.item)
         indicatorView.layer.removeAllAnimations()
         collectionView.isUserInteractionEnabled = false
-        UIView.animate(withDuration: configuration.indicator.animationDuration, delay: 0.01, options: .curveEaseInOut) { [weak self] in
+        var animationDuration: TimeInterval = 0.0
+        switch configuration.indicator.animationType {
+        case .none: break
+        case .move(let duration):
+            animationDuration = duration
+        case .stretch(let duration):
+            animationDuration = duration
+        }
+        UIView.animate(withDuration: animationDuration, delay: 0.01, options: .curveEaseInOut) { [weak self] in
             guard let self = self else { return }
             if let cell = currentItemCell {
                 cell.updateTitleScale?(currentItem.titleScale)
@@ -1160,12 +1168,19 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
             self.collectionView.isUserInteractionEnabled = true
             self.scrollToItem(at: index, to: self.configuration.navigation.scrollPosition, animated: true)
         }
-        if lastSelectedIndex != index {
-            // 标记线动画
-            let duration = configuration.indicator.animationType == .stretch ? configuration.indicator.animationDuration/2.0 : configuration.indicator.animationDuration
-            let animations: ()->Void = { [weak self] in
+        if index == lastSelectedIndex { return }
+        // 一般不会触发
+        switch configuration.indicator.animationType {
+        case .none:
+            indicatorView.frame = targetItem.indicatorFrame
+        case .move(let duration):
+            UIView.animate(withDuration: duration, delay: 0.0, options: .curveEaseInOut) { [weak self] in
                 guard let self = self else { return }
-                guard self.configuration.indicator.animationType == .stretch else { return }
+                self.indicatorView.frame = targetItem.indicatorFrame
+            }
+        case .stretch(let duration):
+            UIView.animate(withDuration: duration/2.0) { [weak self] in
+                guard let self = self else { return }
                 var indicatorFrame = self.indicatorView.frame
                 if index > currentIndex {
                     if self.configuration.navigation.orientation == .horizontal {
@@ -1183,13 +1198,15 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
                     }
                 }
                 self.indicatorView.frame = indicatorFrame
-            }
-            UIView.animate(withDuration: configuration.indicator.animationType == .stretch ? duration : 0.0, animations: animations) { [weak self] _ in
+            } completion: { [weak self] _ in
                 UIView.animate(withDuration: duration, delay: 0.0, options: .curveEaseInOut) {
                     guard let self = self else { return }
                     self.indicatorView.frame = targetItem.indicatorFrame
                 }
             }
         }
+#if DEBUG
+        print("⚠️分段控制器模块 \(#file) \(#function) 需要调整⚠️")
+#endif
     }
 }

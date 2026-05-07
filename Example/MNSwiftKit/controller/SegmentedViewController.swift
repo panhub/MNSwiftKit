@@ -41,7 +41,7 @@ class SegmentedViewController: UIViewController {
         var configuration = MNSegmentedConfiguration()
         configuration.separator.style = .trailing
         configuration.separator.constraint = .init(inset: 0.0, dimension: 1.0)
-        configuration.indicator.animationType = .stretch
+        configuration.indicator.animationType = .stretch(duration: 0.25)
         configuration.separator.backgroundColor = .gray.withAlphaComponent(0.15)
         if axisSegment.selectedSegmentIndex == 1 {
             // 纵向
@@ -93,7 +93,7 @@ extension SegmentedViewController: MNSegmentedViewControllerDataSource {
         return imageView
     }
     
-    func segmentedViewController(_ viewController: MNSwiftKit.MNSegmentedViewController, subpageAt index: Int) -> any MNSwiftKit.MNSegmentedSubpageConvertible {
+    func segmentedViewController(_ viewController: MNSwiftKit.MNSegmentedViewController, pageAt index: Int) -> any MNSwiftKit.MNSegmentedPageConvertible {
         
         SegmentedSubpageController(style: index % 2 == 0 ? .grid : .table)
     }

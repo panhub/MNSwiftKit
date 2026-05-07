@@ -114,10 +114,12 @@ extension MNSegmentedConfiguration {
 
         /// 指示视图动画类型
         public enum AnimationType {
+            /// 无动画
+            case none
             /// 平滑移动
-            case move
+            case move(duration: TimeInterval)
             /// 拉伸
-            case stretch
+            case stretch(duration: TimeInterval)
         }
 
         /// 指示视图放置位置
@@ -140,9 +142,6 @@ extension MNSegmentedConfiguration {
         /// 颜色
         public var backgroundColor: UIColor = .black
         
-        /// 动画时长
-        public var animationDuration: TimeInterval = 0.25
-        
         /// 内容填充模式
         public var contentMode: UIView.ContentMode = .scaleToFill
         
@@ -150,7 +149,7 @@ extension MNSegmentedConfiguration {
         public var position: MNSegmentedConfiguration.Indicator.Position = .above
         
         /// 转场类型
-        public var animationType: MNSegmentedConfiguration.Indicator.AnimationType = .move
+        public var animationType: MNSegmentedConfiguration.Indicator.AnimationType = .move(duration: 0.25)
         
         /// 指示器尺寸固定时的对齐方式
         public var alignment: MNSegmentedConfiguration.Indicator.Alignment = .center

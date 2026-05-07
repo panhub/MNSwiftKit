@@ -6799,7 +6799,7 @@ extension ViewController: MNSegmentedViewControllerDataSource {
     }
     
     // 获取子页面
-    func segmentedViewController(_ viewController: MNSegmentedViewController, subpageAt index: Int) -> MNSegmentedSubpageConvertible {
+    func segmentedViewController(_ viewController: MNSegmentedViewController, subpageAt index: Int) -> MNSegmentedPageConvertible {
         let pageVC = PageViewController()
         pageVC.title = preferredSegmentedNavigationTitles[index]
         return pageVC
@@ -6813,12 +6813,12 @@ extension ViewController: MNSegmentedViewControllerDelegate {
     }
 }
 
-// 子页面需要遵循 MNSegmentedSubpageConvertible 协议
-class PageViewController: UIViewController, MNSegmentedSubpageConvertible {
+// 子页面需要遵循 MNSegmentedPageConvertible 协议
+class PageViewController: UIViewController, MNSegmentedPageConvertible {
 
     @IBOutlet weak var tableView: UITableView!
     
-    var preferredSubpageScrollView: UIScrollView? {
+    var preferredPageScrollView: UIScrollView? {
         return tableView
     }
 }
@@ -6914,7 +6914,7 @@ segmentedController.setSubpage(at: 2, animated: true)
 segmentedController.setSubpage(at: 2, animated: false)
 
 // 获取当前页面索引
-let currentIndex = segmentedController.subpageIndex
+let currentIndex = segmentedController.pageIndex
 
 // 获取指定子页面
 if let page = segmentedController.subpage(for: 1, access: true) {
@@ -6987,8 +6987,8 @@ class CustomSegmentedCell: UICollectionViewCell, MNSegmentedNavigationCellConver
 
 #### 📝 注意事项
 
-- **子页面协议**：子页面必须遵循 `MNSegmentedSubpageConvertible` 协议，并提供 `preferredSubpageScrollView` 属性（可选返回 `UIScrollView?`）。
-- **头部视图联动**：当子页面的 `preferredSubpageScrollView` 内容高度达到最小要求时，头部视图会与内容页面联动滚动。
+- **子页面协议**：子页面必须遵循 `MNSegmentedPageConvertible` 协议，并提供 `preferredPageScrollView` 属性（可选返回 `UIScrollView?`）。
+- **头部视图联动**：当子页面的 `preferredPageScrollView` 内容高度达到最小要求时，头部视图会与内容页面联动滚动。
 - **生命周期管理**：分段控制器会自动管理子页面的生命周期。
 - **页面缓存**：分段控制器会缓存已创建的页面，避免重复创建。
 - **布局方向**：通过 `configuration.navigation.orientation` 设置横向（`.horizontal`）或纵向（`.vertical`）。

@@ -99,9 +99,9 @@ extension SegmentedSubpageController: UICollectionViewDelegateFlowLayout {
 }
 
 // MARK: - MNSplitPageConvertible
-extension SegmentedSubpageController: MNSegmentedSubpageConvertible {
+extension SegmentedSubpageController: MNSegmentedPageConvertible {
     
-    var preferredSubpageScrollView: UIScrollView? {
+    var preferredPageScrollView: UIScrollView {
         
         collectionView
     }
