@@ -6719,27 +6719,29 @@ Caches/MNSwiftKit/emoticons/
 
 ### SegmentedViewController
 
-一个功能强大的分段视图控制器组件，支持顶部公共视图和内容页面的联动滑动，支持自定义导航项，提供丰富的自定义选项和流畅的交互体验。
+一个功能强大的分段视图控制器组件，支持顶部公共视图与内容区联动滚动、自定义导航项与角标。子分页由 `UIPageViewController` 驱动，分页切换、横向场景下对子页 `UIScrollView` 的观察与内容 inset 适配等逻辑集中在 `MNSegmentedPageCoordinator` 中，与导航层解耦，便于维护与扩展。
 
 #### ✨ 特性
 
 - 📑 **分页展示**：支持多个子页面横向或纵向滑动切换
-- 🎨 **丰富配置**：提供 `MNSegmentedConfiguration` 配置，支持自定义导航项样式、指示器动画、角标等
+- 🧩 **页面协调**：`MNSegmentedPageCoordinator` 统一管理分页数据源/代理、子页缓存与滚动进度，并在分页衰减与新手势交错时处理交互边界，减少页码错乱等问题
+- 🎨 **丰富配置**：提供 `MNSegmentedConfiguration` 配置，支持自定义导航项样式、指示器、角标、分割线等
 - 🔄 **布局方向**：支持横向和纵向两种布局方向（`UIPageViewController.NavigationOrientation`）
-- 📊 **头部视图**：支持公共头部视图（`preferredSegmentedNavigationHeaderView`），支持头部视图与内容页面联动滚动
-- 🎭 **指示器动画**：支持多种指示器动画效果（`.move` 平滑移动、`.stretch` 拉伸）
+- 📊 **头部视图**：支持公共头部视图（`preferredSegmentedNavigationHeaderView`），子页提供 `preferredPageScrollView` 且内容满足最小高度时，可与头部联动折叠
+- 🎭 **指示器**：支持置于 item 之上/之下（`indicator.position`），动画类型包括无动画（`.none`）、平滑移动（`.move(duration:)`）、拉伸（`.stretch(duration:)`）
 - 🏷️ **角标支持**：支持在导航项上显示角标（数字、文字、布尔值）
-- 🔧 **动态管理**：支持替换标题、替换子页面、重载子页面
-- 🎬 **生命周期**：完善的子页面生命周期管理
-- 💪 **手势处理**：智能处理手势冲突
-- 🚀 **高性能**：基于 UIPageViewController 和 UICollectionView，性能优异
+- 📡 **事件回调**：除页切换外，可选实现头视图偏移（`headerViewDidChangeOffset`）、子页内容偏移（`subpageDidChangeContentOffset`）、分段 Cell 即将展示（`willDisplay`）等
+- 🔧 **动态管理**：支持替换标题、替换子页面、重载子页面、按索引替换分割线约束等
+- 🎬 **生命周期**：通过子页 `pageState` 与协调器配合，管理出现/消失时机
+- 💪 **手势与滚动**：导航与分页滚动协同；子页可响应 `scrollViewDidChangeAdjustedContentInset`、`scrollView(_:determinedMinimumContentSize:)` 等与 inset/最小内容尺寸相关的回调
+- 🚀 **高性能**：基于 `UIPageViewController` 与 `UICollectionView`，子页按需创建并缓存
 
 #### 🚀 快速开始
 
 Cocoapods 安装：
 
 ```ruby
-// Podfile 文件
+# Podfile
 pod 'MNSwiftKit/SegmentedViewController'
 ```
 
@@ -6793,13 +6795,13 @@ extension ViewController: MNSegmentedViewControllerDataSource {
         return ["推荐", "关注", "热门", "最新"]
     }
     
-    // 初始页面索引
+    // 初始选中索引（协议中为可选，未实现时默认为 0）
     var preferredSegmentedNavigationPresentationIndex: Int {
         return 0
     }
     
-    // 获取子页面
-    func segmentedViewController(_ viewController: MNSegmentedViewController, subpageAt index: Int) -> MNSegmentedPageConvertible {
+    // 按索引提供子页面（数据源方法名为 pageAt）
+    func segmentedViewController(_ viewController: MNSegmentedViewController, pageAt index: Int) -> MNSegmentedPageConvertible {
         let pageVC = PageViewController()
         pageVC.title = preferredSegmentedNavigationTitles[index]
         return pageVC
@@ -6839,7 +6841,7 @@ configuration.segment.titleFont = .systemFont(ofSize: 16, weight: .medium)
 // 配置指示器
 configuration.indicator.backgroundColor = .systemBlue
 configuration.indicator.constraint = .matchTitle(dimension: 2.5)
-configuration.indicator.animationType = .move  // 平滑移动
+configuration.indicator.animationType = .move(duration: 0.25)  // 平滑移动；亦支持 .none、.stretch(duration:)
 
 // 配置选中缩放
 configuration.segment.selected.titleScale = 1.2
@@ -6898,27 +6900,31 @@ segmentedController.replaceTitle("新标题", at: 0)
 
 // 替换子页面内容
 let newPage = NewPageViewController()
-segmentedController.replaceSubpage(newPage, at: 0)
+segmentedController.replacePage(newPage, at: 0)
 
 // 重载所有子页面
-segmentedController.reloadSubpage()
+segmentedController.reloadPages()
 ```
 
 切换页面
 
 ```swift
 // 切换到指定页面（带动画）
-segmentedController.setSubpage(at: 2, animated: true)
+segmentedController.setPage(at: 2, animated: true)
 
 // 切换到指定页面（无动画）
-segmentedController.setSubpage(at: 2, animated: false)
+segmentedController.setPage(at: 2, animated: false)
 
 // 获取当前页面索引
 let currentIndex = segmentedController.pageIndex
 
-// 获取指定子页面
-if let page = segmentedController.subpage(for: 1, access: true) {
+// 获取指定子页面（仅缓存或按需向数据源请求，由 access 控制）
+if let page = segmentedController.page(for: 1, access: true) {
     // 使用页面
+}
+// 按具体类型获取
+if let listPage = segmentedController.page(for: 0, as: PageViewController.self, access: false) {
+    // ...
 }
 ```
 
@@ -6980,21 +6986,21 @@ class CustomSegmentedCell: UICollectionViewCell, MNSegmentedNavigationCellConver
 - **Indicator**（`configuration.indicator`）：
   - `constraint`: 指示器尺寸（`.matchTitle`、`.matchItem`、`.fixed`）
   - `alignment`: 对齐方式（`.leading`、`.center`、`.trailing`）
-  - `animationType`: 动画类型（`.move`、`.stretch`）
-  - `position`: 放置位置（`.above`、`.below`）
+  - `animationType`: 动画类型（`.none`、`.move(duration:)`、`.stretch(duration:)`）
+  - `position`: 指示器相对 item 的层级（`.above`、`.below`）
 - **Badge**（`configuration.badge`）：角标样式配置
 - **Separator**（`configuration.separator`）：分割线配置
 
 #### 📝 注意事项
 
-- **子页面协议**：子页面必须遵循 `MNSegmentedPageConvertible` 协议，并提供 `preferredPageScrollView` 属性（可选返回 `UIScrollView?`）。
-- **头部视图联动**：当子页面的 `preferredPageScrollView` 内容高度达到最小要求时，头部视图会与内容页面联动滚动。
-- **生命周期管理**：分段控制器会自动管理子页面的生命周期。
-- **页面缓存**：分段控制器会缓存已创建的页面，避免重复创建。
+- **子页面协议**：子页面遵循 `MNSegmentedPageConvertible`。`preferredPageScrollView` 为可选能力；实现并返回列表/滚动容器后，横向布局下才支持头部与内容联动及内部对 contentInset、最小内容高度的自动适配。
+- **头部视图联动**：当子页滚动视图内容高度达到协调器计算的最小要求时，公共头部随内容上滑折叠；可通过 `configuration.headerMinimumVisibleHeight` 约束头部至少保留的可见高度。
+- **生命周期与缓存**：协调器配合子页 `pageState` 维护出现与消失；已创建子页会按索引缓存，可通过 `page(for:access:)` 读取，`reloadPages()` 会清空缓存并刷新。
 - **布局方向**：通过 `configuration.navigation.orientation` 设置横向（`.horizontal`）或纵向（`.vertical`）。
 - **角标类型**：角标支持 `String`、`Int`、`Bool` 等类型，`Bool` 类型显示为红点。
-- **自定义导航项**：可以通过 `register(_:forSegmentedCellWithReuseIdentifier:)` 注册自定义 Cell，需遵循 `MNSegmentedNavigationCellConvertible` 协议。
-- **头部视图最小高度**：通过 `configuration.headerMinimumVisibleHeight` 设置头部视图至少在屏幕上显示的高度。
+- **自定义导航项**：通过 `register(_:forSegmentedCellWithReuseIdentifier:)` 注册自定义 Cell，需遵循 `MNSegmentedNavigationCellConvertible` 协议。
+- **当前索引**：使用宿主上的 `pageIndex`（与导航选中项一致）获取当前页码。
+
 ## 示例
 
 要运行示例项目，克隆repo，从 `Example` 目录运行 `pod install`。

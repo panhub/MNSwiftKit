@@ -250,7 +250,7 @@ extension MNSegmentedViewController {
 extension MNSegmentedViewController {
     
     /// 重载子界面
-    public func reloadSubpage() {
+    public func reloadPages() {
         guard isViewLoaded else { return }
         guard navigationView.isItemLoaded else { return }
         var oldY: CGFloat?
@@ -288,22 +288,22 @@ extension MNSegmentedViewController {
     
     /// 替换子页面
     /// - Parameters:
-    ///   - subpage: 子页面meisha
+    ///   - page: 页面
     ///   - index: 页面索引
-    public func replaceSubpage(_ subpage: MNSegmentedPageConvertible, at index: Int) {
+    public func replacePage(_ page: MNSegmentedPageConvertible, at index: Int) {
         if isViewLoaded, navigationView.isItemLoaded {
             guard index < numberOfPages else { return }
             // 删除旧页面缓存
             pageCoordinator.invalidatePage(at: index)
             // 缓存新页面
-            pageCoordinator.setPage(subpage, for: index)
+            pageCoordinator.setPage(page, for: index)
             if index == pageIndex {
                 // 替换当前页面
                 pageCoordinator.setPage(at: index, direction: .forward, animated: false)
             }
         } else {
             // 未有子页面
-            pageCoordinator.setPage(subpage, for: index)
+            pageCoordinator.setPage(page, for: index)
         }
     }
     
@@ -311,7 +311,7 @@ extension MNSegmentedViewController {
     /// - Parameters:
     ///   - index: 子页面索引
     ///   - animated: 是否动态
-    public func setSubpage(at index: Int, animated: Bool = false) {
+    public func setPage(at index: Int, animated: Bool = false) {
         guard isViewLoaded else { return }
         guard navigationView.isItemLoaded else { return }
         guard index < numberOfPages else { return }
