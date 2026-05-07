@@ -129,7 +129,31 @@ fileprivate extension Target {
     static let kit = target(
         name: .kit,
         dependencies: [
-            .base, .utility, .slider, .toast, .player, .refresh, .request, .purchase, .database, .definition, .extension, .emptyView, .networking, .editingView, .assetPicker, .nameSpace, .pageControl, .components, .mediaExport, .transitioning, .assetPicker, .animatedImage, .collectionLayout, .emoticonKeyboard, .segmentedViewController
+            .base,
+            .utility,
+            .slider,
+            .toast,
+            .player,
+            .refresh,
+            .request,
+            .purchase,
+            .database,
+            .definition,
+            .extension,
+            .emptyView,
+            .networking,
+            .editingView,
+            .assetPicker,
+            .nameSpace,
+            .pageControl,
+            .components,
+            .mediaExport,
+            .transitioning,
+            .assetBrowser,
+            .animatedImage,
+            .collectionLayout,
+            .emoticonKeyboard,
+            .segmentedViewController
         ],
         path: .Path.kit
     )
@@ -137,7 +161,15 @@ fileprivate extension Target {
     static let base = target(
         name: .base,
         dependencies: [
-            .toast, .refresh, .request, .definition, .extension, .emptyView, .nameSpace, .transitioning, .collectionLayout
+            .toast,
+            .refresh,
+            .request,
+            .definition,
+            .extension,
+            .emptyView,
+            .nameSpace,
+            .transitioning,
+            .collectionLayout
         ],
         path: .Path.base,
         resources: [
@@ -276,7 +308,8 @@ fileprivate extension Target {
     static let `extension` = target(
         name: .extension,
         dependencies: [
-            .nameSpace, .animatedImage
+            .nameSpace,
+            .animatedImage
         ],
         path: .Path.extension,
         linkerSettings: [
@@ -335,7 +368,17 @@ fileprivate extension Target {
     static let assetPicker = target(
         name: .assetPicker,
         dependencies: [
-            .toast, .slider, .player, .refresh, .definition, .extension, .emptyView, .nameSpace, .mediaExport, .assetBrowser, .animatedImage
+            .toast,
+            .slider,
+            .player,
+            .refresh,
+            .definition,
+            .extension,
+            .emptyView,
+            .nameSpace,
+            .mediaExport,
+            .assetBrowser,
+            .animatedImage
         ],
         path: .Path.assetPicker,
         resources: [
@@ -377,9 +420,10 @@ fileprivate extension Target {
     static let components = target(
         name: .components,
         dependencies: [
-            .extension, .nameSpace
+            .extension,
+            .nameSpace
         ],
-        path: .Path.nameSpace,
+        path: .Path.components,
         resources: [
             .process("Resources")
         ],
@@ -401,7 +445,7 @@ fileprivate extension Target {
         dependencies: [
             .nameSpace
         ],
-        path: .Path.nameSpace,
+        path: .Path.mediaExport,
         linkerSettings: [
             .linkedFramework("CoreMedia"),
             .linkedFramework("Foundation"),
@@ -426,7 +470,11 @@ fileprivate extension Target {
     static let assetBrowser = target(
         name: .assetBrowser,
         dependencies: [
-            .slider, .player, .definition, .extension, .animatedImage
+            .slider,
+            .player,
+            .definition,
+            .extension,
+            .animatedImage
         ],
         path: .Path.assetBrowser,
         resources: [
@@ -471,7 +519,11 @@ fileprivate extension Target {
     static let emoticonKeyboard = target(
         name: .emoticonKeyboard,
         dependencies: [
-            .definition, .extension, .nameSpace, .pageControl, .animatedImage
+            .definition,
+            .extension,
+            .nameSpace,
+            .pageControl,
+            .animatedImage
         ],
         path: .Path.emoticonKeyboard,
         resources: [
@@ -605,7 +657,6 @@ fileprivate extension String {
     
     static let segmentedViewController = "MNSegmentedViewController"
     
-    
     enum Path {
         
         static let kit = "MNSwiftKit/MNSwiftKit"
@@ -663,6 +714,7 @@ fileprivate extension String {
 }
 
 /**
+ // 旧版
  let package = Package(
      name: "MNSwiftKit",
      platforms: [
