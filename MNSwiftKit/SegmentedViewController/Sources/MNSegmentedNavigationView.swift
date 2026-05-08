@@ -1013,6 +1013,66 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
             }
         case .stretch:
             // 拉伸
+            if progress <= 0.5 {
+                // 未超过一半进度
+                if targetIndex >= selectedIndex {
+                    // 左/上滑动
+                    if configuration.navigation.orientation == .horizontal {
+                        indicatorFrame.size.width = progress/0.5*(targetItem.indicatorFrame.maxX - currentItem.indicatorFrame.maxX) + currentItem.indicatorFrame.width
+                    } else {
+                        indicatorFrame.size.height = progress/0.5*(targetItem.indicatorFrame.maxY - currentItem.indicatorFrame.maxY) + currentItem.indicatorFrame.height
+                    }
+                } else {
+                    if configuration.navigation.orientation == .horizontal {
+                        indicatorFrame.size.width = progress/0.5*(currentItem.indicatorFrame.minX - targetItem.indicatorFrame.minX) + currentItem.indicatorFrame.width
+                        indicatorFrame.origin.x = currentItem.indicatorFrame.maxX - indicatorFrame.width
+                    } else {
+                        indicatorFrame.size.height = progress/0.5*(currentItem.indicatorFrame.minY - targetItem.indicatorFrame.minY) + currentItem.indicatorFrame.height
+                        indicatorFrame.origin.y = currentItem.indicatorFrame.maxY - indicatorFrame.height
+                    }
+                }
+                // 修改标题缩放
+                if configuration.segment.selected.titleScale > 1.0 {
+                    if let cell = collectionView.cellForItem(at: currentIndexPath) as? MNSegmentedNavigationCellConvertible {
+                        cell.updateTitleScale?(configuration.segment.selected.titleScale)
+                    }
+                    if let cell = collectionView.cellForItem(at: targetIndexPath) as? MNSegmentedNavigationCellConvertible {
+                        cell.updateTitleScale?(1.0)
+                    }
+                }
+            } else {
+                // 超过一半进度
+                if targetIndex >= selectedIndex {
+                    // 左/上滑动
+                    if configuration.navigation.orientation == .horizontal {
+                        indicatorFrame.size.width = (1.0 - progress)/0.5*(targetItem.indicatorFrame.minX - currentItem.indicatorFrame.minX) + targetItem.indicatorFrame.width
+                        indicatorFrame.origin.x = targetItem.indicatorFrame.maxX - indicatorFrame.width
+                    } else {
+                        indicatorFrame.size.height = (1.0 - progress)/0.5*(targetItem.indicatorFrame.minY - currentItem.indicatorFrame.minY) + targetItem.indicatorFrame.height
+                        indicatorFrame.origin.y = targetItem.indicatorFrame.maxY - indicatorFrame.height
+                    }
+                } else {
+                    if configuration.navigation.orientation == .horizontal {
+                        indicatorFrame.size.width = (1.0 - progress)/0.5*(currentItem.indicatorFrame.maxX - targetItem.indicatorFrame.maxX) + targetItem.indicatorFrame.width
+                        indicatorFrame.origin.x = targetItem.indicatorFrame.minX
+                    } else {
+                        indicatorFrame.size.height = (1.0 - progress)/0.5*(currentItem.indicatorFrame.maxY - targetItem.indicatorFrame.maxY) + targetItem.indicatorFrame.height
+                        indicatorFrame.origin.y = targetItem.indicatorFrame.minY
+                    }
+                }
+                // 修改标题缩放
+                if configuration.segment.selected.titleScale > 1.0 {
+                    if let cell = collectionView.cellForItem(at: currentIndexPath) as? MNSegmentedNavigationCellConvertible {
+                        let transformScale = (1.0 - progress)/0.5*(configuration.segment.selected.titleScale - 1.0) + 1.0
+                        cell.updateTitleScale?(transformScale)
+                    }
+                    if let cell = collectionView.cellForItem(at: targetIndexPath) as? MNSegmentedNavigationCellConvertible {
+                        let transformScale = (progress - 0.5)/0.5*(configuration.segment.selected.titleScale - 1.0) + 1.0
+                        cell.updateTitleScale?(transformScale)
+                    }
+                }
+            }
+            /*
             if targetIndex >= selectedIndex {
                 // 左/上滑动
                 if progress <= 0.5 {
@@ -1094,6 +1154,7 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
                     }
                 }
             }
+            */
         }
         indicatorView.frame = indicatorFrame
         // 修改标题颜色
