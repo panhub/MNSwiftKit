@@ -1169,7 +1169,6 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
             self.scrollToItem(at: index, to: self.configuration.navigation.scrollPosition, animated: true)
         }
         if index == lastSelectedIndex { return }
-        // 一般不会触发
         switch configuration.indicator.animationType {
         case .none:
             indicatorView.frame = targetItem.indicatorFrame
@@ -1205,8 +1204,5 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
                 }
             }
         }
-#if DEBUG
-        print("⚠️分段控制器模块 \(#file) \(#function) 需要调整⚠️")
-#endif
     }
 }

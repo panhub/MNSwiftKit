@@ -107,12 +107,12 @@ extension SegmentedViewController: MNSegmentedViewControllerDataSource {
 // MARK: - MNSplitViewControllerDelegate
 extension SegmentedViewController: MNSegmentedViewControllerDelegate {
     
-    func segmentedViewController(_ viewController: MNSegmentedViewController, subpageDidChangeAt index: Int) {
+    func segmentedViewController(_ viewController: MNSegmentedViewController, pageDidChangeAt index: Int) {
         
         print("选择了索引: \(index)")
     }
     
-    func segmentedViewController(_ viewController: MNSegmentedViewController, subpageDidChangeContentOffset contentOffset: CGPoint) {
+    func segmentedViewController(_ viewController: MNSegmentedViewController, pageDidChangeContentOffset contentOffset: CGPoint) {
         
         print("contentOffset：\(contentOffset)")
     }

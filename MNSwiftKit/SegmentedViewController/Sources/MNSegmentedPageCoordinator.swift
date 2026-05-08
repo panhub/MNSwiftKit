@@ -168,9 +168,14 @@ class MNSegmentedPageCoordinator: NSObject {
             if let lastPresentationPage = lastPresentationPage {
                 lastPresentationPage.pageState = .didDisappear
             }
-            if let self = self, let scrollView = self.scrollView {
-                // 确保可交互，避免滑动事件问题引起不可交互
+            guard let self = self else { return }
+            // 确保可交互，避免滑动事件问题引起不可交互
+            if let scrollView = self.scrollView {
                 scrollView.isUserInteractionEnabled = true
+            }
+            // 告知界面切换
+            if let delegate = self.delegate {
+                delegate.pageViewController(self.pageViewController, didScrollTo: page)
             }
         }
     }
