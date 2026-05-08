@@ -371,7 +371,7 @@ extension MNSegmentedNavigationView {
         targetItemCell?.updateBorderColor?(configuration.segment.selected.borderColor)
         targetItemCell?.updateBackgroundImage?(configuration.segment.selected.backgroundImage)
         targetItemCell?.updateCell?(selected: true, at: targetIndexPath.item)
-        // 动画结束
+        collectionView.isUserInteractionEnabled = false
         let completionHandler: (Bool)->Void = { [weak self] _ in
             guard let self = self else { return }
             self.collectionView.isUserInteractionEnabled = true
@@ -379,48 +379,9 @@ extension MNSegmentedNavigationView {
                 self.scrollToItem(at: index, to: self.configuration.navigation.scrollPosition, animated: animated)
             }
         }
-        // 开始指示图动画
-        collectionView.isUserInteractionEnabled = false
-        switch configuration.indicator.animationType {
-        case .none:
-            // 无动画
-            if let item = currentItem, let cell = currentItemCell {
-                cell.updateTitleScale?(item.titleScale)
-                cell.updateBackgroundColor?(item.backgroundColor)
-            }
-            if let item = targetItem {
-                if let cell = targetItemCell {
-                    cell.updateTitleScale?(item.titleScale)
-                    cell.updateBackgroundColor?(item.backgroundColor)
-                }
-                indicatorView.frame = item.indicatorFrame
-            }
-        case .move(let duration):
-            // 滑动
-            let animations: ()->Void = { [weak self] in
-                guard let self = self else { return }
-                if let item = currentItem, let cell = currentItemCell {
-                    cell.updateTitleScale?(item.titleScale)
-                    cell.updateBackgroundColor?(item.backgroundColor)
-                }
-                if let item = targetItem {
-                    if let cell = targetItemCell {
-                        cell.updateTitleScale?(item.titleScale)
-                        cell.updateBackgroundColor?(item.backgroundColor)
-                    }
-                    self.indicatorView.frame = item.indicatorFrame
-                }
-            }
-            if animated, duration > 0.0 {
-                UIView.animate(withDuration: duration, delay: 0.0, options: .curveEaseInOut, animations: animations, completion: completionHandler)
-            } else {
-                animations()
-                completionHandler(true)
-            }
-        case .stretch(let duration):
+        if case .stretch(let duration) = configuration.indicator.animationType {
             // 拉伸
-            let animationDuration = animated ? duration/2.0 : 0.0
-            UIView.animate(withDuration: animationDuration) { [weak self] in
+            let animation1: ()->Void = { [weak self] in
                 guard let self = self else { return }
                 guard let currentItem = currentItem else { return }
                 if let cell = currentItemCell {
@@ -449,16 +410,46 @@ extension MNSegmentedNavigationView {
                         self.indicatorView.frame.size.height = currentItem.indicatorFrame.maxY - targetItem.indicatorFrame.minY
                     }
                 }
-            } completion: { [weak self] _ in
-                UIView.animate(withDuration: animationDuration, animations: {
-                    guard let self = self else { return }
-                    guard let targetItem = targetItem else { return }
-                    if let targetItemCell = targetItemCell {
-                        targetItemCell.updateTitleScale?(targetItem.titleScale)
-                        targetItemCell.updateBackgroundColor?(targetItem.backgroundColor)
+            }
+            let animation2: ()->Void = { [weak self] in
+                guard let self = self else { return }
+                guard let targetItem = targetItem else { return }
+                self.indicatorView.frame = targetItem.indicatorFrame
+                guard let targetItemCell = targetItemCell else { return }
+                targetItemCell.updateTitleScale?(targetItem.titleScale)
+                targetItemCell.updateBackgroundColor?(targetItem.backgroundColor)
+            }
+            if duration > 0.0, animated {
+                let animationDuration = animated ? duration/2.0 : 0.0
+                UIView.animate(withDuration: animationDuration, animations: animation1) { _ in
+                    UIView.animate(withDuration: animationDuration, animations: animation2, completion: completionHandler)
+                }
+            } else {
+                animation1()
+                animation2()
+                completionHandler(true)
+            }
+        } else {
+            let animations: ()->Void = { [weak self] in
+                guard let self = self else { return }
+                if let item = currentItem, let cell = currentItemCell {
+                    cell.updateTitleScale?(item.titleScale)
+                    cell.updateBackgroundColor?(item.backgroundColor)
+                }
+                if let item = targetItem {
+                    if let cell = targetItemCell {
+                        cell.updateTitleScale?(item.titleScale)
+                        cell.updateBackgroundColor?(item.backgroundColor)
                     }
-                    self.indicatorView.frame = targetItem.indicatorFrame
-                }, completion: completionHandler)
+                    self.indicatorView.frame = item.indicatorFrame
+                }
+            }
+            if case .move(let duration) = configuration.indicator.animationType, duration > 0.0, animated {
+                // 支持动态展示
+                UIView.animate(withDuration: duration, delay: 0.0, options: .curveEaseInOut, animations: animations, completion: completionHandler)
+            } else {
+                animations()
+                completionHandler(true)
             }
         }
     }
@@ -989,6 +980,14 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
         case .none:
             // 无动画
             indicatorFrame = progress <= 0.5 ? currentItem.indicatorFrame : targetItem.indicatorFrame
+            if configuration.segment.selected.titleScale > 1.0 {
+                if let cell = collectionView.cellForItem(at: currentIndexPath) as? MNSegmentedNavigationCellConvertible {
+                    cell.updateTitleScale?(progress <= 0.5 ? configuration.segment.selected.titleScale : 1.0)
+                }
+                if let cell = collectionView.cellForItem(at: targetIndexPath) as? MNSegmentedNavigationCellConvertible {
+                    cell.updateTitleScale?(progress <= 0.5 ? 1.0 : configuration.segment.selected.titleScale)
+                }
+            }
         case .move:
             // 移动
             if configuration.navigation.orientation == .horizontal {
@@ -1001,6 +1000,16 @@ extension MNSegmentedNavigationView: MNSegmentedSubpageScrolling {
                 let height = (targetItem.indicatorFrame.height - indicatorFrame.height)*progress + indicatorFrame.height
                 indicatorFrame.origin.y = y
                 indicatorFrame.size.height = height
+            }
+            if configuration.segment.selected.titleScale > 1.0 {
+                if let cell = collectionView.cellForItem(at: currentIndexPath) as? MNSegmentedNavigationCellConvertible {
+                    let transformScale = (configuration.segment.selected.titleScale - 1.0)*(1.0 - progress) + 1.0
+                    cell.updateTitleScale?(transformScale)
+                }
+                if let cell = collectionView.cellForItem(at: targetIndexPath) as? MNSegmentedNavigationCellConvertible {
+                    let transformScale = (configuration.segment.selected.titleScale - 1.0)*progress + 1.0
+                    cell.updateTitleScale?(transformScale)
+                }
             }
         case .stretch:
             // 拉伸
