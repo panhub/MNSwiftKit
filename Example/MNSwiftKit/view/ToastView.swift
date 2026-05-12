@@ -21,7 +21,7 @@ enum ToastViewType: Int {
     
     private var type: ToastViewType = .activity
     
-    var cancellation: Bool = false
+    var cancellable: Bool = false
     
     @IBInspectable var rawValue: Int = 0 {
         didSet {
@@ -77,46 +77,46 @@ enum ToastViewType: Int {
     @objc func show() {
         switch type {
         case .activity:
-            mn.showActivityToast("加载中", cancellation: cancellation, delay: 2.5) { cancellation in
+            mn.showActivityToast("加载中", cancellable: cancellable, delay: 2.5) { isCancelled in
                 print("加载弹窗关闭")
             }
         case .gradient:
-            mn.showRotationToast("请稍后", style: .gradient, cancellation: cancellation, delay: 2.8) { cancellation in
+            mn.showRotationToast("请稍后", style: .gradient, cancellable: cancellable, delay: 2.8) { isCancelled in
                 print("弹窗消失")
             }
         case .arc:
-            mn.showRotationToast("请稍后", style: .arc, cancellation: cancellation, delay: 3.0) { cancellation in
+            mn.showRotationToast("请稍后", style: .arc, cancellable: cancellable, delay: 3.0) { isCancelled in
                 print("弹窗消失")
             }
         case .pair:
-            mn.showRotationToast("请稍后", style: .pair, cancellation: cancellation, delay: 3.3) { cancellation in
+            mn.showRotationToast("请稍后", style: .pair, cancellable: cancellable, delay: 3.3) { isCancelled in
                 print("弹窗消失")
             }
         case .info:
-            mn.showInfoToast("提示信息", cancellation: cancellation, delay: 3.5) { cancellation in
+            mn.showInfoToast("提示信息", cancellable: cancellable, delay: 3.5) { isCancelled in
                 print("提示信息消失")
             }
         case .msg:
-            mn.showMsgToast("提示信息", cancellation: cancellation, delay: 3.8) { cancellation in
+            mn.showMsgToast("提示信息", cancellable: cancellable, delay: 3.8) { isCancelled in
                 print("Msg信息弹窗消失")
             }
         case .circular, .fill:
             destroyTimer()
             progress = 0.0
-            mn.showProgressToast("正在下载", style: type == .circular ? .circular : .fill, value: 0.0, cancellation: cancellation) { [weak self] cancellation in
+            mn.showProgressToast("正在下载", style: type == .circular ? .circular : .fill, value: 0.0, cancellable: cancellable) { [weak self] isCancelled in
                 guard let self = self else { return }
-                if cancellation {
+                if isCancelled {
                     self.destroyTimer()
                 }
                 print("进度Toast消失")
             }
             fireTimer()
         case .success:
-            mn.showSuccessToast("加载成功", cancellation: cancellation, delay: 4.0) { cancellation in
+            mn.showSuccessToast("加载成功", cancellable: cancellable, delay: 4.0) { isCancelled in
                 print("成功Toast消失")
             }
         case .error:
-            mn.showErrorToast("加载失败", cancellation: cancellation, delay: 4.3) { cancellation in
+            mn.showErrorToast("加载失败", cancellable: cancellable, delay: 4.3) { isCancelled in
                 print("失败Toast消失")
             }
         }
@@ -139,9 +139,9 @@ enum ToastViewType: Int {
     @objc private func timerStrike() {
         progress += 0.05
         progress = min(1.0, progress)
-        mn.showProgressToast(nil, value: progress, delay: progress >= 1.0 ? 0.5 : nil) { [weak self] cancellation in
+        mn.showProgressToast(nil, value: progress, delay: progress >= 1.0 ? 0.5 : nil) { [weak self] isCancelled in
             guard let self = self else { return }
-            if cancellation {
+            if isCancelled {
                 self.destroyTimer()
             }
             print("进度Toast消失")

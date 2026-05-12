@@ -61,7 +61,7 @@ class ToastViewController: UIViewController {
         }
         
         views.forEach {
-            $0.cancellation = sender.isOn
+            $0.cancellable = sender.isOn
         }
         
         views.forEach {
