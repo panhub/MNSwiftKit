@@ -155,7 +155,7 @@ fileprivate extension Target {
             .emoticonKeyboard,
             .segmentedViewController
         ],
-        path: .Path.kit
+        path: .kit.path
     )
     
     static let base = target(
@@ -171,7 +171,7 @@ fileprivate extension Target {
             .transitioning,
             .collectionLayout
         ],
-        path: .Path.base,
+        path: .base.path,
         resources: [
             .process("Resources")
         ],
@@ -185,7 +185,7 @@ fileprivate extension Target {
     
     static let utility = target(
         name: .utility,
-        path: .Path.utility,
+        path: .utility.path,
         linkerSettings: [
             .linkedFramework("UIKit"),
             .linkedFramework("Photos"),
@@ -203,7 +203,7 @@ fileprivate extension Target {
     
     static let slider = target(
         name: .slider,
-        path: .Path.slider,
+        path: .slider.path,
         linkerSettings: [
             .linkedFramework("UIKit"),
             .linkedFramework("Foundation"),
@@ -217,7 +217,7 @@ fileprivate extension Target {
         dependencies: [
             .nameSpace
         ],
-        path: .Path.toast,
+        path: .toast.path,
         resources: [
             .process("Resources")
         ],
@@ -230,7 +230,7 @@ fileprivate extension Target {
     
     static let player = target(
         name: .player,
-        path: .Path.player,
+        path: .player.path,
         linkerSettings: [
             .linkedFramework("UIKit"),
             .linkedFramework("AVFAudio"),
@@ -245,7 +245,7 @@ fileprivate extension Target {
         dependencies: [
             .nameSpace
         ],
-        path: .Path.refresh,
+        path: .refresh.path,
         linkerSettings: [
             .linkedFramework("UIKit"),
             .linkedFramework("Foundation"),
@@ -258,7 +258,7 @@ fileprivate extension Target {
         dependencies: [
             .networking
         ],
-        path: .Path.request,
+        path: .request.path,
         linkerSettings: [
             .linkedLibrary("sqlite3"),
             .linkedFramework("UIKit"),
@@ -272,7 +272,7 @@ fileprivate extension Target {
     
     static let purchase = target(
         name: .purchase,
-        path: .Path.purchase,
+        path: .purchase.path,
         linkerSettings: [
             .linkedLibrary("sqlite3"),
             .linkedFramework("UIKit"),
@@ -283,7 +283,7 @@ fileprivate extension Target {
     
     static let database = target(
         name: .database,
-        path: .Path.database,
+        path: .database.path,
         linkerSettings: [
             .linkedLibrary("sqlite3"),
             .linkedFramework("Foundation"),
@@ -297,7 +297,7 @@ fileprivate extension Target {
         dependencies: [
             .nameSpace
         ],
-        path: .Path.definition,
+        path: .definition.path,
         linkerSettings: [
             .linkedFramework("UIKit"),
             .linkedFramework("Foundation"),
@@ -311,7 +311,7 @@ fileprivate extension Target {
             .nameSpace,
             .animatedImage
         ],
-        path: .Path.extension,
+        path: .extension.path,
         linkerSettings: [
             .linkedFramework("UIKit"),
             .linkedFramework("StoreKit"),
@@ -327,7 +327,7 @@ fileprivate extension Target {
         dependencies: [
             .nameSpace
         ],
-        path: .Path.emptyView,
+        path: .emptyView.path,
         linkerSettings: [
             .linkedFramework("UIKit"),
             .linkedFramework("Foundation"),
@@ -337,7 +337,7 @@ fileprivate extension Target {
     
     static let networking = target(
         name: .networking,
-        path: .Path.networking,
+        path: .networking.path,
         resources: [
             .process("Resources")
         ],
@@ -357,7 +357,7 @@ fileprivate extension Target {
         dependencies: [
             .nameSpace
         ],
-        path: .Path.editingView,
+        path: .editingView.path,
         linkerSettings: [
             .linkedFramework("UIKit"),
             .linkedFramework("Foundation"),
@@ -380,7 +380,7 @@ fileprivate extension Target {
             .assetBrowser,
             .animatedImage
         ],
-        path: .Path.assetPicker,
+        path: .assetPicker.path,
         resources: [
             .process("Resources")
         ],
@@ -398,7 +398,7 @@ fileprivate extension Target {
     
     static let nameSpace = target(
         name: .nameSpace,
-        path: .Path.nameSpace,
+        path: .nameSpace.path,
         linkerSettings: [
             .linkedFramework("UIKit"),
             .linkedFramework("Foundation"),
@@ -409,7 +409,7 @@ fileprivate extension Target {
     
     static let pageControl = target(
         name: .pageControl,
-        path: .Path.pageControl,
+        path: .pageControl.path,
         linkerSettings: [
             .linkedFramework("UIKit"),
             .linkedFramework("Foundation"),
@@ -423,7 +423,7 @@ fileprivate extension Target {
             .extension,
             .nameSpace
         ],
-        path: .Path.components,
+        path: .components.path,
         resources: [
             .process("Resources")
         ],
@@ -445,7 +445,7 @@ fileprivate extension Target {
         dependencies: [
             .nameSpace
         ],
-        path: .Path.mediaExport,
+        path: .mediaExport.path,
         linkerSettings: [
             .linkedFramework("CoreMedia"),
             .linkedFramework("Foundation"),
@@ -459,7 +459,7 @@ fileprivate extension Target {
         dependencies: [
             .nameSpace
         ],
-        path: .Path.transitioning,
+        path: .transitioning.path,
         linkerSettings: [
             .linkedFramework("UIKit"),
             .linkedFramework("Foundation"),
@@ -476,7 +476,7 @@ fileprivate extension Target {
             .extension,
             .animatedImage
         ],
-        path: .Path.assetBrowser,
+        path: .assetBrowser.path,
         resources: [
             .process("Resources")
         ],
@@ -495,7 +495,7 @@ fileprivate extension Target {
         dependencies: [
             .nameSpace
         ],
-        path: .Path.animatedImage,
+        path: .animatedImage.path,
         linkerSettings: [
             .linkedFramework("UIKit"),
             .linkedFramework("ImageIO"),
@@ -508,7 +508,7 @@ fileprivate extension Target {
     
     static let collectionLayout = target(
         name: .collectionLayout,
-        path: .Path.collectionLayout,
+        path: .collectionLayout.path,
         linkerSettings: [
             .linkedFramework("UIKit"),
             .linkedFramework("Foundation"),
@@ -525,7 +525,7 @@ fileprivate extension Target {
             .pageControl,
             .animatedImage
         ],
-        path: .Path.emoticonKeyboard,
+        path: .emoticonKeyboard.path,
         resources: [
             .process("Resources")
         ],
@@ -541,7 +541,7 @@ fileprivate extension Target {
         dependencies: [
             .nameSpace
         ],
-        path: .Path.segmentedViewController,
+        path: .segmentedViewController.path,
         linkerSettings: [
             .linkedFramework("UIKit"),
             .linkedFramework("Foundation"),
@@ -657,59 +657,9 @@ fileprivate extension String {
     
     static let segmentedViewController = "MNSegmentedViewController"
     
-    enum Path {
+    var path: String {
         
-        static let kit = "MNSwiftKit/MNSwiftKit"
-        
-        static let base = "MNSwiftKit/Base"
-        
-        static let utility = "MNSwiftKit/Utility"
-        
-        static let slider = "MNSwiftKit/Slider"
-        
-        static let toast = "MNSwiftKit/Toast"
-        
-        static let player = "MNSwiftKit/Player"
-        
-        static let refresh = "MNSwiftKit/Refresh"
-        
-        static let request = "MNSwiftKit/Request"
-        
-        static let purchase = "MNSwiftKit/Purchase"
-        
-        static let database = "MNSwiftKit/Database"
-        
-        static let definition = "MNSwiftKit/Definition"
-        
-        static let `extension` = "MNSwiftKit/Extension"
-        
-        static let emptyView = "MNSwiftKit/EmptyView"
-        
-        static let networking = "MNSwiftKit/Networking"
-        
-        static let editingView = "MNSwiftKit/EditingView"
-        
-        static let assetPicker = "MNSwiftKit/AssetPicker"
-        
-        static let nameSpace = "MNSwiftKit/NameSpace"
-        
-        static let pageControl = "MNSwiftKit/PageControl"
-        
-        static let components = "MNSwiftKit/Components"
-        
-        static let mediaExport = "MNSwiftKit/MediaExport"
-        
-        static let transitioning = "MNSwiftKit/Transitioning"
-        
-        static let assetBrowser = "MNSwiftKit/AssetBrowser"
-        
-        static let animatedImage = "MNSwiftKit/AnimatedImage"
-        
-        static let collectionLayout = "MNSwiftKit/CollectionLayout"
-        
-        static let emoticonKeyboard = "MNSwiftKit/EmoticonKeyboard"
-        
-        static let segmentedViewController = "MNSwiftKit/SegmentedViewController"
+        return .kit + "/" + (self == .kit ? self : self.replacingOccurrences(of: "MN", with: ""))
     }
 }
 

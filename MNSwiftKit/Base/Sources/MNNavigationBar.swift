@@ -132,7 +132,7 @@ public class MNNavigationBar: UIView {
     
     public override func layoutSubviews() {
         super.layoutSubviews()
-        guard mn.isFirstTime else { return }
+        guard mn.isFirstAccess else { return }
         guard let delegate = delegate else { return }
         delegate.navigationBarDidLayoutSubitems?(self)
     }

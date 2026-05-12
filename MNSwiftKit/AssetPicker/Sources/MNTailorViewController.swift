@@ -301,13 +301,13 @@ public class MNTailorViewController: UIViewController {
     
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        guard view.mn.isFirstTime else { return }
+        guard view.mn.isFirstAccess else { return }
         createSubview()
     }
     
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        guard mn.isFirstTime else { return }
+        guard mn.isFirstAccess else { return }
         playControl.layer.mn.setRadius(5.0, by: [.topLeft, .bottomLeft])
         if let _ = playView.coverView.image {
             tailorView.reloadFrames()

@@ -31,7 +31,7 @@ class ToastViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        guard mn.isFirstTime else { return }
+        guard mn.isFirstAccess else { return }
         
         var views: [ToastView] = []
         for arrangedSubview in stackView.arrangedSubviews {

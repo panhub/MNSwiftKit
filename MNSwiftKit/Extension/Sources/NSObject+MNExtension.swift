@@ -55,7 +55,7 @@ extension MNNameSpaceWrapper where Base: NSObject {
     }
     
     /// 是否首次询问
-    public var isFirstTime: Bool {
+    public var isFirstAccess: Bool {
         if let _ = objc_getAssociatedObject(base, &NSObject.MNAssociatedKey.first) { return false }
         objc_setAssociatedObject(base, &NSObject.MNAssociatedKey.first, true, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         return true
