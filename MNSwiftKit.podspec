@@ -24,7 +24,7 @@ Pod::Spec.new do |s|
   DESC
 
   s.homepage         = 'https://github.com/panhub/MNSwiftKit'
-  # s.screenshots     = ''
+  # s.screenshots     = 'https://github.com/panhub/MNSwiftKit/blob/master/screenshots/module.png?raw=true'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'panhub' => 'fengpann@163.com' }
   s.source           = { :git => 'https://github.com/panhub/MNSwiftKit.git', :tag => s.version.to_s }
