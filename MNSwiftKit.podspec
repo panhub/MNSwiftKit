@@ -7,22 +7,24 @@
 #
 
 Pod::Spec.new do |s|
+  # 名称
   s.name             = 'MNSwiftKit'
-  s.version          = '0.1.4'
-  s.summary          = 'A collection of Swift components.'
-
-# This description is used to generate tags and improve search results.
-#   * Think: What does it do? Why did you write it? What is the focus?
-#   * Try to keep it short, snappy and to the point.
-#   * Write the description between the DESC delimiters below.
-#   * Finally, don't worry about the indent, CocoaPods strips it!
-
+  # 版本号
+  s.version          = '0.1.5'
+  # 简介
+  s.summary          = 'MNSwiftKit - A collection of UI components, Swift extensions, and developer utilities'
+  # 描述
   s.description      = <<-DESC
-  A collection of Swift components, Any module can installed.
-                       DESC
+  MNSwiftKit is a collection of reusable Swift components designed to accelerate iOS development.
+  
+  It includes:
+  - Custom UI components for common use cases
+  - Useful Swift extensions for native types
+  - Handy utility methods and tools
+  DESC
 
   s.homepage         = 'https://github.com/panhub/MNSwiftKit'
-  # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
+  # s.screenshots     = ''
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'panhub' => 'fengpann@163.com' }
   s.source           = { :git => 'https://github.com/panhub/MNSwiftKit.git', :tag => s.version.to_s }

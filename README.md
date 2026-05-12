@@ -8,7 +8,12 @@
 [![Maintained](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=flat)](https://github.com/panhub/MNSwiftKit/graphs/commit-activity)
 [![License](https://img.shields.io/cocoapods/l/MNSwiftKit.svg?style=flat)](https://cocoapods.org/pods/MNSwiftKit)
 
-一个 Swift 组件集合，支持 CocoaPods 和 Swift Package Manager，可按需安装任一模块。
+MNSwiftKit 是一系列可复用的 Swift 组件集合，旨在加快 iOS 开发进程。
+- 适用于常见场景的自定义用户界面组件;
+- 用于原生类型的功能性 Swift 扩展;
+- 方便实用的方法和工具;
+
+支持 CocoaPods 方式集成和 Swift Package Manager 方式安装，根据需求可按需安装其中任一模块。
 
 - [要求](#要求)
 - [安装](#安装)
@@ -102,7 +107,7 @@ let package = Package(
         .iOS(.v12)
     ],
     dependencies: [
-        .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+        .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
     ],
     targets: [
         .target(
@@ -162,7 +167,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -650,7 +655,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -848,7 +853,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -1176,7 +1181,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -1581,7 +1586,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -2025,7 +2030,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -2253,7 +2258,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -2602,7 +2607,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -3012,7 +3017,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -3312,7 +3317,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -3761,7 +3766,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -3900,7 +3905,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -4288,7 +4293,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -4338,7 +4343,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -4473,7 +4478,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -4729,7 +4734,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -4920,7 +4925,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -5156,7 +5161,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -5437,7 +5442,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -5662,7 +5667,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -5807,7 +5812,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -6072,7 +6077,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -6300,7 +6305,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
@@ -6750,7 +6755,7 @@ SPM 安装：
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.4")
+    .package(url: "https://github.com/panhub/MNSwiftKit.git", from: "0.1.5")
 ],
 targets: [
     .target(
