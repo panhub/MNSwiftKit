@@ -49,12 +49,6 @@ class RequestViewController: UIViewController {
         playView.isTouchEnabled = false
         playView.coverView.isHidden = true
         playView.player = player.player
-        
-        let p = MNRequestDatabase()
-        if p.setCache("字符串", forKey: "test") {
-            let t = p.cache(forKey: "test")
-            print(t)
-        }
     }
 
     @IBAction func back() {

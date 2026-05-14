@@ -1,5 +1,5 @@
 //
-//  Order.swift
+//  Comment.swift
 //  MNSwiftKit_Example
 //
 //  Created by 冯盼 on 2026/3/24.
@@ -9,46 +9,46 @@
 import Foundation
 import MNSwiftKit
 
-class Order: MNTableRowInitializable {
+class Comment: MNTableRowInitializable {
     
-    var oid: Int = 0
+    var cid: Int = 0
     
     var userId: Int = 0
     
-    var amount: Double = 0
+    var orderId: Int?
     
-    var title: String = ""
+    var content: String = ""
     
     var createdAt: String = ""
     
     required init() {}
 }
 
-extension Order: MNTableColumnSupported {
+extension Comment: MNTableColumnSupported {
     
     static var supportedTableColumns: [MNSwiftKit.MNTableColumn] {
         [
-            .init(name: "oid", type: .integer, primary: true),
+            .init(name: "cid", type: .integer, primary: true),
             .init(name: "userId", type: .integer),
-            .init(name: "amount", type: .float),
-            .init(name: "title", type: .text),
+            .init(name: "orderId", type: .integer, nullable: true),
+            .init(name: "content", type: .text),
             .init(name: "createdAt", type: .text)
         ]
     }
 }
 
-extension Order: MNTableColumnAssignment {
+extension Comment: MNTableColumnAssignment {
     
     func setValue(_ value: Any?, forColumn name: String) {
         switch name {
-        case "oid":
-            oid = value as? Int ?? 0
+        case "cid":
+            cid = value as? Int ?? 0
         case "userId":
             userId = value as? Int ?? 0
-        case "amount":
-            amount = value as? Double ?? (value as? NSNumber)?.doubleValue ?? 0
-        case "title":
-            title = value as? String ?? ""
+        case "orderId":
+            orderId = value as? Int
+        case "content":
+            content = value as? String ?? ""
         case "createdAt":
             createdAt = value as? String ?? ""
         default: break

@@ -9,19 +9,101 @@
 import Foundation
 import MNSwiftKit
 
-enum Table: Int {
+enum Table: Int, CaseIterable {
     case user
     case order
     case comment
     
     var modelType: MNTableRowInitializable.Type {
-        
-        User.self
+        switch self {
+        case .user:
+            return User.self
+        case .order:
+            return Order.self
+        case .comment:
+            return Comment.self
+        }
     }
     
     var tableName: String {
-        
-        "t_user"
+        switch self {
+        case .user:
+            return "t_user"
+        case .order:
+            return "t_order"
+        case .comment:
+            return "t_comment"
+        }
+    }
+    
+    /// 追加数据页导航标题
+    var editingNavigationTitle: String {
+        switch self {
+        case .user:
+            return "用户表"
+        case .order:
+            return "订单表"
+        case .comment:
+            return "评论表"
+        }
+    }
+    
+    /// 表单与表头展示用列标题
+    func displayTitle(forColumn columnName: String) -> String {
+        switch self {
+        case .user:
+            switch columnName {
+            case "uid": return "用户标识"
+            case "age": return "年龄"
+            case "birthday": return "生日"
+            case "gender": return "性别"
+            case "username": return "用户名"
+            case "phone": return "手机号"
+            case "email": return "邮箱"
+            case "status": return "状态"
+            default: return columnName
+            }
+        case .order:
+            switch columnName {
+            case "oid": return "订单标识"
+            case "userId": return "用户标识"
+            case "amount": return "金额"
+            case "title": return "标题"
+            case "createdAt": return "创建时间"
+            default: return columnName
+            }
+        case .comment:
+            switch columnName {
+            case "cid": return "评论标识"
+            case "userId": return "用户标识"
+            case "orderId": return "订单标识"
+            case "content": return "内容"
+            case "createdAt": return "创建时间"
+            default: return columnName
+            }
+        }
+    }
+    
+    static func placeholder(forColumn columnName: String) -> String {
+        switch columnName {
+        case "uid": return "请输入标识"
+        case "age": return "选择年龄"
+        case "birthday": return "选择生日"
+        case "gender": return "选择性别"
+        case "username": return "请输入用户名"
+        case "phone": return "请输入手机号"
+        case "email": return "请输入邮箱"
+        case "status": return "选择状态"
+        case "oid": return "请输入订单标识"
+        case "userId": return "请输入用户标识"
+        case "amount": return "请输入金额"
+        case "title": return "请输入标题"
+        case "createdAt": return "选择创建时间"
+        case "cid": return "请输入评论标识"
+        case "orderId": return "请输入订单标识"
+        case "content": return "请输入内容"
+        default: return columnName
+        }
     }
 }
 

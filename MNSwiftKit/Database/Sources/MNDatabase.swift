@@ -282,6 +282,16 @@ extension MNTableColumn: Equatable {
     }
 }
 
+/// 仅用于跨 `@Sendable` 边界传递 `T.Type`，避免对 `T` 强加 `Sendable`。
+/// 元类型在运行期可视为只读标识
+private struct MNDatabaseSendableType<T>: @unchecked Sendable {
+    let value: T.Type
+    
+    init(_ value: T.Type) {
+        self.value = value
+    }
+}
+
 /// SQLite3数据库支持方案
 public class MNDatabase {
     /// 异步操作结果回调
@@ -421,9 +431,10 @@ extension MNDatabase {
     ///   - queue: 使用的队列
     ///   - completionHandler: 结束回调
     public func create<T>(table tableName: String, using type: T.Type, ordered: Foundation.ComparisonResult = .orderedAscending, on queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) where T: MNTableRowInitializable {
+        let boxed = MNDatabaseSendableType(type)
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
-            let result = self.create(table: tableName, using: type, ordered: ordered)
+            let result = self.create(table: tableName, using: boxed.value, ordered: ordered)
             completionHandler?(result)
         }
     }
@@ -475,20 +486,26 @@ extension MNDatabase {
         if ordered != .orderedSame {
             columns.sort { $0.name.localizedCompare($1.name) == ordered }
         }
-        // 处理主键
-        if let column = columns.first(where: { $0.isPrimary }), column.type == .integer, column.isNullable == false {
-            // 先删除所有主键，避免有其它主键
-            columns.removeAll { $0.isPrimary }
-            // 插入主键
+        let primarys = columns.filter({ $0.isPrimary })
+        assert(primarys.count <= 1, "创建表: 字段中有多个主键")
+        if let column = primarys.first {
+            assert(column.type == .integer, "主键必须是`integer`类型, 符合自增要求")
+            assert(column.isNullable == false, "主键不允许为空")
+            // 移动主键到首位
+            let index = columns.firstIndex(of: column)!
+            columns.remove(at: index)
             columns.insert(column, at: 0)
         } else {
-            // 先删除所有主键，避免有其它主键
-            columns.removeAll { $0.isPrimary }
             // 插入主键
             let column = MNTableColumn(name: "mn_primary_id", type: .integer, primary: true)
             columns.insert(column, at: 0)
         }
-        guard columns.count > 1 else { return false }
+        guard columns.count > 1 else {
+#if DEBUG
+            print("⚠️创建表: 只有主键⚠️")
+#endif
+            return false
+        }
         let elements: [String] = columns.compactMap { $0.sql }
         let sql: String = "CREATE TABLE IF NOT EXISTS '\(tableName)' (\(elements.joined(separator: ", ")));"
         semaphore.wait()
@@ -1003,9 +1020,10 @@ extension MNDatabase {
     ///   - queue: 使用的队列
     ///   - completionHandler: 回调
     public func update<T>(_ tableName: String, using type: T.Type, on queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) where T: MNTableRowInitializable {
+        let boxed = MNDatabaseSendableType(type)
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
-            let result = self.update(tableName, using: type)
+            let result = self.update(tableName, using: boxed.value)
             completionHandler?(result)
         }
     }
@@ -1107,9 +1125,10 @@ extension MNDatabase {
     ///   - queue: 使用队列
     ///   - completionHandler: 结果回调
     public func selectRows<T>(from tableName: String, where condition: String? = nil, regular: MNTableColumn.MatchType? = nil, ordered: MNTableColumn.ComparisonResult? = nil, limit range: NSRange? = nil, type: T.Type, on queue: DispatchQueue? = nil, completion completionHandler: ((_ rows: [T]?)->Void)?) where T: MNTableRowInitializable {
+        let boxed = MNDatabaseSendableType(type)
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
-            let result = self.selectRows(from: tableName, where: condition, regular: regular, ordered: ordered, limit: range, type: type)
+            let result = self.selectRows(from: tableName, where: condition, regular: regular, ordered: ordered, limit: range, type: boxed.value)
             completionHandler?(result)
         }
     }

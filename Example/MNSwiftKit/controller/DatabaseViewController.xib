@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -49,6 +49,20 @@
                             <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
                         </label>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4mo-0V-G81">
+                            <rect key="frame" x="341" y="58" width="32" height="30"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="30" id="aOr-uy-PUN"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal" title="添加">
+                                <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </state>
+                            <connections>
+                                <action selector="appendRow" destination="-1" eventType="touchUpInside" id="AVB-Hh-Unl"/>
+                            </connections>
+                        </button>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ljI-71-PHd">
                             <rect key="frame" x="0.0" y="94.333333333333329" width="393" height="0.6666666666666714"/>
                             <color key="backgroundColor" systemColor="separatorColor"/>
@@ -59,11 +73,13 @@
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
+                        <constraint firstAttribute="trailing" secondItem="4mo-0V-G81" secondAttribute="trailing" constant="20" id="0ep-x2-3ig"/>
                         <constraint firstAttribute="height" constant="95" id="5Nr-x0-PsD"/>
                         <constraint firstItem="8MM-rJ-1C8" firstAttribute="leading" secondItem="ZXr-Y1-rjC" secondAttribute="leading" constant="15" id="A0v-dV-zBW"/>
                         <constraint firstItem="Ney-om-KMk" firstAttribute="centerX" secondItem="ZXr-Y1-rjC" secondAttribute="centerX" id="Iyj-IP-xKC"/>
                         <constraint firstItem="ljI-71-PHd" firstAttribute="leading" secondItem="ZXr-Y1-rjC" secondAttribute="leading" id="K4x-TF-ajl"/>
                         <constraint firstAttribute="trailing" secondItem="ljI-71-PHd" secondAttribute="trailing" id="U92-L1-hoo"/>
+                        <constraint firstItem="4mo-0V-G81" firstAttribute="centerY" secondItem="8MM-rJ-1C8" secondAttribute="centerY" id="ZKI-aq-IuM"/>
                         <constraint firstItem="Ney-om-KMk" firstAttribute="centerY" secondItem="8MM-rJ-1C8" secondAttribute="centerY" id="adl-Zi-Fwf"/>
                         <constraint firstAttribute="bottom" secondItem="ljI-71-PHd" secondAttribute="bottom" id="pLF-Xj-6Me"/>
                         <constraint firstItem="8MM-rJ-1C8" firstAttribute="top" secondItem="ZXr-Y1-rjC" secondAttribute="top" constant="63" id="tfQ-Z5-cIm"/>
@@ -181,13 +197,13 @@
             </constraints>
             <nil key="simulatedTopBarMetrics"/>
             <nil key="simulatedBottomBarMetrics"/>
-            <point key="canvasLocation" x="837" y="79"/>
+            <point key="canvasLocation" x="-126" y="4"/>
         </view>
     </objects>
     <resources>
         <image name="back" width="50" height="50"/>
         <systemColor name="separatorColor">
-            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.28999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.12" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
