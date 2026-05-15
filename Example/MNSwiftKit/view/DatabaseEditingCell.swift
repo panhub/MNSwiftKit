@@ -9,6 +9,11 @@
 import UIKit
 import MNSwiftKit
 
+protocol DatabaseEditing {
+    
+    func cellShouldBeginEditing(_ cell: DatabaseEditingCell) -> Bool
+}
+
 class DatabaseEditingCell: UICollectionViewCell {
     
     @IBOutlet weak var textField: UITextField!
@@ -46,8 +51,8 @@ class DatabaseEditingCell: UICollectionViewCell {
 extension DatabaseEditingCell: UITextFieldDelegate {
     
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        
-        return true
+        guard let delegate = mn.seek(as: DatabaseEditing.self) else { return false }
+        return delegate.cellShouldBeginEditing(self)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

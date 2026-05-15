@@ -13,13 +13,13 @@ fileprivate var MNPlayTimeFormatter: DateFormatter?
 extension MNNameSpaceWrapper where Base == Date {
     
     /// 时间戳 - 秒
-    public var second: Int { Int(base.timeIntervalSince1970) }
+    public var seconds: Int { Int(base.timeIntervalSince1970) }
     
     /// 时间戳 - 毫秒
-    public var millisecond: Int { Int(base.timeIntervalSince1970*1000.0) }
+    public var milliseconds: Int { Int(base.timeIntervalSince1970*1000.0) }
     
     /// 格式化字符串 'yyyy-MM-dd HH:mm:ss'
-    public var dateString: String { string(using: "yyyy-MM-dd HH:mm:ss") }
+    public var dateString: String { string(format: "yyyy-MM-dd HH:mm:ss") }
     
     /// 播放时间格式化
     public var playTime: String {
@@ -42,7 +42,7 @@ extension MNNameSpaceWrapper where Base == Date {
     /// 日期格式化
     /// - Parameter format: 格式
     /// - Returns: 格式化后的日期字符串
-    public func string(using format: String) -> String {
+    public func string(format: String) -> String {
         let formatter = DateFormatter()
         formatter.timeZone = .current
         formatter.dateFormat = format

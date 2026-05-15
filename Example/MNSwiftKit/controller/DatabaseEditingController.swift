@@ -158,3 +158,29 @@ extension DatabaseEditingController: UICollectionViewDataSource, UICollectionVie
         cell.updateColumn(column)
     }
 }
+
+extension DatabaseEditingController: DatabaseEditing {
+    
+    func cellShouldBeginEditing(_ cell: DatabaseEditingCell) -> Bool {
+        guard let indexPath = collectionView.indexPath(for: cell), let textField = cell.textField else {
+            MNToast.showMsg("视图错误")
+            return false
+        }
+        let column = columns[indexPath.row]
+        switch column.name {
+        case "birthday":
+            DatePicker.show(in: view) { date in
+                textField.text = date.mn.string(format: "yyyy-MM-dd")
+            }
+            return false
+        case "gender":
+            //MNAlertView(title: <#T##String?#>, message: <#T##String?#>, style: <#T##MNAlertView.Style#>, cancelButtonTitle: <#T##String?#>, otherButtonTitles: <#T##String?...##String?#>)
+            return false
+        default: break
+        }
+        
+        
+        
+        return true
+    }
+}
