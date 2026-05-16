@@ -19,6 +19,8 @@ class DatabaseViewController: UIViewController {
     
     private let database = MNDatabase()
     
+    private var needsReloadTable: Bool = false
+    
     @IBOutlet weak var stackView: UIStackView!
     // 滑动视图
     @IBOutlet weak var scrollView: UIScrollView!
@@ -45,13 +47,12 @@ class DatabaseViewController: UIViewController {
         // Do any additional setup after loading the view.
         
         for table in Table.allCases {
-            
             if database.create(table: table.tableName, using: table.modelType) == false {
                 print("创建表失败")
             }
         }
         
-        seedTablesIfEmpty()
+        //seedTablesIfEmpty()
         
         navHeight.constant = MN_TOP_BAR_HEIGHT
         backTop.constant = (MN_NAV_BAR_HEIGHT - backHeight.constant)/2.0 + MN_STATUS_BAR_HEIGHT
@@ -63,7 +64,18 @@ class DatabaseViewController: UIViewController {
         collectionView.alwaysBounceHorizontal = false
         collectionView.register(UINib(nibName: "DatabaseCollectionCell", bundle: .main), forCellWithReuseIdentifier: "DatabaseCollectionCell")
         
+        view.mn.dataEmptyDelegate = self
+        view.mn.dataEmptyComponents = [.text]
+        
         updateTable()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if needsReloadTable {
+            needsReloadTable = false
+            reloadTable()
+        }
     }
     
     /// 各表示例数据（表为空时写入，避免重复进入页面无限插入）
@@ -72,7 +84,6 @@ class DatabaseViewController: UIViewController {
         if database.selectCount(from: Table.user.tableName) == 0 {
             
             let u1 = User()
-            u1.age = 14
             u1.birthday = "2010-02-02"
             u1.gender = .female
             u1.username = "用户1"
@@ -92,7 +103,6 @@ class DatabaseViewController: UIViewController {
             u3.status = .forbidden
             
             for user in [u1, u2, u3] {
-                
                 if database.insert(into: Table.user.tableName, using: user) == false {
                     print("插入数据失败")
                 }
@@ -101,24 +111,20 @@ class DatabaseViewController: UIViewController {
         
         if database.selectCount(from: Table.order.tableName) == 0 {
             
-            let users = database.selectRows(from: Table.user.tableName, type: User.self) ?? []
-            let firstUid = users.first?.uid ?? 1
-            let secondUid = users.count > 1 ? users[1].uid : firstUid
-            
             let o1 = Order()
-            o1.userId = firstUid
+            o1.uid = "010"
             o1.amount = 99.5
-            o1.title = "示例订单一"
-            o1.createdAt = "2026-01-10 10:00"
+            o1.title = "外卖订单"
+            o1.subtitle = "副标题"
+            o1.createdAt = "2026-01-10"
             
             let o2 = Order()
-            o2.userId = secondUid
+            o2.uid = "011"
             o2.amount = 256
             o2.title = "示例订单二"
-            o2.createdAt = "2026-02-15 14:30"
+            o2.createdAt = "2026-02-15"
             
             for order in [o1, o2] {
-                
                 if database.insert(into: Table.order.tableName, using: order) == false {
                     print("插入订单失败")
                 }
@@ -127,25 +133,20 @@ class DatabaseViewController: UIViewController {
         
         if database.selectCount(from: Table.comment.tableName) == 0 {
             
-            let users = database.selectRows(from: Table.user.tableName, type: User.self) ?? []
-            let orders = database.selectRows(from: Table.order.tableName, type: Order.self) ?? []
-            let uid = users.first?.uid ?? 1
-            let oid = orders.first?.oid
-            
             let c1 = Comment()
-            c1.userId = uid
-            c1.orderId = oid
-            c1.content = "订单评价：发货很快"
-            c1.createdAt = "2026-01-11 09:00"
+            c1.uid = "0111"
+            c1.favours = 13
+            c1.content = "发货很快"
+            c1.comment = "确实"
+            c1.createdAt = "2026-01-11"
             
             let c2 = Comment()
-            c2.userId = uid
-            c2.orderId = nil
-            c2.content = "全局留言：示例评论（无关联订单）"
-            c2.createdAt = "2026-03-01 16:20"
+            c2.uid = "1023"
+            c2.favours = 0
+            c2.content = "示例评论"
+            c2.createdAt = "2026-03-01"
             
             for comment in [c1, c2] {
-                
                 if database.insert(into: Table.comment.tableName, using: comment) == false {
                     print("插入评论失败")
                 }
@@ -156,7 +157,14 @@ class DatabaseViewController: UIViewController {
     /// 更新表字段
     private func updateTable() {
         
-        let columns = database.columns(in: table.tableName)
+        rows.removeAll()
+        UIView.performWithoutAnimation {
+            self.collectionView.reloadData()
+        }
+        
+        let names = database.columns(for: table.rowType).compactMap { $0.name }
+        var columns = database.columns(in: table.tableName)
+        columns.removeAll { names.contains($0.name) == false }
         self.columns.removeAll()
         self.columns.append(contentsOf: columns)
         
@@ -165,16 +173,16 @@ class DatabaseViewController: UIViewController {
             if nameLabels.count > index {
                 let nameLabel = nameLabels[index]
                 nameLabel.isHidden = false
-                nameLabel.text = table.displayTitle(forColumn: column.name)
+                nameLabel.text = column.name
             } else {
                 // 添加
                 let nameLabel = UILabel()
                 nameLabel.numberOfLines = 1
                 nameLabel.textAlignment = .center
-                nameLabel.font = .systemFont(ofSize: 14.0)
+                nameLabel.font = .systemFont(ofSize: 14.0, weight: .medium)
                 nameLabel.textColor = .darkText
                 nameLabel.backgroundColor = UIColor(mn_rgb: 238.0)
-                nameLabel.text = table.displayTitle(forColumn: column.name)
+                nameLabel.text = column.name
                 stackView.addArrangedSubview(nameLabel)
             }
         }
@@ -189,7 +197,7 @@ class DatabaseViewController: UIViewController {
     }
     
     private func reloadTable() {
-        MNToast.showActivity("正在加载表")
+        MNToast.showActivity("正在加载数据")
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self = self else { return }
             var rows: [Table.Row] = []
@@ -203,20 +211,14 @@ class DatabaseViewController: UIViewController {
                         switch column.name {
                         case "uid":
                             contents.append("\(user.uid)")
-                        case "age":
-                            if let age = user.age {
-                                contents.append("\(age)")
-                            } else {
-                                contents.append("NULL")
-                            }
                         case "birthday":
                             if let birthday = user.birthday {
-                                contents.append("\(birthday)")
+                                contents.append(birthday)
                             } else {
                                 contents.append("NULL")
                             }
                         case "gender":
-                            contents.append("\(user.gender.rawValue)")
+                            contents.append(user.gender.stringValue)
                         case "username":
                             contents.append(user.username)
                         case "phone":
@@ -233,7 +235,7 @@ class DatabaseViewController: UIViewController {
                             }
                         case "status":
                             if let status = user.status {
-                                contents.append("\(status.rawValue)")
+                                contents.append(status.stringValue)
                             } else {
                                 contents.append("NULL")
                             }
@@ -249,14 +251,18 @@ class DatabaseViewController: UIViewController {
                     var contents: [String] = []
                     for column in self.columns {
                         switch column.name {
-                        case "oid":
-                            contents.append("\(order.oid)")
-                        case "userId":
-                            contents.append("\(order.userId)")
+                        case "uid":
+                            contents.append(order.uid)
                         case "amount":
                             contents.append("\(order.amount)")
                         case "title":
                             contents.append(order.title)
+                        case "subtitle":
+                            if let subtitle = order.subtitle {
+                                contents.append(subtitle)
+                            } else {
+                                contents.append("NULL")
+                            }
                         case "createdAt":
                             contents.append(order.createdAt)
                         default: break
@@ -270,18 +276,14 @@ class DatabaseViewController: UIViewController {
                     var contents: [String] = []
                     for column in self.columns {
                         switch column.name {
-                        case "cid":
-                            contents.append("\(comment.cid)")
-                        case "userId":
-                            contents.append("\(comment.userId)")
-                        case "orderId":
-                            if let orderId = comment.orderId {
-                                contents.append("\(orderId)")
-                            } else {
-                                contents.append("NULL")
-                            }
+                        case "uid":
+                            contents.append(comment.uid)
+                        case "favours":
+                            contents.append("\(comment.favours)")
                         case "content":
                             contents.append(comment.content)
+                        case "comment":
+                            contents.append(comment.comment)
                         case "createdAt":
                             contents.append(comment.createdAt)
                         default: break
@@ -297,6 +299,7 @@ class DatabaseViewController: UIViewController {
                 UIView.performWithoutAnimation {
                     self.collectionView.reloadData()
                 }
+                self.view.mn.showEmptyViewIfNeeded()
                 MNToast.close()
             }
         }
@@ -309,9 +312,9 @@ class DatabaseViewController: UIViewController {
     
     @IBAction func appendRow() {
         
-        let controller = DatabaseEditingController(database: database, table: table, columns: columns)
-        controller.insertSucceededHandler = { [weak self] in
-            self?.reloadTable()
+        let controller = DatabaseEditingController(database: database, table: table, columns: columns) { [weak self] in
+            guard let self = self else { return }
+            self.needsReloadTable = true
         }
         navigationController?.pushViewController(controller, animated: true)
     }
@@ -344,5 +347,31 @@ extension DatabaseViewController: UICollectionViewDelegate, UICollectionViewData
         guard let cell = cell as? DatabaseCollectionCell else { return }
         let row = rows[indexPath.section]
         cell.updateRow(row)
+    }
+}
+
+extension DatabaseViewController: MNDataEmptyDelegate {
+    
+    func dataEmptyViewShouldAppear() -> Bool {
+        
+        rows.isEmpty
+    }
+    
+    func edgeInsetForDataEmptyView() -> UIEdgeInsets {
+        
+        .init(top: navHeight.constant + 92, left: 0.0, bottom: 0.0, right: 0.0)
+    }
+    
+    func attributedHintForDataEmptyView() -> NSAttributedString? {
+        
+        NSAttributedString(string: "表内无数据", attributes: [.font: UIFont.systemFont(ofSize: 15, weight: .regular), .foregroundColor: UIColor.lightGray])
+    }
+}
+
+extension DatabaseViewController: MNDataEmptyHierarchyPositioning {
+    
+    func hierarchyPositionForDataEmptyView() -> MNDataEmptyHierarchyPosition {
+        
+        .front
     }
 }

@@ -112,6 +112,24 @@ import ObjectiveC.runtime
     @objc optional func dataEmptyViewButtonTouchUpInside()
 }
 
+/// 在父视图中的层级
+public enum MNDataEmptyHierarchyPosition {
+    /// 添加到最前（最上层）
+    case front
+    /// 添加到最后（最下层）
+    case back
+    /// 插入到指定索引
+    case insex(Int)
+}
+
+/// 空数据视图在父视图中的层级代理
+public protocol MNDataEmptyHierarchyPositioning {
+    
+    /// 获取空数据视图在父视图中的层级
+    /// - Returns: 在父视图中的层级
+    func hierarchyPositionForDataEmptyView() -> MNDataEmptyHierarchyPosition
+}
+
 /// 空数据视图构成元素 component
 @objc public enum MNDataEmptyComponent: Int {
     /// 图片
@@ -298,9 +316,10 @@ extension MNDataEmptyView {
         }
         set {
             guard let superview = superview else { return }
-            autoresizingMask = []
+            let autoresizingMask = autoresizingMask
+            self.autoresizingMask = []
             frame = CGRect(origin: .zero, size: superview.frame.size).inset(by: newValue)
-            autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            self.autoresizingMask = autoresizingMask
         }
     }
     
@@ -536,13 +555,22 @@ extension MNDataEmptyView {
     public func show() {
         guard let delegate = delegate else { return }
         var displaying: Bool = false
-        if let superview = superview {
+        if let _ = superview {
             displaying = alpha == 1.0
-            superview.sendSubviewToBack(self)
         } else {
             guard let parentView = parentView else { return }
             translatesAutoresizingMaskIntoConstraints = true
             parentView.addSubview(self)
+        }
+        if let superview = superview, let positioning = delegate as? MNDataEmptyHierarchyPositioning {
+            switch positioning.hierarchyPositionForDataEmptyView() {
+            case .front:
+                superview.bringSubviewToFront(self)
+            case .back:
+                superview.sendSubviewToBack(self)
+            case .insex(let index):
+                superview.insertSubview(self, at: index)
+            }
         }
         let areAnimationsEnabled = UIView.areAnimationsEnabled
         UIView.setAnimationsEnabled(false)

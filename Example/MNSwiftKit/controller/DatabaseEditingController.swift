@@ -10,13 +10,10 @@ import UIKit
 import MNSwiftKit
 
 class DatabaseEditingController: UIViewController {
-    // 类型
     private let table: Table
     private let database: MNDatabase
     private let columns: [MNTableColumn]
-    /// 插入成功后由列表页刷新
-    var insertSucceededHandler: (() -> Void)?
-    
+    private let successHandler: () -> Void
     // 返回按钮顶部约束
     @IBOutlet weak var backTop: NSLayoutConstraint!
     // 导航高度约束
@@ -36,10 +33,11 @@ class DatabaseEditingController: UIViewController {
     // 集合视图约束
     @IBOutlet weak var collectionLayout: UICollectionViewFlowLayout!
     
-    init(database: MNDatabase, table: Table, columns: [MNTableColumn]) {
+    init(database: MNDatabase, table: Table, columns: [MNTableColumn], success: @escaping () -> Void) {
         self.table = table
         self.database = database
-        self.columns = columns
+        self.columns = columns.filter{ $0.isPrimary == false }
+        self.successHandler = success
         super.init(nibName: "DatabaseEditingController", bundle: .main)
     }
     
@@ -54,14 +52,14 @@ class DatabaseEditingController: UIViewController {
         navHeight.constant = MN_TOP_BAR_HEIGHT
         backTop.constant = (MN_NAV_BAR_HEIGHT - backHeight.constant)/2.0 + MN_STATUS_BAR_HEIGHT
         
-        titleLabel.text = table.editingNavigationTitle
+        titleLabel.text = table.navigationTitle
         
         let nameLabels = stackView.arrangedSubviews.compactMap { $0 as? UILabel }
         for (index, column) in columns.enumerated() {
             if nameLabels.count > index {
                 let nameLabel = nameLabels[index]
                 nameLabel.isHidden = false
-                nameLabel.text = table.displayTitle(forColumn: column.name)
+                nameLabel.text = column.name
             } else {
                 let nameLabel = UILabel()
                 nameLabel.numberOfLines = 1
@@ -69,7 +67,7 @@ class DatabaseEditingController: UIViewController {
                 nameLabel.font = .systemFont(ofSize: 14.0)
                 nameLabel.textColor = .darkGray
                 nameLabel.backgroundColor = UIColor(mn_rgb: 238.0)
-                nameLabel.text = table.displayTitle(forColumn: column.name)
+                nameLabel.text = column.name
                 stackView.addArrangedSubview(nameLabel)
             }
         }
@@ -83,6 +81,11 @@ class DatabaseEditingController: UIViewController {
         collectionView.register(UINib(nibName: "DatabaseEditingCell", bundle: .main), forCellWithReuseIdentifier: "DatabaseEditingCell")
     }
     
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        view.endEditing(true)
+    }
+    
     @IBAction func back() {
         
         navigationController?.popViewController(animated: true)
@@ -93,45 +96,66 @@ class DatabaseEditingController: UIViewController {
         view.endEditing(true)
         
         var fields: [String: Any] = [:]
-        for index in 0..<columns.count {
-            let indexPath = IndexPath(item: 0, section: index)
-            guard let cell = collectionView.cellForItem(at: indexPath) as? DatabaseEditingCell else { continue }
-            let column = columns[index]
-            let text = cell.textField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-            if text.isEmpty {
+        for (index, column) in columns.enumerated() {
+            let indexPath = IndexPath(item: index, section: 0)
+            guard let cell = collectionView.cellForItem(at: indexPath) as? DatabaseEditingCell, let textField = cell.textField else {
+                MNToast.showMsg("数据错误")
+                return
+            }
+            guard let text = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines), text.isEmpty == false else {
+                if column.isNullable == false {
+                    MNToast.showMsg(textField.placeholder!)
+                    return
+                }
                 continue
             }
-            switch column.type {
-            case .integer:
-                if let value = Int(text) {
-                    fields[column.name] = value
+            if column.name == "gender" {
+                guard let gender = User.Gender(rawString: text) else {
+                    MNToast.showMsg("'gender'字段无效")
+                    return
                 }
-            case .float:
-                if let value = Double(text) {
-                    fields[column.name] = value
+                fields[column.name] = gender.rawValue
+            } else if column.name == "status" {
+                guard let status = User.Status(rawString: text) else {
+                    MNToast.showMsg("'status'字段无效")
+                    return
                 }
-            case .text:
-                fields[column.name] = text
-            case .blob:
-                fields[column.name] = text.data(using: .utf8) ?? Data()
+                fields[column.name] = status.rawValue
+            } else {
+                switch column.type {
+                case .integer:
+                    guard let value = Int(text) else {
+                        MNToast.showMsg("'\(column.name)'字段无效")
+                        return
+                    }
+                    fields[column.name] = value
+                case .float:
+                    guard let value = Double(text) else {
+                        MNToast.showMsg("'\(column.name)'字段无效")
+                        return
+                    }
+                    fields[column.name] = value
+                case .text:
+                    fields[column.name] = text
+                case .blob:
+                    guard let data = text.data(using: .utf8) else {
+                        MNToast.showMsg("'\(column.name)'字段无效")
+                        return
+                    }
+                    fields[column.name] = data
+                }
             }
         }
-        
         guard fields.isEmpty == false else {
             MNToast.showMsg("请至少填写一个字段")
             return
         }
-        
-        if database.insert(into: table.tableName, using: fields) {
-            MNToast.showMsg("添加成功")
-            let handler = insertSucceededHandler
-            navigationController?.popViewController(animated: true)
-            DispatchQueue.main.async {
-                handler?()
-            }
-        } else {
-            MNToast.showMsg("添加失败")
+        guard database.insert(into: table.tableName, using: fields) else {
+            MNToast.showMsg("操作失败")
+            return
         }
+        successHandler()
+        navigationController?.popViewController(animated: true)
     }
 }
 
@@ -168,19 +192,26 @@ extension DatabaseEditingController: DatabaseEditing {
         }
         let column = columns[indexPath.row]
         switch column.name {
-        case "birthday":
+        case "birthday", "createdAt":
             DatePicker.show(in: view) { date in
                 textField.text = date.mn.string(format: "yyyy-MM-dd")
             }
             return false
         case "gender":
-            //MNAlertView(title: <#T##String?#>, message: <#T##String?#>, style: <#T##MNAlertView.Style#>, cancelButtonTitle: <#T##String?#>, otherButtonTitles: <#T##String?...##String?#>)
+            let alertView = MNAlertView(title: "选择性别", message: nil, style: .actionSheet, cancelButtonTitle: "取消", otherButtonTitles: "未知", "男", "女") { tag, action in
+                let gender = User.Gender(rawValue: tag)!
+                textField.text = gender.stringValue
+            }
+            alertView.show()
             return false
-        default: break
+        case "status":
+            let alertView = MNAlertView(title: "选择用户状态", message: nil, style: .actionSheet, cancelButtonTitle: "取消", otherButtonTitles: "禁用", "正常", "不活跃") { tag, action in
+                let status = User.Status(rawValue: tag)!
+                textField.text = status.stringValue
+            }
+            alertView.show()
+            return false
+        default: return true
         }
-        
-        
-        
-        return true
     }
 }

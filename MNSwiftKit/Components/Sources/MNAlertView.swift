@@ -148,7 +148,7 @@ public class MNAlertView: UIView {
     ///   - destructiveButtonTitle: 不可恢复样式按钮标题
     ///   - otherButtonTitles: 其它按钮标题
     ///   - events: 按钮点击事件回调
-    public convenience init(title: String?, message: String?, style: MNAlertView.Style, cancelButtonTitle: String?, destructiveButtonTitle: String? = nil, otherButtonTitles: String?..., events: ((_ tag: Int, _ action: MNAlertAction) -> Void)? = nil) {
+    public convenience init(title: String?, message: String?, style: MNAlertView.Style, cancelButtonTitle: String?, destructiveButtonTitle: String? = nil, otherButtonTitles: String?..., actions: ((_ tag: Int, _ action: MNAlertAction) -> Void)? = nil) {
         self.init(title: title, message: message, preferredStyle: style)
         var elements: [(MNAlertAction.Style, String)] = []
         for buttonTitle in otherButtonTitles {
@@ -163,7 +163,7 @@ public class MNAlertView: UIView {
         }
         for (index, element) in elements.enumerated() {
             addAction(title: element.1, style: element.0) { action in
-                events?(index, action)
+                actions?(index, action)
             }
         }
     }

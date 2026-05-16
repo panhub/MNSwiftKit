@@ -296,6 +296,8 @@ private struct MNDatabaseSendableType<T>: @unchecked Sendable {
 public class MNDatabase {
     /// 异步操作结果回调
     public typealias CompletionHandler = (_ isSuccess: Bool)->Void
+    /// 主键标识
+    public static let PrimaryKey: String = "mn_primary_id"
     /// 默认数据库名
     public static var name: String { "database" }
     /// 默认后缀
@@ -610,7 +612,7 @@ extension MNDatabase {
     /// - Returns: 是否插入成功
     @discardableResult
     public func insert<T>(into tableName: String, using model: T) -> Bool where T: MNTableRowInitializable {
-        return insert(into: tableName, using: field(for: model))
+        return insert(into: tableName, using: fields(for: model))
     }
     
     /// 异步插入数据模型
@@ -698,7 +700,7 @@ extension MNDatabase {
     /// - Returns: 是否插入成功
     @discardableResult
     public func insert<T>(into tableName: String, using models: [T]) -> Bool where T: MNTableRowInitializable {
-        insert(into: tableName, using: models.compactMap({ field(for: $0) }))
+        insert(into: tableName, using: models.compactMap({ fields(for: $0) }))
     }
     
     /// 异步插入多条数据模型
@@ -910,7 +912,7 @@ extension MNDatabase {
     /// - Returns: 是否更新成功
     @discardableResult
     public func update<T>(_ tableName: String, where condition: String? = nil, using model: T) -> Bool where T: MNTableRowInitializable {
-        return update(tableName, where: condition, using: field(for: model))
+        return update(tableName, where: condition, using: fields(for: model))
     }
     
     /// 异步更新数据
@@ -1513,7 +1515,7 @@ extension MNDatabase {
     /// 映射数据模型在数据库中的字段
     /// - Parameter model: 模型对象
     /// - Returns: [字段:值]
-    fileprivate func field<T>(for model: T) -> [String:Any] where T: MNTableRowInitializable {
+    fileprivate func fields<T>(for model: T) -> [String:Any] where T: MNTableRowInitializable {
         var result: [String:Any] = [:]
         let columns = columns(for: Swift.type(of: model))
         let mirror = Mirror(reflecting: model)

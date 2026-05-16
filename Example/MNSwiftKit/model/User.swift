@@ -16,17 +16,57 @@ class User: MNTableRowInitializable {
         case forbidden
         case normal
         case inactive
+        
+        var stringValue: String {
+            switch self {
+            case .forbidden: return "禁止"
+            case .normal: return "正常"
+            case .inactive: return "不活跃"
+            }
+        }
+        
+        init?(rawString: String) {
+            switch rawString {
+            case "禁止":
+                self = .forbidden
+            case "正常":
+                self = .normal
+            case "不活跃":
+                self = .inactive
+            default:
+                return nil
+            }
+        }
     }
     
     enum Gender: Int {
         case unknown
         case male
         case female
+        
+        var stringValue: String {
+            switch self {
+            case .unknown: return "未知"
+            case .male: return "男"
+            case .female: return "女"
+            }
+        }
+        
+        init?(rawString: String) {
+            switch rawString {
+            case "未知":
+                self = .unknown
+            case "男":
+                self = .male
+            case "女":
+                self = .female
+            default:
+                return nil
+            }
+        }
     }
     
     var uid: Int = 0
-    
-    var age: Int?
     
     var birthday: String?
     
@@ -48,7 +88,6 @@ extension User: MNTableColumnSupported {
     static var supportedTableColumns: [MNSwiftKit.MNTableColumn] {
         [
             .init(name: "uid", type: .integer, primary: true),
-            .init(name: "age", type: .integer, nullable: true),
             .init(name: "birthday", type: .text, nullable: true),
             .init(name: "gender", type: .integer),
             .init(name: "username", type: .text),
@@ -66,8 +105,6 @@ extension User: MNTableColumnAssignment {
         switch name {
         case "uid":
             uid = value as? Int ?? 0
-        case "age":
-            age = value as? Int
         case "birthday":
             birthday = value as? String
         case "gender":

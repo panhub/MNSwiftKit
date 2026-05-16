@@ -9,49 +9,19 @@
 import Foundation
 import MNSwiftKit
 
-class Comment: MNTableRowInitializable {
+class Comment: NSObject, MNTableRowInitializable {
     
-    var cid: Int = 0
+    @objc var uid: String = ""
     
-    var userId: Int = 0
+    @objc var favours: Int = 0
     
-    var orderId: Int?
+    @objc var content: String = ""
     
-    var content: String = ""
+    @objc var comment: String = ""
     
-    var createdAt: String = ""
+    @objc var createdAt: String = ""
     
-    required init() {}
-}
-
-extension Comment: MNTableColumnSupported {
-    
-    static var supportedTableColumns: [MNSwiftKit.MNTableColumn] {
-        [
-            .init(name: "cid", type: .integer, primary: true),
-            .init(name: "userId", type: .integer),
-            .init(name: "orderId", type: .integer, nullable: true),
-            .init(name: "content", type: .text),
-            .init(name: "createdAt", type: .text)
-        ]
-    }
-}
-
-extension Comment: MNTableColumnAssignment {
-    
-    func setValue(_ value: Any?, forColumn name: String) {
-        switch name {
-        case "cid":
-            cid = value as? Int ?? 0
-        case "userId":
-            userId = value as? Int ?? 0
-        case "orderId":
-            orderId = value as? Int
-        case "content":
-            content = value as? String ?? ""
-        case "createdAt":
-            createdAt = value as? String ?? ""
-        default: break
-        }
+    required override init() {
+        super.init()
     }
 }

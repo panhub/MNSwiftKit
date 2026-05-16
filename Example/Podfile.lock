@@ -1,15 +1,15 @@
 PODS:
-  - MNSwiftKit (0.1.4):
-    - MNSwiftKit/Full (= 0.1.4)
-  - MNSwiftKit/AnimatedImage (0.1.4):
+  - MNSwiftKit (0.1.5):
+    - MNSwiftKit/Full (= 0.1.5)
+  - MNSwiftKit/AnimatedImage (0.1.5):
     - MNSwiftKit/NameSpace
-  - MNSwiftKit/AssetBrowser (0.1.4):
+  - MNSwiftKit/AssetBrowser (0.1.5):
     - MNSwiftKit/AnimatedImage
     - MNSwiftKit/Definition
     - MNSwiftKit/Extension
     - MNSwiftKit/Player
     - MNSwiftKit/Slider
-  - MNSwiftKit/AssetPicker (0.1.4):
+  - MNSwiftKit/AssetPicker (0.1.5):
     - MNSwiftKit/AnimatedImage
     - MNSwiftKit/AssetBrowser
     - MNSwiftKit/Definition
@@ -21,7 +21,7 @@ PODS:
     - MNSwiftKit/Refresh
     - MNSwiftKit/Slider
     - MNSwiftKit/Toast
-  - MNSwiftKit/Base (0.1.4):
+  - MNSwiftKit/Base (0.1.5):
     - MNSwiftKit/CollectionLayout
     - MNSwiftKit/Definition
     - MNSwiftKit/EmptyView
@@ -31,27 +31,27 @@ PODS:
     - MNSwiftKit/Request
     - MNSwiftKit/Toast
     - MNSwiftKit/Transitioning
-  - MNSwiftKit/CollectionLayout (0.1.4)
-  - MNSwiftKit/Components (0.1.4):
+  - MNSwiftKit/CollectionLayout (0.1.5)
+  - MNSwiftKit/Components (0.1.5):
     - MNSwiftKit/Extension
     - MNSwiftKit/NameSpace
-  - MNSwiftKit/Database (0.1.4)
-  - MNSwiftKit/Definition (0.1.4):
+  - MNSwiftKit/Database (0.1.5)
+  - MNSwiftKit/Definition (0.1.5):
     - MNSwiftKit/NameSpace
-  - MNSwiftKit/EditingView (0.1.4):
+  - MNSwiftKit/EditingView (0.1.5):
     - MNSwiftKit/NameSpace
-  - MNSwiftKit/EmoticonKeyboard (0.1.4):
+  - MNSwiftKit/EmoticonKeyboard (0.1.5):
     - MNSwiftKit/AnimatedImage
     - MNSwiftKit/Definition
     - MNSwiftKit/Extension
     - MNSwiftKit/NameSpace
     - MNSwiftKit/PageControl
-  - MNSwiftKit/EmptyView (0.1.4):
+  - MNSwiftKit/EmptyView (0.1.5):
     - MNSwiftKit/NameSpace
-  - MNSwiftKit/Extension (0.1.4):
+  - MNSwiftKit/Extension (0.1.5):
     - MNSwiftKit/AnimatedImage
     - MNSwiftKit/NameSpace
-  - MNSwiftKit/Full (0.1.4):
+  - MNSwiftKit/Full (0.1.5):
     - MNSwiftKit/AnimatedImage
     - MNSwiftKit/AssetBrowser
     - MNSwiftKit/AssetPicker
@@ -77,25 +77,25 @@ PODS:
     - MNSwiftKit/Toast
     - MNSwiftKit/Transitioning
     - MNSwiftKit/Utility
-  - MNSwiftKit/MediaExport (0.1.4):
+  - MNSwiftKit/MediaExport (0.1.5):
     - MNSwiftKit/NameSpace
-  - MNSwiftKit/NameSpace (0.1.4)
-  - MNSwiftKit/Networking (0.1.4)
-  - MNSwiftKit/PageControl (0.1.4)
-  - MNSwiftKit/Player (0.1.4)
-  - MNSwiftKit/Purchase (0.1.4)
-  - MNSwiftKit/Refresh (0.1.4):
+  - MNSwiftKit/NameSpace (0.1.5)
+  - MNSwiftKit/Networking (0.1.5)
+  - MNSwiftKit/PageControl (0.1.5)
+  - MNSwiftKit/Player (0.1.5)
+  - MNSwiftKit/Purchase (0.1.5)
+  - MNSwiftKit/Refresh (0.1.5):
     - MNSwiftKit/NameSpace
-  - MNSwiftKit/Request (0.1.4):
+  - MNSwiftKit/Request (0.1.5):
     - MNSwiftKit/Networking
-  - MNSwiftKit/SegmentedViewController (0.1.4):
+  - MNSwiftKit/SegmentedViewController (0.1.5):
     - MNSwiftKit/NameSpace
-  - MNSwiftKit/Slider (0.1.4)
-  - MNSwiftKit/Toast (0.1.4):
+  - MNSwiftKit/Slider (0.1.5)
+  - MNSwiftKit/Toast (0.1.5):
     - MNSwiftKit/NameSpace
-  - MNSwiftKit/Transitioning (0.1.4):
+  - MNSwiftKit/Transitioning (0.1.5):
     - MNSwiftKit/NameSpace
-  - MNSwiftKit/Utility (0.1.4)
+  - MNSwiftKit/Utility (0.1.5)
 
 DEPENDENCIES:
   - MNSwiftKit (from `../`)
@@ -105,7 +105,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MNSwiftKit: f00471870889532fde30b5810f15abdb3362484d
+  MNSwiftKit: b9cc03f25f51e12b59010c17de9c117de3c613e6
 
 PODFILE CHECKSUM: b5b3f07c62b9037f61d7b7620397651c6f3e24ef
 

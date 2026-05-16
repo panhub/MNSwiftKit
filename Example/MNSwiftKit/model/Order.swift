@@ -11,44 +11,31 @@ import MNSwiftKit
 
 class Order: MNTableRowInitializable {
     
-    var oid: Int = 0
-    
-    var userId: Int = 0
+    var uid: String = ""
     
     var amount: Double = 0
     
     var title: String = ""
+    
+    var subtitle: String?
     
     var createdAt: String = ""
     
     required init() {}
 }
 
-extension Order: MNTableColumnSupported {
-    
-    static var supportedTableColumns: [MNSwiftKit.MNTableColumn] {
-        [
-            .init(name: "oid", type: .integer, primary: true),
-            .init(name: "userId", type: .integer),
-            .init(name: "amount", type: .float),
-            .init(name: "title", type: .text),
-            .init(name: "createdAt", type: .text)
-        ]
-    }
-}
-
 extension Order: MNTableColumnAssignment {
     
     func setValue(_ value: Any?, forColumn name: String) {
         switch name {
-        case "oid":
-            oid = value as? Int ?? 0
-        case "userId":
-            userId = value as? Int ?? 0
+        case "uid":
+            uid = value as? String ?? ""
         case "amount":
-            amount = value as? Double ?? (value as? NSNumber)?.doubleValue ?? 0
+            amount = value as? Double ?? (value as? NSNumber)?.doubleValue ?? 0.0
         case "title":
             title = value as? String ?? ""
+        case "subtitle":
+            subtitle = value as? String ?? ""
         case "createdAt":
             createdAt = value as? String ?? ""
         default: break
