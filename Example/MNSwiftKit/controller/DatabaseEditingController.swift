@@ -12,7 +12,7 @@ import MNSwiftKit
 class DatabaseEditingController: UIViewController {
     
     enum Action {
-        case add, editing(row: Table.Row, key: String, value: Int)
+        case add, editing(row: Table.Row)
     }
     
     private let table: Table
@@ -91,14 +91,13 @@ class DatabaseEditingController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         guard mn.isFirstAccess else { return }
-        guard case .editing(row: let row, key: _, value: _) = action else { return }
-        var contents = row.contents
-        contents.removeFirst()
-        for (index, content) in contents.enumerated() {
-            if content == "NULL" || content == "--" { continue }
+        guard case .editing(row: let row) = action else { return }
+        for (index, column) in columns.enumerated() {
+            guard let field = row.fields.first(where: { $0.name == column.name }) else { continue }
+            guard let _ = field.value else { continue }
             let indexPath = IndexPath(item: index, section: 0)
             guard let cell = collectionView.cellForItem(at: indexPath) as? DatabaseEditingCell else { continue }
-            cell.textField.text = content
+            cell.textField.text = field.displayEditingString
         }
     }
     
@@ -132,13 +131,13 @@ class DatabaseEditingController: UIViewController {
             }
             if column.name == "gender" {
                 guard let gender = User.Gender(rawString: text) else {
-                    MNToast.showMsg("'gender'字段无效")
+                    MNToast.showMsg("'\(column.name)'字段无效")
                     return
                 }
                 fields[column.name] = gender.rawValue
             } else if column.name == "status" {
                 guard let status = User.Status(rawString: text) else {
-                    MNToast.showMsg("'status'字段无效")
+                    MNToast.showMsg("'\(column.name)'字段无效")
                     return
                 }
                 fields[column.name] = status.rawValue
@@ -177,8 +176,16 @@ class DatabaseEditingController: UIViewController {
                 MNToast.showMsg("操作失败")
                 return
             }
-        case .editing(row: _, key: let key, value: let value):
-            guard database.update(table.tableName, where: "\(key)=\(value)", using: fields) else {
+        case .editing(row: let row):
+            guard let field = row.fields.first(where: { $0.isPrimary }) else {
+                MNToast.showMsg("获取主键失败")
+                return
+            }
+            guard let value = field.value else {
+                MNToast.showMsg("主键标识不合法")
+                return
+            }
+            guard database.update(table.tableName, where: "\(field.name)=\(value)", using: fields) else {
                 MNToast.showMsg("操作失败")
                 return
             }
@@ -228,15 +235,21 @@ extension DatabaseEditingController: DatabaseEditing {
             return false
         case "gender":
             let alertView = MNAlertView(title: "选择性别", message: nil, style: .actionSheet, cancelButtonTitle: "取消", otherButtonTitles: "未知", "男", "女") { tag, action in
-                let gender = User.Gender(rawValue: tag)!
+                guard let gender = User.Gender(rawValue: tag) else { return }
                 textField.text = gender.stringValue
             }
             alertView.show()
             return false
         case "status":
-            let alertView = MNAlertView(title: "选择用户状态", message: nil, style: .actionSheet, cancelButtonTitle: "取消", otherButtonTitles: "禁用", "正常", "不活跃") { tag, action in
-                let status = User.Status(rawValue: tag)!
-                textField.text = status.stringValue
+            let alertView = MNAlertView(title: "选择用户状态", message: nil, style: .actionSheet, cancelButtonTitle: "取消", destructiveButtonTitle: "清除", otherButtonTitles: "禁用", "正常", "不活跃") { tag, action in
+                switch action.style {
+                case .default:
+                    guard let status = User.Status(rawValue: tag) else { break }
+                    textField.text = status.stringValue
+                case .destructive:
+                    textField.text = nil
+                default: break
+                }
             }
             alertView.show()
             return false

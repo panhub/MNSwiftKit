@@ -52,7 +52,7 @@ class DatabaseViewController: UIViewController {
             }
         }
         
-        seedTablesIfEmpty()
+        //seedTablesIfEmpty()
         
         navHeight.constant = MN_TOP_BAR_HEIGHT
         backTop.constant = (MN_NAV_BAR_HEIGHT - backHeight.constant)/2.0 + MN_STATUS_BAR_HEIGHT
@@ -60,7 +60,9 @@ class DatabaseViewController: UIViewController {
         scrollView.bounces = false
         scrollView.alwaysBounceHorizontal = false
         
-        collectionView.bounces = false
+        collectionView.bounces = true
+        collectionView.alwaysBounceVertical = true
+        collectionView.alwaysBounceHorizontal = false
         collectionView.register(UINib(nibName: "DatabaseCollectionCell", bundle: .main), forCellWithReuseIdentifier: "DatabaseCollectionCell")
         
         view.mn.dataEmptyDelegate = self
@@ -177,7 +179,7 @@ class DatabaseViewController: UIViewController {
                 nameLabel.numberOfLines = 1
                 nameLabel.textAlignment = .center
                 nameLabel.font = .systemFont(ofSize: 14.0, weight: .medium)
-                nameLabel.textColor = .darkText
+                nameLabel.textColor = .darkGray
                 nameLabel.backgroundColor = UIColor(mn_rgb: 238.0)
                 nameLabel.text = column.name
                 stackView.addArrangedSubview(nameLabel)
@@ -200,125 +202,18 @@ class DatabaseViewController: UIViewController {
             var rows: [Table.Row] = []
             if let dics = self.database.selectRows(self.table.tableName) {
                 for dic in dics {
-                    var contents: [String] = []
+                    var fields: [Table.Row.Field] = []
                     for column in self.columns {
                         if let value = dic[column.name], let value = value {
-                            if column.name == "gender" {
-                                if let rawValue = value as? Int, let gender = User.Gender(rawValue: rawValue) {
-                                    contents.append(gender.stringValue)
-                                } else {
-                                    contents.append("--")
-                                }
-                            } else if column.name == "status" {
-                                if let rawValue = value as? Int, let status = User.Status(rawValue: rawValue) {
-                                    contents.append(status.stringValue)
-                                } else {
-                                    contents.append("--")
-                                }
-                            } else {
-                                contents.append("\(value)")
-                            }
+                            fields.append(.init(name: column.name, value: value, isPrimary: column.isPrimary))
                         } else {
-                            contents.append("NULL")
+                            fields.append(.init(name: column.name, value: nil, isPrimary: column.isPrimary))
                         }
                     }
-                    let row = Table.Row(contents: contents)
+                    let row = Table.Row(fields: fields)
                     rows.append(row)
                 }
             }
-            /*
-            switch self.table {
-            case .user:
-                //
-                guard let users = self.database.selectRows(from: self.table.tableName, type: User.self) else { break }
-                for user in users {
-                    var contents: [String] = []
-                    for column in self.columns {
-                        switch column.name {
-                        case "uid":
-                            contents.append("\(user.uid)")
-                        case "birthday":
-                            if let birthday = user.birthday {
-                                contents.append(birthday)
-                            } else {
-                                contents.append("NULL")
-                            }
-                        case "gender":
-                            contents.append(user.gender.stringValue)
-                        case "username":
-                            contents.append(user.username)
-                        case "phone":
-                            if let phone = user.phone {
-                                contents.append(phone)
-                            } else {
-                                contents.append("NULL")
-                            }
-                        case "email":
-                            if let email = user.email {
-                                contents.append(email)
-                            } else {
-                                contents.append("NULL")
-                            }
-                        case "status":
-                            if let status = user.status {
-                                contents.append(status.stringValue)
-                            } else {
-                                contents.append("NULL")
-                            }
-                        default: break
-                        }
-                    }
-                    let row = Table.Row(contents: contents)
-                    rows.append(row)
-                }
-            case .order:
-                guard let orders = self.database.selectRows(from: self.table.tableName, type: Order.self) else { break }
-                for order in orders {
-                    var contents: [String] = []
-                    for column in self.columns {
-                        switch column.name {
-                        case "uid":
-                            contents.append(order.uid)
-                        case "amount":
-                            contents.append("\(order.amount)")
-                        case "title":
-                            contents.append(order.title)
-                        case "subtitle":
-                            if let subtitle = order.subtitle {
-                                contents.append(subtitle)
-                            } else {
-                                contents.append("NULL")
-                            }
-                        case "createdAt":
-                            contents.append(order.createdAt)
-                        default: break
-                        }
-                    }
-                    rows.append(Table.Row(contents: contents))
-                }
-            case .comment:
-                guard let comments = self.database.selectRows(from: self.table.tableName, type: Comment.self) else { break }
-                for comment in comments {
-                    var contents: [String] = []
-                    for column in self.columns {
-                        switch column.name {
-                        case "uid":
-                            contents.append(comment.uid)
-                        case "favours":
-                            contents.append("\(comment.favours)")
-                        case "content":
-                            contents.append(comment.content)
-                        case "comment":
-                            contents.append(comment.comment)
-                        case "createdAt":
-                            contents.append(comment.createdAt)
-                        default: break
-                        }
-                    }
-                    rows.append(Table.Row(contents: contents))
-                }
-            }
-            */
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 self.rows.removeAll()
@@ -409,20 +304,8 @@ extension DatabaseViewController: UICollectionViewEditingDelegate {
     func collectionView(_ collectionView: UICollectionView, commitEditing action: UIView, forItemAt indexPath: IndexPath, direction: MNSwiftKit.MNEditingView.Direction) -> UIView? {
         // 如果无需确认视图，在这里处理事件即可，返回nil
         if action.tag == 0 {
-            if let cell = collectionView.cellForItem(at: indexPath) {
-                cell.mn.endEditing(animated: true)
-            }
-            guard let column = columns.first(where: { $0.isPrimary }) else {
-                MNToast.showMsg("获取主键失败")
-                return nil
-            }
-            let row = rows[indexPath.item]
-            guard let first = row.contents.first else {
-                MNToast.showMsg("获取行失败")
-                return nil
-            }
-            let value = first.mn.intValue
-            let controller = DatabaseEditingController(database: database, table: table, columns: columns, action: .editing(row: row, key: column.name, value: value)) { [weak self] in
+            let row = rows[indexPath.section]
+            let controller = DatabaseEditingController(database: database, table: table, columns: columns, action: .editing(row: row)) { [weak self] in
                 guard let self = self else { return }
                 self.needsReloadTable = true
             }
@@ -430,7 +313,7 @@ extension DatabaseViewController: UICollectionViewEditingDelegate {
             return nil
         }
         let button = UIButton(type: .custom)
-        button.tag = indexPath.item
+        button.tag = indexPath.section
         button.frame = .init(origin: .zero, size: .init(width: 180.0, height: 50.0))
         button.setTitle("确认删除", for: .normal)
         button.backgroundColor = .systemRed
@@ -440,26 +323,25 @@ extension DatabaseViewController: UICollectionViewEditingDelegate {
     }
     
     @objc private func deleteRow(_ sender: UIButton) {
-        let indexPath = IndexPath(item: sender.tag, section: 0)
-        guard let column = columns.first(where: { $0.isPrimary }) else {
+        let index = sender.tag
+        let row = rows[index]
+        guard let field = row.fields.first(where: { $0.isPrimary }) else {
             MNToast.showMsg("获取主键失败")
             return
         }
-        let row = rows[indexPath.item]
-        guard let first = row.contents.first else {
-            MNToast.showMsg("获取行失败")
+        guard let value = field.value else {
+            MNToast.showMsg("主键标识不合法")
             return
         }
-        let value = first.mn.intValue
         MNToast.showActivity("请稍后")
-        database.delete(from: table.tableName, where: "\(column.name)=\(value)", on: .main) { [weak self] isSuccess in
+        database.delete(from: table.tableName, where: "\(field.name)=\(value)", on: .main) { [weak self] isSuccess in
             guard isSuccess else {
                 MNToast.showMsg("操作失败")
                 return
             }
             MNToast.close()
             guard let self = self else { return }
-            self.rows.remove(at: indexPath.item)
+            self.rows.remove(at: index)
             self.collectionView.reloadData()
             self.view.mn.showEmptyViewIfNeeded()
         }

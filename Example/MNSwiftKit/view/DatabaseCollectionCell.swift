@@ -32,20 +32,20 @@ class DatabaseCollectionCell: UICollectionViewCell {
     
     func updateRow(_ row: Table.Row) {
         let subviews = stackView.arrangedSubviews.compactMap { $0 as? DatabaseCollectionItem }
-        for (index, content) in row.contents.enumerated() {
+        for (index, field) in row.fields.enumerated() {
             if subviews.count > index {
                 let subview = subviews[index]
                 subview.isHidden = false
-                subview.textLabel.text = content
+                subview.textLabel.text = field.displayString
             } else {
                 // 添加
                 let subview = DatabaseCollectionItem.mn.loadFromNib()!
-                subview.textLabel.text = content
+                subview.textLabel.text = field.displayString
                 stackView.addArrangedSubview(subview)
             }
         }
-        if subviews.count > row.contents.count {
-            let subviews = subviews.suffix(from: row.contents.count)
+        if subviews.count > row.fields.count {
+            let subviews = subviews.suffix(from: row.fields.count)
             subviews.forEach { $0.isHidden = true }
         }
     }

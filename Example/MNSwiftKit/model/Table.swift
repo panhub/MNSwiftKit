@@ -56,41 +56,6 @@ enum Table: Int, CaseIterable {
         }
     }
     
-//    /// 表单与表头展示用列标题
-//    func displayTitle(forColumn columnName: String) -> String {
-//        switch self {
-//        case .user:
-//            switch columnName {
-//            case "uid": return "用户标识"
-//            case "birthday": return "生日"
-//            case "gender": return "性别"
-//            case "username": return "用户名"
-//            case "phone": return "手机号"
-//            case "email": return "邮箱"
-//            case "status": return "状态"
-//            default: return columnName
-//            }
-//        case .order:
-//            switch columnName {
-//            case MNDatabase.PrimaryKey: return "用户标识"
-//            case "uid": return "用户标识"
-//            case "amount": return "金额"
-//            case "title": return "标题"
-//            case "createdAt": return "创建时间"
-//            default: return columnName
-//            }
-//        case .comment:
-//            switch columnName {
-//            case "cid": return "评论标识"
-//            case "userId": return "用户标识"
-//            case "orderId": return "订单标识"
-//            case "content": return "内容"
-//            case "createdAt": return "创建时间"
-//            default: return columnName
-//            }
-//        }
-//    }
-    
     static func placeholder(forColumn columnName: String) -> String {
         switch columnName {
         case "uid": return "请输入用户标识"
@@ -116,11 +81,51 @@ extension Table {
     
     class Row {
         
-        let contents: [String]
+        let fields: [Table.Row.Field]
         
-        init(contents: [String]) {
-            self.contents = contents
+        init(fields: [Table.Row.Field]) {
+            self.fields = fields
         }
     }
 }
 
+extension Table.Row {
+    
+    class Field {
+        
+        let name: String
+        
+        let value: Any?
+        
+        let isPrimary: Bool
+        
+        var displayString: String {
+            guard let value = value else { return "NULL" }
+            return "\(value)"
+        }
+        
+        var displayEditingString: String {
+            guard let value = value else { return "NULL" }
+            if name == "gender" {
+                if let rawValue = value as? Int, let gender = User.Gender(rawValue: rawValue) {
+                    return gender.stringValue
+                } else {
+                    return "--"
+                }
+            } else if name == "status" {
+                if let rawValue = value as? Int, let status = User.Status(rawValue: rawValue) {
+                    return status.stringValue
+                } else {
+                    return "--"
+                }
+            }
+            return "\(value)"
+        }
+        
+        init(name: String, value: Any?, isPrimary: Bool) {
+            self.name = name
+            self.value = value
+            self.isPrimary = isPrimary
+        }
+    }
+}
