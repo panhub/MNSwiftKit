@@ -1086,6 +1086,7 @@ extension MNDatabase {
     /// - Parameters:
     ///   - tableName: 表名
     ///   - condition: 条件
+    ///   - regular: 匹配规则
     ///   - ordered: 排序方式
     ///   - range: 数量限制
     ///   - type: 数据模型的类型
@@ -1106,7 +1107,8 @@ extension MNDatabase {
             if model is NSObject {
                 let obj = model as! NSObject
                 for (field, value) in row {
-                    let selector = NSSelectorFromString(field)
+                    //let selector = NSSelectorFromString(field)
+                    let selector = NSSelectorFromString("set\(field.prefix(1).uppercased())\(field.dropFirst()):")
                     if obj.responds(to: selector) {
                         obj.setValue(value, forKey: field)
                     }
@@ -1121,10 +1123,11 @@ extension MNDatabase {
     /// - Parameters:
     ///   - tableName: 表名
     ///   - condition: 条件
+    ///   - regular: 匹配规则
     ///   - ordered: 排序方式
     ///   - range: 数量限制
     ///   - type: 数据模型的类型
-    ///   - queue: 使用队列
+    ///   - queue: 调用队列
     ///   - completionHandler: 结果回调
     public func selectRows<T>(from tableName: String, where condition: String? = nil, regular: MNTableColumn.MatchType? = nil, ordered: MNTableColumn.ComparisonResult? = nil, limit range: NSRange? = nil, type: T.Type, on queue: DispatchQueue? = nil, completion completionHandler: ((_ rows: [T]?)->Void)?) where T: MNTableRowInitializable {
         let boxed = MNDatabaseSendableType(type)
@@ -1139,10 +1142,11 @@ extension MNDatabase {
     /// - Parameters:
     ///   - tableName: 表名
     ///   - condition: 条件
+    ///   - regular: 匹配规则
     ///   - ordered: 排序方式
     ///   - range: 数量限制
     /// - Returns: 数据集合
-    private func selectRows(_ tableName: String, where condition: String? = nil, regular: MNTableColumn.MatchType? = nil, ordered: MNTableColumn.ComparisonResult? = nil, limit range: NSRange? = nil) -> [[String:Any?]]? {
+    public func selectRows(_ tableName: String, where condition: String? = nil, regular: MNTableColumn.MatchType? = nil, ordered: MNTableColumn.ComparisonResult? = nil, limit range: NSRange? = nil) -> [[String:Any?]]? {
         guard exists(table: tableName) else { return nil }
         /*
         let columns = columns(from: tableName)
@@ -1240,6 +1244,23 @@ extension MNDatabase {
         } while true
         sqlite3_finalize(statement)
         return rows
+    }
+    
+    /// 异步查询符合条件的数据模型
+    /// - Parameters:
+    ///   - tableName: 表名
+    ///   - condition: 条件
+    ///   - regular: 匹配规则
+    ///   - ordered: 排序方式
+    ///   - range: 数量限制
+    ///   - queue: 使用队列
+    ///   - completionHandler: 结果回调
+    public func selectRows(_ tableName: String, where condition: String? = nil, regular: MNTableColumn.MatchType? = nil, ordered: MNTableColumn.ComparisonResult? = nil, limit range: NSRange? = nil, on queue: DispatchQueue? = nil, completion completionHandler: ((_ rows: [[String:Any?]]?)->Void)?) {
+        (queue ?? self.queue).async { [weak self] in
+            guard let self = self else { return }
+            let result = self.selectRows(tableName, where: condition, regular: regular, ordered: ordered, limit: range)
+            completionHandler?(result)
+        }
     }
 }
 

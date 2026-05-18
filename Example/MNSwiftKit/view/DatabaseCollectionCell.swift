@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MNSwiftKit
 
 class DatabaseCollectionCell: UICollectionViewCell {
     
@@ -15,6 +16,18 @@ class DatabaseCollectionCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        mn.layoutContentView()
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        mn.reuseContentView()
     }
     
     func updateRow(_ row: Table.Row) {

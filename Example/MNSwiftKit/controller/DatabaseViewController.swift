@@ -52,16 +52,15 @@ class DatabaseViewController: UIViewController {
             }
         }
         
-        //seedTablesIfEmpty()
+        seedTablesIfEmpty()
         
         navHeight.constant = MN_TOP_BAR_HEIGHT
         backTop.constant = (MN_NAV_BAR_HEIGHT - backHeight.constant)/2.0 + MN_STATUS_BAR_HEIGHT
         
-        scrollView.alwaysBounceVertical = false
+        scrollView.bounces = false
         scrollView.alwaysBounceHorizontal = false
         
-        collectionView.alwaysBounceVertical = false
-        collectionView.alwaysBounceHorizontal = false
+        collectionView.bounces = false
         collectionView.register(UINib(nibName: "DatabaseCollectionCell", bundle: .main), forCellWithReuseIdentifier: "DatabaseCollectionCell")
         
         view.mn.dataEmptyDelegate = self
@@ -162,9 +161,9 @@ class DatabaseViewController: UIViewController {
             self.collectionView.reloadData()
         }
         
-        let names = database.columns(for: table.rowType).compactMap { $0.name }
-        var columns = database.columns(in: table.tableName)
-        columns.removeAll { names.contains($0.name) == false }
+        //let names = database.columns(for: table.rowType).compactMap { $0.name }
+        let columns = database.columns(in: table.tableName)
+        //columns.removeAll { names.contains($0.name) == false }
         self.columns.removeAll()
         self.columns.append(contentsOf: columns)
         
@@ -201,6 +200,35 @@ class DatabaseViewController: UIViewController {
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self = self else { return }
             var rows: [Table.Row] = []
+            if let dics = self.database.selectRows(self.table.tableName) {
+                for dic in dics {
+                    var contents: [String] = []
+                    for column in self.columns {
+                        if let value = dic[column.name], let value = value {
+                            if column.name == "gender" {
+                                if let rawValue = value as? Int, let gender = User.Gender(rawValue: rawValue) {
+                                    contents.append(gender.stringValue)
+                                } else {
+                                    contents.append("--")
+                                }
+                            } else if column.name == "status" {
+                                if let rawValue = value as? Int, let status = User.Status(rawValue: rawValue) {
+                                    contents.append(status.stringValue)
+                                } else {
+                                    contents.append("--")
+                                }
+                            } else {
+                                contents.append("\(value)")
+                            }
+                        } else {
+                            contents.append("NULL")
+                        }
+                    }
+                    let row = Table.Row(contents: contents)
+                    rows.append(row)
+                }
+            }
+            /*
             switch self.table {
             case .user:
                 //
@@ -292,6 +320,7 @@ class DatabaseViewController: UIViewController {
                     rows.append(Table.Row(contents: contents))
                 }
             }
+            */
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
                 guard let self = self else { return }
                 self.rows.removeAll()
@@ -340,7 +369,9 @@ extension DatabaseViewController: UICollectionViewDelegate, UICollectionViewData
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        collectionView.dequeueReusableCell(withReuseIdentifier: "DatabaseCollectionCell", for: indexPath)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "DatabaseCollectionCell", for: indexPath)
+        cell.mn.allowsEditing = true
+        return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -350,11 +381,64 @@ extension DatabaseViewController: UICollectionViewDelegate, UICollectionViewData
     }
 }
 
+extension DatabaseViewController: UICollectionViewEditingDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, editingDirectionsForItemAt indexPath: IndexPath) -> MNSwiftKit.MNEditingView.Direction {
+        
+        .left
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, editingActionsForItemAt indexPath: IndexPath, direction: MNSwiftKit.MNEditingView.Direction) -> [UIView] {
+        
+        let label1 = UILabel(frame: .init(origin: .zero, size: .init(width: 80.0, height: 50.0)))
+        label1.textColor = .white
+        label1.text = "编辑"
+        label1.textAlignment = .center
+        label1.font = .systemFont(ofSize: 15.0, weight: .regular)
+        label1.backgroundColor = .systemYellow
+        
+        let label2 = UILabel(frame: .init(origin: .zero, size: .init(width: 80.0, height: 50.0)))
+        label2.tag = 1
+        label2.textColor = .white
+        label2.text = "删除"
+        label2.textAlignment = .center
+        label2.font = .systemFont(ofSize: 15.0, weight: .regular)
+        label2.backgroundColor = .systemRed
+        
+        return [label1, label2]
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, commitEditing action: UIView, forItemAt indexPath: IndexPath, direction: MNSwiftKit.MNEditingView.Direction) -> UIView? {
+        // 如果无需确认视图，在这里处理事件即可，返回nil
+        if action.tag == 0 {
+            
+            return nil
+        }
+        let button = UIButton(type: .custom)
+        button.tag = indexPath.item
+        button.frame = .init(origin: .zero, size: .init(width: 180.0, height: 50.0))
+        button.setTitle("确认删除", for: .normal)
+        button.backgroundColor = .systemRed
+        button.titleLabel?.font = .systemFont(ofSize: 15.0, weight: .regular)
+        button.addTarget(self, action: #selector(deleteRow(_:)), for: .touchUpInside)
+        return button
+    }
+    
+    @objc private func deleteRow(_ sender: UIButton) {
+        
+    }
+}
+
 extension DatabaseViewController: MNDataEmptyDelegate {
     
     func dataEmptyViewShouldAppear() -> Bool {
         
         rows.isEmpty
+    }
+    
+    func backgroundColorForDataEmptyView() -> UIColor? {
+        
+        UIColor(mn_rgb: 238.0)
     }
     
     func edgeInsetForDataEmptyView() -> UIEdgeInsets {
