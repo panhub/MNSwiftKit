@@ -118,6 +118,10 @@ public enum MNDataEmptyHierarchyPosition {
     case front
     /// 添加到最后（最下层）
     case back
+    /// 在指定视图之上
+    case above(UIView)
+    /// 在指定视图之下
+    case below(UIView)
     /// 插入到指定索引
     case insex(Int)
 }
@@ -554,22 +558,22 @@ extension MNDataEmptyView {
     /// 显示
     public func show() {
         guard let delegate = delegate else { return }
-        var displaying: Bool = false
-        if let _ = superview {
-            displaying = alpha == 1.0
-        } else {
+        if superview == nil {
             guard let parentView = parentView else { return }
             translatesAutoresizingMaskIntoConstraints = true
-            parentView.addSubview(self)
-        }
-        if let superview = superview, let positioning = delegate as? MNDataEmptyHierarchyPositioning {
-            switch positioning.hierarchyPositionForDataEmptyView() {
-            case .front:
-                superview.bringSubviewToFront(self)
-            case .back:
-                superview.sendSubviewToBack(self)
-            case .insex(let index):
-                superview.insertSubview(self, at: index)
+            if let positioning = delegate as? MNDataEmptyHierarchyPositioning {
+                switch positioning.hierarchyPositionForDataEmptyView() {
+                case .front:
+                    parentView.addSubview(self)
+                case .back:
+                    parentView.insertSubview(self, at: 0)
+                case .above(let subview):
+                    parentView.insertSubview(self, aboveSubview: subview)
+                case .below(let subview):
+                    parentView.insertSubview(self, belowSubview: subview)
+                case .insex(let index):
+                    parentView.insertSubview(self, at: index)
+                }
             }
         }
         let areAnimationsEnabled = UIView.areAnimationsEnabled
@@ -598,7 +602,7 @@ extension MNDataEmptyView {
         setButtonBackgroundImage(delegate.buttonBackgroundImageForDataEmptyView?(for: .highlighted), for: .highlighted)
         layoutIfNeeded()
         UIView.setAnimationsEnabled(areAnimationsEnabled)
-        guard displaying == false else { return }
+        guard alpha == 0.0 else { return }
         var animationDuration: TimeInterval = 0.0
         if let duration = delegate.fadeAnimationDurationForDataEmptyView?(), duration > 0.0 {
             animationDuration = duration
