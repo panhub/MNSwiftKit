@@ -115,18 +115,19 @@ class DatabaseEditingController: UIViewController {
         
         view.endEditing(true)
         
-        var fields: [String: Any] = [:]
+        var fields: [String: Any?] = [:]
         for (index, column) in columns.enumerated() {
             let indexPath = IndexPath(item: index, section: 0)
             guard let cell = collectionView.cellForItem(at: indexPath) as? DatabaseEditingCell, let textField = cell.textField else {
                 MNToast.showMsg("数据错误")
                 return
             }
-            guard let text = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines), text.isEmpty == false else {
+            guard let text = textField.text?.trimmingCharacters(in: .newlines), text.isEmpty == false else {
                 if column.isNullable == false {
                     MNToast.showMsg(textField.placeholder!)
                     return
                 }
+                fields[column.name] = .some(nil)
                 continue
             }
             if column.name == "gender" {

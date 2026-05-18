@@ -635,14 +635,14 @@ extension MNDatabase {
     ///   - fields: 字段集合
     /// - Returns: 是否插入成功
     @discardableResult
-    public func insert(into tableName: String, using fields: [String:Any]) -> Bool {
+    public func insert(into tableName: String, using fields: [String:Any?]) -> Bool {
         guard fields.isEmpty == false else { return false }
         guard exists(table:tableName) else { return false }
         var columns = columns(in: tableName)
         columns.removeAll { $0.isPrimary }
         var contents: [(MNTableColumn, Any?)] = []
         for column in columns {
-            if let value = fields[column.name] {
+            if let value = fields[column.name], let value = value {
                 contents.append((column, value))
             } else if column.isNullable {
                 contents.append((column, nil))
@@ -685,7 +685,7 @@ extension MNDatabase {
     ///   - fields: 字段数据集合
     ///   - queue: 使用队列
     ///   - completionHandler: 结束回调
-    public func insert(into tableName: String, using fields: [String:Any], on queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) {
+    public func insert(into tableName: String, using fields: [String:Any?], on queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.insert(into: tableName, using: fields)
@@ -835,7 +835,7 @@ extension MNDatabase {
     ///   - fields: 更新内容[字段:值]
     /// - Returns: 是否更新成功
     @discardableResult
-    public func update(_ tableName: String, where condition: String? = nil, using fields: [String:Any]) -> Bool {
+    public func update(_ tableName: String, where condition: String? = nil, using fields: [String:Any?]) -> Bool {
         guard fields.isEmpty == false else { return false }
         guard exists(table:tableName) else { return false }
         var columns = columns(in: tableName)
@@ -843,6 +843,14 @@ extension MNDatabase {
         var contents: [(MNTableColumn, Any?)] = []
         for (key, value) in fields {
             guard let column = columns.first(where: { $0.name == key }) else { continue }
+            if let value = value {
+                contents.append((column, value))
+            } else if column.isNullable {
+                contents.append((column, nil))
+            } else {
+                contents.append((column, column.defaultValue))
+            }
+            /*
             switch value {
             case Optional<Any>.none:
                 if column.isNullable {
@@ -853,6 +861,7 @@ extension MNDatabase {
             default:
                 contents.append((column, value))
             }
+            */
         }
         guard contents.isEmpty == false else { return false }
         var params = [String]()
@@ -896,7 +905,7 @@ extension MNDatabase {
     ///   - fields: 更新内容[字段:值]
     ///   - queue: 使用队列
     ///   - completionHandler: 结果回调
-    public func update(_ tableName: String, where condition: String? = nil, using fields: [String:Any], on queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) {
+    public func update(_ tableName: String, where condition: String? = nil, using fields: [String:Any?], on queue: DispatchQueue? = nil, completion completionHandler: CompletionHandler?) {
         (queue ?? self.queue).async { [weak self] in
             guard let self = self else { return }
             let result = self.update(tableName, where: condition, using: fields)
@@ -1189,7 +1198,7 @@ extension MNDatabase {
             let result = sqlite3_step(statement)
             if result == SQLITE_ROW {
                 // 取值
-                var value: Any!
+                var value: Any?
                 var row: [String:Any?] = [:]
                 let count = sqlite3_column_count(statement)
                 for index in 0..<count {
