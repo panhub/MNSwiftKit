@@ -10,9 +10,15 @@ import UIKit
 import MNSwiftKit
 
 class DatabaseEditingController: UIViewController {
+    
+    enum Action {
+        case add, editing(row: Table.Row, key: String, value: Int)
+    }
+    
     private let table: Table
     private let database: MNDatabase
     private let columns: [MNTableColumn]
+    private let action: DatabaseEditingController.Action
     private let successHandler: () -> Void
     // 返回按钮顶部约束
     @IBOutlet weak var backTop: NSLayoutConstraint!
@@ -33,10 +39,11 @@ class DatabaseEditingController: UIViewController {
     // 集合视图约束
     @IBOutlet weak var collectionLayout: UICollectionViewFlowLayout!
     
-    init(database: MNDatabase, table: Table, columns: [MNTableColumn], success: @escaping () -> Void) {
-        self.table = table
+    init(database: MNDatabase, table: Table, columns: [MNTableColumn], action: DatabaseEditingController.Action, success: @escaping () -> Void) {
         self.database = database
-        self.columns = columns.filter{ $0.isPrimary == false }
+        self.table = table
+        self.columns = columns.filter({ $0.isPrimary == false })
+        self.action = action
         self.successHandler = success
         super.init(nibName: "DatabaseEditingController", bundle: .main)
     }
@@ -79,6 +86,20 @@ class DatabaseEditingController: UIViewController {
         collectionLayout.itemSize = .init(width: MN_SCREEN_WIDTH - stackWidth.constant - 1.0, height: itemHeight.constant)
         
         collectionView.register(UINib(nibName: "DatabaseEditingCell", bundle: .main), forCellWithReuseIdentifier: "DatabaseEditingCell")
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard mn.isFirstAccess else { return }
+        guard case .editing(row: let row, key: _, value: _) = action else { return }
+        var contents = row.contents
+        contents.removeFirst()
+        for (index, content) in contents.enumerated() {
+            if content == "NULL" || content == "--" { continue }
+            let indexPath = IndexPath(item: index, section: 0)
+            guard let cell = collectionView.cellForItem(at: indexPath) as? DatabaseEditingCell else { continue }
+            cell.textField.text = content
+        }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -150,9 +171,17 @@ class DatabaseEditingController: UIViewController {
             MNToast.showMsg("请至少填写一个字段")
             return
         }
-        guard database.insert(into: table.tableName, using: fields) else {
-            MNToast.showMsg("操作失败")
-            return
+        switch action {
+        case .add:
+            guard database.insert(into: table.tableName, using: fields) else {
+                MNToast.showMsg("操作失败")
+                return
+            }
+        case .editing(row: _, key: let key, value: let value):
+            guard database.update(table.tableName, where: "\(key)=\(value)", using: fields) else {
+                MNToast.showMsg("操作失败")
+                return
+            }
         }
         successHandler()
         navigationController?.popViewController(animated: true)

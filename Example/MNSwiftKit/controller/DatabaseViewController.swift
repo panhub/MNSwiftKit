@@ -161,9 +161,7 @@ class DatabaseViewController: UIViewController {
             self.collectionView.reloadData()
         }
         
-        //let names = database.columns(for: table.rowType).compactMap { $0.name }
         let columns = database.columns(in: table.tableName)
-        //columns.removeAll { names.contains($0.name) == false }
         self.columns.removeAll()
         self.columns.append(contentsOf: columns)
         
@@ -321,7 +319,7 @@ class DatabaseViewController: UIViewController {
                 }
             }
             */
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+            DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 self.rows.removeAll()
                 self.rows.append(contentsOf: rows)
@@ -341,7 +339,7 @@ class DatabaseViewController: UIViewController {
     
     @IBAction func appendRow() {
         
-        let controller = DatabaseEditingController(database: database, table: table, columns: columns) { [weak self] in
+        let controller = DatabaseEditingController(database: database, table: table, columns: columns, action: .add) { [weak self] in
             guard let self = self else { return }
             self.needsReloadTable = true
         }
@@ -411,7 +409,24 @@ extension DatabaseViewController: UICollectionViewEditingDelegate {
     func collectionView(_ collectionView: UICollectionView, commitEditing action: UIView, forItemAt indexPath: IndexPath, direction: MNSwiftKit.MNEditingView.Direction) -> UIView? {
         // 如果无需确认视图，在这里处理事件即可，返回nil
         if action.tag == 0 {
-            
+            if let cell = collectionView.cellForItem(at: indexPath) {
+                cell.mn.endEditing(animated: true)
+            }
+            guard let column = columns.first(where: { $0.isPrimary }) else {
+                MNToast.showMsg("获取主键失败")
+                return nil
+            }
+            let row = rows[indexPath.item]
+            guard let first = row.contents.first else {
+                MNToast.showMsg("获取行失败")
+                return nil
+            }
+            let value = first.mn.intValue
+            let controller = DatabaseEditingController(database: database, table: table, columns: columns, action: .editing(row: row, key: column.name, value: value)) { [weak self] in
+                guard let self = self else { return }
+                self.needsReloadTable = true
+            }
+            navigationController?.pushViewController(controller, animated: true)
             return nil
         }
         let button = UIButton(type: .custom)
@@ -425,7 +440,29 @@ extension DatabaseViewController: UICollectionViewEditingDelegate {
     }
     
     @objc private func deleteRow(_ sender: UIButton) {
-        
+        let indexPath = IndexPath(item: sender.tag, section: 0)
+        guard let column = columns.first(where: { $0.isPrimary }) else {
+            MNToast.showMsg("获取主键失败")
+            return
+        }
+        let row = rows[indexPath.item]
+        guard let first = row.contents.first else {
+            MNToast.showMsg("获取行失败")
+            return
+        }
+        let value = first.mn.intValue
+        MNToast.showActivity("请稍后")
+        database.delete(from: table.tableName, where: "\(column.name)=\(value)", on: .main) { [weak self] isSuccess in
+            guard isSuccess else {
+                MNToast.showMsg("操作失败")
+                return
+            }
+            MNToast.close()
+            guard let self = self else { return }
+            self.rows.remove(at: indexPath.item)
+            self.collectionView.reloadData()
+            self.view.mn.showEmptyViewIfNeeded()
+        }
     }
 }
 
