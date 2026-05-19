@@ -499,7 +499,7 @@ extension MNDatabase {
             columns.insert(column, at: 0)
         } else {
             // 插入主键
-            let column = MNTableColumn(name: "mn_primary_id", type: .integer, primary: true)
+            let column = MNTableColumn(name: MNDatabase.PrimaryKey, type: .integer, primary: true)
             columns.insert(column, at: 0)
         }
         guard columns.count > 1 else {
