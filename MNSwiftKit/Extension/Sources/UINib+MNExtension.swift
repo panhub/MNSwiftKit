@@ -22,7 +22,13 @@ extension MNNameSpaceWrapper where Base: UIView {
         if let name = name, name.isEmpty == false {
             nibName = name
         } else {
-            nibName = NSStringFromClass(Base.self).components(separatedBy: ".").last
+            var string = NSStringFromClass(Base.self)
+            if string.hasSuffix(".Type") {
+                string.removeLast(5)
+            }
+            let components = string.components(separatedBy: ".")
+            // 取.last 避免有命名空间前缀
+            nibName = components.last
         }
         guard let nibName = nibName else { return nil }
         guard let result = bundle.loadNibNamed(nibName, owner: owner) else { return nil }
