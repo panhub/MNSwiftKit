@@ -887,11 +887,11 @@ extension MNSegmentedNavigationView {
 // MARK: - Divider
 extension MNSegmentedNavigationView {
     
-    /// 替换分割线约束
+    /// 替换分段项分割线约束
     /// - Parameters:
     ///   - constraint: 分割线约束
-    ///   - index: 子页面索引
-    public func replaceDividerConstraint(_ constraint: MNSegmentedConfiguration.Constraint, at index: Int) {
+    ///   - index: 页面索引
+    func replaceDividerConstraint(_ constraint: MNSegmentedConfiguration.Constraint, at index: Int) {
         guard isItemLoaded else { return }
         guard index < items.count else { return }
         items[index].dividerConstraint = constraint
@@ -899,6 +899,23 @@ extension MNSegmentedNavigationView {
             UIView.performWithoutAnimation {
                 self.collectionView.reloadItems(at: [indexPath])
             }
+        }
+    }
+}
+
+// MARK: - Separator
+extension MNSegmentedNavigationView {
+    
+    /// 设置分割线颜色
+    /// - Parameters:
+    ///   - color: 分割线颜色
+    ///   - style: 分割线样式(以此区分分割线)
+    func setSeparatorColor(_ color: UIColor?, with style: MNSegmentedConfiguration.Separator.Style) {
+        if style.contains(.leading) {
+            leadingSeparator.backgroundColor = color
+        }
+        if style.contains(.trailing) {
+            trailingSeparator.backgroundColor = color
         }
     }
 }

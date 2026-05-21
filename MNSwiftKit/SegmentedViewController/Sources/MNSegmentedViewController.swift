@@ -72,10 +72,10 @@ import CoreFoundation
 public class MNSegmentedViewController: UIViewController {
     
     /// 位置
-    private lazy var frame: CGRect = .zero
+    private let frame: CGRect
     
     /// 配置信息
-    private lazy var configuration = MNSegmentedConfiguration()
+    public let configuration: MNSegmentedConfiguration
     
     /// 事件代理
     public weak var delegate: MNSegmentedViewControllerDelegate?
@@ -102,8 +102,21 @@ public class MNSegmentedViewController: UIViewController {
         headerView: dataSource?.preferredSegmentedNavigationHeaderView ?? nil
     )
     
+    @available(*, unavailable, message: "Use init(frame: configuration:) instead")
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        self.frame = .zero
+        self.configuration = .init()
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    }
+    
+    /// 构造分段视图控制器
+    /// - Parameters:
+    ///   - frame: 视图位置
+    ///   - configuration: 配置信息
+    public init(frame: CGRect = .zero, configuration: MNSegmentedConfiguration) {
+        self.frame = frame
+        self.configuration = configuration
+        super.init(nibName: nil, bundle: nil)
         edgesForExtendedLayout = .all
         extendedLayoutIncludesOpaqueBars = true
         if #available(iOS 11.0, *) {
@@ -111,16 +124,6 @@ public class MNSegmentedViewController: UIViewController {
         } else {
             automaticallyAdjustsScrollViewInsets = false
         }
-    }
-    
-    /// 构造分段视图控制器
-    /// - Parameters:
-    ///   - frame: 视图位置
-    ///   - configuration: 配置信息
-    public convenience init(frame: CGRect = .zero, configuration: MNSegmentedConfiguration) {
-        self.init(nibName: nil, bundle: nil)
-        self.frame = frame
-        self.configuration = configuration
     }
     
     required init?(coder: NSCoder) {
@@ -374,13 +377,26 @@ extension MNSegmentedViewController {
 // MARK: - Divider
 extension MNSegmentedViewController {
     
-    /// 替换分割线约束
+    /// 替换分段项分割线约束
     /// - Parameters:
     ///   - constraint: 分割线约束
-    ///   - index: 子页面索引
+    ///   - index: 页面索引
     public func replaceDividerConstraint(_ constraint: MNSegmentedConfiguration.Constraint, at index: Int) {
         guard isViewLoaded else { return }
         navigationView.replaceDividerConstraint(constraint, at: index)
+    }
+}
+
+// MARK: - Separator
+extension MNSegmentedViewController {
+    
+    /// 设置分割线颜色
+    /// - Parameters:
+    ///   - color: 分割线颜色
+    ///   - style: 分割线样式(以此区分分割线)
+    public func setSeparatorColor(_ color: UIColor?, with style: MNSegmentedConfiguration.Separator.Style) {
+        guard isViewLoaded else { return }
+        navigationView.setSeparatorColor(color, with: style)
     }
 }
 
