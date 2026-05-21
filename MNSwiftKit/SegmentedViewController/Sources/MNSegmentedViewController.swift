@@ -59,13 +59,13 @@ import CoreFoundation
     
     /// 告知已修改ContentInset
     /// - Parameter scrollView: 滑动视图
-    @objc optional func scrollViewDidChangeAdjustedContentInset(_ scrollView: UIScrollView)
+    @objc optional func pageScrollViewDidChangeAdjustedContentInset(_ scrollView: UIScrollView)
     
     /// 告知`scrollView`最小内容尺寸
     /// - Parameters:
     ///   - scrollView: 滑动视图
     ///   - contentSize: 内容尺寸
-    @objc optional func scrollView(_ scrollView: UIScrollView, determinedMinimumContentSize contentSize: CGSize)
+    @objc optional func pageScrollView(_ scrollView: UIScrollView, determinedMinimumContentSize contentSize: CGSize)
 }
 
 /// 分段视图控制器

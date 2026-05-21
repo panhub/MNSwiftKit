@@ -222,7 +222,7 @@ class MNSegmentedPageCoordinator: NSObject {
                     scrollView.contentInset = contentInset
                     scrollView.mn.pageInset = adjustmentInset
                     if let page = page(for: pageIndex, access: false) {
-                        page.scrollViewDidChangeAdjustedContentInset?(scrollView)
+                        page.pageScrollViewDidChangeAdjustedContentInset?(scrollView)
                     }
                 } else {
                     scrollView.mn.pageInset = 0.0
@@ -242,7 +242,7 @@ class MNSegmentedPageCoordinator: NSObject {
                 size.height = max(0.0, size.height - contentInset.top - contentInset.bottom + offsetY)
                 scrollView.mn.minimumPageSize = size
                 if let page = page(for: pageIndex, access: false) {
-                    page.scrollView?(scrollView, determinedMinimumContentSize: size)
+                    page.pageScrollView?(scrollView, determinedMinimumContentSize: size)
                 }
             }
             let minimumPageSize = scrollView.mn.minimumPageSize
