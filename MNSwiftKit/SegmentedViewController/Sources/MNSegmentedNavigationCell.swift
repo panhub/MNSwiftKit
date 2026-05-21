@@ -111,8 +111,8 @@ public class MNSegmentedNavigationCell: UICollectionViewCell, MNSegmentedNavigat
                     text = string
                 }
             } else if let number = badge as? Int {
-                if number > 0 {
-                    text = NSNumber(value: number).stringValue
+                if number != 0 {
+                    text = "\(number)"
                 }
             } else if let flag = badge as? Bool {
                 if flag {
@@ -120,7 +120,7 @@ public class MNSegmentedNavigationCell: UICollectionViewCell, MNSegmentedNavigat
                 }
             }
         }
-        if let text = text, text != "0" {
+        if let text = text {
             var size: CGSize = .zero
             if text.isEmpty == false {
                 size = (text as NSString).size(withAttributes: [.font:item.badgeFont])
