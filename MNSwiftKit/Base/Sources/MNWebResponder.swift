@@ -15,8 +15,8 @@ public let MNWebViewBackScriptMessageName: String = "back"
 public let MNWebViewReloadScriptMessageName: String = "reload"
 
 open class MNWebResponder: NSObject {
-    // 加载它的网页控制器
-    public weak var webViewController: MNWebViewController!
+    // 加载它的控制器
+    public weak var viewController: UIViewController!
 }
 
 extension MNWebResponder: MNWebScriptBridge {
@@ -26,17 +26,23 @@ extension MNWebResponder: MNWebScriptBridge {
     }
 
     public func call(cmd: String, body: Any) {
-        guard let webViewController = webViewController else { return }
+        guard let viewController = viewController else { return }
         switch cmd {
         case MNWebViewExitScriptMessageName:
             // 退出
-            webViewController.close()
+            let close = NSSelectorFromString("close")
+            guard viewController.responds(to: close) else { break }
+            viewController.perform(close)
         case MNWebViewBackScriptMessageName:
             // 返回
-            webViewController.back()
+            let back = NSSelectorFromString("back")
+            guard viewController.responds(to: back) else { break }
+            viewController.perform(back)
         case MNWebViewReloadScriptMessageName:
             // 重载
-            webViewController.reload()
+            let reload = NSSelectorFromString("reload")
+            guard viewController.responds(to: reload) else { break }
+            viewController.perform(reload)
         default: break
         }
     }

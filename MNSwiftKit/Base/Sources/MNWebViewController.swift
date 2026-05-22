@@ -439,7 +439,7 @@ extension MNWebViewController: MNWebScriptAddHandler {
     // 添加响应者
     public func addScript(responder: MNWebScriptBridge) -> Void {
         if responder is MNWebResponder {
-            (responder as! MNWebResponder).webViewController = self
+            (responder as! MNWebResponder).viewController = self
         }
         messageHandler.addScript(responder: responder)
     }
