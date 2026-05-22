@@ -17,6 +17,7 @@ MNSwiftKit 是一系列可复用的 Swift 组件集合，旨在加快 iOS 开发
 
 - [要求](#要求)
 - [安装](#安装)
+- [注意](#注意)
 - [使用](#使用)
     - [Base](#Base)
     - [Toast](#Toast)
@@ -133,6 +134,51 @@ let package = Package(
 
 依赖系统库/框架包括：
 `UIKit`，`Photos`，`PhotosUI`，`ImageIO`，`Security`，`StoreKit`，`Foundation`，`CoreFoundation`，`AVFoundation`, `AudioToolbox`，`CoreFoundation`，`CoreServices`，`CoreGraphics`，`CoreMedia`，`CoreAudio`，`CoreImage`，`CoreTelephony`，`QuartzCore`，`AdSupport`，`AppTrackingTransparency`，`AuthenticationServices`，`UniformTypeIdentifiers`，`SystemConfiguration`，`sqlite3`。
+
+## 注意
+
+集成 `MNSwiftKit` 后，部分模块会触发系统隐私权限弹窗。
+**未在宿主 App 的 `Info.plist` 中配置对应 Usage Description 时，相关能力会被系统直接拒绝甚至引发崩溃。** 请根据实际引入的模块，在工程中补充说明文案。
+
+### 权限与模块对应关系
+
+| 系统权限 | Info.plist 键 | 主要模块 / API | 说明 |
+| --- | --- | --- | --- |
+| 相册（读取） | `NSPhotoLibraryUsageDescription` | **Utility**（`MNPermission.requestAlbum`）、**AssetPicker**（`MNAssetPickerController`） | 选择、浏览相册资源 |
+| 相册（写入） | `NSPhotoLibraryAddUsageDescription` | **AssetPicker**（`MNAssetHelper` 保存到相册） | 仅在使用保存到相册能力时需要 |
+| 相机 | `NSCameraUsageDescription` | **Utility**（`MNPermission.requestCamera`、`MNScanner`） | 扫码、相机采集 |
+| 麦克风 | `NSMicrophoneUsageDescription` | **Utility**（`MNPermission.requestMicrophone` / `requestMicrophonePermission`） | 录音相关；按实际调用的 API 配置 |
+| 广告标识符（IDFA） | `NSUserTrackingUsageDescription` | **Utility**（`MNPermission.requestTracking`） | iOS 14+；仅在使用 IDFA 采集时需要 |
+| Face ID | `NSFaceIDUsageDescription` | **Utility**（`MNLocalAuthentication`） | 使用生物识别且设备支持 Face ID 时需要 |
+
+> **按需配置**：通过 CocoaPods / SPM 只引入部分模块时，只需添加你会用到的权限项。例如未集成 `AssetPicker`，可省略相册相关键；未调用 `requestTracking`，可省略 `NSUserTrackingUsageDescription`。
+
+### Info.plist 配置示例
+
+将下列键值对加入宿主 App 的 `Info.plist`（文案请替换为你的业务说明）：
+
+```xml
+<key>NSPhotoLibraryUsageDescription</key>
+<string>需要访问您的相册以选择图片或视频</string>
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>需要保存图片或视频到您的相册</string>
+<key>NSCameraUsageDescription</key>
+<string>需要使用相机以扫描二维码或条形码</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>需要使用麦克风进行录音</string>
+<key>NSUserTrackingUsageDescription</key>
+<string>用于向您提供更相关的广告与内容</string>
+<key>NSFaceIDUsageDescription</key>
+<string>用于通过面容 ID 验证您的身份</string>
+```
+
+Xcode 可视化编辑：在 `Target` → `Info` → `Custom iOS Target Properties` 中新增同名键即可。
+
+### 其他说明
+
+- 后台音频：若使用 Player 模块并需要后台播放，除将 `sessionCategory` 设为 `.playback` 外，还需在 Info.plist 中配置 UIBackgroundModes（audio）。详见 Player 模块注意事项。
+- Apple 登录：Utility 中的 Apple 登录（AppleLoginHelper）需在 Xcode 中开启 `Sign in with Apple Capability`，一般不需要额外的 Usage Description 键。
+- 模块内说明：各模块的注意事项中可能仍有权限相关提示（如 Utility、AssetPicker、Player），与本节互为补充。
 
 ## 使用
 
