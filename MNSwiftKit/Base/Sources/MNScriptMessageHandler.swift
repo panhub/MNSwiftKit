@@ -24,7 +24,7 @@ public protocol MNWebScriptAddHandler {
 
 public class MNScriptMessageHandler: NSObject, MNWebScriptAddHandler {
     /**保存响应者*/
-    private(set) var responders: [String:MNWebScriptBridge] = [:]
+    public private(set) var responders: [String:MNWebScriptBridge] = [:]
     /**添加响应者*/
     public func addScript(responder: MNWebScriptBridge) -> Void {
         for cmd in responder.cmds {

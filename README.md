@@ -6738,7 +6738,7 @@ Caches/MNSwiftKit/emoticons/
 - 📡 **事件回调**：除页切换外，可选实现头视图偏移（`headerViewDidChangeOffset`）、子页内容偏移（`subpageDidChangeContentOffset`）、分段 Cell 即将展示（`willDisplay`）等
 - 🔧 **动态管理**：支持替换标题、替换子页面、重载子页面、按索引替换分割线约束等
 - 🎬 **生命周期**：通过子页 `pageState` 与协调器配合，管理出现/消失时机
-- 💪 **手势与滚动**：导航与分页滚动协同；子页可响应 `scrollViewDidChangeAdjustedContentInset`、`scrollView(_:determinedMinimumContentSize:)` 等与 inset/最小内容尺寸相关的回调
+- 💪 **手势与滚动**：导航与分页滚动协同；子页可响应 `pageScrollViewDidChangeAdjustedContentInset`、`pageScrollView(_:determinedMinimumContentSize:)` 等与 inset/最小内容尺寸相关的回调
 - 🚀 **高性能**：基于 `UIPageViewController` 与 `UICollectionView`，子页按需创建并缓存
 
 #### 🚀 快速开始

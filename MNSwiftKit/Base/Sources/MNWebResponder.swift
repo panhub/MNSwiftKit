@@ -9,6 +9,8 @@ import UIKit
 
 /// 退出
 public let MNWebViewExitScriptMessageName: String = "exit"
+/// 关闭
+public let MNWebViewCloseScriptMessageName: String = "close"
 /// 返回
 public let MNWebViewBackScriptMessageName: String = "back"
 /// 刷新
@@ -28,8 +30,8 @@ extension MNWebResponder: MNWebScriptBridge {
     public func call(cmd: String, body: Any) {
         guard let viewController = viewController else { return }
         switch cmd {
-        case MNWebViewExitScriptMessageName:
-            // 退出
+        case MNWebViewExitScriptMessageName, MNWebViewCloseScriptMessageName:
+            // 退出/关闭直接出栈
             let close = NSSelectorFromString("close")
             guard viewController.responds(to: close) else { break }
             viewController.perform(close)
