@@ -13,7 +13,7 @@ MNSwiftKit 是一系列可复用的 Swift 组件集合，旨在加快 iOS 开发
 - 用于原生类型的功能性 Swift 扩展;
 - 方便实用的方法和工具;
 
-支持 CocoaPods 方式集成和 Swift Package Manager 方式安装，根据需求可按需安装其中任一模块。
+> 支持 CocoaPods 方式集成和 Swift Package Manager 方式安装，根据需求可按需安装其中任一模块。
 
 - [要求](#要求)
 - [安装](#安装)
@@ -137,8 +137,7 @@ let package = Package(
 
 ## 注意
 
-集成 `MNSwiftKit` 后，部分模块会触发系统隐私权限弹窗。
-**未在宿主 App 的 `Info.plist` 中配置对应 Usage Description 时，相关能力会被系统直接拒绝甚至引发崩溃。** 请根据实际引入的模块，在工程中补充说明文案。
+集成 `MNSwiftKit` 后，部分模块会触发系统隐私权限弹窗。未在宿主 App 的 `Info.plist` 中配置对应 Usage Description 时，相关能力会被系统直接拒绝甚至引发崩溃。请根据实际引入的模块，在工程中补充说明文案。
 
 ### 权限与模块对应关系
 
@@ -172,7 +171,7 @@ let package = Package(
 <string>用于通过面容 ID 验证您的身份</string>
 ```
 
-Xcode 可视化编辑：在 `Target` → `Info` → `Custom iOS Target Properties` 中新增同名键即可。
+**Xcode 可视化编辑**：在 `Target` → `Info` → `Custom iOS Target Properties` 中新增同名键即可。
 
 ### 其他说明
 
