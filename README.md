@@ -6777,12 +6777,12 @@ Caches/MNSwiftKit/emoticons/
 - 🧩 **页面协调**：`MNSegmentedPageCoordinator` 统一管理分页数据源/代理、子页缓存与滚动进度，并在分页衰减与新手势交错时处理交互边界，减少页码错乱等问题
 - 🎨 **丰富配置**：提供 `MNSegmentedConfiguration` 配置，支持自定义导航项样式、指示器、角标、分割线等
 - 🔄 **布局方向**：支持横向和纵向两种布局方向（`UIPageViewController.NavigationOrientation`）
-- 📊 **头部视图**：支持公共头部视图（`preferredSegmentedNavigationHeaderView`），子页提供 `preferredPageScrollView` 且内容满足最小高度时，可与头部联动折叠
+- 📊 **头部视图**：支持公共头部视图（`preferredSegmentedNavigationHeaderView`），子页遵循 `MNSegmentedPageScrollSupported` 并提供 `preferredPageScrollView`，且内容满足最小高度时，可与头部联动折叠
 - 🎭 **指示器**：支持置于 item 之上/之下（`indicator.position`），动画类型包括无动画（`.none`）、平滑移动（`.move(duration:)`）、拉伸（`.stretch(duration:)`）
 - 🏷️ **角标支持**：支持在导航项上显示角标（数字、文字、布尔值）
-- 📡 **事件回调**：除页切换外，可选实现头视图偏移（`headerViewDidChangeOffset`）、子页内容偏移（`subpageDidChangeContentOffset`）、分段 Cell 即将展示（`willDisplay`）等
+- 📡 **事件回调**：除页切换（`didChangePageAt`）外，可选实现头视图偏移（`didChangeHeaderOffset`）、子页内容偏移（`pageDidChangeOffset`）、分段 Cell 即将展示（`willDisplay`）等
 - 🔧 **动态管理**：支持替换标题、替换子页面、重载子页面、按索引替换分割线约束等
-- 🎬 **生命周期**：通过子页 `pageState` 与协调器配合，管理出现/消失时机
+- 🎬 **生命周期**：通过子页 `pageTransitionState` 与协调器配合，管理出现/消失时机
 - 💪 **手势与滚动**：导航与分页滚动协同；子页可响应 `pageScrollViewDidChangeAdjustedContentInset`、`pageScrollView(_:determinedMinimumContentSize:)` 等与 inset/最小内容尺寸相关的回调
 - 🚀 **高性能**：基于 `UIPageViewController` 与 `UICollectionView`，子页按需创建并缓存
 
@@ -6850,8 +6850,8 @@ extension ViewController: MNSegmentedViewControllerDataSource {
         return 0
     }
     
-    // 按索引提供子页面（数据源方法名为 pageAt）
-    func segmentedViewController(_ viewController: MNSegmentedViewController, pageAt index: Int) -> MNSegmentedPageScrollSupported {
+    // 按索引提供子页面（返回 UIViewController；需联动滚动时子页再遵循 MNSegmentedPageScrollSupported）
+    func segmentedViewController(_ viewController: MNSegmentedViewController, pageAt index: Int) -> UIViewController {
         let pageVC = PageViewController()
         pageVC.title = preferredSegmentedNavigationTitles[index]
         return pageVC
@@ -6860,17 +6860,17 @@ extension ViewController: MNSegmentedViewControllerDataSource {
 
 extension ViewController: MNSegmentedViewControllerDelegate {
     // 页面切换回调
-    func segmentedViewController(_ viewController: MNSegmentedViewController, subpageDidChangeAt index: Int) {
+    func segmentedViewController(_ viewController: MNSegmentedViewController, didChangePageAt index: Int) {
         print("切换到页面：\(index)")
     }
 }
 
-// 子页面需要遵循 MNSegmentedPageScrollSupported 协议
+// 需要头部联动、内容偏移回调时，子页面遵循 MNSegmentedPageScrollSupported 协议
 class PageViewController: UIViewController, MNSegmentedPageScrollSupported {
 
     @IBOutlet weak var tableView: UITableView!
     
-    var preferredPageScrollView: UIScrollView? {
+    var preferredPageScrollView: UIScrollView {
         return tableView
     }
 }
@@ -6919,6 +6919,33 @@ extension ViewController: MNSegmentedViewControllerDataSource {
         headerView.addSubview(label)
         
         return headerView
+    }
+}
+```
+
+事件回调
+
+```swift
+extension ViewController: MNSegmentedViewControllerDelegate {
+    
+    // 子页面切换（可选）
+    func segmentedViewController(_ viewController: MNSegmentedViewController, didChangePageAt index: Int) {
+        print("切换到页面：\(index)")
+    }
+    
+    // 公共头部偏移变化（可选，需配置 preferredSegmentedNavigationHeaderView 且子页遵循 MNSegmentedPageScrollSupported）
+    func segmentedViewController(_ viewController: MNSegmentedViewController, didChangeHeaderOffset offset: CGPoint, from: CGPoint) {
+        print("头部偏移：\(offset)，变化前：\(from)")
+    }
+    
+    // 当前子页内容偏移变化（可选，子页需遵循 MNSegmentedPageScrollSupported）
+    func segmentedViewController(_ viewController: MNSegmentedViewController, pageDidChangeOffset contentOffset: CGPoint) {
+        print("内容偏移：\(contentOffset)")
+    }
+    
+    // 分段导航 Cell 即将展示（可选）
+    func segmentedViewController(_ viewController: MNSegmentedViewController, willDisplay cell: MNSegmentedNavigationCellConvertible, item: MNSegmentedNavigationItem, at index: Int) {
+        print("即将展示分段项：\(index)")
     }
 }
 ```
@@ -7043,9 +7070,10 @@ class CustomSegmentedCell: UICollectionViewCell, MNSegmentedNavigationCellConver
 
 #### 📝 注意事项
 
-- **子页面协议**：子页面遵循 `MNSegmentedPageScrollSupported`。`preferredPageScrollView` 为可选能力；实现并返回列表/滚动容器后，横向布局下才支持头部与内容联动及内部对 contentInset、最小内容高度的自动适配。
+- **子页面协议**：数据源 `pageAt` 返回 `UIViewController`。需要头部与内容联动、滚动观察或内容偏移回调时，子页额外遵循 `MNSegmentedPageScrollSupported`，并实现非可选的 `preferredPageScrollView`；横向布局下，当滚动内容满足协调器计算的最小高度后，才启用头部折叠及对 contentInset、最小内容高度的自动适配。
 - **头部视图联动**：当子页滚动视图内容高度达到协调器计算的最小要求时，公共头部随内容上滑折叠；可通过 `configuration.headerMinimumVisibleHeight` 约束头部至少保留的可见高度。
-- **生命周期与缓存**：协调器配合子页 `pageState` 维护出现与消失；已创建子页会按索引缓存，可通过 `page(for:access:)` 读取，`reloadPages()` 会清空缓存并刷新。
+- **生命周期与缓存**：协调器配合子页 `mn.pageTransitionState`（`willAppear` / `didAppear` / `willDisappear` / `didDisappear`）维护出现与消失；已创建子页会按索引缓存，可通过 `page(for:access:)` 读取，`reloadPages()` 会清空缓存并刷新。
+- **初始化**：`init(frame:configuration:)` 的 `frame` 默认为 `.zero`；使用 Auto Layout 约束时，可只传入 `configuration`，由外部约束决定尺寸与位置。
 - **布局方向**：通过 `configuration.navigation.orientation` 设置横向（`.horizontal`）或纵向（`.vertical`）。
 - **角标类型**：角标支持 `String`、`Int`、`Bool` 等类型，`Bool` 类型显示为红点。
 - **自定义导航项**：通过 `register(_:forSegmentedCellWithReuseIdentifier:)` 注册自定义 Cell，需遵循 `MNSegmentedNavigationCellConvertible` 协议。
