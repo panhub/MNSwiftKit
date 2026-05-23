@@ -17,7 +17,7 @@ import CoreFoundation
     ///   - viewController: 分段视图控制器
     ///   - index: 页码索引
     /// - Returns: 子界面控制器
-    func segmentedViewController(_ viewController: MNSegmentedViewController, pageAt index: Int) -> MNSegmentedPageConvertible
+    func segmentedViewController(_ viewController: MNSegmentedViewController, pageAt index: Int) -> UIViewController
 }
 
 /// 分段视图控制器事件代理
@@ -25,22 +25,22 @@ import CoreFoundation
     
     /// 子页面变化
     /// - Parameters:
-    ///   - splitController: 分段视图控制器
+    ///   - viewController: 分段视图控制器
     ///   - index: 子页面索引
-    @objc optional func segmentedViewController(_ viewController: MNSegmentedViewController, pageDidChangeAt index: Int)
+    @objc optional func segmentedViewController(_ viewController: MNSegmentedViewController, didChangePageAt index: Int)
     
     /// 头视图偏移变化
     /// - Parameters:
     ///   - viewController: 分段视图控制器
     ///   - offset: 当前视图偏移
     ///   - from: 变化前视图偏移
-    @objc optional func segmentedViewController(_ viewController: MNSegmentedViewController, headerViewDidChangeOffset offset: CGPoint, from: CGPoint)
+    @objc optional func segmentedViewController(_ viewController: MNSegmentedViewController, didChangeHeaderOffset offset: CGPoint, from: CGPoint)
     
     /// 子页面内容偏移变化
     /// - Parameters:
     ///   - viewController: 分段视图控制器
     ///   - contentOffset: 内容偏移量
-    @objc optional func segmentedViewController(_ viewController: MNSegmentedViewController, pageDidChangeContentOffset contentOffset: CGPoint)
+    @objc optional func segmentedViewController(_ viewController: MNSegmentedViewController, pageDidChangeOffset contentOffset: CGPoint)
     
     /// 即将显示分段Cell
     /// - Parameters:
@@ -52,10 +52,10 @@ import CoreFoundation
 }
 
 /// 分段视图控制器子页面规范
-@objc public protocol MNSegmentedPageConvertible where Self: UIViewController {
+@objc public protocol MNSegmentedPageScrollSupported where Self: UIViewController {
     
     /// 滑动视图
-    @objc optional var preferredPageScrollView: UIScrollView { get }
+    var preferredPageScrollView: UIScrollView { get }
     
     /// 告知已修改ContentInset
     /// - Parameter scrollView: 滑动视图
@@ -197,7 +197,6 @@ public class MNSegmentedViewController: UIViewController {
         // 页面协调器
         pageCoordinator.delegate = self
         pageCoordinator.dataSource = self
-        pageCoordinator.scrolling = navigationView
     }
 }
 
@@ -264,7 +263,7 @@ extension MNSegmentedViewController {
         pageCoordinator.invalidatePage()
         navigationView.reloadSubview()
         if let oldY = oldY, let delegate = delegate {
-            delegate.segmentedViewController?(self, headerViewDidChangeOffset: .init(x: 0.0, y: navigationView.frame.minY), from: .init(x: 0.0, y: oldY))
+            delegate.segmentedViewController?(self, didChangeHeaderOffset: .init(x: 0.0, y: navigationView.frame.minY), from: .init(x: 0.0, y: oldY))
         }
     }
     
@@ -273,7 +272,7 @@ extension MNSegmentedViewController {
     ///   - index: 子页面索引
     ///   - access: 若缓存没有, 是否允许向数据源代理获取
     /// - Returns: 子页面控制器
-    public func page(for index: Int, access: Bool = false) -> MNSegmentedPageConvertible? {
+    public func page(for index: Int, access: Bool = false) -> UIViewController? {
         guard isViewLoaded else { return nil }
         guard navigationView.isItemLoaded else { return nil }
         return pageCoordinator.page(for: index, access: access)
@@ -293,7 +292,7 @@ extension MNSegmentedViewController {
     /// - Parameters:
     ///   - page: 页面
     ///   - index: 页面索引
-    public func replacePage(_ page: MNSegmentedPageConvertible, at index: Int) {
+    public func replacePage(_ page: UIViewController, at index: Int) {
         if isViewLoaded, navigationView.isItemLoaded {
             guard index < numberOfPages else { return }
             // 删除旧页面缓存
@@ -483,18 +482,18 @@ extension MNSegmentedViewController: MNSegmentedPageDataSource {
         max(0.0, pageHeaderHeight - configuration.headerMinimumVisibleHeight)
     }
     
-    public func page(at index: Int) -> (any MNSegmentedPageConvertible)? {
+    public func page(at index: Int) -> UIViewController? {
         
         guard let dataSource = dataSource else { return nil }
         return dataSource.segmentedViewController(self, pageAt: index)
     }
     
-    public func contentOffset(for subpage: any MNSegmentedPageConvertible, direction: UIPageViewController.NavigationDirection) -> CGPoint {
-        guard let scrollView = subpage.preferredPageScrollView else { return .zero }
+    public func contentOffset(for subpage: any MNSegmentedPageScrollSupported, direction: UIPageViewController.NavigationDirection) -> CGPoint {
+        let scrollView = subpage.preferredPageScrollView
         var contentOffset = scrollView.contentOffset
         switch configuration.navigation.orientation {
         case .horizontal:
-            guard scrollView.mn.isReachedMinimumSize else { break }
+            guard scrollView.mn.isPageHeaderScrollEnabled else { break }
             let greatestFiniteOffset = pageHeaderGreatestFiniteOffset
             var minY = 0.0
             if let superview = scrollView.superview {
@@ -527,17 +526,34 @@ extension MNSegmentedViewController: MNSegmentedPageDataSource {
 // MARK: - MNSegmentedPageDelegate
 extension MNSegmentedViewController: MNSegmentedPageDelegate {
     
-    func pageViewController(_ viewController: UIPageViewController, didScrollTo subpage: any MNSegmentedPageConvertible) {
-        guard let delegate = delegate else { return }
-        delegate.segmentedViewController?(self, pageDidChangeAt: subpage.pageIndex)
-        guard let scrollView = subpage.preferredPageScrollView else { return }
-        delegate.segmentedViewController?(self, pageDidChangeContentOffset: scrollView.contentOffset)
+    func pageViewControllerWillBeginDragging() {
+        
+        navigationView.pageViewControllerWillBeginDragging()
     }
     
-    func pageViewController(_ viewController: UIPageViewController, page: any MNSegmentedPageConvertible, didChangeContentOffset contentOffset: CGPoint) {
-        guard let scrollView = page.preferredPageScrollView else { return }
+    func pageViewControllerDidScroll(_ ratio: CGFloat) {
+        
+        navigationView.pageViewControllerDidScroll(ratio)
+    }
+    
+    func pageViewControllerWillScrollToPage(_ index: Int) {
+        
+        navigationView.pageViewControllerWillScrollToPage(index)
+    }
+    
+    func pageViewControllerDidScrollTo(_ page: UIViewController) {
+        
+        guard let delegate = delegate else { return }
+        delegate.segmentedViewController?(self, didChangePageAt: page.mn.pageIndex)
+        guard let page = page as? MNSegmentedPageScrollSupported else { return }
+        delegate.segmentedViewController?(self, pageDidChangeOffset: page.preferredPageScrollView.contentOffset)
+    }
+    
+    func pageViewController(_ page: any MNSegmentedPageScrollSupported, didChangeContentOffset contentOffset: CGPoint) {
+        
+        let scrollView = page.preferredPageScrollView
         let greatestFiniteOffset = pageHeaderGreatestFiniteOffset
-        if greatestFiniteOffset > 0.0, scrollView.mn.isReachedMinimumSize {
+        if greatestFiniteOffset > 0.0, scrollView.mn.isPageHeaderScrollEnabled {
             var minY = 0.0
             if let superview = scrollView.superview {
                 minY = superview.convert(scrollView.frame, to: page.view).minY
@@ -553,13 +569,13 @@ extension MNSegmentedViewController: MNSegmentedPageDelegate {
                 if abs(oldY - newY) >= 0.01 {
                     navigationView.frame.origin.y = newY
                     if let delegate = delegate {
-                        delegate.segmentedViewController?(self, headerViewDidChangeOffset: .init(x: 0.0, y: newY), from: .init(x: 0.0, y: oldY))
+                        delegate.segmentedViewController?(self, didChangeHeaderOffset: .init(x: 0.0, y: newY), from: .init(x: 0.0, y: oldY))
                     }
                 }
             }
         }
         if let delegate = delegate {
-            delegate.segmentedViewController?(self, pageDidChangeContentOffset: contentOffset)
+            delegate.segmentedViewController?(self, pageDidChangeOffset: contentOffset)
         }
     }
 }

@@ -93,7 +93,7 @@ extension SegmentedViewController: MNSegmentedViewControllerDataSource {
         return imageView
     }
     
-    func segmentedViewController(_ viewController: MNSwiftKit.MNSegmentedViewController, pageAt index: Int) -> any MNSwiftKit.MNSegmentedPageConvertible {
+    func segmentedViewController(_ viewController: MNSwiftKit.MNSegmentedViewController, pageAt index: Int) -> UIViewController {
         
         SegmentedSubpageController(style: index % 2 == 0 ? .grid : .table)
     }
@@ -107,17 +107,17 @@ extension SegmentedViewController: MNSegmentedViewControllerDataSource {
 // MARK: - MNSplitViewControllerDelegate
 extension SegmentedViewController: MNSegmentedViewControllerDelegate {
     
-    func segmentedViewController(_ viewController: MNSegmentedViewController, pageDidChangeAt index: Int) {
+    func segmentedViewController(_ viewController: MNSegmentedViewController, didChangePageAt index: Int) {
         
         print("选择了索引: \(index)")
     }
     
-    func segmentedViewController(_ viewController: MNSegmentedViewController, pageDidChangeContentOffset contentOffset: CGPoint) {
+    func segmentedViewController(_ viewController: MNSegmentedViewController, pageDidChangeOffset contentOffset: CGPoint) {
         
         print("contentOffset：\(contentOffset)")
     }
     
-    func segmentedViewController(_ viewController: MNSegmentedViewController, headerViewDidChangeOffset offset: CGPoint, from: CGPoint) {
+    func segmentedViewController(_ viewController: MNSegmentedViewController, didChangeHeaderOffset offset: CGPoint, from: CGPoint) {
         
         print("headerOffset：\(offset)")
     }

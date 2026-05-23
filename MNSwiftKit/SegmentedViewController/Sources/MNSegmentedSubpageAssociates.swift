@@ -12,17 +12,17 @@ import ObjectiveC.runtime
 extension UIScrollView {
     
     fileprivate struct MNPageAssociated {
-        nonisolated(unsafe) static var pageInset: Void?
+        nonisolated(unsafe) static var topInset: Void?
         nonisolated(unsafe) static var pageIndex: Void?
-        nonisolated(unsafe) static var pageObserved: Void?
+        nonisolated(unsafe) static var observedPage: Void?
         nonisolated(unsafe) static var minimumPageSize: Void?
-        nonisolated(unsafe) static var reachedMinimumPageSize: Void?
+        nonisolated(unsafe) static var headerScrollEnabled: Void?
     }
 }
 
 extension MNNameSpaceWrapper where Base: UIScrollView {
     
-    /// 子页面索引
+    /// 页面索引
     var pageIndex: Int {
         get {
             guard let number = objc_getAssociatedObject(base, &UIScrollView.MNPageAssociated.pageIndex) as? NSNumber else { return 0 }
@@ -45,38 +45,38 @@ extension MNNameSpaceWrapper where Base: UIScrollView {
     }
     
     /// 是否已满足最小内容尺寸
-    var isReachedMinimumSize: Bool {
+    var isPageHeaderScrollEnabled: Bool {
         get {
-            guard let number = objc_getAssociatedObject(base, &UIScrollView.MNPageAssociated.reachedMinimumPageSize) as? NSNumber else { return false }
+            guard let number = objc_getAssociatedObject(base, &UIScrollView.MNPageAssociated.headerScrollEnabled) as? NSNumber else { return false }
             return number.boolValue
         }
         set {
-            objc_setAssociatedObject(base, &UIScrollView.MNPageAssociated.reachedMinimumPageSize, NSNumber(value: newValue), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(base, &UIScrollView.MNPageAssociated.headerScrollEnabled, NSNumber(value: newValue), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
     
     /// 是否已监听
-    var isPageObserved: Bool {
+    var isObservedPage: Bool {
         get {
-            guard let number = objc_getAssociatedObject(base, &UIScrollView.MNPageAssociated.pageObserved) as? NSNumber else { return false }
+            guard let number = objc_getAssociatedObject(base, &UIScrollView.MNPageAssociated.observedPage) as? NSNumber else { return false }
             return number.boolValue
         }
         set {
-            objc_setAssociatedObject(base, &UIScrollView.MNPageAssociated.pageObserved, NSNumber(value: newValue), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(base, &UIScrollView.MNPageAssociated.observedPage, NSNumber(value: newValue), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
     
     /// 页头调整后的插入量
-    var pageInset: CGFloat? {
+    var pageTopInset: CGFloat? {
         get {
-            guard let number = objc_getAssociatedObject(base, &UIScrollView.MNPageAssociated.pageInset) as? NSNumber else { return nil }
+            guard let number = objc_getAssociatedObject(base, &UIScrollView.MNPageAssociated.topInset) as? NSNumber else { return nil }
             return CGFloat(number.doubleValue)
         }
         set {
             if let newValue = newValue {
-                objc_setAssociatedObject(base, &UIScrollView.MNPageAssociated.pageInset, NSNumber(value: Double(newValue)), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+                objc_setAssociatedObject(base, &UIScrollView.MNPageAssociated.topInset, NSNumber(value: Double(newValue)), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             } else {
-                objc_setAssociatedObject(base, &UIScrollView.MNPageAssociated.pageInset, nil, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+                objc_setAssociatedObject(base, &UIScrollView.MNPageAssociated.topInset, nil, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             }
         }
     }
@@ -85,7 +85,7 @@ extension MNNameSpaceWrapper where Base: UIScrollView {
 extension UIViewController {
     
     /// 转场状态
-    public enum MNPageState: Int {
+    public enum MNPageTransitionState: Int {
         /// 未知(默认状态)
         case unknown
         /// 即将出现
@@ -102,13 +102,13 @@ extension UIViewController {
         /// 子页面索引
         nonisolated(unsafe) static var pageIndex: Void?
         /// 子页面状态
-        nonisolated(unsafe) static var pageState: Void?
+        nonisolated(unsafe) static var transitionState: Void?
     }
 }
 
 extension MNNameSpaceWrapper where Base: UIViewController {
     
-    /// 子页面索引
+    /// 页面索引
     public internal(set) var pageIndex: Int {
         get {
             guard let number = objc_getAssociatedObject(base, &UIViewController.MNPageAssociated.pageIndex) as? NSNumber else { return 0 }
@@ -119,38 +119,14 @@ extension MNNameSpaceWrapper where Base: UIViewController {
         }
     }
     
-    /// 子页面转场状态
-    public internal(set) var pageState: UIViewController.MNPageState {
+    /// 页面转场状态
+    public internal(set) var pageTransitionState: UIViewController.MNPageTransitionState {
         get {
-            guard let number = objc_getAssociatedObject(base, &UIViewController.MNPageAssociated.pageState) as? NSNumber else { return .unknown }
+            guard let number = objc_getAssociatedObject(base, &UIViewController.MNPageAssociated.transitionState) as? NSNumber else { return .unknown }
             return .init(rawValue: number.intValue) ?? .unknown
         }
         set {
-            objc_setAssociatedObject(base, &UIViewController.MNPageAssociated.pageState, NSNumber(value: newValue.rawValue), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        }
-    }
-}
-
-
-extension MNSegmentedPageConvertible {
-    
-    /// 子页面索引
-    public var pageIndex: Int {
-        get {
-            (self as UIViewController).mn.pageIndex
-        }
-        set {
-            (self as UIViewController).mn.pageIndex = newValue
-        }
-    }
-    
-    /// 子页面转场状态
-    public var pageState: UIViewController.MNPageState {
-        get {
-            (self as UIViewController).mn.pageState
-        }
-        set {
-            (self as UIViewController).mn.pageState = newValue
+            objc_setAssociatedObject(base, &UIViewController.MNPageAssociated.transitionState, NSNumber(value: newValue.rawValue), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 }

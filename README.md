@@ -6851,7 +6851,7 @@ extension ViewController: MNSegmentedViewControllerDataSource {
     }
     
     // 按索引提供子页面（数据源方法名为 pageAt）
-    func segmentedViewController(_ viewController: MNSegmentedViewController, pageAt index: Int) -> MNSegmentedPageConvertible {
+    func segmentedViewController(_ viewController: MNSegmentedViewController, pageAt index: Int) -> MNSegmentedPageScrollSupported {
         let pageVC = PageViewController()
         pageVC.title = preferredSegmentedNavigationTitles[index]
         return pageVC
@@ -6865,8 +6865,8 @@ extension ViewController: MNSegmentedViewControllerDelegate {
     }
 }
 
-// 子页面需要遵循 MNSegmentedPageConvertible 协议
-class PageViewController: UIViewController, MNSegmentedPageConvertible {
+// 子页面需要遵循 MNSegmentedPageScrollSupported 协议
+class PageViewController: UIViewController, MNSegmentedPageScrollSupported {
 
     @IBOutlet weak var tableView: UITableView!
     
@@ -7043,7 +7043,7 @@ class CustomSegmentedCell: UICollectionViewCell, MNSegmentedNavigationCellConver
 
 #### 📝 注意事项
 
-- **子页面协议**：子页面遵循 `MNSegmentedPageConvertible`。`preferredPageScrollView` 为可选能力；实现并返回列表/滚动容器后，横向布局下才支持头部与内容联动及内部对 contentInset、最小内容高度的自动适配。
+- **子页面协议**：子页面遵循 `MNSegmentedPageScrollSupported`。`preferredPageScrollView` 为可选能力；实现并返回列表/滚动容器后，横向布局下才支持头部与内容联动及内部对 contentInset、最小内容高度的自动适配。
 - **头部视图联动**：当子页滚动视图内容高度达到协调器计算的最小要求时，公共头部随内容上滑折叠；可通过 `configuration.headerMinimumVisibleHeight` 约束头部至少保留的可见高度。
 - **生命周期与缓存**：协调器配合子页 `pageState` 维护出现与消失；已创建子页会按索引缓存，可通过 `page(for:access:)` 读取，`reloadPages()` 会清空缓存并刷新。
 - **布局方向**：通过 `configuration.navigation.orientation` 设置横向（`.horizontal`）或纵向（`.vertical`）。
