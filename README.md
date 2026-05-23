@@ -175,9 +175,9 @@ let package = Package(
 
 ### 其他说明
 
-- 后台音频：若使用 Player 模块并需要后台播放，除将 `sessionCategory` 设为 `.playback` 外，还需在 Info.plist 中配置 UIBackgroundModes（audio）。详见 Player 模块注意事项。
-- Apple 登录：Utility 中的 Apple 登录（AppleLoginHelper）需在 Xcode 中开启 `Sign in with Apple Capability`，一般不需要额外的 Usage Description 键。
-- 模块内说明：各模块的注意事项中可能仍有权限相关提示（如 Utility、AssetPicker、Player），与本节互为补充。
+- **后台音频**：若使用 Player 模块并需要后台播放，除将 `sessionCategory` 设为 `.playback` 外，还需在 Info.plist 中配置 UIBackgroundModes（audio）。详见 Player 模块注意事项。
+- **Apple 登录**：Utility 中的 Apple 登录（AppleLoginHelper）需在 Xcode 中开启 `Sign in with Apple Capability`，一般不需要额外的 Usage Description 键。
+- **模块内说明**：各模块的注意事项中可能仍有权限相关提示（如 Utility、AssetPicker、Player），与本节互为补充。
 
 ## 使用
 
