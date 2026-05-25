@@ -2000,8 +2000,8 @@ class PagingRequest: MNDataRequest, MNPagingRequestSupported {
 
 `CachePolicy` 枚举支持以下策略：
 - `.never`: 不使用缓存
-- `.returnCacheElseLoad`: 优先使用缓存，失败后请求网络
-- `.returnCacheDontLoad`: 优先使用缓存，没有缓存或缓存过期则不加载
+- `.returnCacheElseLoad`: 优先请求网络，网络加载失败后则使用缓存
+- `.returnCacheDontLoad`: 优先使用缓存，获取到缓存则不加载
 
 内容类型
 
@@ -2037,7 +2037,7 @@ class PagingRequest: MNDataRequest, MNPagingRequestSupported {
 
 - **线程安全**：所有回调都在主线程执行（除非指定了自定义队列），可以直接更新 UI。
 - **内存管理**：请求对象会被强引用直到请求完成，无需担心提前释放。
-- **缓存机制**：缓存基于 `SQLite` 数据库，默认路径为 `Documents/http_caches.sqlite`。
+- **缓存机制**：缓存基于 `SQLite` 数据库，默认路径为 `Caches/MNSwiftKit/request_cache.sqlite`。
 - **重试机制**：重试只对网络错误有效，不会对序列化错误、解析错误、取消操作进行重试。
 - **断点续传**：`MNDownloadRequest` 支持断点续传，暂停后可以继续下载。
 - **文件下载**：`MNFileDataRequest` 使用 DataTask 下载，适合小文件；`MNDownloadRequest` 使用 DownloadTask，支持断点续传，适合大文件。

@@ -187,7 +187,7 @@ extension MNNetworkError {
     /// 是否是取消带来的错误
     public var isCancelled: Bool { errCode == MNNetworkErrorCancelled }
     
-    /// 是否是请求编码时的错误
+    /// 是否是关于请求编码的错误
     public var isSerializationError: Bool {
         switch self {
         case .requestSerializationFailure: return true
@@ -195,7 +195,23 @@ extension MNNetworkError {
         }
     }
     
-    /// 是否是数据解析错误
+    /// 是否是关于HTTPS验证的错误
+    public var isChallengeError: Bool {
+        switch self {
+        case .httpsChallengeFailure: return true
+        default: return false
+        }
+    }
+    
+    /// 是否是关于请求响应错误
+    public var isResponseError: Bool {
+        switch self {
+        case .httpsChallengeFailure: return true
+        default: return false
+        }
+    }
+    
+    /// 是否是关于数据解析错误
     public var isParseError: Bool {
         switch self {
         case .dataParseFailure: return true

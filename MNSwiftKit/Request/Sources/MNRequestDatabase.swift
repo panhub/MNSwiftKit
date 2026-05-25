@@ -15,7 +15,7 @@ public class MNRequestDatabase {
     /// 默认表名
     public static let Table: String = "t_request_result"
     /// 默认数据库路径
-    public static let Path: String = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/request_cache.sqlite"
+    public static let Path: String = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first! + "/MNSwiftKit/request_cache.sqlite"
     /// 操作线程
     private let queue = DispatchQueue(label: "com.mn.request.data.result.queue", attributes: .concurrent)
     /// 数据库路径
@@ -34,9 +34,6 @@ public class MNRequestDatabase {
     ///   - path: 数据库路径
     public init(path: String = Path) {
         self.path = path
-#if DEBUG
-        print("\n===============网络缓存路径===============\n\(path)\n======================================")
-#endif
         if FileManager.default.fileExists(atPath: path) == false {
             do {
                 try FileManager.default.createDirectory(atPath: (path as NSString).deletingLastPathComponent, withIntermediateDirectories: true, attributes: nil)
@@ -46,6 +43,9 @@ public class MNRequestDatabase {
 #endif
             }
         }
+#if DEBUG
+        print("\n===============网络缓存路径===============\n\(path)\n======================================")
+#endif
     }
     
     deinit {
@@ -96,16 +96,16 @@ public class MNRequestDatabase {
     /// 读取缓存
     /// - Parameters:
     ///   - key: 缓存标识
-    ///   - ttl: 缓存有效时长 单位秒
+    ///   - timeInterval: 缓存有效时长 单位秒
     /// - Returns: 缓存数据
-    public func cache(forKey key: String, ttl: TimeInterval = 0.0) -> Any? {
+    public func cache(forKey key: String, timeInterval: TimeInterval = 0.0) -> Any? {
         semaphore.wait()
-        let row = fetch(for: key)
+        let row = select(for: key)
         semaphore.signal()
         guard let row = row, let data = row.data else { return nil }
-        if ttl > 0.0  {
+        if timeInterval > 0.0  {
             let time =  TimeInterval(time(nil))
-            guard time <= (row.time + ttl) else { return nil }
+            guard time <= (row.time + timeInterval) else { return nil }
         }
         var object: Any?
         do {
@@ -121,12 +121,12 @@ public class MNRequestDatabase {
     /// 异步读取缓存
     /// - Parameters:
     ///   - key: 缓存标识
-    ///   - ttl: 缓存有效时长 单位秒
+    ///   - timeInterval: 缓存有效时长 单位秒
     ///   - completionHandler: 缓存数据回调
-    public func cache(forKey key: String, ttl: TimeInterval = 0.0, completion completionHandler: @escaping ((Any?)->Void)) {
+    public func cache(forKey key: String, timeInterval: TimeInterval = 0.0, completion completionHandler: @escaping ((Any?)->Void)) {
         queue.async { [weak self] in
             guard let self = self else { return }
-            let object = self.cache(forKey:key, ttl: ttl)
+            let object = self.cache(forKey:key, timeInterval: timeInterval)
             completionHandler(object)
         }
     }
@@ -268,7 +268,7 @@ fileprivate extension MNRequestDatabase {
     /// 获取数据
     /// - Parameter key: 条件数据
     /// - Returns: 查询到的数据
-    func fetch(for key: String) -> (key: String, data: Data?, time: Double)? {
+    func select(for key: String) -> (key: String, data: Data?, time: Double)? {
         let sql: String = "select value, time from '\(MNRequestDatabase.Table)' where key = ?1;"
         guard let stmt = stmt(sql: sql) else { return nil }
         guard sqlite3_bind_text(stmt, 1, key.cString(using: .utf8), -1, SQLITE_TRANSIENT) == SQLITE_OK else { return nil }

@@ -44,8 +44,8 @@ open class MNDataRequest: MNRequest {
     public var body: Any?
     /// 请求方式
     public var method: MNNetworkMethod = .get
-    /// 重试次数 失败时重新请求 NSURLErrorCancelled 无效
-    internal var retryCount: Int = 0
+    /// 最大重试次数 失败时重新请求 code 为 `NSURLErrorCancelled` 时不再重试
+    public var maxRetryCount: Int = 0
     /// 重试时间间隔 默认立即重试
     public var retryInterval: TimeInterval = 0.0
     /// 数据来源
@@ -84,21 +84,11 @@ open class MNDataRequest: MNRequest {
         // 判断是否需要读取缓存
         let httpResult = MNRequestResult(result: result)
         httpResult.request = self
-        if result.isSuccess == false, method == .get, cachePolicy == .returnCacheElseLoad, let cache = MNRequestDatabase.default.cache(forKey: cacheForKey, ttl: cacheTTL) {
-            dataSource = .cache
-            httpResult.data = cache
-        }
         // 定制自己的结果
         if httpResult.isSuccess {
             didFinish(result: httpResult)
             // 依据结果回调
             if let data = httpResult.data {
-                // 判断是否缓存结果
-                if method == .get, dataSource == .network, cachePolicy != .never, MNRequestDatabase.default.setCache(data, forKey: cacheForKey) {
-#if DEBUG
-                    print("已缓存数据")
-#endif
-                }
                 // 回调成功函数
                 didSuccess(responseData: data)
             }

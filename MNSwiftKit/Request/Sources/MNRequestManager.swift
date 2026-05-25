@@ -49,28 +49,39 @@ public class MNRequestManager {
     ///   - request: 请求体
     ///   - result: 请求结果
     private func finish(request: MNRequest, result: Result<Any, MNNetworkError>) {
-        // 标记已不是第一次请求
-        request.isFirstRunning = false
-        // 判断是否需要重新请求并修改数据来源
-        let code = result.code
+        var requestResult = result
         if request is MNDataRequest {
             let dataRequest = request as! MNDataRequest
-            if let error = result.error, error.isCancelled == false, error.isSerializationError == false, error.isParseError == false, dataRequest.mn_retryEventCount < dataRequest.retryCount {
-                // 重试
-                DispatchQueue.main.asyncAfter(deadline: .now() + max(dataRequest.retryInterval, 0.1)) { [weak self] in
-                    guard let self = self else { return }
-                    dataRequest.mn_retryEventCount += 1
-                    self.load(dataRequest)
+            if let error = result.error, error.isCancelled == false, error.isResponseError {
+                if dataRequest.retryCount < dataRequest.maxRetryCount {
+                    // 重试
+                    DispatchQueue.main.asyncAfter(deadline: .now() + max(dataRequest.retryInterval, 0.1)) { [weak self] in
+                        guard let self = self else { return }
+                        dataRequest.retryCount += 1
+                        self.load(dataRequest)
+                    }
+                    return
                 }
-                return
+                if dataRequest.method == .get, dataRequest.cachePolicy == .returnCacheElseLoad, let cache = MNRequestDatabase.default.cache(forKey: dataRequest.cacheForKey, timeInterval: dataRequest.cacheTTL) {
+                    // 失败 - 取缓存
+                    requestResult = .success(cache)
+                    dataRequest.dataSource = .cache
+                }
+            } else if result.isSuccess, let data = result.data {
+                // 成功 - 缓存
+                dataRequest.dataSource = .network
+                if dataRequest.method == .get, dataRequest.cachePolicy != .never, MNRequestDatabase.default.setCache(data, forKey: dataRequest.cacheForKey) {
+#if DEBUG
+                    print("已缓存网络请求的数据: \(dataRequest.cacheForKey)")
+#endif
+                }
             }
-            dataRequest.mn_retryEventCount = 0
-            dataRequest.dataSource = .network
+            dataRequest.retryCount = 0
         }
-        // 判断是否需要回调
-        if request.ignoringErrorCodes.contains(code) { return }
+        request.isFirstRunning = false
+        if request.ignoringErrorCodes.contains(requestResult.code) { return }
         // 回调结果
-        request.loadFinish(result: result)
+        request.loadFinish(result: requestResult)
     }
 }
 
@@ -81,12 +92,12 @@ extension MNRequestManager {
     /// - Parameter request: 数据请求
     public func load(_ request: MNDataRequest) {
         // 判断是否需要读取缓存
-        if request.method == .get, request.cachePolicy == .returnCacheDontLoad, request.mn_retryEventCount <= 0, let cache = MNRequestDatabase.default.cache(forKey: request.cacheForKey, ttl: request.cacheTTL) {
+        if request.method == .get, request.cachePolicy == .returnCacheDontLoad, request.retryCount == 0, let cache = MNRequestDatabase.default.cache(forKey: request.cacheForKey, timeInterval: request.cacheTTL) {
             request.dataSource = .cache
             request.isFirstRunning = false
             request.loadFinish(result: .success(cache))
 #if DEBUG
-            print("读取缓存成功===\(request.url)")
+            print("已读取网络缓存: \(request.cacheForKey)")
 #endif
             return
         }
@@ -95,7 +106,7 @@ extension MNRequestManager {
         guard let dataTask = request.task else { return }
         // 开启请求
         dataTask.resume()
-        guard request.mn_retryEventCount <= 0 else { return }
+        guard request.retryCount == 0 else { return }
         // 回调开始
         (request.queue ?? .main).async { [weak request] in
             guard let request = request else { return }
@@ -356,9 +367,10 @@ extension MNDataRequest {
     }
     
     /// 当前重试次数
-    fileprivate var mn_retryEventCount: Int {
+    fileprivate var retryCount: Int {
         get {
-            objc_getAssociatedObject(self, &MNDataRequest.RetryAssociated.retryCount) as? Int ?? 0
+            guard let number = objc_getAssociatedObject(self, &MNDataRequest.RetryAssociated.retryCount) as? NSNumber else { return 0 }
+            return number.intValue
         }
         set {
             objc_setAssociatedObject(self, &MNDataRequest.RetryAssociated.retryCount, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
