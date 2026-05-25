@@ -1699,7 +1699,7 @@ request.start(completion: { result in
 ```swift
 let request = MNDataRequest(url: "https://api.example.com/data")
 request.method = .get
-request.cachePolicy = .returnCacheElseLoad  // 优先使用缓存，失败后请求网络
+request.cachePolicy = .returnCacheElseLoad  // 优先请求网络，失败后使用缓存
 request.cacheTTL = 3600  // 缓存有效期1小时
 
 request.start(completion: { result in
@@ -1717,7 +1717,7 @@ request.start(completion: { result in
 
 ```swift
 let request = MNDataRequest(url: "https://api.example.com/data")
-request.retryCount = 3  // 最多重试3次
+request.maxRetryCount = 3  // 最多重试3次
 request.retryInterval = 1.0  // 重试间隔1秒
 
 request.start(completion: { result in
@@ -1921,15 +1921,25 @@ request.start(completion: { result in
 
 网络缓存管理
 
+`MNRequestDatabase` 提供独立的缓存读写能力，请求模块也会根据 `cachePolicy` 自动管理缓存：
+
 ```swift
-// 写入缓存
+// 同步写入缓存
+let success = MNRequestDatabase.default.setCache(data, forKey: "cache_key")
+
+// 异步写入缓存
 MNRequestDatabase.default.setCache(data, forKey: "cache_key") { success in
     print("缓存写入：\(success)")
 }
 
-// 读取缓存
+// 读取缓存（timeInterval 为有效时长，单位秒，0 表示无限期）
 if let cache = MNRequestDatabase.default.cache(forKey: "cache_key", timeInterval: 3600) {
     print("读取缓存：\(cache)")
+}
+
+// 判断是否包含缓存
+if MNRequestDatabase.default.containsCache(forKey: "cache_key") {
+    print("存在缓存")
 }
 
 // 删除缓存
@@ -2001,7 +2011,7 @@ class PagingRequest: MNDataRequest, MNPagingRequestSupported {
 `CachePolicy` 枚举支持以下策略：
 - `.never`: 不使用缓存
 - `.returnCacheElseLoad`: 优先请求网络，网络加载失败后则使用缓存
-- `.returnCacheDontLoad`: 优先使用缓存，获取到缓存则不加载
+- `.returnCacheDontLoad`: 优先使用缓存，命中缓存则直接返回，未命中或过期则请求网络
 
 内容类型
 
@@ -2033,12 +2043,19 @@ class PagingRequest: MNDataRequest, MNPagingRequestSupported {
 - `httpsChallengeFailure`: HTTPS 挑战失败
 - `custom`: 自定义错误
 
+错误判断辅助属性：
+- `isCancelled`: 是否为取消错误
+- `isSerializationError`: 是否为请求编码错误
+- `isResponseError`: 是否为响应错误
+- `isChallengeError`: 是否为 HTTPS 验证错误
+- `isParseError`: 是否为数据解析错误
+
 #### 📝 注意事项
 
 - **线程安全**：所有回调都在主线程执行（除非指定了自定义队列），可以直接更新 UI。
 - **内存管理**：请求对象会被强引用直到请求完成，无需担心提前释放。
-- **缓存机制**：缓存基于 `SQLite` 数据库，默认路径为 `Caches/MNSwiftKit/request_cache.sqlite`。
-- **重试机制**：重试只对网络错误有效，不会对序列化错误、解析错误、取消操作进行重试。
+- **缓存机制**：缓存基于 `SQLite` 数据库，默认路径为 `Caches/MNSwiftKit/request_cache.sqlite`；GET 请求的缓存读写由 `MNRequestManager` 根据 `cachePolicy` 自动处理，也可通过 `MNRequestDatabase` 手动管理。
+- **重试机制**：通过 `maxRetryCount` 配置最大重试次数，`retryInterval` 配置重试间隔；响应错误（`isResponseError`）且非取消时会自动重试，请求编码、数据解析错误不会重试；重试耗尽后，配合 `.returnCacheElseLoad` 策略可回退到本地缓存。
 - **断点续传**：`MNDownloadRequest` 支持断点续传，暂停后可以继续下载。
 - **文件下载**：`MNFileDataRequest` 使用 DataTask 下载，适合小文件；`MNDownloadRequest` 使用 DownloadTask，支持断点续传，适合大文件。
 - **参数编码**：参数会自动进行 URL 编码，支持字典、字符串等多种格式。
@@ -3926,15 +3943,16 @@ if MN_IS_SIMULATOR {
 
 #### ✨ 特性
 
-- 🎨 **多元素支持**：支持图片、文字、按钮、自定义视图四种元素，可自由组合
+- 🎨 **多元素支持**：支持图片、文字、按钮三种构成元素，可自由组合顺序
+- 🖼️ **自定义视图**：支持通过代理提供完全自定义的空状态视图
 - 🔄 **自动检测**：自动检测 `UITableView` 和 `UICollectionView` 的数据数量，无需手动控制
-- 📱 **滚动控制**：支持控制 `UIScrollView` 的滚动状态，空数据时可禁用滚动
-- 🎭 **灵活配置**：通过协议提供丰富的配置选项，支持自定义样式、布局、动画等
-- 🎬 **动画支持**：支持自定义动画和渐现动画，提升用户体验
-- 🔍 **智能显示**：根据数据源自动判断是否显示空视图，支持手动控制
+- 🎭 **灵活配置**：通过 `MNDataEmptyDelegate` 协议提供丰富的样式与布局配置
+- 🎬 **渐现动画**：支持配置渐现动画时长，提升显示体验
+- 🔍 **智能显示**：根据数据源自动判断是否显示空视图，也支持手动控制
 - 📐 **布局灵活**：支持垂直和水平布局，可自定义间距、对齐方式、偏移量
-- 🎯 **事件处理**：支持图片、文字、按钮的点击事件，提供完整的交互能力
-- 🔗 **协议驱动**：采用数据源和代理模式，代码结构清晰，易于扩展
+- 📚 **层级控制**：通过 `MNDataEmptyHierarchyPositioning` 协议控制空视图在父视图中的层级
+- 🎯 **事件处理**：支持按钮点击事件及显示/隐藏生命周期回调
+- 🔗 **协议驱动**：采用代理模式，代码结构清晰，易于扩展
 
 #### 🚀 快速开始
 
@@ -3971,26 +3989,31 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // 设置数据源
-        tableView.mn.emptySource = self
-        tableView.mn.emptyDelegate = self
+        // 设置空数据代理（需同时实现 MNDataEmptyHierarchyPositioning）
+        tableView.mn.dataEmptyDelegate = self
     }
 }
 
-extension ViewController: MNDataEmptySource {
-    // 是否显示空视图
-    func dataEmptyViewShouldAppear(_ superview: UIView) -> Bool {
-        // 返回 true 表示显示空视图
+extension ViewController: MNDataEmptyHierarchyPositioning {
+    
+    func hierarchyPositionForDataEmptyView() -> MNDataEmptyHierarchyPosition {
+        return .front
+    }
+}
+
+extension ViewController: MNDataEmptyDelegate {
+    // 是否显示空视图（可选，未实现时自动检测列表数据量）
+    func dataEmptyViewShouldAppear() -> Bool {
         return dataArray.isEmpty
     }
     
     // 空视图图片
-    func imageForDataEmptyView(_ superview: UIView) -> UIImage? {
+    func imageForDataEmptyView() -> UIImage? {
         return UIImage(named: "empty_icon")
     }
     
     // 空视图描述文字
-    func attributedHintForDataEmptyView(_ superview: UIView) -> NSAttributedString? {
+    func attributedHintForDataEmptyView() -> NSAttributedString? {
         let attributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 16),
             .foregroundColor: UIColor.gray
@@ -3999,7 +4022,7 @@ extension ViewController: MNDataEmptySource {
     }
     
     // 按钮标题
-    func buttonAttributedTitleForDataEmptyView(_ superview: UIView, with state: UIControl.State) -> NSAttributedString? {
+    func buttonAttributedTitleForDataEmptyView(for state: UIControl.State) -> NSAttributedString? {
         if state == .normal {
             let attributes: [NSAttributedString.Key: Any] = [
                 .font: UIFont.systemFont(ofSize: 15),
@@ -4011,15 +4034,12 @@ extension ViewController: MNDataEmptySource {
     }
     
     // 按钮大小
-    func buttonSizeForDataEmptyView(_ superview: UIView) -> CGSize {
+    func buttonSizeForDataEmptyView() -> CGSize {
         return CGSize(width: 120, height: 40)
     }
-}
-
-extension ViewController: MNDataEmptyDelegate {
+    
     // 按钮点击事件
     func dataEmptyViewButtonTouchUpInside() {
-        // 重新加载数据
         loadData()
     }
 }
@@ -4028,14 +4048,14 @@ extension ViewController: MNDataEmptyDelegate {
 自定义视图
 
 ```swift
-extension ViewController: MNDataEmptySource {
+extension ViewController: MNDataEmptyDelegate {
 
-    func dataEmptyViewShouldAppear(_ superview: UIView) -> Bool {
+    func dataEmptyViewShouldAppear() -> Bool {
         return dataArray.isEmpty
     }
     
-    // 使用自定义视图
-    func customViewForDataEmptyView(_ superview: UIView) -> UIView? {
+    // 使用自定义视图，会插入到图片位置
+    func customViewForDataEmptyView() -> UIView? {
         let customView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
         customView.backgroundColor = .lightGray
         
@@ -4059,43 +4079,59 @@ extension ViewController: MNDataEmptySource {
 
 ```swift
 // 只显示图片和文字，不显示按钮
-tableView.mn.emptyComponents = [.image, .text]
+tableView.mn.dataEmptyComponents = [.image, .text]
 
-// 只显示自定义视图
-tableView.mn.emptyComponents = [.custom]
+// 只显示文字
+tableView.mn.dataEmptyComponents = [.text]
 
 // 显示所有元素（默认）
-tableView.mn.emptyComponents = [.image, .text, .button]
+tableView.mn.dataEmptyComponents = [.image, .text, .button]
 ```
 
 自定义布局
 
 ```swift
-extension ViewController: MNDataEmptySource {
+extension ViewController: MNDataEmptyDelegate {
 
     // 布局方向（垂直或水平）
-    func axisForDataEmptyView(_ superview: UIView) -> NSLayoutConstraint.Axis {
+    func axisForDataEmptyView() -> NSLayoutConstraint.Axis {
         return .horizontal  // 水平布局
     }
     
     // 元素间距
-    func spacingForDataEmptyView(_ superview: UIView) -> CGFloat {
+    func spacingForDataEmptyView() -> CGFloat {
         return 30.0
     }
     
     // 对齐方式
-    func alignmentForDataEmptyView(_ superview: UIView) -> UIStackView.Alignment {
+    func alignmentForDataEmptyView() -> UIStackView.Alignment {
         return .center
     }
     
     // 内容偏移
-    func offsetForDataEmptyView(_ superview: UIView) -> UIOffset {
+    func offsetForDataEmptyView() -> UIOffset {
         return UIOffset(horizontal: 0, vertical: -50)  // 向上偏移50点
     }
     
     // 边距
-    func edgeInsetForDataEmptyView(_ superview: UIView) -> UIEdgeInsets {
+    func edgeInsetForDataEmptyView() -> UIEdgeInsets {
         return UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+    }
+}
+```
+
+层级控制
+
+```swift
+extension ViewController: MNDataEmptyHierarchyPositioning {
+    
+    func hierarchyPositionForDataEmptyView() -> MNDataEmptyHierarchyPosition {
+        // .front: 添加到最上层
+        // .back: 添加到最下层
+        // .above(subview): 在指定视图之上
+        // .below(subview): 在指定视图之下
+        // .insex(index): 插入到指定索引
+        return .front
     }
 }
 ```
@@ -4103,50 +4139,55 @@ extension ViewController: MNDataEmptySource {
 自定义样式
 
 ```swift
-extension ViewController: MNDataEmptySource {
+extension ViewController: MNDataEmptyDelegate {
 
     // 背景颜色
-    func backgroundColorForDataEmptyView(_ superview: UIView) -> UIColor? {
+    func backgroundColorForDataEmptyView() -> UIColor? {
         return UIColor(white: 0.95, alpha: 1.0)
     }
     
     // 图片尺寸
-    func imageSizeForDataEmptyView(_ superview: UIView) -> CGSize {
+    func imageSizeForDataEmptyView() -> CGSize {
         return CGSize(width: 120, height: 120)
     }
     
     // 图片圆角
-    func imageRadiusForDataEmptyView(_ superview: UIView) -> CGFloat {
+    func imageRadiusForDataEmptyView() -> CGFloat {
         return 10.0
     }
     
     // 图片填充模式
-    func imageModeForDataEmptyView(_ superview: UIView) -> UIView.ContentMode {
+    func imageModeForDataEmptyView() -> UIView.ContentMode {
         return .scaleAspectFit
     }
     
     // 文字最大宽度
-    func hintConstrainedMagnitudeForDataEmptyView(_ superview: UIView) -> CGFloat {
+    func hintConstrainedMagnitudeForDataEmptyView() -> CGFloat {
         return 250.0
     }
     
     // 按钮圆角
-    func buttonRadiusForDataEmptyView(_ superview: UIView) -> CGFloat {
+    func buttonRadiusForDataEmptyView() -> CGFloat {
         return 5.0
     }
     
     // 按钮边框
-    func buttonBorderWidthForDataEmptyView(_ superview: UIView) -> CGFloat {
+    func buttonBorderWidthForDataEmptyView() -> CGFloat {
         return 1.0
     }
     
-    func buttonBorderColorForDataEmptyView(_ superview: UIView) -> UIColor? {
+    func buttonBorderColorForDataEmptyView() -> UIColor? {
         return .blue
     }
     
     // 按钮背景颜色
-    func buttonBackgroundColorForDataEmptyView(_ superview: UIView) -> UIColor? {
+    func buttonBackgroundColorForDataEmptyView() -> UIColor? {
         return .white
+    }
+    
+    // 按钮背景图片
+    func buttonBackgroundImageForDataEmptyView(for state: UIControl.State) -> UIImage? {
+        return nil
     }
 }
 ```
@@ -4154,68 +4195,22 @@ extension ViewController: MNDataEmptySource {
 动画效果
 
 ```swift
-extension ViewController: MNDataEmptySource {
-
-    // 自定义动画
-    func displayAnimationForDataEmptyView(_ superview: UIView) -> CAAnimation? {
-        let animation = CABasicAnimation(keyPath: "transform.scale")
-        animation.fromValue = 0.0
-        animation.toValue = 1.0
-        animation.duration = 0.3
-        animation.timingFunction = CAMediaTimingFunction(name: .easeOut)
-        return animation
-    }
-    
-    // 或使用渐现动画
-    func fadeAnimationDurationForDataEmptyView(_ superview: UIView) -> TimeInterval {
-        return 0.25  // 0.0 表示不使用渐现动画
-    }
-}
-```
-
-滚动控制
-
-```swift
-extension ViewController: MNDataEmptySource {
-
-    // 空数据时是否允许滚动
-    func dataEmptyViewShouldScroll(_ superview: UIView) -> Bool {
-        return false  // 空数据时禁用滚动
-    }
-}
-```
-
-交互事件
-
-```swift
-extension ViewController: MNDataEmptySource {
-
-    // 图片是否可点击
-    func dataEmptyViewShouldTouchImage(_ superview: UIView) -> Bool {
-        return true
-    }
-    
-    // 文字是否可点击
-    func dataEmptyViewShouldTouchDescription(_ superview: UIView) -> Bool {
-        return true
-    }
-}
-
 extension ViewController: MNDataEmptyDelegate {
 
-    // 图片点击事件
-    func dataEmptyViewImageTouchUpInside(_ image: UIImage?) {
-        print("图片被点击")
+    // 渐现动画时长，> 0 时启用渐现动画
+    func fadeAnimationDurationForDataEmptyView() -> TimeInterval {
+        return 0.25
     }
-    
-    // 文字点击事件
-    func dataEmptyViewDescriptionTouchUpInside(_ description: String?) {
-        print("文字被点击：\(description ?? "")")
-    }
-    
+}
+```
+
+生命周期与事件
+
+```swift
+extension ViewController: MNDataEmptyDelegate {
+
     // 按钮点击事件
     func dataEmptyViewButtonTouchUpInside() {
-        print("按钮被点击")
         loadData()
     }
     
@@ -4234,33 +4229,26 @@ extension ViewController: MNDataEmptyDelegate {
 手动控制显示/隐藏
 
 ```swift
-// 手动显示空视图
-tableView.mn.emptyView?.show()
-
-// 手动隐藏空视图
-tableView.mn.emptyView?.dismiss()
-
-// 根据条件显示/隐藏
-tableView.mn.emptyView?.showIfNeeded()
+// 根据条件自动显示或隐藏
+tableView.mn.showEmptyViewIfNeeded()
 ```
 
 自动显示控制
 
 ```swift
 // 启用自动显示（默认开启）
-tableView.mn.autoDisplayEmpty = true
+tableView.mn.automaticallyShowEmptyView = true
 
 // 禁用自动显示
-tableView.mn.autoDisplayEmpty = false
+tableView.mn.automaticallyShowEmptyView = false
 ```
 
 协议方法说明
 
-`MNDataEmptySource` 协议提供了丰富的配置方法，所有方法都是可选的：
+`MNDataEmptyDelegate` 协议提供了丰富的配置方法，所有方法都是可选的：
 
 - 显示控制：
   - `dataEmptyViewShouldAppear`: 是否显示空视图
-  - `dataEmptyViewShouldScroll`: 是否允许滚动（`UIScrollView` 有效）
 - 布局配置：
   - `edgeInsetForDataEmptyView`: 边距
   - `offsetForDataEmptyView`: 内容偏移
@@ -4272,38 +4260,41 @@ tableView.mn.autoDisplayEmpty = false
   - `imageSizeForDataEmptyView`: 图片尺寸
   - `imageModeForDataEmptyView`: 图片填充模式
   - `imageRadiusForDataEmptyView`: 图片圆角
-  - `dataEmptyViewShouldTouchImage`: 图片是否可点击
 - 文字配置：
   - `attributedHintForDataEmptyView`: 描述文字（富文本）
   - `hintConstrainedMagnitudeForDataEmptyView`: 文字最大宽度
-  - `dataEmptyViewShouldTouchDescription`: 文字是否可点击
 - 按钮配置：
   - `buttonSizeForDataEmptyView`: 按钮尺寸
   - `buttonRadiusForDataEmptyView`: 按钮圆角
   - `buttonBorderWidthForDataEmptyView`: 按钮边框宽度
   - `buttonBorderColorForDataEmptyView`: 按钮边框颜色
   - `buttonBackgroundColorForDataEmptyView`: 按钮背景颜色
-  - `buttonBackgroundImageForDataEmptyView`: 按钮背景图片
-  - `buttonAttributedTitleForDataEmptyView`: 按钮标题（富文本）
+  - `buttonBackgroundImageForDataEmptyView(for:)`: 按钮背景图片
+  - `buttonAttributedTitleForDataEmptyView(for:)`: 按钮标题（富文本）
 - 其他配置：
   - `customViewForDataEmptyView`: 自定义视图
   - `backgroundColorForDataEmptyView`: 背景颜色
-  - `userInfoForDataEmptyView`: 用户信息
-  - `displayAnimationForDataEmptyView`: 自定义动画
   - `fadeAnimationDurationForDataEmptyView`: 渐现动画时长
+- 事件与生命周期：
+  - `dataEmptyViewButtonTouchUpInside`: 按钮点击
+  - `dataEmptyViewDidAppear`: 空视图已显示
+  - `dataEmptyViewDidDisappear`: 空视图已隐藏
+
+`MNDataEmptyHierarchyPositioning` 协议用于控制空视图层级：
+
+- `hierarchyPositionForDataEmptyView`: 返回 `.front`、`.back`、`.above(_)`、`.below(_)` 或 `.insex(_)` 之一
 
 #### 📝 注意事项
 
 - **自动检测**：对于 `UITableView` 和 `UICollectionView`，模块会自动检测数据源的数量，无需手动实现 `dataEmptyViewShouldAppear`。
 - **滚动视图**：对于 `UIScrollView`，模块会监听 `contentSize` 的变化，自动判断是否显示空视图。
-- **线程安全**：所有显示/隐藏操作都应在主线程执行，模块已使用 `@MainActor` 标记。
-- **内存管理**：空视图使用弱引用关联到父视图，无需担心循环引用。
-- **元素顺序**：通过 `emptyComponents` 可以控制元素的显示顺序，例如 [.text, .image, .button]。
-- **自定义视图**：使用自定义视图时，需要设置正确的 frame 或使用 Auto Layout。
-- **动画优先级**：如果同时实现了 `displayAnimationForDataEmptyView` 和 `fadeAnimationDurationForDataEmptyView`，优先使用自定义动画。
-- **滚动控制**：当空视图显示时，如果设置了 `dataEmptyViewShouldScroll` 为 `false`，会自动禁用滚动视图的滚动，隐藏时会恢复。
-- **生命周期**：空视图的显示和隐藏会触发代理方法，可以在这些方法中执行相关操作。
-- **数据源更新**：当数据源发生变化时，如果启用了 `autoDisplayEmpty`，空视图会自动更新显示状态。
+- **线程安全**：所有显示/隐藏操作都应在主线程执行。
+- **内存管理**：空视图通过关联对象绑定到父视图，代理使用弱引用，无需担心循环引用。
+- **元素顺序**：通过 `dataEmptyComponents` 可以控制元素的显示顺序，例如 `[.text, .image, .button]`。
+- **自定义视图**：使用 `customViewForDataEmptyView` 提供的自定义视图会插入到图片位置，需设置正确的 frame。
+- **层级控制**：空视图首次显示时需实现 `MNDataEmptyHierarchyPositioning` 协议指定插入位置，通常返回 `.front` 即可。
+- **生命周期**：空视图的显示和隐藏会触发 `dataEmptyViewDidAppear` / `dataEmptyViewDidDisappear` 代理方法。
+- **数据源更新**：当数据源发生变化时，如果启用了 `automaticallyShowEmptyView`，空视图会自动更新显示状态；也可手动调用 `showEmptyViewIfNeeded()` 刷新。
 
 ### Extension
 

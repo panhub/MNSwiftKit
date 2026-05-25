@@ -77,28 +77,4 @@ open class MNDataRequest: MNRequest {
         completionHandler = completion
         resume()
     }
-    
-    /// 请求结束
-    /// - Parameter result: 数据体
-    final public override func loadFinish(result: Result<Any, MNNetworkError>) {
-        // 判断是否需要读取缓存
-        let httpResult = MNRequestResult(result: result)
-        httpResult.request = self
-        // 定制自己的结果
-        if httpResult.isSuccess {
-            didFinish(result: httpResult)
-            // 依据结果回调
-            if let data = httpResult.data {
-                // 回调成功函数
-                didSuccess(responseData: data)
-            }
-        } else {
-            didFail(httpResult)
-        }
-        // 回调结果
-        (queue ?? .main).async {
-            // 回调结果
-            self.completionHandler?(httpResult)
-        }
-    }
 }

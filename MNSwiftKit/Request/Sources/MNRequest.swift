@@ -96,20 +96,20 @@ open class MNRequest: NSObject {
     open func loadFinish(result: Result<Any, MNNetworkError>) {
         let httpResult = MNRequestResult(result: result)
         httpResult.request = self
-        if let data = httpResult.data {
-            didFinish(result: httpResult)
+        didFinish(result: httpResult)
+        if httpResult.code == .succeed, let data = httpResult.data {
             didSuccess(responseData: data)
         } else {
             didFail(httpResult)
         }
         // 回调结果 这里要强引用self 避免过早释放
-        (queue ?? DispatchQueue.main).async {
+        (queue ?? .main).async {
             // 回调结果代码块
             self.completionHandler?(httpResult)
         }
     }
     
-    /// 处理响应结果
+    /// 处理响应结果(自定义响应)
     /// - Parameter result: 响应结果
     open func didFinish(result: MNRequestResult) {}
     

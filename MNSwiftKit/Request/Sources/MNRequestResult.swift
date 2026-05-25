@@ -108,42 +108,42 @@ public class MNRequestResult: NSObject {
     }
     
     /// Swift数据结果
-    private var result: Result<Any, MNNetworkError> = .failure(.custom(code: MNNetworkErrorUnknown, msg: "unknown error"))
+    private var rawResult: Result<Any, MNNetworkError> = .failure(.custom(code: MNNetworkErrorUnknown, msg: "unknown error"))
     
     /// 响应码
     public var code: MNRequestResult.Code {
-        get { MNRequestResult.Code(rawValue: result.code) ?? .failed }
+        get { MNRequestResult.Code(rawValue: rawResult.code) ?? .failed }
         set {
             if newValue == .succeed {
-                if result.isSuccess == false {
-                    result = .success(NSNull())
+                if rawResult.isSuccess == false {
+                    rawResult = .success(NSNull())
                 }
             } else {
-                result = .failure(.custom(code: newValue.rawValue, msg: result.msg))
+                rawResult = .failure(.custom(code: newValue.rawValue, msg: rawResult.msg))
             }
         }
     }
     
     /// 错误信息
     public var msg: String {
-        get { result.msg }
-        set { result = .failure(.custom(code: result.code, msg: newValue)) }
+        get { rawResult.msg }
+        set { rawResult = .failure(.custom(code: rawResult.code, msg: newValue)) }
     }
     
     /// 响应数据
     public var data: Any! {
-        get { result.data }
+        get { rawResult.data }
         set {
             if let responseObject = newValue {
-                result = .success(responseObject)
-            } else if let _ = result.data {
-                result = .failure(.custom(code: MNNetworkErrorUnknown, msg: "request failed"))
+                rawResult = .success(responseObject)
+            } else if let _ = rawResult.data {
+                rawResult = .failure(.custom(code: MNNetworkErrorUnknown, msg: "request failed"))
             }
         }
     }
     
     /// HTTP响应码
-    public var responseCode: Int { result.responseCode }
+    public var responseCode: Int { rawResult.responseCode }
     
     /// 请求是否成功
     public var isSuccess: Bool { code == .succeed }
@@ -152,12 +152,12 @@ public class MNRequestResult: NSObject {
     public weak var request: MNRequest!
     
     /// 调试信息
-    public override var debugDescription: String { result.debugDescription }
+    public override var debugDescription: String { rawResult.debugDescription }
     
     /// 构造请求结果
     /// - Parameter result: 请求结果
     public init(result: Result<Any, MNNetworkError>) {
-        self.result = result
+        self.rawResult = result
     }
     
     /// 构造请求结果
