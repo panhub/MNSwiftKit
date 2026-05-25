@@ -1608,8 +1608,9 @@ tableView.mn.footer = nil
 - 📤 **文件上传**：支持单文件上传，表单数据上传
 - 📥 **文件下载**：支持普通下载和断点续传
 - 💾 **智能缓存**：支持请求缓存策略，可设置缓存有效期
-- 🔄 **自动重试**：支持失败自动重试，可配置重试次数和间隔
-- 🎯 **灵活解析**：支持 JSON、纯文本等多种数据格式解析
+- 🔄 **自动重试**：支持失败自动重试，可配置 `maxRetryCount` 和 `retryInterval`
+- 🎯 **灵活解析**：支持 JSON、纯文本等多种数据格式解析，可自定义 `analyticHandler`
+- 🔁 **统一回调**：所有请求通过 `didFinish` → `didSuccess` / `didFail` 分层处理，便于业务响应转换
 - 🔒 **安全策略**：支持 HTTPS 证书验证、域名验证等安全策略
 - 📊 **进度监控**：支持上传和下载进度实时回调
 - 🎨 **参数编码**：自动处理参数编码，支持 URL 编码和表单编码
@@ -1666,11 +1667,11 @@ POST 请求
 ```swift
 let request = MNDataRequest(url: "https://api.example.com/login")
 request.method = .post
-request.param = [
+request.serializationType = .json
+request.body = [
     "username": "user123",
     "password": "password123"
 ]
-request.contentType = .json
 
 request.start(completion: { result in
     if result.isSuccess {
@@ -1697,9 +1698,10 @@ request.start(completion: { result in
 请求缓存
 
 ```swift
+// 策略一：优先请求网络，失败后使用缓存
 let request = MNDataRequest(url: "https://api.example.com/data")
 request.method = .get
-request.cachePolicy = .returnCacheElseLoad  // 优先请求网络，失败后使用缓存
+request.cachePolicy = .returnCacheElseLoad
 request.cacheTTL = 3600  // 缓存有效期1小时
 
 request.start(completion: { result in
@@ -1710,6 +1712,16 @@ request.start(completion: { result in
             print("使用网络数据")
         }
     }
+})
+
+// 策略二：优先使用缓存，命中则直接返回
+let cacheRequest = MNDataRequest(url: "https://api.example.com/data")
+cacheRequest.method = .get
+cacheRequest.cachePolicy = .returnCacheDontLoad
+cacheRequest.cacheTTL = 3600
+
+cacheRequest.start(completion: { result in
+  // 命中缓存时不会发起网络请求
 })
 ```
 
@@ -1729,11 +1741,10 @@ request.start(completion: { result in
 
 ```swift
 let request = MNDataRequest(url: "https://api.example.com/data")
-request.contentType = .json
-request.analyticHandler = { data, contentType in
+request.serializationType = .json
+request.analyticHandler = { data, serializationType in
     // 自定义解析逻辑
-    if contentType == .json {
-        // 自定义 JSON 解析
+    if serializationType == .json {
         return try? JSONSerialization.jsonObject(with: data, options: [])
     }
     return nil
@@ -1820,7 +1831,7 @@ request.start(location: { _, _ in
 }
 
 // 暂停下载
-request.suspend { resumeData in
+request.pause { resumeData in
     if let resumeData = resumeData {
         print("已暂停，可以继续下载")
     }
@@ -1840,7 +1851,7 @@ request.resume { success in
 let request = MNFileDataRequest(url: "https://example.com/file.zip")
 request.downloadOptions = [.createIntermediateDirectories]
 
-request.start(location: {
+request.start(location: { response, url in
     // 返回文件保存路径
     let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
     return URL(fileURLWithPath: "\(documentsPath)/file.zip")
@@ -1907,12 +1918,12 @@ request.start(completion: { result in
 })
 ```
 
-接受的状态码和内容类型
+接受的状态码和解析类型
 
 ```swift
 let request = MNDataRequest(url: "https://api.example.com/data")
 request.acceptableStatusCodes = IndexSet(integersIn: 200..<300)  // 只接受 200-299
-request.acceptableContentTypes = [.json, .plainText]  // 只接受 JSON 和纯文本
+request.serializationType = .json  // 指定响应解析类型
 
 request.start(completion: { result in
     // 处理结果
@@ -1955,8 +1966,24 @@ MNRequestDatabase.default.removeAll { success in
 
 继承 MNRequest 自定义请求
 
+所有请求类型均通过 `MNRequest.loadFinish(result:)` 统一处理回调，`didFinish` 会在 `didSuccess` / `didFail` 之前调用，适合在此处理业务层响应转换：
+
 ```swift
 class CustomRequest: MNDataRequest {
+
+    override func didFinish(result: MNRequestResult) {
+        super.didFinish(result: result)
+        // 自定义业务响应，例如根据服务端 code 修改 result.code / result.data / result.msg
+        if let dict = result.data as? [String: Any], let code = dict["code"] as? Int {
+            if code == 0 {
+                result.code = .succeed
+                result.data = dict["data"]
+            } else {
+                result.code = .failed
+                result.msg = dict["msg"] as? String ?? "请求失败"
+            }
+        }
+    }
 
     override func didSuccess(responseData: Any) {
         super.didSuccess(responseData: responseData)
@@ -1999,7 +2026,7 @@ class PagingRequest: MNDataRequest, MNPagingRequestSupported {
 
 请求方法
 
-`HTTPMethod` 枚举支持以下方法：
+`MNNetworkMethod` 枚举支持以下方法：
 - `.get`: GET 请求
 - `.post`: POST 请求
 - `.put`: PUT 请求
@@ -2008,23 +2035,19 @@ class PagingRequest: MNDataRequest, MNPagingRequestSupported {
 
 缓存策略
 
-`CachePolicy` 枚举支持以下策略：
+`MNDataRequest.CachePolicy` 枚举支持以下策略：
 - `.never`: 不使用缓存
 - `.returnCacheElseLoad`: 优先请求网络，网络加载失败后则使用缓存
 - `.returnCacheDontLoad`: 优先使用缓存，命中缓存则直接返回，未命中或过期则请求网络
 
-内容类型
+解析类型
 
-`MNNetworkContentType` 枚举支持以下类型：
+`MNNetworkSerializationType` 枚举支持以下类型：
 - `.none`: 不做处理
 - `.json`: JSON 数据
 - `.plainText`: 纯文本
 - `.xml`: XML 数据
-- `.html`: HTML 数据
 - `.plist`: Plist 数据
-- `.formData`: 文件上传
-- `.formURLEncoded`: URL 编码数据
-- `.binary`: 二进制数据
 
 下载选项
 
@@ -2050,11 +2073,25 @@ class PagingRequest: MNDataRequest, MNPagingRequestSupported {
 - `isChallengeError`: 是否为 HTTPS 验证错误
 - `isParseError`: 是否为数据解析错误
 
+请求结果
+
+`MNRequestResult` 封装了请求的最终结果，常用属性如下：
+- `isSuccess`: 是否成功（`code == .succeed`）
+- `code`: 结果码（`MNRequestResult.Code` 枚举）
+- `msg`: 错误或提示信息
+- `data`: 响应数据
+- `responseCode`: HTTP 响应码
+- `request`: 关联的请求对象
+
+可在子类 `didFinish(result:)` 中修改 `code`、`data`、`msg`，从而影响后续 `didSuccess` / `didFail` 及 `completionHandler` 的分发逻辑。
+
 #### 📝 注意事项
 
 - **线程安全**：所有回调都在主线程执行（除非指定了自定义队列），可以直接更新 UI。
 - **内存管理**：请求对象会被强引用直到请求完成，无需担心提前释放。
-- **缓存机制**：缓存基于 `SQLite` 数据库，默认路径为 `Caches/MNSwiftKit/request_cache.sqlite`；GET 请求的缓存读写由 `MNRequestManager` 根据 `cachePolicy` 自动处理，也可通过 `MNRequestDatabase` 手动管理。
+- **回调顺序**：请求结束后依次触发 `didFinish` → `didSuccess` / `didFail` → `completionHandler`；可在 `didFinish` 中修改 `MNRequestResult` 的 `code`、`data`、`msg` 以实现业务层响应转换。
+- **开始回调**：`startHandler` 仅在首次请求时触发，自动重试期间不会重复回调。
+- **缓存机制**：缓存基于 `SQLite` 数据库，默认路径为 `Caches/MNSwiftKit/request_cache.sqlite`；GET 请求的缓存读写由 `MNRequestManager` 根据 `cachePolicy` 自动处理，也可通过 `MNRequestDatabase` 手动管理；可通过重写 `cacheForKey` 自定义缓存键。
 - **重试机制**：通过 `maxRetryCount` 配置最大重试次数，`retryInterval` 配置重试间隔；响应错误（`isResponseError`）且非取消时会自动重试，请求编码、数据解析错误不会重试；重试耗尽后，配合 `.returnCacheElseLoad` 策略可回退到本地缓存。
 - **断点续传**：`MNDownloadRequest` 支持断点续传，暂停后可以继续下载。
 - **文件下载**：`MNFileDataRequest` 使用 DataTask 下载，适合小文件；`MNDownloadRequest` 使用 DownloadTask，支持断点续传，适合大文件。
