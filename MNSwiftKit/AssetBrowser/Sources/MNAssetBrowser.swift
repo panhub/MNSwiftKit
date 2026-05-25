@@ -13,6 +13,16 @@ import CoreMedia
 /// 资源浏览代理
 @objc public protocol MNAssetBrowseDelegate: AnyObject {
     
+    /// 自定义资源浏览器导航栏左侧视图
+    /// - Parameter browser: 资源浏览器
+    /// - Returns: 导航栏左侧视图
+    @objc optional func assetBrowserNavigationLeftItemView(_ browser: MNAssetBrowser) -> UIView
+    
+    /// 自定义资源浏览器导航栏右侧视图
+    /// - Parameter browser: 资源浏览器
+    /// - Returns: 导航栏右侧视图
+    @objc optional func assetBrowserNavigationRightItemView(_ browser: MNAssetBrowser) -> UIView
+    
     /// 资源浏览器浏览告知
     /// - Parameters:
     ///   - browser: 资源浏览器
@@ -283,19 +293,20 @@ public class MNAssetBrowser: UIView {
             navigationView.heightAnchor.constraint(equalToConstant: statusBarHeight + navigationViewHeight)
         ])
         
-        // 导航左按钮
+        // 导航左视图
+        var leftBarButton: UIButton!
         let leftBarItemImg = leftBarItemEvent.img
         if leftBarItemImg.isEmpty == false {
             let leftBarItemImage = AssetBrowserResource.image(named: leftBarItemImg)
-            let button = UIButton(type: .custom)
-            button.tag = leftBarItemEvent.rawValue
-            button.translatesAutoresizingMaskIntoConstraints = false
-            button.addTarget(self, action: #selector(self.navigationBarItemTouchUpInside(_:)), for: .touchUpInside)
+            leftBarButton = UIButton(type: .custom)
+            leftBarButton.tag = leftBarItemEvent.rawValue
+            leftBarButton.translatesAutoresizingMaskIntoConstraints = false
+            leftBarButton.addTarget(self, action: #selector(self.navigationBarItemTouchUpInside(_:)), for: .touchUpInside)
             if #available(iOS 15.0, *) {
                 var configuration = UIButton.Configuration.plain()
                 configuration.background.backgroundColor = .clear
-                button.configuration = configuration
-                button.configurationUpdateHandler = { button in
+                leftBarButton.configuration = configuration
+                leftBarButton.configurationUpdateHandler = { button in
                     switch button.state {
                     case .normal, .highlighted:
                         button.configuration?.background.image = leftBarItemImage
@@ -303,31 +314,49 @@ public class MNAssetBrowser: UIView {
                     }
                 }
             } else {
-                button.adjustsImageWhenHighlighted = false
-                button.setBackgroundImage(leftBarItemImage, for: .normal)
+                leftBarButton.adjustsImageWhenHighlighted = false
+                leftBarButton.setBackgroundImage(leftBarItemImage, for: .normal)
             }
-            navigationView.addSubview(button)
+            navigationView.addSubview(leftBarButton)
             NSLayoutConstraint.activate([
-                button.widthAnchor.constraint(equalToConstant: 24.0),
-                button.heightAnchor.constraint(equalToConstant: 24.0),
-                button.leftAnchor.constraint(equalTo: navigationView.leftAnchor, constant: 16.0),
-                button.topAnchor.constraint(equalTo: navigationView.topAnchor, constant: statusBarHeight + (navigationViewHeight - 24.0)/2.0)
+                leftBarButton.widthAnchor.constraint(equalToConstant: 24.0),
+                leftBarButton.heightAnchor.constraint(equalToConstant: 24.0),
+                leftBarButton.leftAnchor.constraint(equalTo: navigationView.leftAnchor, constant: 16.0),
+                leftBarButton.topAnchor.constraint(equalTo: navigationView.topAnchor, constant: statusBarHeight + (navigationViewHeight - 24.0)/2.0)
             ])
         }
         
-        // 导航右按钮
+        if let delegate = delegate, let leftItemView = delegate.assetBrowserNavigationLeftItemView?(self) {
+            
+            leftItemView.translatesAutoresizingMaskIntoConstraints = false
+            navigationView.addSubview(leftItemView)
+            if let leftBarButton = leftBarButton {
+                NSLayoutConstraint.activate([
+                    leftItemView.leftAnchor.constraint(equalTo: leftBarButton.rightAnchor, constant: 10.0),
+                    leftItemView.centerYAnchor.constraint(equalTo: leftBarButton.centerYAnchor)
+                ])
+            } else {
+                NSLayoutConstraint.activate([
+                    leftItemView.leftAnchor.constraint(equalTo: navigationView.leftAnchor, constant: 16.0),
+                    leftItemView.topAnchor.constraint(equalTo: navigationView.topAnchor, constant: statusBarHeight + (navigationViewHeight - leftItemView.frame.height)/2.0)
+                ])
+            }
+        }
+        
+        // 导航右视图
+        var rightBarButton: UIButton!
         let rightBarItemImg = rightBarItemEvent.img
         if rightBarItemImg.isEmpty == false {
             let rightBarItemImage = AssetBrowserResource.image(named: rightBarItemImg)
-            let button = UIButton(type: .custom)
-            button.tag = rightBarItemEvent.rawValue
-            button.translatesAutoresizingMaskIntoConstraints = false
-            button.addTarget(self, action: #selector(navigationBarItemTouchUpInside(_:)), for: .touchUpInside)
+            rightBarButton = UIButton(type: .custom)
+            rightBarButton.tag = rightBarItemEvent.rawValue
+            rightBarButton.translatesAutoresizingMaskIntoConstraints = false
+            rightBarButton.addTarget(self, action: #selector(navigationBarItemTouchUpInside(_:)), for: .touchUpInside)
             if #available(iOS 15.0, *) {
                 var configuration = UIButton.Configuration.plain()
                 configuration.background.backgroundColor = .clear
-                button.configuration = configuration
-                button.configurationUpdateHandler = { button in
+                rightBarButton.configuration = configuration
+                rightBarButton.configurationUpdateHandler = { button in
                     switch button.state {
                     case .normal, .highlighted:
                         button.configuration?.background.image = rightBarItemImage
@@ -335,16 +364,33 @@ public class MNAssetBrowser: UIView {
                     }
                 }
             } else {
-                button.adjustsImageWhenHighlighted = false
-                button.setBackgroundImage(rightBarItemImage, for: .normal)
+                rightBarButton.adjustsImageWhenHighlighted = false
+                rightBarButton.setBackgroundImage(rightBarItemImage, for: .normal)
             }
-            navigationView.addSubview(button)
+            navigationView.addSubview(rightBarButton)
             NSLayoutConstraint.activate([
-                button.widthAnchor.constraint(equalToConstant: 24.0),
-                button.heightAnchor.constraint(equalToConstant: 24.0),
-                button.rightAnchor.constraint(equalTo: navigationView.rightAnchor, constant: -16.0),
-                button.topAnchor.constraint(equalTo: navigationView.topAnchor, constant:  statusBarHeight + (navigationViewHeight - 24.0)/2.0)
+                rightBarButton.widthAnchor.constraint(equalToConstant: 24.0),
+                rightBarButton.heightAnchor.constraint(equalToConstant: 24.0),
+                rightBarButton.rightAnchor.constraint(equalTo: navigationView.rightAnchor, constant: -16.0),
+                rightBarButton.topAnchor.constraint(equalTo: navigationView.topAnchor, constant:  statusBarHeight + (navigationViewHeight - 24.0)/2.0)
             ])
+        }
+        
+        if let delegate = delegate, let rightItemView = delegate.assetBrowserNavigationRightItemView?(self) {
+            
+            rightItemView.translatesAutoresizingMaskIntoConstraints = false
+            navigationView.addSubview(rightItemView)
+            if let rightBarButton = rightBarButton {
+                NSLayoutConstraint.activate([
+                    rightItemView.rightAnchor.constraint(equalTo: rightBarButton.leftAnchor, constant: -10),
+                    rightItemView.centerYAnchor.constraint(equalTo: rightBarButton.centerYAnchor)
+                ])
+            } else {
+                NSLayoutConstraint.activate([
+                    rightItemView.rightAnchor.constraint(equalTo: navigationView.rightAnchor, constant: -16),
+                    rightItemView.topAnchor.constraint(equalTo: navigationView.topAnchor, constant: statusBarHeight + (navigationViewHeight - rightItemView.frame.height)/2.0)
+                ])
+            }
         }
         
         // 导航栏阴影
