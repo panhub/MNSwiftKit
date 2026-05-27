@@ -48,6 +48,11 @@ extension MNErrorToast: MNToastBuilder {
         MNToast.Configuration.shared.effect
     }
     
+    var cornerRadiusForToast: CGFloat {
+        
+        MNToast.Configuration.shared.cornerRadius
+    }
+    
     var contentInsetForToast: UIEdgeInsets {
         
         MNToast.Configuration.shared.contentInset

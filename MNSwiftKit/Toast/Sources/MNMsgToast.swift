@@ -19,6 +19,11 @@ class MNMsgToast: MNToastBuilder {
         MNToast.Configuration.shared.effect
     }
     
+    var cornerRadiusForToast: CGFloat {
+        
+        8.0
+    }
+    
     var contentInsetForToast: UIEdgeInsets {
         
         .init(top: 11.0, left: 12.0, bottom: 10.0, right: 12.0)

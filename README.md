@@ -683,7 +683,7 @@ class ViewController: MNBaseViewController {
 - ⌨️ **键盘避让**：监听键盘位置并调整 Toast 显示位置
 - 🔧 **高度配置**：通过 `Configuration` 统一配置颜色、位置、字体等
 - 🎯 **线程安全**：类调用时自动在主线程执行，无需手动处理线程问题
-- 🔘 **手动取消**：可选择显示关闭按钮，允许用户手动关闭
+- 🔘 **手动取消**：通过 `cancellable` 参数显示关闭按钮，关闭回调返回 `isCancelled` 标识
 - ⏱️ **自动关闭**：支持自定义显示时长，也可根据文字长度智能计算
 
 #### 🚀 快速开始
@@ -712,12 +712,12 @@ targets: [
 ]
 ```
 
-显示带系统加载指示器的 Toast（支持大号和小号两种样式）：
+显示带系统加载指示器的 Toast（支持大号和中号两种样式）：
 
 ```swift
-MNToast.showActivity("加载中...")
+MNToast.showActivity("加载中...", style: .large)
 
-view.mn.showActivityToast("加载中...")
+view.mn.showActivityToast("加载中...", style: .medium)
 ```
 
 显示成功的 Toast（带对勾动画的指示器）：
@@ -752,30 +752,84 @@ MNToast.showInfo("温馨提示")
 view.mn.showInfoToast("温馨提示")
 ```
 
-显示旋转动画的 Toast（支持三种样式：纯色线条、双线条、渐变线条）：
+显示旋转动画的 Toast（支持三种样式：`.arc` 圆弧线条、`.pair` 双线条、`.gradient` 渐变线条）：
 
 ```swift
 // 默认渐变线条
 MNToast.showRotation("加载中...", style: .gradient)
 
-view.mn.showRotationToast("加载中...", style: .gradient)
+view.mn.showRotationToast("加载中...", style: .arc)
 ```
 
-显示带进度的 Toast（支持两种样式：线条、填充）：
+显示带进度的 Toast（支持两种样式：`.circular` 圆环线条、`.fill` 填充）：
 
 ```swift
-// 默认线条样式, 更新进度时，重新调用即可
+// 首次显示
 MNToast.showProgress("正在下载", style: .circular, value: 0.0)
 
-view.mn.showProgressToast("正在下载", style: .circular, value: 0.0)
+// 同类型 Toast 再次调用会更新进度
+MNToast.showProgress("正在下载", style: .circular, value: 0.5)
+
+view.mn.showProgressToast("正在下载", style: .fill, value: 0.0)
 ```
 
 关闭当前 Toast
 
 ```swift
-MNToast.close(delay: 3.0, completion: nil)
+MNToast.close(delay: 0.0) { isCancelled in
+    print("Toast 已关闭，是否手动取消：\(isCancelled)")
+}
 
-view.mn.closeToast(delay: 3.0, completion: nil)
+view.mn.closeToast(delay: 0.0) { isCancelled in
+    print("Toast 已关闭")
+}
+```
+
+手动取消与关闭回调
+
+设置 `cancellable: true` 会在 Toast 右上角显示关闭按钮；`close` 回调中的 `isCancelled` 表示是否由用户手动关闭：
+
+```swift
+MNToast.showActivity("加载中...", cancellable: true, delay: 2.5) { isCancelled in
+    if isCancelled {
+        print("用户手动关闭")
+    }
+}
+
+view.mn.showMsgToast("提示信息", cancellable: true, delay: 3.0) { isCancelled in
+    print("Toast 关闭")
+}
+```
+
+全局配置
+
+通过 `MNToast.Configuration.shared` 统一配置默认样式：
+
+```swift
+let config = MNToast.Configuration.shared
+config.effect = .dark                              // 视觉效果：.none / .dark / .light
+config.position = .center                         // 默认位置
+config.axis = .vertical(spacing: 8.0)             // 布局方向
+config.cornerRadius = 8.0                         // 圆角
+config.contentInset = UIEdgeInsets(top: 13, left: 13, bottom: 13, right: 13)
+config.font = .systemFont(ofSize: 14.0)           // 文字字体
+config.textColor = .white                         // 文字颜色
+config.activityColor = .white                     // 指示器颜色
+config.maxStatusTextWidth = 200.0                 // 文字最大宽度
+config.spacingToKeyboard = 20.0                   // 与键盘的间距
+config.allowUserInteraction = false               // 显示时是否允许穿透交互
+```
+
+显示位置
+
+`MNToast.Position` 支持以下位置：
+- `.top(distance:)`: 距顶部指定距离，默认 90pt
+- `.center`: 居中显示
+- `.bottom(distance:)`: 距底部指定距离，默认 45pt
+
+```swift
+MNToast.showMsg("顶部提示", at: .top(distance: 100.0))
+MNToast.showSuccess("操作成功", at: .bottom())
 ```
 
 检查窗口是否有 Toast 显示
@@ -811,6 +865,9 @@ class CustomToast: MNToastBuilder {
     // 视觉效果（支持暗色、亮色、无效果三种）
     var effectForToast: MNToast.Effect { .dark }
     
+    // 圆角大小
+    var cornerRadiusForToast: CGFloat { 8.0 }
+    
     // 内容四周约束
     var contentInsetForToast: UIEdgeInsets { UIEdgeInsets(top: 13, left: 13, bottom: 13, right: 13) }
     
@@ -829,6 +886,9 @@ class CustomToast: MNToastBuilder {
     // Toast 显示后是否允许交互事件
     var allowUserInteraction: Bool { false }
 }
+
+// 显示自定义 Toast
+MNToast.show(CustomToast(), at: .center, status: "加载中", progress: nil, cancellable: false, delay: nil, close: nil)
 ```
 
 如果需要支持动画，可以实现 `MNToastAnimationSupported` 协议：
@@ -857,12 +917,27 @@ extension CustomToast: MNToastProgressSupported {
 }
 ```
 
+如果需要自动关闭，可以实现 `MNToastCloseSupported` 协议（`MNMsgToast` 内置此逻辑）：
+
+```swift
+extension CustomToast: MNToastCloseSupported {
+
+    func toastShouldClose(with status: String?) -> TimeInterval {
+        // 返回显示时长，也可使用 MNToast.displayDuration(with:) 按文字长度计算
+        return MNToast.displayDuration(with: status)
+    }
+}
+```
+
 #### 📝 注意事项
 
-- **线程安全**：类方法加载时，Toast 相关方法都会自动在主线程执行，无需手动处理
+- **线程安全**：类方法调用时会自动切换到主线程执行，无需手动处理
+- **智能更新**：同类型 Toast 再次显示时会更新文字和进度，而不是重复创建
+- **手动取消**：`cancellable: true` 时显示关闭按钮；关闭回调参数 `isCancelled` 为 `true` 表示用户手动关闭
 - **键盘避让**：Toast 会自动检测键盘位置并调整显示位置，避免被键盘遮挡
-- **内存管理**：Toast 会在关闭后自动从视图层级中移除，无需手动管理
-- **自动关闭**：`MNMsgToast` 会根据文字长度自动计算合适的显示时长
+- **内存管理**：Toast 关闭后会自动从视图层级中移除，无需手动管理
+- **自动关闭**：`MNMsgToast` 通过 `MNToastCloseSupported` 调用 `MNToast.displayDuration(with:)` 按文字长度计算显示时长；也可通过 `delay` 参数手动指定
+- **交互穿透**：`MNMsgToast` 默认 `allowUserInteraction` 为 `true`，显示时仍可操作底层界面；其他类型默认跟随 `Configuration.shared.allowUserInteraction`
 
 ### Player
 

@@ -17,6 +17,9 @@ public protocol MNToastBuilder {
     /// Toast视觉效果
     var effectForToast: MNToast.Effect { get }
     
+    /// Toast圆角大小
+    var cornerRadiusForToast: CGFloat { get }
+    
     /// Toast内容四周约束
     var contentInsetForToast: UIEdgeInsets { get }
     
@@ -175,7 +178,7 @@ public class MNToast: UIView {
                     // 右部分正常宽度
                     var contentPartWidth = activityWidthConstraint.constant/2.0
                     if let statusText = statusLabel.attributedText {
-                        let statusTextWidth = statusText.boundingRect(with: .init(width: MNToast.Configuration.shared.greatestFiniteStatusWidth, height: .greatestFiniteMagnitude), options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil).width
+                        let statusTextWidth = statusText.boundingRect(with: .init(width: MNToast.Configuration.shared.maxStatusTextWidth, height: .greatestFiniteMagnitude), options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil).width
                         if statusTextWidth > activityWidthConstraint.constant {
                             contentPartWidth += ceil(statusTextWidth - activityWidthConstraint.constant)/2.0
                         }
@@ -211,7 +214,7 @@ public class MNToast: UIView {
                     if let statusText = statusLabel.attributedText {
                         // [.usesFontLeading, .usesLineFragmentOrigin]
                         //
-                        let statusTextHeight = statusText.boundingRect(with: .init(width: MNToast.Configuration.shared.greatestFiniteStatusWidth, height: .greatestFiniteMagnitude), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).height
+                        let statusTextHeight = statusText.boundingRect(with: .init(width: MNToast.Configuration.shared.maxStatusTextWidth, height: .greatestFiniteMagnitude), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).height
                         contentHeight = max(contentHeight, statusTextHeight)
                     }
                     closeTopConstraint.constant = (contentInset.top + contentHeight + contentInset.bottom - closeHeightConstraint.constant)/2.0
@@ -230,7 +233,7 @@ public class MNToast: UIView {
                     guard constraint.firstAttribute == .top, constraint.secondAttribute == .top else { return false }
                     return true
                 }) else { return }
-                let statusTextHeight = statusText.boundingRect(with: .init(width: MNToast.Configuration.shared.greatestFiniteStatusWidth, height: .greatestFiniteMagnitude), options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil).height
+                let statusTextHeight = statusText.boundingRect(with: .init(width: MNToast.Configuration.shared.maxStatusTextWidth, height: .greatestFiniteMagnitude), options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil).height
                 closeTopConstraint.constant = (contentInset.top + statusTextHeight + contentInset.bottom - closeHeightConstraint.constant)/2.0
             }
         }
@@ -308,7 +311,7 @@ public class MNToast: UIView {
         statusLabel.textAlignment = stackView.axis == .horizontal ? .left : .center
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
         stackView.addArrangedSubview(statusLabel)
-        NSLayoutConstraint.activate([statusLabel.widthAnchor.constraint(lessThanOrEqualToConstant: MNToast.Configuration.shared.greatestFiniteStatusWidth)])
+        NSLayoutConstraint.activate([statusLabel.widthAnchor.constraint(lessThanOrEqualToConstant: MNToast.Configuration.shared.maxStatusTextWidth)])
         
         if cancellable, let closeImage = ToastResource.image(named: "toast_close")?.withRenderingMode(.alwaysTemplate) {
             closeButton = UIButton(type: .custom)

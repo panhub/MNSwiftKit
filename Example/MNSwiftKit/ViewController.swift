@@ -84,12 +84,15 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let row = rows[indexPath.row]
-        guard var nameSpace = Bundle.main.infoDictionary?["CFBundleExecutable"] as? String else { return }
-        nameSpace = nameSpace.replacingOccurrences(of: " ", with: "_")
-        let cls: AnyClass? = NSClassFromString("\(nameSpace).\(row.subtitle)")
-        guard let type = cls as? UIViewController.Type else { return }
-        let vc = type.init()
-        navigationController?.pushViewController(vc, animated: true)
+        view.mn.showSuccessToast("成功测试", delay: 2.0) { isCancelled in
+            MNToast.showError("发生错误", delay: 2.0)
+        }
+//        let row = rows[indexPath.row]
+//        guard var nameSpace = Bundle.main.infoDictionary?["CFBundleExecutable"] as? String else { return }
+//        nameSpace = nameSpace.replacingOccurrences(of: " ", with: "_")
+//        let cls: AnyClass? = NSClassFromString("\(nameSpace).\(row.subtitle)")
+//        guard let type = cls as? UIViewController.Type else { return }
+//        let vc = type.init()
+//        navigationController?.pushViewController(vc, animated: true)
     }
 }

@@ -75,6 +75,11 @@ extension MNRotationToast: MNToastBuilder {
         MNToast.Configuration.shared.effect
     }
     
+    public var cornerRadiusForToast: CGFloat {
+        
+        MNToast.Configuration.shared.cornerRadius
+    }
+    
     public var contentInsetForToast: UIEdgeInsets {
         
         MNToast.Configuration.shared.contentInset
