@@ -8,65 +8,6 @@
 import UIKit
 import ObjectiveC.runtime
 
-/// Toast构建规则
-public protocol MNToastBuilder {
-    
-    /// Toast布局方向
-    var axisForToast: MNToast.Axis { get }
-    
-    /// Toast视觉效果
-    var effectForToast: MNToast.Effect { get }
-    
-    /// Toast圆角大小
-    var cornerRadiusForToast: CGFloat { get }
-    
-    /// Toast内容四周约束
-    var contentInsetForToast: UIEdgeInsets { get }
-    
-    /// Toast指示视图
-    var activityViewForToast: UIView? { get }
-    
-    /// Toast中状态文字的富文本描述
-    var attributesForToastStatus: [NSAttributedString.Key:Any] { get }
-    
-    /// Toast渐入式显示
-    var fadeInForToast: Bool { get }
-    
-    /// Toast渐隐式取消
-    var fadeOutForToast: Bool { get }
-    
-    /// Toast显示时是否允许交互
-    var allowUserInteraction: Bool { get }
-}
-
-/// 弹框动画规则
-public protocol MNToastAnimationSupported where Self: MNToastBuilder {
-    
-    /// 开启动画
-    func startAnimating()
-    
-    /// 停止动画
-    func stopAnimating()
-}
-
-/// 弹框进度更新规则
-public protocol MNToastProgressSupported where Self: MNToastBuilder {
-    
-    /// Toast需要更新进度
-    /// - Parameter value: 进度值
-    func toastShouldUpdateProgress(_ value: CGFloat)
-}
-
-/// 弹框自动关闭支持
-public protocol MNToastCloseSupported where Self: MNToastBuilder {
-    
-    /// Toast想要定时自动关闭
-    /// - Parameter status: 状态文字
-    /// - Returns: 显示时长(nil则不做自动关闭操作)
-    func toastShouldClose(with status: String?) -> TimeInterval
-}
-
-
 /// 提示弹窗
 public class MNToast: UIView {
     
@@ -311,35 +252,51 @@ public class MNToast: UIView {
         statusLabel.textAlignment = stackView.axis == .horizontal ? .left : .center
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
         stackView.addArrangedSubview(statusLabel)
-        NSLayoutConstraint.activate([statusLabel.widthAnchor.constraint(lessThanOrEqualToConstant: MNToast.Configuration.shared.maxStatusTextWidth)])
+        NSLayoutConstraint.activate([
+            statusLabel.widthAnchor.constraint(lessThanOrEqualToConstant: MNToast.Configuration.shared.maxStatusTextWidth)
+        ])
         
-        if cancellable, let closeImage = ToastResource.image(named: "toast_close")?.withRenderingMode(.alwaysTemplate) {
-            closeButton = UIButton(type: .custom)
-            closeButton.tintColor = MNToast.Configuration.shared.activityColor
-            closeButton.translatesAutoresizingMaskIntoConstraints = false
-            closeButton.addTarget(self, action: #selector(closeToast), for: .touchUpInside)
-            if #available(iOS 15.0, *) {
-                var configuration = UIButton.Configuration.plain()
-                configuration.background.backgroundColor = .clear
-                closeButton.configuration = configuration
-                closeButton.configurationUpdateHandler = { button in
-                    switch button.state {
-                    case .normal, .highlighted:
-                        button.configuration?.background.image = closeImage
-                    default: break
-                    }
-                }
+        // 取消
+        if cancellable {
+            var closeImage: UIImage?
+            var isBundleResource: Bool = false
+            if builder is MNToastCancelSupported {
+                let delegate = builder as! MNToastCancelSupported
+                closeImage = delegate.closeImageResourceForToast
             } else {
-                closeButton.adjustsImageWhenHighlighted = false
-                closeButton.setBackgroundImage(closeImage, for: .normal)
+                isBundleResource = true
+                closeImage = ToastResource.image(named: "toast_close")?.withRenderingMode(.alwaysTemplate)
             }
-            visualView.contentView.addSubview(closeButton)
-            NSLayoutConstraint.activate([
-                closeButton.topAnchor.constraint(equalTo: visualView.contentView.topAnchor, constant: 8.0),
-                closeButton.rightAnchor.constraint(equalTo: visualView.contentView.rightAnchor, constant: -8.0),
-                closeButton.widthAnchor.constraint(equalToConstant: 14.0),
-                closeButton.heightAnchor.constraint(equalToConstant: 14.0)
-            ])
+            if let closeImage = closeImage {
+                closeButton = UIButton(type: .custom)
+                closeButton.translatesAutoresizingMaskIntoConstraints = false
+                closeButton.addTarget(self, action: #selector(closeToast), for: .touchUpInside)
+                if isBundleResource {
+                    closeButton.tintColor = MNToast.Configuration.shared.activityColor
+                }
+                if #available(iOS 15.0, *) {
+                    var configuration = UIButton.Configuration.plain()
+                    configuration.background.backgroundColor = .clear
+                    closeButton.configuration = configuration
+                    closeButton.configurationUpdateHandler = { button in
+                        switch button.state {
+                        case .normal, .highlighted:
+                            button.configuration?.background.image = closeImage
+                        default: break
+                        }
+                    }
+                } else {
+                    closeButton.adjustsImageWhenHighlighted = false
+                    closeButton.setBackgroundImage(closeImage, for: .normal)
+                }
+                visualView.contentView.addSubview(closeButton)
+                NSLayoutConstraint.activate([
+                    closeButton.topAnchor.constraint(equalTo: visualView.contentView.topAnchor, constant: 8.0),
+                    closeButton.rightAnchor.constraint(equalTo: visualView.contentView.rightAnchor, constant: -8.0),
+                    closeButton.widthAnchor.constraint(equalToConstant: 14.0),
+                    closeButton.heightAnchor.constraint(equalToConstant: 14.0)
+                ])
+            }
         }
         
         // 键盘变化告知

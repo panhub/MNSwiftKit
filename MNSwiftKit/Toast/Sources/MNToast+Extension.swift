@@ -161,7 +161,7 @@ extension MNToast {
     ///   - cancellable: 是否支持手动取消
     ///   - timeInterval: 显示时长后自动关闭
     ///   - handler: 关闭后回调(是否是手动取消)
-    public class func showSuccess(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellable: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ isCancelled: Bool)->Void)? = nil) {
+    public class func showSuccess(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellable: Bool = false, delay timeInterval: TimeInterval? = 1.5, close handler: ((_ isCancelled: Bool)->Void)? = nil) {
         
         show(MNSuccessToast(), at: position, status: status, progress: nil, cancellable: cancellable, delay: timeInterval, close: handler)
     }
@@ -173,7 +173,7 @@ extension MNToast {
     ///   - cancellable: 是否支持手动取消
     ///   - timeInterval: 显示时长后自动关闭
     ///   - handler: 关闭后回调(是否是手动取消)
-    public class func showError(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellable: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ isCancelled: Bool)->Void)? = nil) {
+    public class func showError(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellable: Bool = false, delay timeInterval: TimeInterval? = 1.5, close handler: ((_ isCancelled: Bool)->Void)? = nil) {
         
         show(MNErrorToast(), at: position, status: status, progress: nil, cancellable: cancellable, delay: timeInterval, close: handler)
     }

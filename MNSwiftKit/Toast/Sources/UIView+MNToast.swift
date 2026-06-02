@@ -95,7 +95,7 @@ extension MNNameSpaceWrapper where Base: UIView {
     ///   - cancellable: 是否支持手动取消
     ///   - timeInterval: 显示时长后自动关闭
     ///   - handler: 关闭后回调(是否是手动取消)
-    public func showSuccessToast(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellable: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ isCancelled: Bool)->Void)? = nil) {
+    public func showSuccessToast(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellable: Bool = false, delay timeInterval: TimeInterval? = 1.5, close handler: ((_ isCancelled: Bool)->Void)? = nil) {
         
         MNToast.show(MNSuccessToast(), in: base, at: position, status: status, progress: nil, cancellable: cancellable, delay: timeInterval, close: handler)
     }
@@ -107,7 +107,7 @@ extension MNNameSpaceWrapper where Base: UIView {
     ///   - cancellable: 是否支持手动取消
     ///   - timeInterval: 显示时长后自动关闭
     ///   - handler: 关闭后回调(是否是手动取消)
-    public func showErrorToast(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellable: Bool = false, delay timeInterval: TimeInterval? = nil, close handler: ((_ isCancelled: Bool)->Void)? = nil) {
+    public func showErrorToast(_ status: String?, at position: MNToast.Position = MNToast.Configuration.shared.position, cancellable: Bool = false, delay timeInterval: TimeInterval? = 1.5, close handler: ((_ isCancelled: Bool)->Void)? = nil) {
         
         MNToast.show(MNErrorToast(), in: base, at: position, status: status, progress: nil, cancellable: cancellable, delay: timeInterval, close: handler)
     }
