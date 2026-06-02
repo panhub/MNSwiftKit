@@ -574,6 +574,8 @@ extension MNDataEmptyView {
                 case .insex(let index):
                     parentView.insertSubview(self, at: index)
                 }
+            } else {
+                parentView.addSubview(self)
             }
         }
         let areAnimationsEnabled = UIView.areAnimationsEnabled
