@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -11,6 +12,9 @@
             <connections>
                 <outlet property="backHeight" destination="mpq-gB-mOL" id="ica-pl-abr"/>
                 <outlet property="backTop" destination="66t-ZG-A29" id="aut-sU-HsI"/>
+                <outlet property="collectionLayout" destination="WV2-Qq-Qc5" id="mdh-98-C7h"/>
+                <outlet property="collectionTop" destination="Ai3-mb-vVJ" id="Vuy-6T-atn"/>
+                <outlet property="collectionView" destination="b8G-Vp-v7Z" id="QTp-4r-hqF"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -19,9 +23,6 @@
             <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="transition_bg" translatesAutoresizingMaskIntoConstraints="NO" id="mXf-dv-eYs">
-                    <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
-                </imageView>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eDa-TR-Ywh">
                     <rect key="frame" x="15" y="63" width="20" height="20"/>
                     <constraints>
@@ -34,15 +35,29 @@
                         <action selector="back" destination="-1" eventType="touchUpInside" id="idH-je-e3Q"/>
                     </connections>
                 </button>
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" contentInsetAdjustmentBehavior="never" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="b8G-Vp-v7Z">
+                    <rect key="frame" x="0.0" y="95" width="393" height="757"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="WV2-Qq-Qc5">
+                        <size key="itemSize" width="128" height="128"/>
+                        <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                        <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                        <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    </collectionViewFlowLayout>
+                    <connections>
+                        <outlet property="dataSource" destination="-1" id="BwM-Xr-miZ"/>
+                        <outlet property="delegate" destination="-1" id="IFN-Bc-dqk"/>
+                    </connections>
+                </collectionView>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="eDa-TR-Ywh" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="63" id="66t-ZG-A29"/>
-                <constraint firstAttribute="trailing" secondItem="mXf-dv-eYs" secondAttribute="trailing" id="8xb-gj-5Hh"/>
-                <constraint firstAttribute="bottom" secondItem="mXf-dv-eYs" secondAttribute="bottom" id="UTN-yv-vER"/>
-                <constraint firstItem="mXf-dv-eYs" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="kOn-Xa-FMW"/>
+                <constraint firstItem="b8G-Vp-v7Z" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="95" id="Ai3-mb-vVJ"/>
+                <constraint firstAttribute="bottom" secondItem="b8G-Vp-v7Z" secondAttribute="bottom" id="I4c-8F-N4e"/>
+                <constraint firstItem="b8G-Vp-v7Z" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="Rhg-Ta-xVV"/>
+                <constraint firstAttribute="trailing" secondItem="b8G-Vp-v7Z" secondAttribute="trailing" id="p2Z-TB-Sw1"/>
                 <constraint firstItem="eDa-TR-Ywh" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="15" id="sXw-J1-aRA"/>
-                <constraint firstItem="mXf-dv-eYs" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="x8D-6m-tjO"/>
             </constraints>
             <nil key="simulatedTopBarMetrics"/>
             <nil key="simulatedBottomBarMetrics"/>
@@ -51,6 +66,8 @@
     </objects>
     <resources>
         <image name="back" width="50" height="50"/>
-        <image name="transition_bg" width="295.66665649414062" height="640"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>
