@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>MNSwiftKit - iOS Swift 组件库与 API 文档</title>
+  <meta name="description" content="MNSwiftKit 是一套可按模块集成的 iOS Swift 组件库，提供 UI 组件、媒体选择与浏览、网络、数据库、Toast、刷新、播放器、表情键盘、转场和基础扩展。CocoaPods 支持 iOS 9+，Swift Package Manager 支持 iOS 12+。">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <div class="topbar">
+    <nav class="nav" aria-label="主导航">
+      <a class="brand" href="#top" aria-label="MNSwiftKit 首页">
+        <img src="assets/images/logo.png" alt="MNSwiftKit">
+      </a>
+      <div class="navlinks">
+        <a href="#install">安装</a>
+        <a href="#features">能力</a>
+        <a href="#modules">模块</a>
+        <a href="#api">API 文档</a>
+        <a href="#privacy">权限</a>
+        <a href="https://github.com/panhub/MNSwiftKit">GitHub</a>
+      </div>
+    </nav>
+  </div>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-inner">
+        <div>
+          <span class="eyebrow">CocoaPods iOS 9+ / SPM iOS 12+ / Swift 5</span>
+          <h1>MNSwiftKit</h1>
+          <p class="lead">一套面向 iOS 日常工程的 Swift 组件库：从基础控制器、网络请求、Toast、刷新、数据库，到资源选择、媒体导出、播放器、表情键盘和分页容器，支持按模块集成，也可以一次引入完整能力。</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#api">查看 API 文档</a>
+            <a class="button secondary" href="#install">复制安装方式</a>
+          </div>
+          <div class="stats">
+            <div class="stat"><strong>25</strong><span>可独立安装模块</span></div>
+            <div class="stat"><strong>0.1.5</strong><span>CocoaPods 当前版本</span></div>
+            <div class="stat"><strong>MIT</strong><span>开源许可</span></div>
+          </div>
+        </div>
+        <div class="hero-panel" aria-label="安装示例">
+          <div class="terminal-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <pre><code># Podfile
+pod 'MNSwiftKit'
+pod 'MNSwiftKit/AssetPicker'
+pod 'MNSwiftKit/Networking'
+pod 'MNSwiftKit/Toast'
+
+// Package.swift
+.package(
+  url: "https://github.com/panhub/MNSwiftKit.git",
+  from: "0.1.5"
+)
+
+.product(name: "MNSwiftKit", package: "MNSwiftKit")
+.product(name: "MNAssetPicker", package: "MNSwiftKit")</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section id="install" class="section">
+      <div class="section-head">
+        <h2>安装方式</h2>
+        <p>完整库适合快速接入；子模块适合降低依赖体积。CocoaPods 子模块名与源码目录一致，SPM Product 使用 <code>MN</code> 前缀。</p>
+      </div>
+      <div class="install-grid">
+        <article class="install-card">
+          <h3>CocoaPods 完整安装</h3>
+          <p>默认 <code>Full</code> 聚合所有子模块。</p>
+          <pre><code>pod 'MNSwiftKit'</code></pre>
+        </article>
+        <article class="install-card">
+          <h3>CocoaPods 按需安装</h3>
+          <p>只引入业务需要的模块。</p>
+          <pre><code>pod 'MNSwiftKit/Base'
+pod 'MNSwiftKit/Toast'
+pod 'MNSwiftKit/AssetPicker'</code></pre>
+        </article>
+        <article class="install-card">
+          <h3>Swift Package Manager</h3>
+          <p>Xcode 添加仓库后选择 Product。</p>
+          <pre><code>.product(name: "MNToast", package: "MNSwiftKit")
+.product(name: "MNNetworking", package: "MNSwiftKit")</code></pre>
+        </article>
+      </div>
+    </section>
+
+    <section id="features" class="section">
+      <div class="section-head">
+        <h2>工程能力</h2>
+        <p>库的设计重点不是单个控件，而是把高频 iOS 开发链路拆成稳定、可复用的模块。</p>
+      </div>
+      <div class="features">
+        <article class="feature-card">
+          <div class="mark">UI</div>
+          <h3>UIKit 组件体系</h3>
+          <p>基础控制器、导航栏、标签栏、分页容器、Alert、Popover、空数据页、编辑态工具条。</p>
+        </article>
+        <article class="feature-card">
+          <div class="mark">AV</div>
+          <h3>媒体工作流</h3>
+          <p>相册选择、资源浏览、GIF/LivePhoto/视频处理、AVAsset 导出、音视频播放。</p>
+        </article>
+        <article class="feature-card">
+          <div class="mark">NET</div>
+          <h3>网络与数据</h3>
+          <p>请求序列化、响应解析、上传下载、断点数据库、SQLite 模型映射和 StoreKit 购买流程。</p>
+        </article>
+        <article class="feature-card">
+          <div class="mark">KIT</div>
+          <h3>基础工具扩展</h3>
+          <p>命名空间、屏幕尺寸定义、常用扩展、权限、扫码、二维码、触感、Keychain/认证相关工具。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="modules" class="section">
+      <div class="section-head">
+        <h2>模块总览</h2>
+        <p>每个模块都可以单独安装。下面是按源码和 podspec 整理的功能边界。</p>
+      </div>
+      <div class="module-grid">
+        <a class="module-card" href="#base"><div class="module-top"><h3 class="module-name">Base</h3><span class="tag">MNBase</span></div><p>基础控制器、导航、TabBar、WebView、列表页与网页支付。</p></a>
+        <a class="module-card" href="#components"><div class="module-top"><h3 class="module-name">Components</h3><span class="tag">MNComponents</span></div><p>按钮、Alert、Popover、日期选择、安全输入、数字键盘等基础 UI。</p></a>
+        <a class="module-card" href="#asset-picker"><div class="module-top"><h3 class="module-name">AssetPicker</h3><span class="tag">MNAssetPicker</span></div><p>图片、视频、GIF、LivePhoto 选择器和裁剪导出。</p></a>
+        <a class="module-card" href="#asset-browser"><div class="module-top"><h3 class="module-name">AssetBrowser</h3><span class="tag">MNAssetBrowser</span></div><p>图片、动图、LivePhoto、视频资源浏览与预览。</p></a>
+        <a class="module-card" href="#networking"><div class="module-top"><h3 class="module-name">Networking</h3><span class="tag">MNNetworking</span></div><p>URLSession 封装、序列化、解析、Reachability、错误码体系。</p></a>
+        <a class="module-card" href="#request"><div class="module-top"><h3 class="module-name">Request</h3><span class="tag">MNRequest</span></div><p>业务请求模型、分页、上传下载、文件数据请求和本地任务记录。</p></a>
+        <a class="module-card" href="#toast"><div class="module-top"><h3 class="module-name">Toast</h3><span class="tag">MNToast</span></div><p>消息、成功、失败、进度、旋转、活动指示型提示。</p></a>
+        <a class="module-card" href="#refresh"><div class="module-top"><h3 class="module-name">Refresh</h3><span class="tag">MNRefresh</span></div><p>UIScrollView 下拉刷新、上拉加载和状态组件。</p></a>
+        <a class="module-card" href="#player"><div class="module-top"><h3 class="module-name">Player</h3><span class="tag">MNPlayer</span></div><p>AVPlayer 播放队列、进度、缓存开关和声音播放支持。</p></a>
+        <a class="module-card" href="#database"><div class="module-top"><h3 class="module-name">Database</h3><span class="tag">MNDatabase</span></div><p>SQLite 建表、增删改查、模型映射、聚合计算和异步操作。</p></a>
+        <a class="module-card" href="#media-export"><div class="module-top"><h3 class="module-name">MediaExport</h3><span class="tag">MNMediaExport</span></div><p>AVAsset 视频/音频导出、裁剪、时间片段、质量和进度回调。</p></a>
+        <a class="module-card" href="#utility"><div class="module-top"><h3 class="module-name">Utility</h3><span class="tag">MNUtility</span></div><p>权限、扫码、二维码、Apple 登录、本地认证、触感反馈、弱代理。</p></a>
+        <a class="module-card" href="#purchase"><div class="module-top"><h3 class="module-name">Purchase</h3><span class="tag">MNPurchase</span></div><p>StoreKit 商品购买、恢复购买、票据校验与结果通知。</p></a>
+        <a class="module-card" href="#segmented"><div class="module-top"><h3 class="module-name">SegmentedViewController</h3><span class="tag">MNSegmentedViewController</span></div><p>分段导航、分页控制器、角标、页面缓存和滚动协调。</p></a>
+        <a class="module-card" href="#emoticon"><div class="module-top"><h3 class="module-name">EmoticonKeyboard</h3><span class="tag">MNEmoticonKeyboard</span></div><p>表情包管理、键盘、附件、富文本解析和输入控件适配。</p></a>
+        <a class="module-card" href="#editing"><div class="module-top"><h3 class="module-name">EditingView</h3><span class="tag">MNEditingView</span></div><p>UITableView/UICollectionView 编辑态观察、手势和批量操作 UI。</p></a>
+        <a class="module-card" href="#transitioning"><div class="module-top"><h3 class="module-name">Transitioning</h3><span class="tag">MNTransitioning</span></div><p>普通、抽屉、翻转、模态转场动画及代理封装。</p></a>
+        <a class="module-card" href="#extension"><div class="module-top"><h3 class="module-name">Extension</h3><span class="tag">MNExtension</span></div><p>Foundation/UIKit 常用扩展、路径、MD5、动图识别、布局辅助。</p></a>
+        <a class="module-card" href="#definition"><div class="module-top"><h3 class="module-name">Definition</h3><span class="tag">MNDefinition</span></div><p>屏幕、安全区、导航栏、TabBar、Debug/Simulator 常量。</p></a>
+        <a class="module-card" href="#empty-view"><div class="module-top"><h3 class="module-name">EmptyView</h3><span class="tag">MNEmptyView</span></div><p>空数据、网络错误、加载失败等占位视图。</p></a>
+        <a class="module-card" href="#page-control"><div class="module-top"><h3 class="module-name">PageControl</h3><span class="tag">MNPageControl</span></div><p>可自定义数据源和代理的页码指示器。</p></a>
+        <a class="module-card" href="#slider"><div class="module-top"><h3 class="module-name">Slider</h3><span class="tag">MNSlider</span></div><p>带代理回调的自定义滑块，适合播放器与编辑器。</p></a>
+        <a class="module-card" href="#namespace"><div class="module-top"><h3 class="module-name">NameSpace</h3><span class="tag">MNNameSpace</span></div><p><code>mn</code> 命名空间包装，隔离扩展 API。</p></a>
+        <a class="module-card" href="#animated-image"><div class="module-top"><h3 class="module-name">AnimatedImage</h3><span class="tag">MNAnimatedImage</span></div><p>UIImageView 动图播放和 Data 图片格式识别依赖。</p></a>
+        <a class="module-card" href="#collection-layout"><div class="module-top"><h3 class="module-name">CollectionLayout</h3><span class="tag">MNCollectionLayout</span></div><p>Flow、Word 和自定义 CollectionView 布局。</p></a>
+      </div>
+    </section>
+
+    <section id="api" class="section">
+      <div class="section-head">
+        <h2>API 文档</h2>
+        <p>以下内容基于源码公开类型、公开属性与模块依赖整理，可作为开源主页的 API 索引。</p>
+      </div>
+      <div class="docs-layout">
+        <aside class="toc" aria-label="API 目录">
+          <strong>快速定位</strong>
+          <a href="#base">Base</a>
+          <a href="#components">Components</a>
+          <a href="#asset-picker">AssetPicker</a>
+          <a href="#asset-browser">AssetBrowser</a>
+          <a href="#networking">Networking</a>
+          <a href="#request">Request</a>
+          <a href="#toast">Toast</a>
+          <a href="#refresh">Refresh</a>
+          <a href="#player">Player</a>
+          <a href="#database">Database</a>
+          <a href="#media-export">MediaExport</a>
+          <a href="#utility">Utility</a>
+          <a href="#purchase">Purchase</a>
+          <a href="#segmented">SegmentedViewController</a>
+          <a href="#emoticon">EmoticonKeyboard</a>
+          <a href="#other-modules">基础与辅助模块</a>
+        </aside>
+        <div class="api-stack">
+          <article id="base" class="api-doc">
+            <header><h3>Base</h3><p>应用基础架构模块，统一控制器生命周期、导航栏、标签栏、列表加载、WebView 和网页支付流程。</p></header>
+            <div class="api-body">
+              <div>
+                <h4>核心 API</h4>
+                <ul class="api-list">
+                  <li><code>MNBaseViewController</code><span>通用 UIViewController 基类，提供初始化钩子、内容视图、加载状态和导航状态处理。</span></li>
+                  <li><code>MNExtendViewController</code><span>在 Base 基础上扩展导航栏支持，适合业务控制器继承。</span></li>
+                  <li><code>MNNavigationController</code><span>隐藏系统导航栏并接入自定义转场能力的导航控制器。</span></li>
+                  <li><code>MNNavigationBar / MNNavigationBarDelegate</code><span>自定义导航栏、标题、按钮及交互代理。</span></li>
+                  <li><code>MNTabBarController / MNTabBar / MNTabBarItem</code><span>自定义 TabBar 容器、角标和重复点击回调。</span></li>
+                  <li><code>MNListViewController</code><span>集成列表视图、刷新、加载更多与空数据状态的列表基类。</span></li>
+                  <li><code>MNWebViewController</code><span>封装 WKWebView，支持 URL/HTML 加载、进度条、脚本桥、前进后退与关闭逻辑。</span></li>
+                  <li><code>MNWebPayController / MNWebPayment</code><span>为微信、支付宝等网页支付场景提供控制器和回调处理。</span></li>
+                </ul>
+                <div class="code-sample"><pre><code>let controller = MNWebViewController(url: URL(string: "https://example.com")!)
+controller.reloadWhenAppear = true
+controller.allowsUpdateTitle = true
+navigationController?.pushViewController(controller, animated: true)</code></pre></div>
+              </div>
+              <aside class="side-note">安装：<code>pod 'MNSwiftKit/Base'</code><br>SPM：<code>MNBase</code><br>依赖 Toast、Refresh、Request、Definition、Extension、EmptyView、NameSpace、Transitioning、CollectionLayout。</aside>
+            </div>
+          </article>
+
+          <article id="components" class="api-doc">
+            <header><h3>Components</h3><p>一组可直接落地的 UIKit 基础组件，适合替代项目中重复实现的弹窗、按钮、选择器和输入控件。</p></header>
+            <div class="api-body">
+              <div>
+                <h4>核心 API</h4>
+                <ul class="api-list">
+                  <li><code>MNAlertView</code><span>支持标题、消息、文本框、动作按钮和通知关闭的自定义 Alert。</span></li>
+                  <li><code>MNAlertAction / MNAlertField</code><span>描述 Alert 动作和输入框配置。</span></li>
+                  <li><code>MNPopoverView</code><span>支持箭头方向、动画类型、分割线约束和 item 布局的弹出菜单。</span></li>
+                  <li><code>MNButton</code><span>自定义 UIControl 按钮，便于处理图片、标题和状态展示。</span></li>
+                  <li><code>MNSegmentedControl</code><span>分段选择控件。</span></li>
+                  <li><code>MNDatePicker</code><span>日期选择视图。</span></li>
+                  <li><code>MNTextView / MNTextViewUpdater</code><span>带更新回调的文本视图。</span></li>
+                  <li><code>MNNumberKeyboard</code><span>数字键盘和代理事件。</span></li>
+                  <li><code>MNScanView</code><span>扫码场景中的扫描框 UI。</span></li>
+                  <li><code>MNActivityIndicatorView</code><span>深色/浅色活动指示器。</span></li>
+                  <li><code>MNSecureView</code><span>安全输入或隐私保护容器。</span></li>
+                </ul>
+                <div class="code-sample"><pre><code>let alert = MNAlertView(title: "删除记录", message: "此操作不可撤销", preferredStyle: .alert)
+alert.addAction(title: "取消", style: .cancel)
+alert.addAction(title: "删除", style: .destructive) { _ in
+    // handle delete
+}
+alert.show()</code></pre></div>
+              </div>
+              <aside class="side-note">安装：<code>pod 'MNSwiftKit/Components'</code><br>SPM：<code>MNComponents</code><br>依赖 Extension、NameSpace。</aside>
+            </div>
+          </article>
+
+          <article id="asset-picker" class="api-doc">
+            <header><h3>AssetPicker</h3><p>面向相册选择业务的完整模块，覆盖多选、预览、GIF/LivePhoto、视频导出、裁剪和相册分页加载。</p></header>
+            <div class="api-body">
+              <div>
+                <h4>核心 API</h4>
+                <ul class="api-list">
+                  <li><code>MNAssetPicker</code><span>UINavigationController 子类，提供 <code>present</code> 入口和选择/取消回调。</span></li>
+                  <li><code>MNAssetPickerOptions</code><span>选择器配置：最大/最小数量、照片/视频/GIF/LivePhoto、混选、预览、导出、列数、主题色、深浅模式。</span></li>
+                  <li><code>MNAssetPickerDelegate</code><span>选择完成与取消事件代理。</span></li>
+                  <li><code>MNAsset</code><span>统一描述 PHAsset、封面、文件 URL、资源类型、更新回调和浏览协议。</span></li>
+                  <li><code>MNAssetAlbum</code><span>相册模型。</span></li>
+                  <li><code>MNAssetHelper</code><span>相册权限、资源读取、保存和导出相关工具入口。</span></li>
+                  <li><code>MNTailorViewController</code><span>图片或视频裁剪控制器，配合 <code>MNTailorView</code>、<code>MNTailorHandler</code> 使用。</span></li>
+                  <li><code>MNPickError</code><span>选择、读取和导出过程中的错误枚举。</span></li>
+                </ul>
+                <div class="code-sample"><pre><code>let options = MNAssetPickerOptions()
+options.maxPickingCount = 9
+options.allowsPreview = true
+options.allowsPickingVideo = true
+options.allowsExportVideo = true
+
+MNAssetPicker(options: options).present(in: self) { assets in
+    // use selected MNAsset values
+}</code></pre></div>
+              </div>
+              <aside class="side-note">安装：<code>pod 'MNSwiftKit/AssetPicker'</code><br>SPM：<code>MNAssetPicker</code><br>需要相册权限；使用相机或保存相册时补充对应 Info.plist 键。</aside>
+            </div>
+          </article>
+
+          <article id="asset-browser" class="api-doc">
+            <header><h3>AssetBrowser</h3><p>资源浏览器模块，用于全屏预览图片、GIF、LivePhoto 和视频，并支持拖拽关闭、缩放、保存、分享和自定义数据源。</p></header>
+            <div class="api-body">
+              <div>
+                <h4>核心 API</h4>
+                <ul class="api-list">
+                  <li><code>MNAssetBrowser</code><span>主浏览视图，接收 <code>MNAssetBrowseSupported</code> 数组并调用 <code>present</code> 展示。</span></li>
+                  <li><code>MNAssetBrowseSupported</code><span>资源数据协议，描述 identifier、contents、type、cover 和进度。</span></li>
+                  <li><code>MNAssetBrowseDelegate</code><span>监听浏览器事件、页面切换、按钮触发和状态变化。</span></li>
+                  <li><code>MNAssetType</code><span>资源类型：photo、gif、livePhoto、video。</span></li>
+                  <li><code>MNAssetBrowserCell</code><span>浏览单元格，负责封面、内容、播放视图和缩放容器。</span></li>
+                  <li><code>MNAssetScrollView</code><span>图片缩放和拖拽容器。</span></li>
+                </ul>
+                <div class="code-sample"><pre><code>let browser = MNAssetBrowser(assets: assets)
+browser.autoPlay = true
+browser.dragToDismiss = true
+browser.rightBarItemEvent = .share
+browser.present(in: view, from: 0)</code></pre></div>
+              </div>
+              <aside class="side-note">安装：<code>pod 'MNSwiftKit/AssetBrowser'</code><br>SPM：<code>MNAssetBrowser</code><br>依赖 Slider、Player、Definition、Extension、AnimatedImage。</aside>
+            </div>
+          </article>
+
+          <article id="networking" class="api-doc">
+            <header><h3>Networking</h3><p>URLSession 网络层封装，关注请求构造、参数编码、响应解析、安全策略、可达性和统一错误信息。</p></header>
+            <div class="api-body">
+              <div>
+                <h4>核心 API</h4>
+                <ul class="api-list">
+                  <li><code>MNNetworkSession</code><span>会话对象，承载 URLSessionTask、上传/下载进度和完成回调。</span></li>
+                  <li><code>MNNetworkProxy</code><span>任务代理，管理 fileURL、parser、Progress、上传下载位置与完成处理。</span></li>
+                  <li><code>MNNetworkSerializer</code><span>根据 <code>MNNetworkMethod</code>、参数和内容类型生成 URLRequest。</span></li>
+                  <li><code>MNNetworkParser</code><span>解析 Data、JSON、String、文件下载和状态码。</span></li>
+                  <li><code>MNNetworkParam</code><span>请求参数结构。</span></li>
+                  <li><code>MNNetworkContentType</code><span>请求/响应 Content-Type 枚举。</span></li>
+                  <li><code>MNNetworkReachability</code><span>网络状态监听与通知。</span></li>
+                  <li><code>MNNetworkSecurityPolicy</code><span>证书校验和安全策略。</span></li>
+                  <li><code>MNNetworkError</code><span>统一错误枚举，内置编码、解析、文件、状态码等错误常量。</span></li>
+                </ul>
+                <div class="code-sample"><pre><code>let serializer = MNNetworkSerializer()
+let parser = MNNetworkParser()
+// 与 MNNetworkSession / MNNetworkProxy 组合，用于请求、上传、下载和解析结果。</code></pre></div>
+              </div>
+              <aside class="side-note">安装：<code>pod 'MNSwiftKit/Networking'</code><br>SPM：<code>MNNetworking</code><br>包含 <code>MNNetworkReason.json</code> 错误原因资源。</aside>
+            </div>
+          </article>
+
+          <article id="request" class="api-doc">
+            <header><h3>Request</h3><p>在 Networking 之上的业务请求层，将请求生命周期抽象成可继承的 Request 类型，适合分页、上传、下载和文件数据业务。</p></header>
+            <div class="api-body">
+              <div>
+                <h4>核心 API</h4>
+                <ul class="api-list">
+                  <li><code>MNRequest</code><span>请求基类，定义请求生命周期、结果处理和状态。</span></li>
+                  <li><code>MNDataRequest</code><span>数据请求基类；<code>MNPagingRequestSupported</code> 为分页请求提供 page/limit 等约定。</span></li>
+                  <li><code>MNUploadRequest</code><span>上传请求封装。</span></li>
+                  <li><code>MNDownloadRequest</code><span>下载请求封装。</span></li>
+                  <li><code>MNFileDataRequest</code><span>文件数据请求。</span></li>
+                  <li><code>MNRequestResult</code><span>统一结果对象。</span></li>
+                  <li><code>MNRequestManager</code><span>请求管理器，负责队列、恢复和取消。</span></li>
+                  <li><code>MNRequestDatabase</code><span>下载/上传等请求本地记录，依赖 SQLite。</span></li>
+                  <li><code>MNUploadAssistant</code><span>辅助构造上传数据。</span></li>
+                </ul>
+              </div>
+              <aside class="side-note">安装：<code>pod 'MNSwiftKit/Request'</code><br>SPM：<code>MNRequest</code><br>依赖 Networking 和 sqlite3。</aside>
+            </div>
+          </article>
+
+          <article id="toast" class="api-doc">
+            <header><h3>Toast</h3><p>统一反馈提示模块，适合加载、成功、失败、信息、进度和可取消任务提示。</p></header>
+            <div class="api-body">
+              <div>
+                <h4>核心 API</h4>
+                <ul class="api-list">
+                  <li><code>MNToast</code><span>主视图，提供 <code>show(_:in:at:status:progress:cancellable:delay:close:)</code> 和显示时长计算。</span></li>
+                  <li><code>MNToastBuilder</code><span>Toast 内容构建协议。</span></li>
+                  <li><code>MNToastCancelSupported</code><span>声明可取消行为。</span></li>
+                  <li><code>MNToastAnimationSupported</code><span>声明自定义动画能力。</span></li>
+                  <li><code>MNToastProgressSupported</code><span>声明进度展示。</span></li>
+                  <li><code>MNToastCloseSupported</code><span>声明关闭按钮能力。</span></li>
+                  <li><code>MNMsgToast / MNInfoToast / MNSuccessToast / MNErrorToast</code><span>文本、信息、成功和错误提示构建器。</span></li>
+                  <li><code>MNProgressToast / MNActivityToast / MNRotationToast</code><span>进度、活动指示和旋转类型提示。</span></li>
+                  <li><code>UIView+MNToast</code><span>为 UIView 提供命名空间提示入口。</span></li>
+                </ul>
+              </div>
+              <aside class="side-note">安装：<code>pod 'MNSwiftKit/Toast'</code><br>SPM：<code>MNToast</code><br>依赖 NameSpace，包含深浅遮罩和图标资源。</aside>
+            </div>
+          </article>
+
+          <article id="refresh" class="api-doc">
+            <header><h3>Refresh</h3><p>UIScrollView 刷新控件模块，用于下拉刷新、上拉加载、状态展示和滚动视图扩展。</p></header>
+            <div class="api-body">
+              <div>
+                <h4>核心 API</h4>
+                <ul class="api-list">
+                  <li><code>MNRefreshComponent</code><span>刷新组件基类，定义状态、回调、布局和触发逻辑。</span></li>
+                  <li><code>MNRefreshHeader</code><span>下拉刷新基类。</span></li>
+                  <li><code>MNRefreshStateHeader</code><span>带状态文本的下拉刷新头。</span></li>
+                  <li><code>MNRefreshFooter</code><span>上拉加载基类。</span></li>
+                  <li><code>MNRefreshStateFooter</code><span>带状态文本的加载更多尾部。</span></li>
+                  <li><code>UIScrollViewRefreshing</code><span>为滚动视图挂载刷新组件的扩展入口。</span></li>
+                </ul>
+              </div>
+              <aside class="side-note">安装：<code>pod 'MNSwiftKit/Refresh'</code><br>SPM：<code>MNRefresh</code><br>依赖 NameSpace。</aside>
+            </div>
+          </article>
+
+          <article id="player" class="api-doc">
+            <header><h3>Player</h3><p>基于 AVPlayer 的播放模块，支持单资源和队列播放、进度、缓冲、播放速率、音量与 seek。</p></header>
+            <div class="api-body">
+              <div>
+                <h4>核心 API</h4>
+                <ul class="api-list">
+                  <li><code>MNPlayer</code><span>播放核心。公开 <code>play</code>、<code>pause</code>、<code>forward</code>、<code>playNext</code>、<code>seek</code>、队列增删改查等方法。</span></li>
+                  <li><code>MNPlayerDelegate</code><span>监听播放状态、时间、缓冲、错误和结束事件。</span></li>
+                  <li><code>MNPlayView</code><span>视频渲染视图和交互代理。</span></li>
+                  <li><code>MNPlayError</code><span>播放错误枚举。</span></li>
+                  <li><code>PlaySoundSupported</code><span>声音播放支持协议。</span></li>
+                </ul>
+                <div class="code-sample"><pre><code>let player = MNPlayer()
+player.append(URL(fileURLWithPath: path))
+player.prepare()
+player.play()
+player.seek(progress: 0.5)</code></pre></div>
+              </div>
+              <aside class="side-note">安装：<code>pod 'MNSwiftKit/Player'</code><br>SPM：<code>MNPlayer</code><br>后台播放需配置 <code>UIBackgroundModes audio</code>。</aside>
+            </div>
+          </article>
+
+          <article id="database" class="api-doc">
+            <header><h3>Database</h3><p>轻量 SQLite 封装，支持通过模型协议或字段字典完成建表、插入、更新、删除、查询和聚合计算。</p></header>
+            <div class="api-body">
+              <div>
+                <h4>核心 API</h4>
+                <ul class="api-list">
+                  <li><code>MNDatabase</code><span>数据库入口。提供 <code>open</code>、<code>close</code>、<code>create</code>、<code>insert</code>、<code>update</code>、<code>delete</code>、<code>selectRows</code>、<code>selectCount</code>、<code>calculate</code>。</span></li>
+                  <li><code>MNDatabase.default</code><span>默认数据库实例。</span></li>
+                  <li><code>MNTableRowInitializable</code><span>模型与表行之间的映射协议。</span></li>
+                  <li><code>MNTableColumn</code><span>字段描述，包含 name、type、primary、nullable 等配置。</span></li>
+                  <li><code>MNTableColumnSupported / MNTableColumnAssignment</code><span>字段集合和赋值协议。</span></li>
+                </ul>
+                <div class="code-sample"><pre><code>let database = MNDatabase.default
+database.open()
+database.create(table: "users", using: User.self)
+database.insert(into: "users", using: user)
+let rows = database.selectRows(from: "users", type: User.self)</code></pre></div>
+              </div>
+              <aside class="side-note">安装：<code>pod 'MNSwiftKit/Database'</code><br>SPM：<code>MNDatabase</code><br>链接 sqlite3。</aside>
+            </div>
+          </article>
+
+          <article id="media-export" class="api-doc">
+            <header><h3>MediaExport</h3><p>AVAsset 导出工具链，面向视频裁剪、音轨/视频轨控制、输出质量、时间范围和导出进度。</p></header>
+            <div class="api-body">
+              <div>
+                <h4>核心 API</h4>
+                <ul class="api-list">
+                  <li><code>MNMediaExportSession</code><span>导出会话，配置 outputURL、cropRect、presetName、renderSize、timeRange、quality，并调用 <code>exportAsynchronously</code>。</span></li>
+                  <li><code>MNAssetExportSession</code><span>资产导出会话封装。</span></li>
+                  <li><code>MNMetadataExportSupported</code><span>元数据导出支持协议。</span></li>
+                  <li><code>MNExportError</code><span>导出错误枚举。</span></li>
+                  <li><code>AVAsset/AVAssetTrack/AVMutableComposition 扩展</code><span>媒体轨道、组合和导出辅助能力。</span></li>
+                </ul>
+                <div class="code-sample"><pre><code>let session = MNMediaExportSession(asset: asset, outputURL: outputURL)
+session.quality = .high
+session.timeRange = timeRange
+session.exportAsynchronously { progress in
+    // update progress
+} completionHandler: { status, error in
+    // handle result
+}</code></pre></div>
+              </div>
+              <aside class="side-note">安装：<code>pod 'MNSwiftKit/MediaExport'</code><br>SPM：<code>MNMediaExport</code><br>依赖 AVFoundation、CoreMedia、NameSpace。</aside>
+            </div>
+          </article>
+
+          <article id="utility" class="api-doc">
+            <header><h3>Utility</h3><p>系统能力工具模块，覆盖权限申请、扫码、二维码、Apple 登录、本地认证、触感反馈和弱代理。</p></header>
+            <div class="api-body">
+              <div>
+                <h4>核心 API</h4>
+                <ul class="api-list">
+                  <li><code>MNPermission</code><span>相册、相机、麦克风、IDFA 等系统权限请求。</span></li>
+                  <li><code>MNScanner / MNScannerDelegate</code><span>二维码/条形码扫描器和回调代理。</span></li>
+                  <li><code>MNQRCode</code><span>二维码生成工具。</span></li>
+                  <li><code>AppleLoginHelper</code><span>Sign in with Apple 封装，返回 user、token、email 或错误枚举。</span></li>
+                  <li><code>MNLocalAuthentication</code><span>Face ID / Touch ID / 设备密码认证。</span></li>
+                  <li><code>HapticFeedback</code><span>触感反馈工具。</span></li>
+                  <li><code>MNNotificationCenter</code><span>通知中心辅助。</span></li>
+                  <li><code>MNUserDefaultsStorage</code><span>UserDefaults 泛型存储包装。</span></li>
+                  <li><code>MNWeakProxy</code><span>Timer、DisplayLink 等场景中的弱代理。</span></li>
+                  <li><code>MNWebClip</code><span>WebClip 相关工具。</span></li>
+                </ul>
+              </div>
+              <aside class="side-note">安装：<code>pod 'MNSwiftKit/Utility'</code><br>SPM：<code>MNUtility</code><br>根据使用能力配置相机、相册、麦克风、Face ID、Tracking 权限。</aside>
+            </div>
+          </article>
+
+          <article id="purchase" class="api-doc">
+            <header><h3>Purchase</h3><p>StoreKit 内购模块，提供购买、恢复购买、票据读取、票据校验、状态回调和通知。</p></header>
+            <div class="api-body">
+              <div>
+                <h4>核心 API</h4>
+                <ul class="api-list">
+                  <li><code>MNPurchaseManager.default</code><span>默认购买管理器，负责成为交易观察者、发起购买、恢复和续接未完成任务。</span></li>
+                  <li><code>startPurchasing(_:userInfo:status:completion:)</code><span>根据 productId 发起购买。</span></li>
+                  <li><code>startRestore(status:completion:)</code><span>恢复购买。</span></li>
+                  <li><code>startCheckout(status:completion:)</code><span>发起票据校验。</span></li>
+                  <li><code>MNPurchaseReceipt</code><span>票据模型。</span></li>
+                  <li><code>MNPurchaseResult</code><span>购买或校验结果。</span></li>
+                  <li><code>MNPurchaseRequest</code><span>购买请求对象，暴露状态回调。</span></li>
+                  <li><code>MNReceiptBase</code><span>本地票据读取和存储基础。</span></li>
+                  <li><code>MNPurchaseDidFinishNotification</code><span>购买完成通知。</span></li>
+                </ul>
+              </div>
+              <aside class="side-note">安装：<code>pod 'MNSwiftKit/Purchase'</code><br>SPM：<code>MNPurchase</code><br>依赖 StoreKit 和 sqlite3。</aside>
+            </div>
+          </article>
+
+          <article id="segmented" class="api-doc">
+            <header><h3>SegmentedViewController</h3><p>分段分页容器，适合资讯、订单、个人主页等顶部导航加多个子页面的结构。</p></header>
+            <div class="api-body">
+              <div>
+                <h4>核心 API</h4>
+                <ul class="api-list">
+                  <li><code>MNSegmentedViewController</code><span>主分页控制器，支持 reloadPages、setPage、replacePage、badge、标题和分割线更新。</span></li>
+                  <li><code>MNSegmentedConfiguration</code><span>分页导航样式、尺寸、方向和分割线配置。</span></li>
+                  <li><code>MNSegmentedViewControllerDataSource</code><span>提供标题、页面数量、页面控制器和导航项尺寸。</span></li>
+                  <li><code>MNSegmentedViewControllerDelegate</code><span>监听页面切换与交互。</span></li>
+                  <li><code>MNSegmentedNavigationView</code><span>顶部导航视图。</span></li>
+                  <li><code>MNSegmentedNavigationItem</code><span>导航项模型，包含标题、角标等数据。</span></li>
+                  <li><code>MNSegmentedNavigationCellConvertible</code><span>自定义导航 cell 协议。</span></li>
+                  <li><code>MNSegmentedPageScrollSupported</code><span>子页面滚动协调协议。</span></li>
+                </ul>
+              </div>
+              <aside class="side-note">安装：<code>pod 'MNSwiftKit/SegmentedViewController'</code><br>SPM：<code>MNSegmentedViewController</code><br>依赖 NameSpace。</aside>
+            </div>
+          </article>
+
+          <article id="emoticon" class="api-doc">
+            <header><h3>EmoticonKeyboard</h3><p>表情键盘模块，内置表情资源、分包管理、输入视图、富文本附件和输入控件适配。</p></header>
+            <div class="api-body">
+              <div>
+                <h4>核心 API</h4>
+                <ul class="api-list">
+                  <li><code>MNEmoticonKeyboard</code><span>表情键盘主视图和代理事件。</span></li>
+                  <li><code>MNEmoticonKeyboardOptions</code><span>键盘样式、布局和行为配置。</span></li>
+                  <li><code>MNEmoticonManager</code><span>表情包增删改查，并发布 added、removed、changed 通知。</span></li>
+                  <li><code>MNEmoticonPacket</code><span>表情包模型。</span></li>
+                  <li><code>MNEmoticon</code><span>单个表情模型。</span></li>
+                  <li><code>MNEmoticonAttachment</code><span>富文本附件，用于把表情嵌入 attributed string。</span></li>
+                  <li><code>MNEmoticonBackedString</code><span>表情文本和附件之间的桥接。</span></li>
+                  <li><code>MNEmoticonInputSupported</code><span>UITextView/UITextField 等输入控件适配协议。</span></li>
+                  <li><code>NSAttributedString+MNEmoticonSupported</code><span>富文本表情解析和生成。</span></li>
+                </ul>
+              </div>
+              <aside class="side-note">安装：<code>pod 'MNSwiftKit/EmoticonKeyboard'</code><br>SPM：<code>MNEmoticonKeyboard</code><br>依赖 Definition、Extension、NameSpace、PageControl、AnimatedImage。</aside>
+            </div>
+          </article>
+
+          <article id="other-modules" class="api-doc">
+            <header><h3>基础与辅助模块</h3><p>下面这些模块体量更轻，通常作为其他模块的依赖，也可以单独用于项目基础设施。</p></header>
+            <div class="api-body">
+              <div>
+                <h4>模块 API</h4>
+                <ul class="api-list">
+                  <li><code id="editing">EditingView</code><span><code>MNEditingView</code>、<code>MNEditingOptions</code>、<code>MNEditingObserver</code>、<code>MNEditingRecognizer</code>，并扩展 UITableView/UICollectionView 的批量编辑能力。</span></li>
+                  <li><code id="transitioning">Transitioning</code><span><code>MNTransitionAnimator</code>、<code>MNTransitioningDelegate</code>、<code>MNNormalAnimator</code>、<code>MNModalAnimator</code>、<code>MNDrawerAnimator</code>、<code>MNFlipAnimator</code>，用于控制器自定义转场。</span></li>
+                  <li><code id="extension">Extension</code><span>为 Array、String、Date、Data、UIImage、UIView、CALayer、UIColor、UIApplication、FileManager 等类型提供高频扩展；公开 <code>MNImageFormat</code>、<code>MNOpenScoreMode</code> 等模型。</span></li>
+                  <li><code id="definition">Definition</code><span>提供 <code>MN_SCREEN_WIDTH</code>、<code>MN_STATUS_BAR_HEIGHT</code>、<code>MN_TOP_BAR_HEIGHT</code>、<code>MN_BOTTOM_SAFE_HEIGHT</code>、<code>MN_IS_DEBUG</code>、<code>MN_IS_SIMULATOR</code> 等常量。</span></li>
+                  <li><code id="empty-view">EmptyView</code><span><code>MNDataEmptyView</code>、<code>MNDataEmptyDelegate</code>、<code>MNDataEmptyComponent</code>、<code>MNDataEmptyHierarchyPosition</code>，用于空态和异常态占位。</span></li>
+                  <li><code id="page-control">PageControl</code><span><code>MNPageControl</code> 通过 <code>MNPageControlDataSource</code> 和 <code>MNPageControlDelegate</code> 自定义页码数量、视图和点击行为。</span></li>
+                  <li><code id="slider">Slider</code><span><code>MNSlider</code> 与 <code>MNSliderDelegate</code> 提供拖动、进度值更新和交互回调。</span></li>
+                  <li><code id="namespace">NameSpace</code><span><code>MNNameSpaceWrapper</code> 与 <code>MNNameSpaceSupported</code> 为类型提供统一 <code>mn</code> 命名空间扩展入口。</span></li>
+                  <li><code id="animated-image">AnimatedImage</code><span><code>UIImage+MNAnimatedSupported</code> 和 <code>Data+MNImageFormat</code> 支撑 GIF/动图解析与 UIImageView 展示。</span></li>
+                  <li><code id="collection-layout">CollectionLayout</code><span><code>MNCollectionViewLayout</code>、<code>MNCollectionViewFlowLayout</code>、<code>MNCollectionViewWordLayout</code>，覆盖常用 CollectionView 自定义布局。</span></li>
+                </ul>
+              </div>
+              <aside class="side-note">这些模块常作为上层功能的基础依赖。按需引入时，优先从业务入口模块安装，CocoaPods 会自动解析依赖。</aside>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="privacy" class="section">
+      <div class="notice">
+        <h3>权限配置提醒</h3>
+        <p>如果使用 AssetPicker、Utility、Player 等涉及相册、相机、麦克风、Face ID、IDFA 或后台音频的能力，请在宿主 App 的 Info.plist 中补充对应 Usage Description。只按需安装模块时，也只需要配置实际调用能力所需的权限。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    MNSwiftKit · reusable Swift components for iOS · MIT License · Author: panhub
+  </footer>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
