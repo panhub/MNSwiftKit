@@ -197,7 +197,12 @@ controller.reloadWhenAppear = true
 controller.allowsUpdateTitle = true
 navigationController?.pushViewController(controller, animated: true)</code></pre></div>
               </div>
-              <aside class="side-note">安装：<code>pod 'MNSwiftKit/Base'</code><br>SPM：<code>MNBase</code><br>依赖 Toast、Refresh、Request、Definition、Extension、EmptyView、NameSpace、Transitioning、CollectionLayout。</aside>
+              <aside class="side-note">
+                <strong>安装方式</strong>
+                <div class="install-line"><span>Pod</span><code>pod 'MNSwiftKit/Base'</code></div>
+                <div class="install-line"><span>SPM</span><code>.product(name: "MNBase", package: "MNSwiftKit")</code></div>
+                <p>依赖 Toast、Refresh、Request、Definition、Extension、EmptyView、NameSpace、Transitioning、CollectionLayout。WebView 加载非 HTTPS 内容时需按业务配置 ATS。</p>
+              </aside>
             </div>
           </article>
 
@@ -226,7 +231,12 @@ alert.addAction(title: "删除", style: .destructive) { _ in
 }
 alert.show()</code></pre></div>
               </div>
-              <aside class="side-note">安装：<code>pod 'MNSwiftKit/Components'</code><br>SPM：<code>MNComponents</code><br>依赖 Extension、NameSpace。</aside>
+              <aside class="side-note">
+                <strong>安装方式</strong>
+                <div class="install-line"><span>Pod</span><code>pod 'MNSwiftKit/Components'</code></div>
+                <div class="install-line"><span>SPM</span><code>.product(name: "MNComponents", package: "MNSwiftKit")</code></div>
+                <p>依赖 Extension、NameSpace。使用扫码 UI 搭配真实相机采集时，需要配置相机权限说明。</p>
+              </aside>
             </div>
           </article>
 
@@ -255,7 +265,12 @@ MNAssetPicker(options: options).present(in: self) { assets in
     // use selected MNAsset values
 }</code></pre></div>
               </div>
-              <aside class="side-note">安装：<code>pod 'MNSwiftKit/AssetPicker'</code><br>SPM：<code>MNAssetPicker</code><br>需要相册权限；使用相机或保存相册时补充对应 Info.plist 键。</aside>
+              <aside class="side-note">
+                <strong>安装方式</strong>
+                <div class="install-line"><span>Pod</span><code>pod 'MNSwiftKit/AssetPicker'</code></div>
+                <div class="install-line"><span>SPM</span><code>.product(name: "MNAssetPicker", package: "MNSwiftKit")</code></div>
+                <p>需要 <code>NSPhotoLibraryUsageDescription</code>；保存到相册需 <code>NSPhotoLibraryAddUsageDescription</code>。若接入拍摄或视频录制，还需相机、麦克风权限。</p>
+              </aside>
             </div>
           </article>
 
@@ -278,7 +293,12 @@ browser.dragToDismiss = true
 browser.rightBarItemEvent = .share
 browser.present(in: view, from: 0)</code></pre></div>
               </div>
-              <aside class="side-note">安装：<code>pod 'MNSwiftKit/AssetBrowser'</code><br>SPM：<code>MNAssetBrowser</code><br>依赖 Slider、Player、Definition、Extension、AnimatedImage。</aside>
+              <aside class="side-note">
+                <strong>安装方式</strong>
+                <div class="install-line"><span>Pod</span><code>pod 'MNSwiftKit/AssetBrowser'</code></div>
+                <div class="install-line"><span>SPM</span><code>.product(name: "MNAssetBrowser", package: "MNSwiftKit")</code></div>
+                <p>依赖 Slider、Player、Definition、Extension、AnimatedImage。浏览 PHAsset 或保存资源时需相册读取/写入权限。</p>
+              </aside>
             </div>
           </article>
 
@@ -302,7 +322,12 @@ browser.present(in: view, from: 0)</code></pre></div>
 let parser = MNNetworkParser()
 // 与 MNNetworkSession / MNNetworkProxy 组合，用于请求、上传、下载和解析结果。</code></pre></div>
               </div>
-              <aside class="side-note">安装：<code>pod 'MNSwiftKit/Networking'</code><br>SPM：<code>MNNetworking</code><br>包含 <code>MNNetworkReason.json</code> 错误原因资源。</aside>
+              <aside class="side-note">
+                <strong>安装方式</strong>
+                <div class="install-line"><span>Pod</span><code>pod 'MNSwiftKit/Networking'</code></div>
+                <div class="install-line"><span>SPM</span><code>.product(name: "MNNetworking", package: "MNSwiftKit")</code></div>
+                <p>包含 <code>MNNetworkReason.json</code> 错误原因资源。访问 HTTP 或自签证书服务时，需按 App 安全策略配置 ATS/证书校验。</p>
+              </aside>
             </div>
           </article>
 
@@ -323,7 +348,12 @@ let parser = MNNetworkParser()
                   <li><code>MNUploadAssistant</code><span>辅助构造上传数据。</span></li>
                 </ul>
               </div>
-              <aside class="side-note">安装：<code>pod 'MNSwiftKit/Request'</code><br>SPM：<code>MNRequest</code><br>依赖 Networking 和 sqlite3。</aside>
+              <aside class="side-note">
+                <strong>安装方式</strong>
+                <div class="install-line"><span>Pod</span><code>pod 'MNSwiftKit/Request'</code></div>
+                <div class="install-line"><span>SPM</span><code>.product(name: "MNRequest", package: "MNSwiftKit")</code></div>
+                <p>依赖 Networking 和 sqlite3。下载到相册或读取本地安全域文件时，需按实际业务补充系统权限或安全域访问处理。</p>
+              </aside>
             </div>
           </article>
 
@@ -344,7 +374,12 @@ let parser = MNNetworkParser()
                   <li><code>UIView+MNToast</code><span>为 UIView 提供命名空间提示入口。</span></li>
                 </ul>
               </div>
-              <aside class="side-note">安装：<code>pod 'MNSwiftKit/Toast'</code><br>SPM：<code>MNToast</code><br>依赖 NameSpace，包含深浅遮罩和图标资源。</aside>
+              <aside class="side-note">
+                <strong>安装方式</strong>
+                <div class="install-line"><span>Pod</span><code>pod 'MNSwiftKit/Toast'</code></div>
+                <div class="install-line"><span>SPM</span><code>.product(name: "MNToast", package: "MNSwiftKit")</code></div>
+                <p>依赖 NameSpace，包含深浅遮罩和图标资源。无额外系统权限。</p>
+              </aside>
             </div>
           </article>
 
@@ -362,7 +397,12 @@ let parser = MNNetworkParser()
                   <li><code>UIScrollViewRefreshing</code><span>为滚动视图挂载刷新组件的扩展入口。</span></li>
                 </ul>
               </div>
-              <aside class="side-note">安装：<code>pod 'MNSwiftKit/Refresh'</code><br>SPM：<code>MNRefresh</code><br>依赖 NameSpace。</aside>
+              <aside class="side-note">
+                <strong>安装方式</strong>
+                <div class="install-line"><span>Pod</span><code>pod 'MNSwiftKit/Refresh'</code></div>
+                <div class="install-line"><span>SPM</span><code>.product(name: "MNRefresh", package: "MNSwiftKit")</code></div>
+                <p>依赖 NameSpace。无额外系统权限。</p>
+              </aside>
             </div>
           </article>
 
@@ -384,7 +424,12 @@ player.prepare()
 player.play()
 player.seek(progress: 0.5)</code></pre></div>
               </div>
-              <aside class="side-note">安装：<code>pod 'MNSwiftKit/Player'</code><br>SPM：<code>MNPlayer</code><br>后台播放需配置 <code>UIBackgroundModes audio</code>。</aside>
+              <aside class="side-note">
+                <strong>安装方式</strong>
+                <div class="install-line"><span>Pod</span><code>pod 'MNSwiftKit/Player'</code></div>
+                <div class="install-line"><span>SPM</span><code>.product(name: "MNPlayer", package: "MNSwiftKit")</code></div>
+                <p>播放本地/网络媒体无需权限；后台播放需开启 <code>UIBackgroundModes audio</code>，录音场景另配麦克风权限。</p>
+              </aside>
             </div>
           </article>
 
@@ -406,7 +451,12 @@ database.create(table: "users", using: User.self)
 database.insert(into: "users", using: user)
 let rows = database.selectRows(from: "users", type: User.self)</code></pre></div>
               </div>
-              <aside class="side-note">安装：<code>pod 'MNSwiftKit/Database'</code><br>SPM：<code>MNDatabase</code><br>链接 sqlite3。</aside>
+              <aside class="side-note">
+                <strong>安装方式</strong>
+                <div class="install-line"><span>Pod</span><code>pod 'MNSwiftKit/Database'</code></div>
+                <div class="install-line"><span>SPM</span><code>.product(name: "MNDatabase", package: "MNSwiftKit")</code></div>
+                <p>链接 sqlite3。无额外系统权限，注意自行处理用户敏感数据的加密与备份策略。</p>
+              </aside>
             </div>
           </article>
 
@@ -431,7 +481,12 @@ session.exportAsynchronously { progress in
     // handle result
 }</code></pre></div>
               </div>
-              <aside class="side-note">安装：<code>pod 'MNSwiftKit/MediaExport'</code><br>SPM：<code>MNMediaExport</code><br>依赖 AVFoundation、CoreMedia、NameSpace。</aside>
+              <aside class="side-note">
+                <strong>安装方式</strong>
+                <div class="install-line"><span>Pod</span><code>pod 'MNSwiftKit/MediaExport'</code></div>
+                <div class="install-line"><span>SPM</span><code>.product(name: "MNMediaExport", package: "MNSwiftKit")</code></div>
+                <p>依赖 AVFoundation、CoreMedia、NameSpace。导出 PHAsset 前需相册读取权限；写回相册需相册添加权限。</p>
+              </aside>
             </div>
           </article>
 
@@ -453,7 +508,12 @@ session.exportAsynchronously { progress in
                   <li><code>MNWebClip</code><span>WebClip 相关工具。</span></li>
                 </ul>
               </div>
-              <aside class="side-note">安装：<code>pod 'MNSwiftKit/Utility'</code><br>SPM：<code>MNUtility</code><br>根据使用能力配置相机、相册、麦克风、Face ID、Tracking 权限。</aside>
+              <aside class="side-note">
+                <strong>安装方式</strong>
+                <div class="install-line"><span>Pod</span><code>pod 'MNSwiftKit/Utility'</code></div>
+                <div class="install-line"><span>SPM</span><code>.product(name: "MNUtility", package: "MNSwiftKit")</code></div>
+                <p>按功能配置 <code>NSCameraUsageDescription</code>、相册读写、<code>NSMicrophoneUsageDescription</code>、<code>NSFaceIDUsageDescription</code>、<code>NSUserTrackingUsageDescription</code>，Apple 登录需开启 Sign in with Apple 能力。</p>
+              </aside>
             </div>
           </article>
 
@@ -474,7 +534,12 @@ session.exportAsynchronously { progress in
                   <li><code>MNPurchaseDidFinishNotification</code><span>购买完成通知。</span></li>
                 </ul>
               </div>
-              <aside class="side-note">安装：<code>pod 'MNSwiftKit/Purchase'</code><br>SPM：<code>MNPurchase</code><br>依赖 StoreKit 和 sqlite3。</aside>
+              <aside class="side-note">
+                <strong>安装方式</strong>
+                <div class="install-line"><span>Pod</span><code>pod 'MNSwiftKit/Purchase'</code></div>
+                <div class="install-line"><span>SPM</span><code>.product(name: "MNPurchase", package: "MNSwiftKit")</code></div>
+                <p>依赖 StoreKit 和 sqlite3。需在 App Store Connect 配置内购商品，并在工程能力中启用 In-App Purchase。</p>
+              </aside>
             </div>
           </article>
 
@@ -494,7 +559,12 @@ session.exportAsynchronously { progress in
                   <li><code>MNSegmentedPageScrollSupported</code><span>子页面滚动协调协议。</span></li>
                 </ul>
               </div>
-              <aside class="side-note">安装：<code>pod 'MNSwiftKit/SegmentedViewController'</code><br>SPM：<code>MNSegmentedViewController</code><br>依赖 NameSpace。</aside>
+              <aside class="side-note">
+                <strong>安装方式</strong>
+                <div class="install-line"><span>Pod</span><code>pod 'MNSwiftKit/SegmentedViewController'</code></div>
+                <div class="install-line"><span>SPM</span><code>.product(name: "MNSegmentedViewController", package: "MNSwiftKit")</code></div>
+                <p>依赖 NameSpace。无额外系统权限。</p>
+              </aside>
             </div>
           </article>
 
@@ -515,7 +585,12 @@ session.exportAsynchronously { progress in
                   <li><code>NSAttributedString+MNEmoticonSupported</code><span>富文本表情解析和生成。</span></li>
                 </ul>
               </div>
-              <aside class="side-note">安装：<code>pod 'MNSwiftKit/EmoticonKeyboard'</code><br>SPM：<code>MNEmoticonKeyboard</code><br>依赖 Definition、Extension、NameSpace、PageControl、AnimatedImage。</aside>
+              <aside class="side-note">
+                <strong>安装方式</strong>
+                <div class="install-line"><span>Pod</span><code>pod 'MNSwiftKit/EmoticonKeyboard'</code></div>
+                <div class="install-line"><span>SPM</span><code>.product(name: "MNEmoticonKeyboard", package: "MNSwiftKit")</code></div>
+                <p>依赖 Definition、Extension、NameSpace、PageControl、AnimatedImage，包含内置表情资源。无额外系统权限。</p>
+              </aside>
             </div>
           </article>
 
@@ -525,19 +600,22 @@ session.exportAsynchronously { progress in
               <div>
                 <h4>模块 API</h4>
                 <ul class="api-list">
-                  <li><code id="editing">EditingView</code><span><code>MNEditingView</code>、<code>MNEditingOptions</code>、<code>MNEditingObserver</code>、<code>MNEditingRecognizer</code>，并扩展 UITableView/UICollectionView 的批量编辑能力。</span></li>
-                  <li><code id="transitioning">Transitioning</code><span><code>MNTransitionAnimator</code>、<code>MNTransitioningDelegate</code>、<code>MNNormalAnimator</code>、<code>MNModalAnimator</code>、<code>MNDrawerAnimator</code>、<code>MNFlipAnimator</code>，用于控制器自定义转场。</span></li>
-                  <li><code id="extension">Extension</code><span>为 Array、String、Date、Data、UIImage、UIView、CALayer、UIColor、UIApplication、FileManager 等类型提供高频扩展；公开 <code>MNImageFormat</code>、<code>MNOpenScoreMode</code> 等模型。</span></li>
-                  <li><code id="definition">Definition</code><span>提供 <code>MN_SCREEN_WIDTH</code>、<code>MN_STATUS_BAR_HEIGHT</code>、<code>MN_TOP_BAR_HEIGHT</code>、<code>MN_BOTTOM_SAFE_HEIGHT</code>、<code>MN_IS_DEBUG</code>、<code>MN_IS_SIMULATOR</code> 等常量。</span></li>
-                  <li><code id="empty-view">EmptyView</code><span><code>MNDataEmptyView</code>、<code>MNDataEmptyDelegate</code>、<code>MNDataEmptyComponent</code>、<code>MNDataEmptyHierarchyPosition</code>，用于空态和异常态占位。</span></li>
-                  <li><code id="page-control">PageControl</code><span><code>MNPageControl</code> 通过 <code>MNPageControlDataSource</code> 和 <code>MNPageControlDelegate</code> 自定义页码数量、视图和点击行为。</span></li>
-                  <li><code id="slider">Slider</code><span><code>MNSlider</code> 与 <code>MNSliderDelegate</code> 提供拖动、进度值更新和交互回调。</span></li>
-                  <li><code id="namespace">NameSpace</code><span><code>MNNameSpaceWrapper</code> 与 <code>MNNameSpaceSupported</code> 为类型提供统一 <code>mn</code> 命名空间扩展入口。</span></li>
-                  <li><code id="animated-image">AnimatedImage</code><span><code>UIImage+MNAnimatedSupported</code> 和 <code>Data+MNImageFormat</code> 支撑 GIF/动图解析与 UIImageView 展示。</span></li>
-                  <li><code id="collection-layout">CollectionLayout</code><span><code>MNCollectionViewLayout</code>、<code>MNCollectionViewFlowLayout</code>、<code>MNCollectionViewWordLayout</code>，覆盖常用 CollectionView 自定义布局。</span></li>
+                  <li><code id="editing">EditingView</code><span><code>MNEditingView</code>、<code>MNEditingOptions</code>、<code>MNEditingObserver</code>、<code>MNEditingRecognizer</code>，并扩展 UITableView/UICollectionView 的批量编辑能力。<span class="install-mini"><b>Pod</b><code>pod 'MNSwiftKit/EditingView'</code><b>SPM</b><code>.product(name: "MNEditingView", package: "MNSwiftKit")</code><em>无额外系统权限。</em></span></span></li>
+                  <li><code id="transitioning">Transitioning</code><span><code>MNTransitionAnimator</code>、<code>MNTransitioningDelegate</code>、<code>MNNormalAnimator</code>、<code>MNModalAnimator</code>、<code>MNDrawerAnimator</code>、<code>MNFlipAnimator</code>，用于控制器自定义转场。<span class="install-mini"><b>Pod</b><code>pod 'MNSwiftKit/Transitioning'</code><b>SPM</b><code>.product(name: "MNTransitioning", package: "MNSwiftKit")</code><em>无额外系统权限。</em></span></span></li>
+                  <li><code id="extension">Extension</code><span>为 Array、String、Date、Data、UIImage、UIView、CALayer、UIColor、UIApplication、FileManager 等类型提供高频扩展；公开 <code>MNImageFormat</code>、<code>MNOpenScoreMode</code> 等模型。<span class="install-mini"><b>Pod</b><code>pod 'MNSwiftKit/Extension'</code><b>SPM</b><code>.product(name: "MNExtension", package: "MNSwiftKit")</code><em>跳转评分或打开系统设置等能力无需 Info.plist 权限，但需按 App Store 规范触发。</em></span></span></li>
+                  <li><code id="definition">Definition</code><span>提供 <code>MN_SCREEN_WIDTH</code>、<code>MN_STATUS_BAR_HEIGHT</code>、<code>MN_TOP_BAR_HEIGHT</code>、<code>MN_BOTTOM_SAFE_HEIGHT</code>、<code>MN_IS_DEBUG</code>、<code>MN_IS_SIMULATOR</code> 等常量。<span class="install-mini"><b>Pod</b><code>pod 'MNSwiftKit/Definition'</code><b>SPM</b><code>.product(name: "MNDefinition", package: "MNSwiftKit")</code><em>无额外系统权限。</em></span></span></li>
+                  <li><code id="empty-view">EmptyView</code><span><code>MNDataEmptyView</code>、<code>MNDataEmptyDelegate</code>、<code>MNDataEmptyComponent</code>、<code>MNDataEmptyHierarchyPosition</code>，用于空态和异常态占位。<span class="install-mini"><b>Pod</b><code>pod 'MNSwiftKit/EmptyView'</code><b>SPM</b><code>.product(name: "MNEmptyView", package: "MNSwiftKit")</code><em>无额外系统权限。</em></span></span></li>
+                  <li><code id="page-control">PageControl</code><span><code>MNPageControl</code> 通过 <code>MNPageControlDataSource</code> 和 <code>MNPageControlDelegate</code> 自定义页码数量、视图和点击行为。<span class="install-mini"><b>Pod</b><code>pod 'MNSwiftKit/PageControl'</code><b>SPM</b><code>.product(name: "MNPageControl", package: "MNSwiftKit")</code><em>无额外系统权限。</em></span></span></li>
+                  <li><code id="slider">Slider</code><span><code>MNSlider</code> 与 <code>MNSliderDelegate</code> 提供拖动、进度值更新和交互回调。<span class="install-mini"><b>Pod</b><code>pod 'MNSwiftKit/Slider'</code><b>SPM</b><code>.product(name: "MNSlider", package: "MNSwiftKit")</code><em>无额外系统权限。</em></span></span></li>
+                  <li><code id="namespace">NameSpace</code><span><code>MNNameSpaceWrapper</code> 与 <code>MNNameSpaceSupported</code> 为类型提供统一 <code>mn</code> 命名空间扩展入口。<span class="install-mini"><b>Pod</b><code>pod 'MNSwiftKit/NameSpace'</code><b>SPM</b><code>.product(name: "MNNameSpace", package: "MNSwiftKit")</code><em>无额外系统权限。</em></span></span></li>
+                  <li><code id="animated-image">AnimatedImage</code><span><code>UIImage+MNAnimatedSupported</code> 和 <code>Data+MNImageFormat</code> 支撑 GIF/动图解析与 UIImageView 展示。<span class="install-mini"><b>Pod</b><code>pod 'MNSwiftKit/AnimatedImage'</code><b>SPM</b><code>.product(name: "MNAnimatedImage", package: "MNSwiftKit")</code><em>只解析展示图片无需权限；读取相册图片时由调用方配置相册权限。</em></span></span></li>
+                  <li><code id="collection-layout">CollectionLayout</code><span><code>MNCollectionViewLayout</code>、<code>MNCollectionViewFlowLayout</code>、<code>MNCollectionViewWordLayout</code>，覆盖常用 CollectionView 自定义布局。<span class="install-mini"><b>Pod</b><code>pod 'MNSwiftKit/CollectionLayout'</code><b>SPM</b><code>.product(name: "MNCollectionLayout", package: "MNSwiftKit")</code><em>无额外系统权限。</em></span></span></li>
                 </ul>
               </div>
-              <aside class="side-note">这些模块常作为上层功能的基础依赖。按需引入时，优先从业务入口模块安装，CocoaPods 会自动解析依赖。</aside>
+              <aside class="side-note">
+                <strong>安装提示</strong>
+                <p>这些模块也可以单独安装。作为上层功能依赖时，CocoaPods 与 SPM 都会随业务入口模块自动解析依赖；直接使用某个轻量模块时按对应条目引入即可。</p>
+              </aside>
             </div>
           </article>
         </div>
