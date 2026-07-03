@@ -120,8 +120,8 @@ class MNSegmentedNavigationView: UIView {
         layout.scrollDirection = configuration.navigation.orientation == .horizontal ? .horizontal : .vertical
         layout.footerReferenceSize = .zero
         layout.headerReferenceSize = .zero
-        layout.minimumLineSpacing = configuration.navigation.orientation == .horizontal ? configuration.segment.spacing : 0.0
-        layout.minimumInteritemSpacing = configuration.navigation.orientation == .horizontal ? 0.0 : configuration.segment.spacing
+        layout.minimumLineSpacing = configuration.segment.itemSpacing.minimumLineSpacing
+        layout.minimumInteritemSpacing = configuration.segment.itemSpacing.minimumInteritemSpacing
         
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -573,7 +573,7 @@ extension MNSegmentedNavigationView {
         // 标题项追加宽度
         let appendWidth: CGFloat = configuration.segment.dimension
         // item间隔
-        let interitemSpacing: CGFloat = configuration.segment.spacing
+        let interitemSpacing: CGFloat = configuration.segment.itemSpacing.minimumLineSpacing
         // 标题字体
         let titleFont: UIFont = configuration.segment.titleFont
         // 缩放因数
@@ -688,7 +688,7 @@ extension MNSegmentedNavigationView {
         // 分割项高度
         let itemHeight: CGFloat = configuration.segment.dimension
         // item间隔
-        let interitemSpacing: CGFloat = configuration.segment.spacing
+        let interitemSpacing: CGFloat = configuration.segment.itemSpacing.minimumLineSpacing
         // 标题字体
         let titleFont: UIFont = configuration.segment.titleFont
         // 起始

@@ -188,6 +188,16 @@ extension MNSegmentedConfiguration {
     
     /// 分段导航视图Item配置
     public struct Segment {
+        
+        /// 用来描述Item的间隔
+        public enum ItemSpacing {
+            /// 全部使用此间隔
+            case all(CGFloat)
+            /// 滑动方向上的相邻Item间隔
+            case lineSpacing(CGFloat)
+            /// 非滑动方向上的相邻Item间隔
+            case interitemSpacing(CGFloat)
+        }
 
         /// 外观配置
         public struct Appearance {
@@ -213,8 +223,8 @@ extension MNSegmentedConfiguration {
         /// - 纵向：分段视图item高度
         public var dimension: CGFloat = 40.0
         
-        /// 相邻两个Item的间隔
-        public var spacing: CGFloat = 0.0
+        /// Item间隔
+        public var itemSpacing: MNSegmentedConfiguration.Segment.ItemSpacing = .all(15.0)
         
         /// 边框宽度
         public var borderWidth: CGFloat = 0.0
@@ -318,6 +328,29 @@ extension MNSegmentedConfiguration {
         public static func == (lhs: MNSegmentedConfiguration.Constraint, rhs: MNSegmentedConfiguration.Constraint) -> Bool {
             
             return lhs.leading == rhs.leading && lhs.trailing == rhs.trailing && lhs.dimension == rhs.dimension
+        }
+    }
+}
+
+extension MNSegmentedConfiguration.Segment.ItemSpacing {
+    
+    /// 滑动方向上的相邻Item间隔
+    public var minimumLineSpacing: CGFloat {
+        switch self {
+        case .all(let spacing), .lineSpacing(let spacing):
+            return spacing
+        case .interitemSpacing:
+            return 0.0
+        }
+    }
+    
+    /// 非滑动方向上的相邻Item间隔
+    public var minimumInteritemSpacing: CGFloat {
+        switch self {
+        case .all(let spacing), .interitemSpacing(let spacing):
+            return spacing
+        case .lineSpacing:
+            return 0.0
         }
     }
 }

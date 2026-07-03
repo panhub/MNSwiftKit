@@ -219,7 +219,7 @@ class MNSegmentedPageCoordinator: NSObject {
                 } else {
                     scrollView.mn.pageTopInset = 0.0
                 }
-                // 某些情况下ScrollView未正确计算内容尺寸, 这里手动修改偏移, 会触发重新计算
+                // 为避免ScrollView未计算内容尺寸, 这里手动修改偏移
                 var contentOffset = scrollView.contentOffset
                 contentOffset.y = -scrollView.contentInset.top
                 scrollView.setContentOffset(contentOffset, animated: false)

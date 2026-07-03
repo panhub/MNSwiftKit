@@ -43,6 +43,7 @@ class SegmentedViewController: UIViewController {
         configuration.separator.constraint = .init(inset: 0.0, dimension: 1.0)
         configuration.indicator.animationType = .stretch(duration: 0.25)
         configuration.separator.backgroundColor = .gray.withAlphaComponent(0.15)
+        configuration.segment.itemSpacing = .all(0.0)
         if axisSegment.selectedSegmentIndex == 1 {
             // 纵向
             configuration.navigation.orientation = .vertical
