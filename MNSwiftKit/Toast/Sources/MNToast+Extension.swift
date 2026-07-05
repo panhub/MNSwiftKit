@@ -75,7 +75,7 @@ extension MNToast {
         public var contentInset: UIEdgeInsets = .init(top: 13.0, left: 13.0, bottom: 13.0, right: 13.0)
         
         /// 字体
-        public var font: UIFont = .systemFont(ofSize: 14.0, weight: .regular)
+        public var font: UIFont = .systemFont(ofSize: 14.5, weight: .regular)
         
         /// 文字颜色
         public var textColor: UIColor = UIColor(hue: 0.0, saturation: 0.0, brightness: 0.95, alpha: 1.0)
