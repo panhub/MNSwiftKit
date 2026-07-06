@@ -438,6 +438,7 @@ extension MNSegmentedViewController: MNSegmentedNavigationDelegate {
     
     func navigationViewDidReloadItem(_ navigationView: MNSegmentedNavigationView) {
         
+        guard numberOfPages > 0 else { return }
         pageCoordinator.setPage(at: navigationView.selectedIndex, direction: .forward, animated: false)
     }
     
