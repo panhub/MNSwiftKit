@@ -805,11 +805,11 @@ extension MNSegmentedNavigationView {
         } else {
             indicatorView.frame = .init(origin: .init(x: 0.0, y: collectionView.frame.height), size: .zero)
         }
-        collectionView.performBatchUpdates { [weak self] in
+        // 这里不使用'performBatchUpdates', 避免item数量变化导致崩溃
+        collectionView.reloadData()
+        DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            self.collectionView.reloadData()
-        } completion: { [weak self] _ in
-            guard let self = self else { return }
+            self.collectionView.layoutIfNeeded()
             if self.selectedIndex < self.items.count {
                 self.scrollToItem(at: self.selectedIndex, to: self.configuration.navigation.scrollPosition, animated: false)
             }
