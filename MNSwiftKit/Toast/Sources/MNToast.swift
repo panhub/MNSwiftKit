@@ -399,7 +399,7 @@ public class MNToast: UIView {
     public class func displayDuration(with status: String?) -> TimeInterval {
         var timeInterval = 1.5
         if let status = status, status.isEmpty == false {
-            let string = status.components(separatedBy: "\n").joined()
+            let string = status.components(separatedBy: .whitespacesAndNewlines).joined()
             let count = string.count - 8
             if count > 0 {
                 timeInterval += TimeInterval(count)*0.06

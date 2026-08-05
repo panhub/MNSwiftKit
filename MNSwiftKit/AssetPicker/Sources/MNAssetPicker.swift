@@ -38,11 +38,11 @@ public class MNAssetPicker: UINavigationController {
     /// 配置信息
     public let options: MNAssetPickerOptions
     /// 选择器代理
-    private weak var _delegate:  MNAssetPickerDelegate?
+    private weak var raw_delegate:  MNAssetPickerDelegate?
     /// 事件代理入口
     public override var delegate: (any UINavigationControllerDelegate)? {
-        get { _delegate }
-        set { _delegate = newValue as? MNAssetPickerDelegate }
+        get { raw_delegate }
+        set { raw_delegate = newValue as? MNAssetPickerDelegate }
     }
     
     /// 构造资源选择器

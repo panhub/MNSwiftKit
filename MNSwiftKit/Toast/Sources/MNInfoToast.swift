@@ -65,3 +65,11 @@ class MNInfoToast: MNToastBuilder {
         MNToast.Configuration.shared.allowUserInteraction
     }
 }
+
+extension MNInfoToast: MNToastCloseSupported {
+    
+    func toastShouldClose(with status: String?) -> TimeInterval {
+        
+        MNToast.displayDuration(with: status)
+    }
+}

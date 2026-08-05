@@ -37,7 +37,7 @@ extension MNNameSpaceWrapper where Base: UIView {
         MNToast.show(MNActivityToast(style: style), in: base, at: position, status: status, progress: nil, cancellable: cancellable, delay: timeInterval, close: handler)
     }
     
-    /// 显示消息Toast
+    /// 显示消息Toast, 根据提示内容自动计算显示时长
     /// - Parameters:
     ///   - msg: 消息内容
     ///   - position: 展示位置
@@ -49,7 +49,7 @@ extension MNNameSpaceWrapper where Base: UIView {
         MNToast.show(MNMsgToast(), in: base, at: position, status: msg, progress: nil, cancellable: cancellable, delay: timeInterval, close: handler)
     }
     
-    /// 显示提示Toast
+    /// 显示提示Toast, 根据提示内容自动计算显示时长
     /// - Parameters:
     ///   - status: 状态描述
     ///   - position: 展示位置

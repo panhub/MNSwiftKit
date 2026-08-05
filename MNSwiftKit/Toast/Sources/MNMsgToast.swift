@@ -26,7 +26,7 @@ class MNMsgToast: MNToastBuilder {
     
     var contentInsetForToast: UIEdgeInsets {
         
-        .init(top: 11.0, left: 12.0, bottom: 10.0, right: 12.0)
+        .init(top: 12.0, left: 13.0, bottom: 11.0, right: 13.0)
     }
     
     var activityViewForToast: UIView? {
