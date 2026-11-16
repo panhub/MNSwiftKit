@@ -38,8 +38,8 @@ public class MNMediaExportSession: NSObject {
     public var outputURL: URL
     /// 裁剪画面矩形
     public var cropRect: CGRect?
-    /// 预设质量
-    public var presetName: String?
+    /// 视频输出预设，未设置或当前设备不支持时自动选择
+    public var presetName: AVOutputSettingsPreset?
     /// 输出分辨率outputRect有效时有效
     public var renderSize: CGSize?
     /// 裁剪片段
@@ -50,6 +50,8 @@ public class MNMediaExportSession: NSObject {
     public var exportVideoTrack: Bool = true
     /// 默认高质量输出策略
     public var quality: MNMediaExportSession.Quality = .medium
+    /// 进度回调最小间隔
+    public var progressUpdateInterval: TimeInterval = 0.15
     /// 是否针对网络使用进行优化
     public var shouldOptimizeForNetworkUse: Bool = true
     /// 错误信息
@@ -62,6 +64,10 @@ public class MNMediaExportSession: NSObject {
     private var videoExportProgress: CGFloat?
     /// 音频输出进度
     private var audioExportProgress: CGFloat?
+    /// 最近一次进度回调时间
+    private var lastProgressCallbackTime: TimeInterval = 0.0
+    /// 读写过程错误
+    private var processingError: Error?
     /// 进度回调
     private var progressHandler: ((CGFloat)->Void)?
     /// 结束回调
@@ -113,8 +119,10 @@ public class MNMediaExportSession: NSObject {
         error = nil
         update(status: .waiting)
         update(progress: 0.0)
+        processingError = nil
         videoExportProgress = nil
         audioExportProgress = nil
+        lastProgressCallbackTime = 0.0
         self.progressHandler = progressHandler
         self.completionHandler = completionHandler
         DispatchQueue(label: "com.mn.media.export.session.queue", qos: .userInitiated).async {
@@ -130,19 +138,41 @@ public class MNMediaExportSession: NSObject {
             finish(error: .unknownFileType(outputURL.pathExtension))
             return
         }
+        guard exportAudioTrack || exportVideoTrack else {
+            finish(error: .invalidConfiguration("请至少选择音频或视频轨道"))
+            return
+        }
+        let sourceVideoTrack = asset.mn.track(with: .video)
+        let sourceAudioTrack = asset.mn.track(with: .audio)
+        guard exportVideoTrack == false || sourceVideoTrack != nil else {
+            finish(error: .invalidConfiguration("资源不包含视频轨道"))
+            return
+        }
+        guard exportAudioTrack == false || sourceAudioTrack != nil else {
+            finish(error: .invalidConfiguration("资源不包含音频轨道"))
+            return
+        }
+        if let timeRange = timeRange,
+           (!CMTIMERANGE_IS_VALID(timeRange) || timeRange.start < .zero || timeRange.duration <= .zero) {
+            finish(error: .invalidConfiguration("时间范围无效"))
+            return
+        }
         
         // 合成器
         let composition = AVMutableComposition()
-        if exportVideoTrack, let videoTrack = asset.mn.track(with: AVMediaType.video) {
+        if exportVideoTrack, let videoTrack = sourceVideoTrack {
             guard composition.mn.append(track: videoTrack, range: timeRange) else {
                 finish(error: .cannotAppendTrack(AVMediaType.video))
                 return
             }
         }
-        if exportAudioTrack, let audioTrack = asset.mn.track(with: AVMediaType.audio) {
-            guard composition.mn.append(track: audioTrack, range: timeRange) else {
-                finish(error: .cannotAppendTrack(AVMediaType.audio))
-                return
+        if exportAudioTrack, let audioTrack = sourceAudioTrack {
+            let audioRange = timeRange.map { CMTimeRangeGetIntersection($0, otherRange: audioTrack.timeRange) }
+            if audioRange == nil || audioRange!.duration > .zero {
+                guard composition.mn.append(track: audioTrack, range: timeRange) else {
+                    finish(error: .cannotAppendTrack(AVMediaType.audio))
+                    return
+                }
             }
         }
         
@@ -161,6 +191,10 @@ public class MNMediaExportSession: NSObject {
         // 检查是否支持输出文件类型
         guard compatibility(export: composition, outputFileType: outputFileType) else {
             finish(error: .cannotExportFile(outputURL, fileType: outputFileType))
+            return
+        }
+        guard status != .cancelled else {
+            finish(error: .cancelled)
             return
         }
         
@@ -221,13 +255,25 @@ public class MNMediaExportSession: NSObject {
         var videoInput: AVAssetWriterInput!
         var videoOutput: AVAssetReaderVideoCompositionOutput!
         if let videoTrack = composition.mn.track(with: AVMediaType.video) {
-            var cropRect = CGRect(origin: CGPoint.zero, size: videoTrack.mn.naturalSize)
+            let sourceBounds = CGRect(origin: .zero, size: videoTrack.mn.rawNaturalSize)
+            var cropRect = sourceBounds
             if let rect = self.cropRect {
-                cropRect = cropRect.intersection(rect)
+                cropRect = videoTrack.mn.sourceRect(forOrientedCropRect: rect)
             }
-            var renderSize = cropRect.size
+            guard cropRect.isNull == false, cropRect.isEmpty == false,
+                  cropRect.minX.isFinite, cropRect.minY.isFinite,
+                  cropRect.width.isFinite, cropRect.height.isFinite else {
+                finish(error: .invalidConfiguration("画面裁剪区域无效"))
+                return
+            }
+            var renderSize = cropRect.applying(videoTrack.mn.preferredTransform).standardized.size
             if let size = self.renderSize {
                 renderSize = size
+            }
+            guard renderSize.width.isFinite, renderSize.height.isFinite,
+                  renderSize.width > 0.0, renderSize.height > 0.0 else {
+                finish(error: .invalidConfiguration("输出分辨率无效"))
+                return
             }
             // 渲染尺寸最好是偶数, 避免出错
             renderSize.width = CGFloat((Int(renderSize.width) + 1) & ~1)
@@ -257,7 +303,7 @@ public class MNMediaExportSession: NSObject {
                 //kCVPixelBufferHeightKey as String: Int(renderSize.height),
                 kCVPixelBufferMetalCompatibilityKey as String: true,
                 kCVPixelBufferOpenGLCompatibilityKey as String: true,
-                kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+                kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
             ]
             videoOutput = AVAssetReaderVideoCompositionOutput(videoTracks: [videoTrack], videoSettings: videoSettings)
             videoOutput.videoComposition = videoComposition
@@ -328,6 +374,8 @@ public class MNMediaExportSession: NSObject {
         }
         writer.startSession(atSourceTime: CMTime.zero)
         
+        videoExportProgress = videoInput == nil ? nil : 0.0
+        audioExportProgress = audioInput == nil ? nil : 0.0
         update(status: .exporting)
         let seconds = CMTimeGetSeconds(composition.duration)
         let group = DispatchGroup()
@@ -344,14 +392,11 @@ public class MNMediaExportSession: NSObject {
                         let presentationTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
                         let value = CMTimeGetSeconds(presentationTime)/seconds
                         self.updateVideoProgress(value)
-                        if let progressHandler = self.progressHandler {
-                            let progress = self.progress
-                            DispatchQueue.main.async {
-                                progressHandler(progress)
-                            }
-                        }
                         if videoInput.append(sampleBuffer) == false {
-                            // 操作失败了
+                            let error = writer.error ?? NSError(domain: AVFoundationErrorDomain, code: -1022, userInfo: [NSLocalizedDescriptionKey:"写入视频数据失败"])
+                            self.setProcessingError(error)
+                            self.update(status: .failed)
+                            reader.cancelReading()
                             videoInput.markAsFinished()
                             group.leave()
                             break
@@ -359,6 +404,7 @@ public class MNMediaExportSession: NSObject {
                     } else {
                         // 读取结束 这里也为了强引用reader
                         if let error = reader.error {
+                            self.setProcessingError(error)
                             self.update(status: .failed)
 #if DEBUG
                             print("读取视频数据失败: \(error)")
@@ -384,14 +430,11 @@ public class MNMediaExportSession: NSObject {
                         let presentationTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
                         let value = CMTimeGetSeconds(presentationTime)/seconds
                         self.updateAudioProgress(value)
-                        if let progressHandler = self.progressHandler {
-                            let progress = self.progress
-                            DispatchQueue.main.async {
-                                progressHandler(progress)
-                            }
-                        }
                         if audioInput.append(sampleBuffer) == false {
-                            // 操作失败了
+                            let error = writer.error ?? NSError(domain: AVFoundationErrorDomain, code: -1023, userInfo: [NSLocalizedDescriptionKey:"写入音频数据失败"])
+                            self.setProcessingError(error)
+                            self.update(status: .failed)
+                            reader.cancelReading()
                             audioInput.markAsFinished()
                             group.leave()
                             break
@@ -399,6 +442,7 @@ public class MNMediaExportSession: NSObject {
                     } else {
                         // 读取结束 这里也为了强引用reader
                         if let error = reader.error {
+                            self.setProcessingError(error)
                             self.update(status: .failed)
 #if DEBUG
                             print("读取音频数据失败: \(error)")
@@ -416,6 +460,11 @@ public class MNMediaExportSession: NSObject {
                 // 取消
                 writer.cancelWriting()
                 self.finish(error: .cancelled)
+                return
+            }
+            if let error = self.processingError {
+                writer.cancelWriting()
+                self.finish(error: .underlyingError(error))
                 return
             }
             if let error = reader.error {
@@ -480,36 +529,60 @@ public class MNMediaExportSession: NSObject {
     /// 更新音频输出进度
     /// - Parameter value: 进度值
     private func updateAudioProgress(_ value: CGFloat) {
-        var progress: CGFloat
         objc_sync_enter(self)
-        audioExportProgress = value
+        audioExportProgress = min(max(value, 0.0), 1.0)
         if let videoExportProgress = videoExportProgress {
-            progress = min(value, videoExportProgress)
+            progress = max(progress, min(audioExportProgress!, videoExportProgress))
         } else {
-            progress = value
+            progress = max(progress, audioExportProgress!)
         }
         objc_sync_exit(self)
-        update(progress: progress)
+        reportProgressIfNeeded()
     }
     
     /// 更新视频输出进度
     /// - Parameter value: 进度值
     private func updateVideoProgress(_ value: CGFloat) {
-        var progress: CGFloat
         objc_sync_enter(self)
-        videoExportProgress = value
+        videoExportProgress = min(max(value, 0.0), 1.0)
         if let audioExportProgress = audioExportProgress {
-            progress = min(value, audioExportProgress)
+            progress = max(progress, min(videoExportProgress!, audioExportProgress))
         } else {
-            progress = value
+            progress = max(progress, videoExportProgress!)
         }
         objc_sync_exit(self)
-        update(progress: progress)
+        reportProgressIfNeeded()
+    }
+
+    /// 节流输出单调递增的进度
+    private func reportProgressIfNeeded() {
+        let now = ProcessInfo.processInfo.systemUptime
+        objc_sync_enter(self)
+        guard now - lastProgressCallbackTime >= max(progressUpdateInterval, 0.0) else {
+            objc_sync_exit(self)
+            return
+        }
+        lastProgressCallbackTime = now
+        let progress = progress
+        let progressHandler = progressHandler
+        objc_sync_exit(self)
+        DispatchQueue.main.async {
+            progressHandler?(progress)
+        }
+    }
+
+    /// 保存首个底层读写错误
+    private func setProcessingError(_ error: Error) {
+        objc_sync_enter(self)
+        if processingError == nil {
+            processingError = error
+        }
+        objc_sync_exit(self)
     }
     
     /// 取消输出任务
     public func cancel() {
-        guard status == .exporting else { return }
+        guard status == .waiting || status == .exporting else { return }
         update(status: .cancelled)
     }
     
@@ -534,43 +607,34 @@ public class MNMediaExportSession: NSObject {
     
     /// 首选的视频轨道输出预设
     /// - Parameters:
-    ///   - useH264CodecType: 是否使用H264编码
     ///   - renderSize: 视频渲染尺寸
-    ///   - containsAlphaChannel: 是否包含透明度
     /// - Returns: 视频轨道输出预设
-    private func preferredVideoOutputPreset(useH264 useH264CodecType: Bool, renderSize: CGSize, containsAlphaChannel: Bool) -> AVOutputSettingsPreset {
+    private func preferredVideoOutputPreset(renderSize: CGSize) -> AVOutputSettingsPreset {
         let dimension = renderSize.width*renderSize.height
-        switch quality {
-        case .low:
-            // 低
-            if dimension <= 640*480 {
-                return .preset640x480
-            }
-            return .preset960x540
-        case .medium:
-            // 中
-            if dimension <= 1280*720 {
-                return .preset1280x720
-            }
-            if useH264CodecType {
-                return .preset1920x1080
-            } else if #available(iOS 13.0, *), containsAlphaChannel {
-                return .hevc1920x1080WithAlpha
-            } else if #available(iOS 11.0, *) {
-                return .hevc1920x1080
-            }
-            return .preset1920x1080
-        case .high:
-            // 高
-            if useH264CodecType {
-                return .preset3840x2160
-            } else if #available(iOS 13.0, *), containsAlphaChannel {
-                return .hevc3840x2160WithAlpha
-            } else if #available(iOS 11.0, *) {
-                return .hevc3840x2160
-            }
-            return .preset3840x2160
+        if dimension <= 640*480 {
+            return .preset640x480
         }
+        if dimension <= 960*540 {
+            return .preset960x540
+        }
+        if dimension <= 1280*720 {
+            return .preset1280x720
+        }
+        if dimension <= 1920*1080 {
+            return .preset1920x1080
+        }
+        return .preset3840x2160
+    }
+
+    /// 依据画面大小、帧率和质量计算平均码率
+    private func videoBitRate(renderSize: CGSize, frameRate: Float) -> Int {
+        let bitsPerPixel: CGFloat
+        switch quality {
+        case .low: bitsPerPixel = 0.05
+        case .medium: bitsPerPixel = 0.1
+        case .high: bitsPerPixel = 0.2
+        }
+        return Int(renderSize.width*renderSize.height*max(CGFloat(frameRate), 30.0)*bitsPerPixel)
     }
     
     /// 视频输出参数
@@ -579,39 +643,13 @@ public class MNMediaExportSession: NSObject {
     ///   - fileType: 输出文件类型
     ///   - renderSize: 视频渲染尺寸
     /// - Returns: 视频输出参数
-    private func videoOutputSettings(for videoTrack: AVAssetTrack, fileType: AVFileType, renderSize: CGSize) -> [String:Any]? {
+    private func videoOutputSettings(for videoTrack: AVAssetTrack, fileType _: AVFileType, renderSize: CGSize) -> [String:Any]? {
         guard let formatDescriptions = videoTrack.mn.formatDescriptions as? [CMFormatDescription], let formatDescription = formatDescriptions.first else { return nil }
-        let subType = CMFormatDescriptionGetMediaSubType(formatDescription)
-        // 是否有Alpha通道
-        var containsAlphaChannel = false
-        if #available(iOS 13.0, *), let containsAlphaChannelValue = CMFormatDescriptionGetExtension(formatDescription, extensionKey: kCMFormatDescriptionExtension_ContainsAlphaChannel) as? Bool, containsAlphaChannelValue {
-            containsAlphaChannel = true
-        } else {
-            let alphaSupportedFormats: [FourCharCode] = [
-                kCVPixelFormatType_32BGRA,
-                kCVPixelFormatType_32RGBA,
-                kCVPixelFormatType_32ABGR,
-                kCVPixelFormatType_32ARGB,
-                kCVPixelFormatType_64ARGB,
-                kCVPixelFormatType_128RGBAFloat,
-                kCMVideoCodecType_AppleProRes4444,
-                kCMVideoCodecType_AppleProRes4444XQ,
-                kCMVideoCodecType_HEVCWithAlpha,
-                kCMVideoCodecType_Animation
-            ]
-            if alphaSupportedFormats.contains(subType) {
-                containsAlphaChannel = true
-            }
-        }
-        // 选择编码方式, 默认兼容性最好
-        var useH264CodecType = true
-        if fileType != .m4v, #available(iOS 11.0, *), shouldOptimizeForNetworkUse == false {
-            // 使用压缩更好的hevc
-            useH264CodecType = false
-        }
-        // 使用推荐
-        let preset = preferredVideoOutputPreset(useH264: useH264CodecType, renderSize: renderSize, containsAlphaChannel: containsAlphaChannel)
-        guard AVOutputSettingsAssistant.availableOutputSettingsPresets().contains(preset) else { return nil }
+        // 优先使用外部预设，未设置时自动选择兼容性最好的H264预设
+        let availablePresets = AVOutputSettingsAssistant.availableOutputSettingsPresets()
+        let automaticPreset = preferredVideoOutputPreset(renderSize: renderSize)
+        let preset = presetName.flatMap { availablePresets.contains($0) ? $0 : nil } ?? automaticPreset
+        guard availablePresets.contains(preset) else { return nil }
         guard let assistant = AVOutputSettingsAssistant(preset: preset) else { return nil }
         assistant.sourceVideoFormat = formatDescription
         let minFrameDuration = videoTrack.mn.minFrameDuration
@@ -624,8 +662,9 @@ public class MNMediaExportSession: NSObject {
         guard var videoSettings = assistant.videoSettings else { return nil }
         videoSettings[AVVideoWidthKey] = Int(renderSize.width)
         videoSettings[AVVideoHeightKey] = Int(renderSize.height)
-        if let codec = videoSettings[AVVideoCodecKey] as? String, codec == "avc1", var compressionProperties = videoSettings[AVVideoCompressionPropertiesKey] as? [String:Any] {
-            //
+        var compressionProperties = videoSettings[AVVideoCompressionPropertiesKey] as? [String:Any] ?? [:]
+        compressionProperties[AVVideoAverageBitRateKey] = videoBitRate(renderSize: renderSize, frameRate: videoTrack.mn.nominalFrameRate)
+        if let codec = videoSettings[AVVideoCodecKey] as? String, codec == "avc1" {
             switch quality {
             case .low:
                 compressionProperties[AVVideoProfileLevelKey] = AVVideoProfileLevelH264BaselineAutoLevel
@@ -635,7 +674,46 @@ public class MNMediaExportSession: NSObject {
                 compressionProperties[AVVideoProfileLevelKey] = AVVideoProfileLevelH264HighAutoLevel
             }
         }
+        videoSettings[AVVideoCompressionPropertiesKey] = compressionProperties
         return videoSettings
+    }
+
+    /// 压缩音频平均码率
+    private var audioBitRate: Int {
+        switch quality {
+        case .low: return 64_000
+        case .medium: return 128_000
+        case .high: return 192_000
+        }
+    }
+
+    /// 压缩音频质量
+    private var audioQuality: AVAudioQuality {
+        switch quality {
+        case .low: return .low
+        case .medium: return .medium
+        case .high: return .high
+        }
+    }
+
+    /// 音频转码统一使用源采样率，最多输出双声道
+    private func audioFormat(for audioTrack: AVAssetTrack) -> (sampleRate: Double, channelCount: Int) {
+        guard let descriptions = audioTrack.mn.formatDescriptions as? [CMAudioFormatDescription],
+              let description = descriptions.first,
+              let streamDescription = CMAudioFormatDescriptionGetStreamBasicDescription(description) else {
+            return (44_100.0, 2)
+        }
+        let sampleRate = streamDescription.pointee.mSampleRate > 0.0 ? streamDescription.pointee.mSampleRate : 44_100.0
+        let channelCount = min(max(Int(streamDescription.pointee.mChannelsPerFrame), 1), 2)
+        return (sampleRate, channelCount)
+    }
+
+    /// 单声道或立体声布局
+    private func audioChannelLayout(for channelCount: Int) -> Data {
+        var channelLayout = AudioChannelLayout()
+        memset(&channelLayout, 0, MemoryLayout<AudioChannelLayout>.size)
+        channelLayout.mChannelLayoutTag = channelCount == 1 ? kAudioChannelLayoutTag_Mono : kAudioChannelLayoutTag_Stereo
+        return Data(bytes: &channelLayout, count: MemoryLayout<AudioChannelLayout>.size)
     }
     
     /// 音频输出参数
@@ -645,6 +723,7 @@ public class MNMediaExportSession: NSObject {
     /// - Returns: 音频输出设置参数
     private func audioOutputSettings(for audioTrack: AVAssetTrack, fileType: AVFileType) -> [String:Any]? {
         var audioSettings: [String:Any] = [:]
+        let (sampleRate, channelCount) = audioFormat(for: audioTrack)
         switch fileType {
         case .wav, .aiff, .aifc:
             // WAV: PCM未压缩音频数据 + 标准的WAV头部
@@ -655,85 +734,19 @@ public class MNMediaExportSession: NSObject {
             audioSettings[AVLinearPCMIsFloatKey] = false
             audioSettings[AVLinearPCMIsBigEndianKey] = fileType != .wav
             audioSettings[AVLinearPCMIsNonInterleaved] = false
-            switch quality {
-            case .low:
-                audioSettings[AVSampleRateKey] = 22050.0
-                audioSettings[AVNumberOfChannelsKey] = 1
-                audioSettings[AVLinearPCMBitDepthKey] = 16
-            case .medium:
-                audioSettings[AVSampleRateKey] = 44100.0
-                audioSettings[AVNumberOfChannelsKey] = 2
-                audioSettings[AVLinearPCMBitDepthKey] = 16
-            case .high:
-                audioSettings[AVSampleRateKey] = 48000.0
-                audioSettings[AVNumberOfChannelsKey] = 2
-                audioSettings[AVLinearPCMBitDepthKey] = 24
-            }
-        case .caf:
-            // CoreAudio框架原生支持的格式, 支持几乎所有的音频编码格式, 支持丰富的元数据, 常用于专业音频应用
-            switch quality {
-            case .low:
-                // AAC 高效压缩 低比特率 语音音质
-                audioSettings[AVFormatIDKey] = kAudioFormatMPEG4AAC
-                audioSettings[AVSampleRateKey] = 22050.0
-                audioSettings[AVNumberOfChannelsKey] = 1
-                audioSettings[AVEncoderBitRateKey] = 64000
-                //audioSettings[AVLinearPCMBitDepthKey] = 16
-                audioSettings[AVEncoderAudioQualityKey] = AVAudioQuality.low.rawValue
-            case .medium:
-                // AAC 优质压缩 128kbps 标准比特率 CD音质
-                audioSettings[AVFormatIDKey] = kAudioFormatMPEG4AAC_LD
-                audioSettings[AVSampleRateKey] = 44100.0
-                audioSettings[AVNumberOfChannelsKey] = 2
-                audioSettings[AVEncoderBitRateKey] = 128000
-                audioSettings[AVEncoderAudioQualityKey] = AVAudioQuality.medium.rawValue
-            case .high:
-                // Apple Lossless 无损 音乐保存
-                audioSettings[AVFormatIDKey] = kAudioFormatAppleLossless
-                audioSettings[AVSampleRateKey] = 48000.0
-                audioSettings[AVNumberOfChannelsKey] = 2
-                audioSettings[AVEncoderBitDepthHintKey] = 16
-            }
-        case .m4a:
-            // 目前最常用、最通用的音频格式, 在苹果生态系统中是默认的音频格式。使用kAudioFormatMPEG4AAC编码, 压缩效率高
-            audioSettings[AVFormatIDKey] = kAudioFormatMPEG4AAC
-            switch quality {
-            case .low:
-                audioSettings[AVSampleRateKey] = 22050.0
-                audioSettings[AVEncoderBitRateKey] = 64000
-                audioSettings[AVNumberOfChannelsKey] = 1
-                audioSettings[AVEncoderAudioQualityKey] = AVAudioQuality.low.rawValue
-                audioSettings[AVEncoderBitRateStrategyKey] = AVAudioBitRateStrategy_Constant
-            case .medium:
-                audioSettings[AVSampleRateKey] = 44100.0
-                audioSettings[AVEncoderBitRateKey] = 128000
-                audioSettings[AVNumberOfChannelsKey] = 2
-                audioSettings[AVEncoderAudioQualityKey] = AVAudioQuality.medium.rawValue
-                audioSettings[AVEncoderBitRateStrategyKey] = AVAudioBitRateStrategy_VariableConstrained
-            case .high:
-                audioSettings[AVSampleRateKey] = 44100.0
-                audioSettings[AVEncoderBitRateKey] = 192000
-                audioSettings[AVNumberOfChannelsKey] = 2
-                audioSettings[AVEncoderAudioQualityKey] = AVAudioQuality.high.rawValue
-                audioSettings[AVEncoderBitRateStrategyKey] = AVAudioBitRateStrategy_VariableConstrained
-            }
+            audioSettings[AVSampleRateKey] = sampleRate
+            audioSettings[AVNumberOfChannelsKey] = channelCount
+            audioSettings[AVLinearPCMBitDepthKey] = 16
         default:
-            // 视频中的音频
-            if let preset = AVOutputSettingsAssistant.availableOutputSettingsPresets().first, let assistant = AVOutputSettingsAssistant(preset: preset), let formatDescriptions = audioTrack.mn.formatDescriptions as? [CMFormatDescription], let formatDescription = formatDescriptions.first {
-                assistant.sourceAudioFormat = formatDescription
-                if let settings = assistant.audioSettings {
-                    audioSettings.merge(settings) { $1 }
-                }
-            }
+            // M4A、CAF和视频容器统一使用AAC
+            audioSettings[AVFormatIDKey] = kAudioFormatMPEG4AAC
+            audioSettings[AVSampleRateKey] = sampleRate
+            audioSettings[AVNumberOfChannelsKey] = channelCount
+            audioSettings[AVEncoderBitRateKey] = audioBitRate
+            audioSettings[AVEncoderAudioQualityKey] = audioQuality.rawValue
+            audioSettings[AVEncoderBitRateStrategyKey] = AVAudioBitRateStrategy_VariableConstrained
         }
-        if audioSettings[AVChannelLayoutKey] == nil {
-            var channelLayout = AudioChannelLayout()
-            memset(&channelLayout, 0, MemoryLayout<AudioChannelLayout>.size)
-            if let numberOfChannels = audioSettings[AVNumberOfChannelsKey] as? Int {
-                channelLayout.mChannelLayoutTag = numberOfChannels == 1 ? kAudioChannelLayoutTag_Mono : kAudioChannelLayoutTag_Stereo
-                audioSettings[AVChannelLayoutKey] = Data(bytes: &channelLayout, count: MemoryLayout<AudioChannelLayout>.size)
-            }
-        }
+        audioSettings[AVChannelLayoutKey] = audioChannelLayout(for: channelCount)
         return audioSettings.isEmpty ? nil : audioSettings
     }
     
@@ -741,47 +754,17 @@ public class MNMediaExportSession: NSObject {
     /// - Parameter audioTrack: 音频轨道
     /// - Returns: 设置参数
     private func audioSettings(for audioTrack: AVAssetTrack) -> [String:Any] {
-        var audioSettings: [String: Any] = [:]
-        if let formatDescriptions = audioTrack.mn.formatDescriptions as? [CMFormatDescription], let formatDescription = formatDescriptions.first {
-            // 音频格式ID
-            let formatID = CMFormatDescriptionGetMediaSubType(formatDescription)
-            if formatID == kAudioFormatLinearPCM, let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(formatDescription) {
-                // 如果是PCM格式，尽量保持原样
-                audioSettings[AVFormatIDKey] = kAudioFormatLinearPCM
-                // 采样率
-                audioSettings[AVSampleRateKey] = asbd.pointee.mSampleRate
-                // 声道数量
-                audioSettings[AVNumberOfChannelsKey] = Int(asbd.pointee.mChannelsPerFrame)
-                if asbd.pointee.mFormatFlags & kLinearPCMFormatFlagIsFloat != 0 {
-                    // 浮点PCM
-                    audioSettings[AVLinearPCMIsFloatKey] = true
-                    audioSettings[AVLinearPCMBitDepthKey] = 32
-                } else {
-                    // 整数PCM
-                    let bitDepth = asbd.pointee.mBitsPerChannel
-                    audioSettings[AVLinearPCMIsFloatKey] = false
-                    audioSettings[AVLinearPCMBitDepthKey] = bitDepth > 0 ? bitDepth : 16
-                }
-                // 声道布局
-                var channelLayoutSize: Int = 0
-                if let channelLayout = CMAudioFormatDescriptionGetChannelLayout(formatDescription, sizeOut: &channelLayoutSize) {
-                    audioSettings[AVChannelLayoutKey] = Data(bytes: channelLayout, count: channelLayoutSize)
-                }
-            }
-        }
-        if audioSettings.isEmpty {
-            // 安全默认16位整数PCM 大部分音频可使用
-            // AVLinearPCMIsFloatKey和AVLinearPCMBitDepthKey必须同时都设置
-            audioSettings[AVFormatIDKey] = kAudioFormatLinearPCM // 解压为PCM
-            audioSettings[AVSampleRateKey] = 44100.0 // 标准采样率
-            audioSettings[AVNumberOfChannelsKey] = 2 // 立体声
-            audioSettings[AVLinearPCMBitDepthKey] = 16 // CD音质
-            audioSettings[AVLinearPCMIsFloatKey] = false // 非浮点型
-            // 通用设置
-            audioSettings[AVLinearPCMIsBigEndianKey] = false
-            audioSettings[AVLinearPCMIsNonInterleaved] = false // 交错处理
-        }
-        return audioSettings
+        let (sampleRate, channelCount) = audioFormat(for: audioTrack)
+        return [
+            AVFormatIDKey: kAudioFormatLinearPCM,
+            AVSampleRateKey: sampleRate,
+            AVNumberOfChannelsKey: channelCount,
+            AVLinearPCMBitDepthKey: 16,
+            AVLinearPCMIsFloatKey: false,
+            AVLinearPCMIsBigEndianKey: false,
+            AVLinearPCMIsNonInterleaved: false,
+            AVChannelLayoutKey: audioChannelLayout(for: channelCount)
+        ]
     }
     
     /// 获取视频轨道描述信息

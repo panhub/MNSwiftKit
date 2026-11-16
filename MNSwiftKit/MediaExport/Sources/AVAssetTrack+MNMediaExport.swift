@@ -34,6 +34,14 @@ extension MNNameSpaceWrapper where Base: AVAssetTrack {
     
     /// 视频轨道原始渲染尺寸
     public var naturalSize: CGSize {
+        let naturalSize = rawNaturalSize
+        let preferredTransform = preferredTransform
+        let transformedRect = CGRect(origin: .zero, size: naturalSize).applying(preferredTransform).standardized
+        return transformedRect.size
+    }
+
+    /// 视频轨道未应用方向变换的原始尺寸
+    public var rawNaturalSize: CGSize {
         var naturalSize: CGSize = .zero
         if #available(iOS 16.0, *) {
             let semaphore = DispatchSemaphore(value: 0)
@@ -51,15 +59,14 @@ extension MNNameSpaceWrapper where Base: AVAssetTrack {
         } else {
             naturalSize = base.naturalSize
         }
-        let preferredTransform = preferredTransform
-        /*
-        let transformedSize = naturalSize.applying(preferredTransform)
-        let width = abs(transformedSize.width)
-        let height = abs(transformedSize.height)
-        return .init(width: width, height: height)
-        */
-        let transformedRect = CGRect(origin: .zero, size: naturalSize).applying(preferredTransform).standardized
-        return transformedRect.size
+        return naturalSize
+    }
+
+    /// 将用户按正向画面传入的裁剪区域转换为原始轨道坐标
+    public func sourceRect(forOrientedCropRect rect: CGRect) -> CGRect {
+        let orientedBounds = CGRect(origin: .zero, size: rawNaturalSize).applying(preferredTransform).standardized
+        let sourceRect = rect.offsetBy(dx: orientedBounds.minX, dy: orientedBounds.minY).applying(preferredTransform.inverted()).standardized
+        return CGRect(origin: .zero, size: rawNaturalSize).intersection(sourceRect)
     }
     
     /// 轨道帧率

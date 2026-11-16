@@ -55,6 +55,8 @@ public class MNAssetExportSession: NSObject {
     private var progressHandler: ((CGFloat)->Void)?
     /// 结束回调
     private var completionHandler: ((AVAssetExportSession.Status, Error?)->Void)?
+    /// 是否请求取消
+    private var cancellationRequested: Bool = false
     
     /// 构造资源输出会话
     /// - Parameters:
@@ -105,6 +107,7 @@ public class MNAssetExportSession: NSObject {
         exportSession = nil
         update(status: .waiting)
         update(progress: 0.0)
+        cancellationRequested = false
         self.progressHandler = progressHandler
         self.completionHandler = completionHandler
         DispatchQueue(label: "com.mn.asset.export.session.queue", qos: .userInitiated).async {
@@ -116,23 +119,45 @@ public class MNAssetExportSession: NSObject {
     private func export() {
         
         // 检查文件类型
-        guard let outputFileType = MNAssetExportSession.fileType(withExtension: outputURL.pathExtension) else {
+        guard let outputFileType = self.outputFileType ?? MNAssetExportSession.fileType(withExtension: outputURL.pathExtension) else {
             finish(error: .unknownFileType(outputURL.pathExtension))
+            return
+        }
+        guard exportAudioTrack || exportVideoTrack else {
+            finish(error: .invalidConfiguration("请至少选择音频或视频轨道"))
+            return
+        }
+        let sourceVideoTrack = asset.mn.track(with: .video)
+        let sourceAudioTrack = asset.mn.track(with: .audio)
+        guard exportVideoTrack == false || sourceVideoTrack != nil else {
+            finish(error: .invalidConfiguration("资源不包含视频轨道"))
+            return
+        }
+        guard exportAudioTrack == false || sourceAudioTrack != nil else {
+            finish(error: .invalidConfiguration("资源不包含音频轨道"))
+            return
+        }
+        if let timeRange = timeRange,
+           (!CMTIMERANGE_IS_VALID(timeRange) || timeRange.start < .zero || timeRange.duration <= .zero) {
+            finish(error: .invalidConfiguration("时间范围无效"))
             return
         }
         
         // 合成器
         let composition = AVMutableComposition()
-        if exportVideoTrack, let videoTrack = asset.mn.track(with: AVMediaType.video) {
+        if exportVideoTrack, let videoTrack = sourceVideoTrack {
             guard composition.mn.append(track: videoTrack, range: timeRange) else {
                 finish(error: .cannotAppendTrack(AVMediaType.video))
                 return
             }
         }
-        if exportAudioTrack, let audioTrack = asset.mn.track(with: AVMediaType.audio) {
-            guard composition.mn.append(track: audioTrack, range: timeRange) else {
-                finish(error: .cannotAppendTrack(AVMediaType.audio))
-                return
+        if exportAudioTrack, let audioTrack = sourceAudioTrack {
+            let audioRange = timeRange.map { CMTimeRangeGetIntersection($0, otherRange: audioTrack.timeRange) }
+            if audioRange == nil || audioRange!.duration > .zero {
+                guard composition.mn.append(track: audioTrack, range: timeRange) else {
+                    finish(error: .cannotAppendTrack(AVMediaType.audio))
+                    return
+                }
             }
         }
         
@@ -148,6 +173,10 @@ public class MNAssetExportSession: NSObject {
         // 检查设置是否可以输出
         guard compatibility(ofExportPreset: presetName, with: composition, outputFileType: outputFileType) else {
             finish(error: .cannotExportFile(outputURL, fileType: outputFileType))
+            return
+        }
+        guard cancellationRequested == false else {
+            finish(error: .cancelled)
             return
         }
         
@@ -192,20 +221,43 @@ public class MNAssetExportSession: NSObject {
             exportSession.shouldOptimizeForNetworkUse = true
         }
         if let videoTrack = composition.mn.track(with: AVMediaType.video) {
-            var createVideoComposition = false
-            if let cropRect = cropRect, cropRect.isEmpty == false, cropRect.isNull == false {
-                createVideoComposition = true
-            } else if let renderSize = renderSize, min(renderSize.width, renderSize.height) > 0.0 {
-                createVideoComposition = true
-            }
-            if createVideoComposition {
-                var cropRect = CGRect(origin: CGPoint.zero, size: videoTrack.mn.naturalSize)
-                if let rect = self.cropRect {
-                    cropRect = cropRect.intersection(rect)
+            if let cropRect = cropRect {
+                guard cropRect.isNull == false, cropRect.isEmpty == false,
+                      cropRect.minX.isFinite, cropRect.minY.isFinite,
+                      cropRect.width.isFinite, cropRect.height.isFinite else {
+                    finish(error: .invalidConfiguration("画面裁剪区域无效"))
+                    return
                 }
-                var renderSize = cropRect.size
+            }
+            if let renderSize = renderSize {
+                guard renderSize.width.isFinite, renderSize.height.isFinite,
+                      renderSize.width > 0.0, renderSize.height > 0.0 else {
+                    finish(error: .invalidConfiguration("输出分辨率无效"))
+                    return
+                }
+            }
+            // 始终渲染 preferredTransform，确保输出像素方向正确
+            let createVideoComposition = true
+            if createVideoComposition {
+                let sourceBounds = CGRect(origin: .zero, size: videoTrack.mn.rawNaturalSize)
+                var cropRect = sourceBounds
+                if let rect = self.cropRect {
+                    cropRect = videoTrack.mn.sourceRect(forOrientedCropRect: rect)
+                }
+                guard cropRect.isNull == false, cropRect.isEmpty == false,
+                      cropRect.minX.isFinite, cropRect.minY.isFinite,
+                      cropRect.width.isFinite, cropRect.height.isFinite else {
+                    finish(error: .invalidConfiguration("画面裁剪区域无效"))
+                    return
+                }
+                var renderSize = cropRect.applying(videoTrack.mn.preferredTransform).standardized.size
                 if let size = self.renderSize {
                     renderSize = size
+                }
+                guard renderSize.width.isFinite, renderSize.height.isFinite,
+                      renderSize.width > 0.0, renderSize.height > 0.0 else {
+                    finish(error: .invalidConfiguration("输出分辨率无效"))
+                    return
                 }
                 // 渲染尺寸最好是偶数, 避免出错
                 renderSize.width = CGFloat((Int(renderSize.width) + 1) & ~1)
@@ -271,11 +323,12 @@ public class MNAssetExportSession: NSObject {
 #if DEBUG
                     print("资源输出失败: \(error)")
 #endif
-                    self.update(status: .failed)
-                    self.error = MNExportError.underlyingError(error)
+                    let cancelled = self.cancellationRequested
+                    self.update(status: cancelled ? .cancelled : .failed)
+                    self.error = cancelled ? MNExportError.cancelled : MNExportError.underlyingError(error)
                     if let error = self.error, let completionHandler = self.completionHandler {
                         DispatchQueue.main.async {
-                            completionHandler(.failed, error)
+                            completionHandler(cancelled ? .cancelled : .failed, error)
                         }
                     }
                 }
@@ -376,8 +429,10 @@ public class MNAssetExportSession: NSObject {
     
     /// 取消输出任务
     public func cancel() {
-        guard let exportSession = exportSession, exportSession.status == .exporting else { return }
-        exportSession.cancelExport()
+        guard status == .waiting || status == .exporting else { return }
+        cancellationRequested = true
+        update(status: .cancelled)
+        exportSession?.cancelExport()
     }
     
     public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -395,7 +450,9 @@ public class MNAssetExportSession: NSObject {
             destroyTimer()
             if let exportSession = exportSession {
                 self.exportSession = nil
-                if let error = exportSession.error {
+                if status == .cancelled {
+                    self.error = MNExportError.cancelled
+                } else if let error = exportSession.error {
                     self.error = MNExportError.underlyingError(error)
                 }
                 exportSession.removeObserver(self, forKeyPath: #keyPath(AVAssetExportSession.status))

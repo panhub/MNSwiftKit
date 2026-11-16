@@ -71,8 +71,10 @@ extension MNNameSpaceWrapper where Base: AVMutableComposition {
     /// - Returns: 是否拼接成功
     @discardableResult
     func append(track: AVAssetTrack, range: CMTimeRange? = nil) -> Bool {
-        let timeRange = range ?? CMTimeRange(start: .zero, duration: track.timeRange.duration)
-        guard CMTIMERANGE_IS_VALID(timeRange) else { return false }
+        let requestedRange = range ?? track.timeRange
+        guard CMTIMERANGE_IS_VALID(requestedRange), requestedRange.duration > .zero else { return false }
+        let timeRange = CMTimeRangeGetIntersection(requestedRange, otherRange: track.timeRange)
+        guard CMTIMERANGE_IS_VALID(timeRange), timeRange.duration > .zero else { return false }
         guard let compositionTrack = compositionTrack(with: track.mediaType) else { return false }
         do {
             try compositionTrack.insertTimeRange(timeRange, of: track, at: compositionTrack.timeRange.duration)
