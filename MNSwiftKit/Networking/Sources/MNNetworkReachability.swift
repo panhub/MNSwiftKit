@@ -5,7 +5,6 @@
 //  Created by panhub on 2021/8/27.
 //  网络可达性检测<可达性并不保证数据包一定会被主机接收到>
 
-import CoreAudio
 import Foundation
 import CoreTelephony
 import SystemConfiguration
@@ -14,7 +13,7 @@ import ObjectiveC.objc_sync
 public extension Notification.Name {
     
     /// 网络监测通知
-    static let networkReachabilityNotificationName = Notification.Name("com.mn.network.reachability.notification.name")
+    static let networkReachabilityNotificationName = Notification.Name("com.mn.network.reachability.notification")
 }
 
 public class MNNetworkReachability: NSObject {
@@ -41,9 +40,6 @@ public class MNNetworkReachability: NSObject {
     /// 内部检测实例
     private var reachability: SCNetworkReachability?
     
-    /// 外界快速获取实例
-    public static let `default`: MNNetworkReachability = MNNetworkReachability()
-    
     /// 是否在监听
     public private(set) var isMonitoring: Bool = false
     
@@ -54,17 +50,23 @@ public class MNNetworkReachability: NSObject {
     private static let Queue = DispatchQueue(label: "com.mn.network.reachability")
     
     /// 检测事件回调 主线程
-    public var updateHandler: ((MNNetworkReachability.Status)->Void)?
+    public var callbackHandler: ((MNNetworkReachability.Status)->Void)?
+
+    /// 检测事件回调队列
+    public var callbackQueue: DispatchQueue = .main
+
+    /// 上次通知的状态，用于过滤重复回调
+    private var lastStatus: MNNetworkReachability.Status?
     
     /// 获取广域网状态标识
     private lazy var technologys: [String: MNNetworkReachability.Technology] = {
         var technologys: [String: MNNetworkReachability.Technology] = [:]
         technologys[CTRadioAccessTechnologyGPRS] = .wwan2g
         technologys[CTRadioAccessTechnologyEdge] = .wwan2g
+        technologys[CTRadioAccessTechnologyCDMA1x] = .wwan2g
         technologys[CTRadioAccessTechnologyWCDMA] = .wwan3g
         technologys[CTRadioAccessTechnologyHSDPA] = .wwan3g
         technologys[CTRadioAccessTechnologyHSUPA] = .wwan3g
-        technologys[CTRadioAccessTechnologyCDMA1x] = .wwan3g
         technologys[CTRadioAccessTechnologyCDMAEVDORev0] = .wwan3g
         technologys[CTRadioAccessTechnologyCDMAEVDORevA] = .wwan3g
         technologys[CTRadioAccessTechnologyCDMAEVDORevB] = .wwan3g
@@ -76,18 +78,16 @@ public class MNNetworkReachability: NSObject {
         }
         return technologys
     }()
+
+    /// 多卡设备可能同时返回多个蜂窝服务，优先报告更快的制式。
+    private let technologyPriority: [MNNetworkReachability.Technology] = [.wwan5g, .wwan4g, .wwan3g, .wwan2g]
     
     /// 网络状态变化回调
-    private lazy var reachabilityCallBack: SCNetworkReachabilityCallBack = { _, _, context in
+    private lazy var reachabilityCallback: SCNetworkReachabilityCallBack = { _, _, context in
         // 通知状态变化
         guard let context = context else { return }
         guard let target = Unmanaged<AnyObject>.fromOpaque(context).takeUnretainedValue() as? MNNetworkReachability else { return }
-        let status = target.status
-        DispatchQueue.main.async { [weak target] in
-            guard let target = target else { return }
-            target.updateHandler?(status)
-            NotificationCenter.default.post(name: .networkReachabilityNotificationName, object: target)
-        }
+        target.notify(status: target.status)
     }
     
     deinit {
@@ -131,7 +131,7 @@ public class MNNetworkReachability: NSObject {
         guard isMonitoring == false, let reachability = reachability else { return }
         var context = SCNetworkReachabilityContext()
         context.info = UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
-        guard SCNetworkReachabilitySetCallback(reachability, reachabilityCallBack, &context) else {
+        guard SCNetworkReachabilitySetCallback(reachability, reachabilityCallback, &context) else {
 #if DEBUG
             print("SCNetworkReachabilitySetCallback() failed: \(SCErrorString(SCError()))")
 #endif
@@ -145,6 +145,11 @@ public class MNNetworkReachability: NSObject {
             return
         }
         isMonitoring = true
+        // 开启监听后回调一次
+        MNNetworkReachability.Queue.async { [weak self] in
+            guard let self = self else { return }
+            self.notify(status: self.status)
+        }
     }
     
     public func cancelMonitoring() {
@@ -152,8 +157,19 @@ public class MNNetworkReachability: NSObject {
         defer { objc_sync_exit(self) }
         guard isMonitoring, let reachability = reachability else { return }
         isMonitoring = false
+        lastStatus = nil
         SCNetworkReachabilitySetCallback(reachability, nil, nil)
         SCNetworkReachabilitySetDispatchQueue(reachability, nil)
+    }
+    
+    private func notify(status: Status) {
+        if let lastStatus = lastStatus, lastStatus == status { return }
+        lastStatus = status
+        callbackQueue.async { [weak self] in
+            guard let self = self else { return }
+            self.callbackHandler?(status)
+            NotificationCenter.default.post(name: .networkReachabilityNotificationName, object: self)
+        }
     }
 }
 
@@ -180,13 +196,18 @@ extension MNNetworkReachability {
     private func status(with flags: SCNetworkReachabilityFlags) -> MNNetworkReachability.Status {
         // 无法连接网络
         guard flags.contains(.reachable) else { return .unreachable }
-        if flags.contains(.interventionRequired) { return .unreachable } //|| flags.contains(.transientConnection)
-        if flags.contains(.isWWAN) {
+        if flags.contains(.interventionRequired) { return .unreachable }
+        if flags.contains(.connectionRequired),
+           flags.contains(.connectionOnDemand) == false,
+           flags.contains(.connectionOnTraffic) == false {
+            return .unreachable
+        }
 #if !arch(i386) && !arch(x86_64) && !targetEnvironment(simulator)
+        if flags.contains(.isWWAN) {
             // 真机
             return .wwan
-#endif
         }
+#endif
         return .wifi
     }
 }
@@ -199,12 +220,9 @@ extension MNNetworkReachability {
         guard isCellularReachable else { return .unknown }
         var technology: MNNetworkReachability.Technology = .unknown
         if #available(iOS 12.0, *) {
-            if let serviceCurrentRadioAccessTechnology = networkInfo.serviceCurrentRadioAccessTechnology {
-                for key in serviceCurrentRadioAccessTechnology.values {
-                    guard let value = technologys[key] else { continue }
-                    technology = value
-                    break
-                }
+            if let services = networkInfo.serviceCurrentRadioAccessTechnology {
+                let values = services.values.compactMap { technologys[$0] }
+                technology = technologyPriority.first(where: values.contains) ?? .unknown
             }
         } else if let current = networkInfo.currentRadioAccessTechnology, let value = technologys[current] {
             technology = value

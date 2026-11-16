@@ -206,7 +206,7 @@ extension MNNetworkError {
     /// 是否是关于请求响应错误
     public var isResponseError: Bool {
         switch self {
-        case .httpsChallengeFailure: return true
+        case .responseParseFailure: return true
         default: return false
         }
     }
