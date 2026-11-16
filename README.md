@@ -5571,10 +5571,10 @@ func tableView(_ tableView: UITableView, editingDirectionsForRowAt indexPath: In
 #### ✨ 特性
 
 -  **多格式支持**：支持 MP4、MOV、M4V、WAV、M4A、CAF、AIFF 等多种音视频格式
--  **视频处理**：支持视频裁剪、尺寸调整、时间范围调整
--  **音频处理**：支持音频提取、格式转换、质量调整
--  **质量控制**：提供低、中、高三种质量预设
--  **进度监控**：实时导出进度回调
+-  **视频处理**：支持方向校正、画面裁剪、尺寸调整和时间范围调整
+-  **音频处理**：支持音频提取、AAC/PCM 格式转换和质量调整
+-  **质量控制**：`MNMediaExportSession` 提供低、中、高三档码率质量
+-  **进度监控**：主队列进度回调，并支持回调间隔设置
 -  **元数据支持**：获取媒体时长、尺寸、截图等元数据信息输出
 -  **错误处理**：完善的错误类型
 
@@ -5606,21 +5606,23 @@ targets: [
 
 **MNAssetExportSession**
 
-使用 `AVAssetExportSession` 进行导出，增加了画面裁剪，时间片段裁剪，是否导出音视频控制等。
+使用系统 `AVAssetExportSession` 导出，支持预设质量、画面裁剪、时间片段裁剪、方向校正以及音视频轨道控制。
 
 ```swift
 let session = MNAssetExportSession(asset: videoAsset, outputURL: outputURL)
 // 质量预设
-session.presetName = AVAssetExportPresetHighestQuality
+session.presetName = AVAssetExportPresetHighestQuality // 可选
+session.outputFileType = .mp4 // 可选，默认根据 outputURL 后缀判断
 // 是否导出音频/视频
 session.exportAudioTrack = true
 session.exportVideoTrack = true
-// 裁剪区域
+// 裁剪区域：使用校正方向后的画面坐标
 session.cropRect = CGRect(x: 0.0, y: 0.0, width: 500.0, height: 500.0)
 // 渲染尺寸（输出的视频画面尺寸）
 session.renderSize = CGSize(width: 1080.0, height: 1080.0)
 // 裁剪的时间范围
 session.timeRange = CMTimeRange(start: CMTime(seconds: 10, preferredTimescale: 600), duration: CMTime(seconds: 30, preferredTimescale: 600))
+session.progressUpdateInterval = 0.15
 // 异步输出，进度和结果在主队列回调
 session.exportAsynchronously { progressValue in
     print(progressValue)
@@ -5635,16 +5637,18 @@ session.exportAsynchronously { progressValue in
 
 **MNMediaExportSession**
 
-使用 `AVAssetReader` 和 `AVAssetWriter` 进行底层导出，提供画面裁剪，时间片段裁剪，是否导出音视频控制等。
+使用 `AVAssetReader` 和 `AVAssetWriter` 进行底层导出。它提供码率质量、画面裁剪、时间片段裁剪、方向校正、音视频轨道控制和进度节流。
 
 ```swift
 let session = MNMediaExportSession(asset: videoAsset, outputURL: outputURL)
 session.quality = .high // 输出质量
+session.presetName = .preset1920x1080 // 可选；不设置时按 renderSize 自动选择
 session.exportAudioTrack = true
 session.exportVideoTrack = true
-session.cropRect = CGRect(x: 0.0, y: 0.0, width: 500.0, height: 500.0)
+session.cropRect = CGRect(x: 0.0, y: 0.0, width: 500.0, height: 500.0) // 校正方向后的画面坐标
 session.renderSize = CGSize(width: 1080.0, height: 1080.0)
 session.timeRange = CMTimeRange(start: CMTime(seconds: 10, preferredTimescale: 600), duration: CMTime(seconds: 30, preferredTimescale: 600))
+session.progressUpdateInterval = 0.15
 session.exportAsynchronously { progressValue in
     print(progressValue)
 } completionHandler: { status, error in
@@ -5655,6 +5659,16 @@ session.exportAsynchronously { progressValue in
     }
 }
 ```
+
+`quality` 只控制压缩质量：视频按分辨率和帧率计算码率，音频使用 64/128/192 kbps AAC。分辨率由 `renderSize` 控制，编码预设由 `presetName` 控制；两者未设置时自动选择。
+
+取消导出：
+
+```swift
+session.cancel()
+```
+
+当前视频管线面向普通 8-bit SDR 视频，暂不保证 HDR、10-bit 或 Alpha 通道保留；音频输出最多保留双声道。
 
 **元数据操作**
 
